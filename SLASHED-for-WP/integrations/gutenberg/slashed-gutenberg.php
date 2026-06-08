@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * plugin they are not yet set and are defined here as usual.
  */
 if ( ! defined( 'SLASHED_GUTENBERG_VERSION' ) ) {
-	define( 'SLASHED_GUTENBERG_VERSION',  '0.5.21' );
+	define( 'SLASHED_GUTENBERG_VERSION',  '0.0.1' );
 	define( 'SLASHED_GUTENBERG_PATH',     plugin_dir_path( __FILE__ ) );
 	define( 'SLASHED_GUTENBERG_URL',      plugin_dir_url( __FILE__ ) );
 	define( 'SLASHED_GUTENBERG_CSS_REF',  'v0.5.23' );

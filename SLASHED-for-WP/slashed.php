@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // ─── Canonical constants ──────────────────────────────────────────────────────
 
-define( 'SLASHED_VERSION',  '0.5.21' );
+define( 'SLASHED_VERSION',  '0.0.1' );
 define( 'SLASHED_PATH',     plugin_dir_path( __FILE__ ) );
 define( 'SLASHED_URL',      plugin_dir_url( __FILE__ ) );
 
