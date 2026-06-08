@@ -34,6 +34,15 @@ const VERSION_HEADER_FILES = [
   `${PLUGIN}/integrations/bricks/slashed-bricks.php`,
   `${PLUGIN}/integrations/gutenberg/slashed-gutenberg.php`,
 ];
+
+// PHP define() constants that mirror the plugin's own release version.
+// These are distinct from SLASHED_*_CSS_REF which tracks the framework version.
+const VERSION_CONSTANT_FILES = [
+  { file: `${PLUGIN}/slashed.php`,                                  name: 'SLASHED_VERSION' },
+  { file: `${PLUGIN}/integrations/bricks/slashed-bricks.php`,      name: 'SLASHED_BRICKS_VERSION' },
+  { file: `${PLUGIN}/integrations/gutenberg/slashed-gutenberg.php`, name: 'SLASHED_GUTENBERG_VERSION' },
+];
+
 const README = `${PLUGIN}/readme.txt`;
 
 const SEMVER = String.raw`\d+\.\d+\.\d+(?:[-.][A-Za-z0-9.]+)*`;
@@ -97,6 +106,15 @@ function main() {
       new RegExp(`(^\\s*\\*\\s*Version:\\s*)${SEMVER}`, 'm'),
       `$1${version}`,
       `Version: = ${version}`
+    ) ? 1 : 0;
+  }
+
+  for (const { file, name } of VERSION_CONSTANT_FILES) {
+    changed += syncReplace(
+      file,
+      new RegExp(`(define\\(\\s*'${name}',\\s*')${SEMVER}('\\s*\\))`),
+      `$1${version}$2`,
+      `${name} = ${version}`
     ) ? 1 : 0;
   }
 

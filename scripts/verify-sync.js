@@ -44,6 +44,13 @@ const VERSION_HEADER_FILES = [
   `${PLUGIN}/integrations/gutenberg/slashed-gutenberg.php`,
 ];
 
+// PHP define() constants that must also match the plugin's own release version.
+const VERSION_CONSTANTS = [
+  { file: `${PLUGIN}/slashed.php`,                                  name: 'SLASHED_VERSION' },
+  { file: `${PLUGIN}/integrations/bricks/slashed-bricks.php`,      name: 'SLASHED_BRICKS_VERSION' },
+  { file: `${PLUGIN}/integrations/gutenberg/slashed-gutenberg.php`, name: 'SLASHED_GUTENBERG_VERSION' },
+];
+
 const INVENTORY_COPIES = [
   `${PLUGIN}/data/inventory.json`,
   `${PLUGIN}/integrations/bricks/data/inventory.json`,
@@ -137,7 +144,12 @@ export function runChecks(root = ROOT) {
     if (v === null) errors.push(`Cannot find Version: header in ${file}`);
     else if (v !== pkgVersion) errors.push(`${file} Version: '${v}' != package.json version '${pkgVersion}' — run \`npm run version-sync\``);
   }
-  if (errors.length === 0) info.push(`Plugin version: ${pkgVersion} (package.json, readme Stable tag, all Version: headers agree)`);
+  for (const { file, name } of VERSION_CONSTANTS) {
+    const val = cssRefValue(file, name);
+    if (val === null) errors.push(`Cannot find ${name} define in ${file}`);
+    else if (val !== pkgVersion) errors.push(`${name} = '${val}' != package.json version '${pkgVersion}' — run \`npm run version-sync\``);
+  }
+  if (errors.length === 0) info.push(`Plugin version: ${pkgVersion} (package.json, readme Stable tag, all Version: headers, all *_VERSION constants agree)`);
 
   return { errors, info };
 }
