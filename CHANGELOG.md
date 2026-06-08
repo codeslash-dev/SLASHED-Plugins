@@ -9,6 +9,19 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-08
+
+### Changed
+
+- Tab consolidation, Bundle/Hooks to PHP, WCAG palette optimizer
+- Bundle cards, version rollback, renamed menus, merged tabs
+
+### Fixed
+
+- Handle pre-existing releases; add workflow_dispatch retry
+
+## [0.1.1] - 2026-06-08
+
 ### Changed
 
 - Settings page rebuilt: bundle cards, version rollback UI, renamed menus, merged tab
