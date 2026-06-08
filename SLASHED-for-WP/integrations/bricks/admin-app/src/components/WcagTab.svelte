@@ -16,6 +16,7 @@
    * handled without a custom parser.
    */
   import { meta, tokens } from '../lib/stores.svelte.js';
+  import { saveSection } from '../lib/api.js';
 
   // ── Color inventory ──────────────────────────────────────────────────
   const defaultColors = meta.defaults?.colors ?? {};
@@ -171,9 +172,6 @@
   }
 
   // ── Palette Optimizer ─────────────────────────────────────────────────
-
-  import { tokens } from '../lib/stores.svelte.js';
-  import { saveSection } from '../lib/api.js';
 
   let suggestion  = $state(null);
   let optimizing  = $state(false);
