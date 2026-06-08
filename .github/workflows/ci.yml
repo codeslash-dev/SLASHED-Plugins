@@ -9,6 +9,32 @@ permissions:
   contents: read
 
 jobs:
+  build:
+    name: Build bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install editor-app dependencies
+        run: npm ci --prefix SLASHED-for-WP/integrations/bricks/editor-app
+
+      - name: Install admin-app dependencies
+        run: npm ci --prefix SLASHED-for-WP/integrations/bricks/admin-app
+
+      - name: Build editor-app
+        run: npm run build:editor-app
+
+      - name: Build admin-app
+        run: npm run build:admin-app
+
   quality:
     name: Lint, test, version & drift checks
     runs-on: ubuntu-latest
