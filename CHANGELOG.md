@@ -1,46 +1,26 @@
-# Changelog — SLASHED for WordPress
+# Changelog
 
-All notable changes to the SLASHED WordPress plugin (Bricks Builder and
-Gutenberg integrations) are documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-> **History note:** this plugin was split out of the
-> [SLASHED framework](https://github.com/codeslash-dev/SLASHED) repository into
-> its own repo. It starts a fresh, independent version line at `0.0.1`; the
-> framework version it bundles is tracked separately via the
-> `SLASHED_*_CSS_REF` constants. The work below was developed while the plugin
-> still lived in the framework repo (so it predates this repo's history) and is
-> consolidated here as the first standalone release, in the order it landed.
+Notable changes to the SLASHED WordPress plugin (Bricks Builder and Gutenberg
+integrations). Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html). The bundled
+framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
 ## [0.0.1] - 2026-06-08
 
-First standalone release of the SLASHED WordPress plugin. Bundles the
-Bricks Builder and Gutenberg integrations developed in the framework repo.
+First standalone release. Bundles the Bricks Builder and Gutenberg integrations
+previously developed in the SLASHED framework repo.
 
 ### Added
 
-- **Bricks Builder integration** — WordPress plugin for one-click SLASHED
-  loading in Bricks Builder themes. (Originally landed 2026-05-23 while bundled
-  in the framework repo, PR #71.)
-- **reBEMer** (`integrations/bricks/`) — Subtree-scoped BEM class manager
-  for the Bricks Builder structure panel. Adds a "BEM" badge to every
-  structure-panel item; clicking it opens a draggable modal that names a
-  block + every descendant element + an optional modifier and applies the
-  result as global classes in one transaction. Five operation modes
-  (Add / Rename / Replace / Add Modifier / Migrate ID styles), a
-  client-side reference-usage check (via `GET /rebemer/unused`) so destructive
-  ops surface cross-element class usage before they run, snapshot + rollback for
-  every apply, an in-panel undo ring buffer, and a reserved-name guard
-  against SLASHED's own utility classes. Full design at
-  [docs/rebemer.md](docs/rebemer.md). The editor app lives in
-  `integrations/bricks/editor-app/` (Svelte 5 runes + Vite); the PHP side
-  is `Slashed_Bricks_ReBEMer_{Policy,REST,Enqueue}` under
-  `integrations/bricks/includes/`.
-- **Layouts tab — responsive header/sticky offsets** — the admin SPA exposes
-  `--sf-header-height-mobile`/`-desktop` and `--sf-sticky-offset-mobile`/`-desktop`
-  as number fields and generates a fluid `clamp()` for `--sf-header-height` /
-  `--sf-sticky-offset` when the two values differ. Tracks the matching framework
-  token additions.
+- **Bricks Builder integration** — one-click SLASHED loading in Bricks themes.
+- **reBEMer** — subtree-scoped BEM class manager for the Bricks structure panel:
+  Add / Rename / Replace / Add Modifier / Migrate-ID-styles modes, per-row
+  class-family picker, sibling auto-numbering, a read-only reference-usage
+  report (`GET /rebemer/unused`), and a reserved-name guard against SLASHED
+  utility classes. Design: [docs/rebemer.md](docs/rebemer.md).
+- **Layouts tab — responsive header/sticky offsets** — admin SPA exposes
+  `--sf-header-height-{mobile,desktop}` and `--sf-sticky-offset-{mobile,desktop}`
+  and generates a `clamp()` for `--sf-header-height` / `--sf-sticky-offset` when
+  the two values differ.
