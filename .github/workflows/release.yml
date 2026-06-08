@@ -1,0 +1,111 @@
+name: Release
+
+# Builds the distributable plugin zip (dist/slashed.zip) and attaches it to the
+# GitHub Release whenever a v* tag is pushed (or via manual dispatch). The zip
+# packages the committed plugin files — bundled framework CSS, data, PHP and the
+# pre-built SPA assets — under a single top-level slashed/ directory.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to (re)build the release for, e.g. v0.5.21'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build + publish plugin zip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # On manual dispatch, build the exact tagged commit (not main HEAD).
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      # Stamp the plugin's own version (package.json / readme Stable tag /
+      # Version: headers) to the tag, so the packaged zip is correctly versioned
+      # even if the bump was not committed before tagging.
+      - name: Stamp plugin version to tag
+        run: |
+          npm version "${{ steps.tag.outputs.version }}" --no-git-tag-version --allow-same-version
+          node scripts/version-sync.js
+
+      - name: Verify version metadata is consistent
+        run: npm run verify
+
+      - name: Build plugin zip
+        run: npm run build:zip
+
+      - name: Extract changelog notes for this version
+        id: notes
+        run: |
+          VERSION="${{ steps.tag.outputs.version }}"
+          NOTES=$(awk -v target="$VERSION" '
+            $1 == "##" {
+              h = $2; gsub(/^\[/, "", h); gsub(/\]$/, "", h)
+              if (found) exit
+              if (h == target) { found = 1; next }
+            }
+            found { print }
+          ' CHANGELOG.md)
+          {
+            echo "body<<EOF"
+            if [ -n "$NOTES" ]; then echo "$NOTES"; else echo "Release ${{ steps.tag.outputs.tag }}"; fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish release with zip asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
+          body: ${{ steps.notes.outputs.body }}
+          files: dist/slashed.zip
+          fail_on_unmatched_files: true
+
+      # Keep main's version metadata aligned with the released tag (prevents the
+      # "main lags the latest tag" drift). Best-effort: a protected main that
+      # blocks direct pushes won't fail the release.
+      - name: Sync version bump back to main
+        if: github.event_name == 'push'
+        continue-on-error: true
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json SLASHED-for-WP/readme.txt \
+            SLASHED-for-WP/slashed.php \
+            SLASHED-for-WP/integrations/bricks/slashed-bricks.php \
+            SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php
+          if git diff --cached --quiet; then
+            echo "Version metadata already in sync."
+          else
+            git commit -m "chore: sync version metadata to ${{ steps.tag.outputs.tag }} [skip ci]"
+            git push origin "HEAD:main"
+          fi
