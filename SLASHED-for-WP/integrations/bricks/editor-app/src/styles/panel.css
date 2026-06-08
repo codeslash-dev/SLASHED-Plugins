@@ -15,7 +15,7 @@
   --rebemer-error: #ff4c4c;
   --rebemer-success: #4ade80;
   --rebemer-radius: 4px;
-  --rebemer-font: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --rebemer-font: "Inter", -apple-system, blinkmacsystemfont, sans-serif;
 }
 
 /* Badge — uses fallbacks because badges are injected outside #slashed-rebemer-host
@@ -95,7 +95,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
 }
 .rebemer-badge:hover {
   color: var(--rebemer-accent, #e2b93b);
-  background: rgba(226, 185, 59, .08);
+  background: rgb(226 185 59 / .08);
 }
 .rebemer-badge:focus-visible {
   outline: 1px dotted var(--rebemer-accent, #e2b93b);
@@ -117,7 +117,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   color: var(--rebemer-fg);
   border: 1px solid var(--rebemer-border);
   border-radius: var(--rebemer-radius);
-  box-shadow: 0 10px 40px rgba(0,0,0,.6);
+  box-shadow: 0 10px 40px rgb(0 0 0 / .6);
   display: flex;
   flex-direction: column;
   font: 12px/1.45 var(--rebemer-font);
@@ -176,13 +176,13 @@ li[data-id]:focus-within > .rebemer-badge-host {
 .rebemer-panel__notice {
   margin: 0;
   padding: 8px 14px;
-  background: rgba(226,185,59,.08);
+  background: rgb(226 185 59 / .08);
   border-bottom: 1px solid var(--rebemer-border);
   color: var(--rebemer-fg);
   font-size: 11px;
   line-height: 1.5;
 }
-.rebemer-panel__notice--warn { background: rgba(226,185,59,.16); }
+.rebemer-panel__notice--warn { background: rgb(226 185 59 / .16); }
 .rebemer-panel__notice strong { color: var(--rebemer-accent); font-weight: 600; }
 .rebemer-panel__notice-skip { display: block; margin-top: 2px; color: var(--rebemer-fg-muted); }
 
@@ -196,10 +196,10 @@ li[data-id]:focus-within > .rebemer-badge-host {
   gap: 8px;
   padding: 6px 8px;
   border-radius: var(--rebemer-radius);
-  background: rgba(255,255,255,.02);
+  background: rgb(255 255 255 / .02);
   margin-left: calc(var(--rebemer-row-depth, 0) * 12px);
 }
-.rebemer-row:hover { background: rgba(255,255,255,.04); }
+.rebemer-row:hover { background: rgb(255 255 255 / .04); }
 .rebemer-row--disabled { opacity: .45; }
 
 .rebemer-row__include input { cursor: pointer; }
@@ -212,17 +212,17 @@ li[data-id]:focus-within > .rebemer-badge-host {
   cursor: pointer; line-height: 1;
 }
 .rebemer-row__type--toggle:hover:not(:disabled) {
-  color: var(--rebemer-fg); background: rgba(255,255,255,.06);
+  color: var(--rebemer-fg); background: rgb(255 255 255 / .06);
 }
 .rebemer-row__type--toggle:disabled { cursor: default; opacity: .5; }
-.rebemer-row__type--block { color: var(--rebemer-accent); background: rgba(226,185,59,.12); }
-.rebemer-row__type--block:hover:not(:disabled) { background: rgba(226,185,59,.2); }
+.rebemer-row__type--block { color: var(--rebemer-accent); background: rgb(226 185 59 / .12); }
+.rebemer-row__type--block:hover:not(:disabled) { background: rgb(226 185 59 / .2); }
 .rebemer-row__hint {
   font-size: 9px;
   color: var(--rebemer-accent);
   text-transform: uppercase;
   letter-spacing: .5px;
-  background: rgba(226,185,59,.12);
+  background: rgb(226 185 59 / .12);
   padding: 1px 4px;
   border-radius: 2px;
 }
@@ -237,7 +237,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   border-radius: var(--rebemer-radius);
   overflow: hidden;
 }
-.rebemer-row__prefix { padding: 4px 6px; background: rgba(0,0,0,.25); color: var(--rebemer-fg-muted); font-size: 11px; border-right: 1px solid var(--rebemer-input-border); white-space: nowrap; }
+.rebemer-row__prefix { padding: 4px 6px; background: rgb(0 0 0 / .25); color: var(--rebemer-fg-muted); font-size: 11px; border-right: 1px solid var(--rebemer-input-border); white-space: nowrap; }
 .rebemer-row__name input { background: transparent; border: 0; outline: 0; color: var(--rebemer-fg); font: inherit; padding: 4px 6px; flex: 1; min-width: 0; }
 /* Suggested rows — the user hasn't touched the input yet. Italic +
    muted color so they read as "we filled this in, you might want to
@@ -291,11 +291,11 @@ li[data-id]:focus-within > .rebemer-badge-host {
 .rebemer-row__op-btn:first-child { border-left: 0; }
 .rebemer-row__op-btn--on {
   color: var(--rebemer-accent);
-  background: rgba(226,185,59,.12);
+  background: rgb(226 185 59 / .12);
 }
 .rebemer-row__op-btn:hover:not(.rebemer-row__op-btn--on) {
   color: var(--rebemer-fg);
-  background: rgba(255,255,255,.06);
+  background: rgb(255 255 255 / .06);
 }
 
 /* Family picker — shown when Rename is selected and the element has multiple families. */
@@ -330,7 +330,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
 /* code inside info/warn notes */
 .rebemer-row__info code,
 .rebemer-row__warn code {
-  background: rgba(0,0,0,.3);
+  background: rgb(0 0 0 / .3);
   padding: 1px 4px;
   border-radius: 2px;
   font: 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -342,7 +342,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   grid-column: 1 / -1;
   margin: 0;
   padding: 6px 8px;
-  background: rgba(74,222,128,.08);
+  background: rgb(74 222 128 / .08);
   border-left: 2px solid var(--rebemer-success);
   border-radius: 2px;
   color: var(--rebemer-fg);
@@ -350,7 +350,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   line-height: 1.4;
 }
 .rebemer-row__recommend code {
-  background: rgba(0,0,0,.3);
+  background: rgb(0 0 0 / .3);
   padding: 1px 4px;
   border-radius: 2px;
   font: 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -368,12 +368,12 @@ li[data-id]:focus-within > .rebemer-badge-host {
   border-radius: 2px;
 }
 .rebemer-row__warn {
-  background: rgba(226,185,59,.12);
+  background: rgb(226 185 59 / .12);
   border-left: 2px solid #e2b93b;
   color: var(--rebemer-fg);
 }
 .rebemer-row__info {
-  background: rgba(99,179,237,.10);
+  background: rgb(99 179 237 / .10);
   border-left: 2px solid #63b3ed;
   color: var(--rebemer-fg-muted);
 }
@@ -403,7 +403,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
 }
 .rebemer-chip {
   font: 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  background: rgba(0,0,0,.3);
+  background: rgb(0 0 0 / .3);
   border: 1px solid var(--rebemer-input-border);
   color: var(--rebemer-fg);
   padding: 2px 5px;
@@ -419,7 +419,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
 .rebemer-btn--primary:hover { background: var(--rebemer-accent-hover); border-color: var(--rebemer-accent-hover); }
 
 /* Toast */
-.rebemer-toast { position: fixed; bottom: 16px; right: 16px; z-index: 100002; background: var(--rebemer-input-bg); color: var(--rebemer-fg); border: 1px solid var(--rebemer-border); border-radius: var(--rebemer-radius); padding: 8px 12px; font: 12px/1.45 var(--rebemer-font); cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.4); }
+.rebemer-toast { position: fixed; bottom: 16px; right: 16px; z-index: 100002; background: var(--rebemer-input-bg); color: var(--rebemer-fg); border: 1px solid var(--rebemer-border); border-radius: var(--rebemer-radius); padding: 8px 12px; font: 12px/1.45 var(--rebemer-font); cursor: pointer; box-shadow: 0 4px 12px rgb(0 0 0 / .4); }
 .rebemer-toast--success { border-color: var(--rebemer-success); }
 .rebemer-toast--error { border-color: var(--rebemer-error); color: var(--rebemer-error); }
 
@@ -436,7 +436,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   border-radius: var(--rebemer-radius);
   padding: 8px 10px;
   font: 12px/1.45 var(--rebemer-font);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, .5);
+  box-shadow: 0 6px 20px rgb(0 0 0 / .5);
   pointer-events: none;
 }
 .rebemer-class-hint[hidden] { display: none; }
@@ -513,7 +513,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   font: 600 11px/1 var(--rebemer-font);
   letter-spacing: .3px;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .45);
+  box-shadow: 0 4px 16px rgb(0 0 0 / .45);
   transition: border-color 120ms, color 120ms, transform 120ms;
 }
 .slashed-cp-launch:hover { border-color: var(--rebemer-fg-muted); transform: translateY(-1px); }
@@ -524,7 +524,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   border-radius: 50%;
   /* A four-stop conic ring nods at the brand families (primary → action). */
   background: conic-gradient(from 210deg, #5b8cff, #b07cff, #ff6b6b, #ffd24a, #4ade80, #5b8cff);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .25);
 }
 .slashed-cp-launch__txt { text-transform: uppercase; }
 
@@ -543,7 +543,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   color: var(--rebemer-fg);
   border: 1px solid var(--rebemer-border);
   border-radius: var(--rebemer-radius);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, .6);
+  box-shadow: 0 12px 48px rgb(0 0 0 / .6);
   font: 12px/1.45 var(--rebemer-font);
   overflow: hidden;
   outline: none;
@@ -626,7 +626,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
 .slashed-cp__body { flex: 1; overflow-y: auto; padding: 6px 12px 12px; }
 .slashed-cp__empty { color: var(--rebemer-fg-muted); font-size: 11px; padding: 12px 2px; }
 
-.slashed-cp__group { padding: 10px 0 6px; border-bottom: 1px solid rgba(255, 255, 255, .05); }
+.slashed-cp__group { padding: 10px 0 6px; border-bottom: 1px solid rgb(255 255 255 / .05); }
 .slashed-cp__group:last-child { border-bottom: 0; }
 .slashed-cp__group-head { margin: 0 0 8px; }
 .slashed-cp__group-title {
@@ -649,7 +649,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   margin-left: auto;
   font: 600 9px/1 var(--rebemer-font);
   color: var(--rebemer-fg-muted);
-  background: rgba(255, 255, 255, .06);
+  background: rgb(255 255 255 / .06);
   border-radius: 999px;
   padding: 2px 6px;
   text-transform: none;
@@ -692,7 +692,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   height: 28px;
   flex: 0 0 auto;
   padding: 0;
-  border: 1px solid rgba(127, 127, 127, .45);
+  border: 1px solid rgb(127 127 127 / .45);
   border-radius: 6px;
   background: none;
   cursor: pointer;
@@ -707,7 +707,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   background: linear-gradient(
     135deg,
     var(--cp-l) 0 calc(50% - 0.5px),
-    rgba(0, 0, 0, .35) calc(50% - 0.5px) calc(50% + 0.5px),
+    rgb(0 0 0 / .35) calc(50% - 0.5px) calc(50% + 0.5px),
     var(--cp-d) calc(50% + 0.5px) 100%
   );
 }
@@ -730,7 +730,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
 .slashed-cp__legend { display: inline-flex; align-items: center; gap: 5px; }
 .slashed-cp__legend-sw {
   width: 12px; height: 12px; border-radius: 3px;
-  border: 1px solid rgba(127, 127, 127, .45);
+  border: 1px solid rgb(127 127 127 / .45);
   background: linear-gradient(135deg, #fff 0 50%, #222 50% 100%);
 }
 
@@ -755,11 +755,11 @@ li[data-id]:focus-within > .rebemer-badge-host {
   opacity: 0.6;
   transition: opacity 120ms, background 120ms;
 }
-.slashed-sf-color-btn:hover { opacity: 1; background: rgba(91, 140, 255, .15); }
+.slashed-sf-color-btn:hover { opacity: 1; background: rgb(91 140 255 / .15); }
 /* Active state — shown after a colour is picked; dot background is set
    inline by JS to the resolved hex. */
 .slashed-sf-color-btn--active { opacity: 1; }
-.slashed-sf-color-btn--active:hover { background: rgba(255, 255, 255, .06); }
+.slashed-sf-color-btn--active:hover { background: rgb(255 255 255 / .06); }
 
 .slashed-sf-color-btn__dot {
   display: inline-block;
@@ -767,7 +767,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   height: 20px;
   border-radius: 50%;
   background: conic-gradient(from 210deg, #5b8cff, #b07cff, #ff6b6b, #ffd24a, #4ade80, #5b8cff);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .2);
   flex-shrink: 0;
   transition: width 80ms, height 80ms, border-radius 120ms;
 }
@@ -777,7 +777,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   height: 28px;
   border-radius: 5px;
   transition: width 80ms, height 80ms, border-radius 120ms;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18), 0 0 0 1.5px rgba(255, 255, 255, .22);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / .18), 0 0 0 1.5px rgb(255 255 255 / .22);
 }
 
 /* Variable-picker colour swatch — a small square prepended to each
@@ -793,15 +793,15 @@ li[data-id]:focus-within > .rebemer-badge-host {
   margin-right: 7px;
   vertical-align: middle;
   border-radius: 3px;
-  border: 1px solid rgba(127, 127, 127, .45);
+  border: 1px solid rgb(127 127 127 / .45);
   /* Layer order: the resolved colour sits on top (opaque tokens hide the
      checkerboard entirely); translucent/alpha tokens let the checkerboard
      show through so transparency reads at a glance. */
   background-color: #fff;
   background-image:
     linear-gradient(var(--slashed-swatch-color, transparent), var(--slashed-swatch-color, transparent)),
-    linear-gradient(45deg, rgba(127, 127, 127, .35) 25%, transparent 25%, transparent 75%, rgba(127, 127, 127, .35) 75%),
-    linear-gradient(45deg, rgba(127, 127, 127, .35) 25%, transparent 25%, transparent 75%, rgba(127, 127, 127, .35) 75%);
+    linear-gradient(45deg, rgb(127 127 127 / .35) 25%, transparent 25%, transparent 75%, rgb(127 127 127 / .35) 75%),
+    linear-gradient(45deg, rgb(127 127 127 / .35) 25%, transparent 25%, transparent 75%, rgb(127 127 127 / .35) 75%);
   background-position: 0 0, 0 0, 4px 4px;
   background-size: auto, 8px 8px, 8px 8px;
 }
@@ -823,7 +823,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   width: 360px;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  box-shadow: 6px 0 32px rgba(0, 0, 0, .55);
+  box-shadow: 6px 0 32px rgb(0 0 0 / .55);
 }
 
 /* ── Shared mode-driven backgrounds ───────────────────────────────────
@@ -837,7 +837,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   background: linear-gradient(
     135deg,
     var(--sw-l) 0 calc(50% - 0.5px),
-    rgba(0, 0, 0, .35) calc(50% - 0.5px) calc(50% + 0.5px),
+    rgb(0 0 0 / .35) calc(50% - 0.5px) calc(50% + 0.5px),
     var(--sw-d) calc(50% + 0.5px) 100%
   );
 }
@@ -856,7 +856,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
 /* ── Section wrapper ──────────────────────────────────────────────── */
 .slashed-cp__sec {
   padding: 10px 0 6px;
-  border-bottom: 1px solid rgba(255, 255, 255, .05);
+  border-bottom: 1px solid rgb(255 255 255 / .05);
 }
 .slashed-cp__sec:last-child { border-bottom: 0; }
 .slashed-cp__sec-title {
@@ -902,14 +902,14 @@ li[data-id]:focus-within > .rebemer-badge-host {
   min-width: 0;
   transition: background 80ms;
 }
-.slashed-cp__qu-cell:hover { background: rgba(255, 255, 255, .06); }
+.slashed-cp__qu-cell:hover { background: rgb(255 255 255 / .06); }
 
 .slashed-cp__qu-sw {
   width: 22px;
   height: 22px;
   flex: 0 0 22px;
   border-radius: 5px;
-  border: 1px solid rgba(127, 127, 127, .35);
+  border: 1px solid rgb(127 127 127 / .35);
   transition: border-color 80ms;
 }
 .slashed-cp__qu-sw--alpha { border-style: dashed; }
@@ -958,14 +958,14 @@ li[data-id]:focus-within > .rebemer-badge-host {
   transition: background 80ms;
 }
 .slashed-cp__scan-row:hover,
-.slashed-cp__scan-row--open { background: rgba(255, 255, 255, .04); }
+.slashed-cp__scan-row--open { background: rgb(255 255 255 / .04); }
 
 .slashed-cp__scan-base {
   width: 18px;
   height: 18px;
   flex: 0 0 18px;
   border-radius: 4px;
-  border: 1px solid rgba(127, 127, 127, .3);
+  border: 1px solid rgb(127 127 127 / .3);
 }
 .slashed-cp__scan-name {
   font-weight: 600;
@@ -989,7 +989,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   width: 14px;
   height: 14px;
   border-radius: 3px;
-  border: 1px solid rgba(127, 127, 127, .2);
+  border: 1px solid rgb(127 127 127 / .2);
 }
 .slashed-cp__scan-chev {
   flex: 0 0 auto;
@@ -1001,7 +1001,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
 .slashed-cp__fam {
   padding: 10px 10px 12px;
   border-top: 1px solid var(--rebemer-border);
-  background: rgba(0, 0, 0, .12);
+  background: rgb(0 0 0 / .12);
 }
 
 .slashed-cp__fam-banner {
@@ -1023,8 +1023,8 @@ li[data-id]:focus-within > .rebemer-badge-host {
   font: 700 9px/1 var(--rebemer-font);
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: rgba(255, 255, 255, .9);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .6);
+  color: rgb(255 255 255 / .9);
+  text-shadow: 0 1px 3px rgb(0 0 0 / .6);
 }
 
 .slashed-cp__fam-sec {
@@ -1039,7 +1039,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   font-weight: 400;
   text-transform: none;
   letter-spacing: 0;
-  color: rgba(255, 255, 255, .25);
+  color: rgb(255 255 255 / .25);
 }
 
 /* ── Scale / alpha strip ──────────────────────────────────────────── */
@@ -1061,7 +1061,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   position: relative;
 }
 .slashed-cp__strip-sw:hover { flex: 2; box-shadow: inset 0 0 0 2px var(--rebemer-accent); }
-.slashed-cp__strip-sw--alpha { box-shadow: inset 0 0 0 1px rgba(127, 127, 127, .4); }
+.slashed-cp__strip-sw--alpha { box-shadow: inset 0 0 0 1px rgb(127 127 127 / .4); }
 .slashed-cp__strip-sw--alpha:hover { box-shadow: inset 0 0 0 2px var(--rebemer-accent); }
 .slashed-cp__strip-sw:focus-visible { outline: 2px solid var(--rebemer-accent); outline-offset: -2px; z-index: 1; }
 

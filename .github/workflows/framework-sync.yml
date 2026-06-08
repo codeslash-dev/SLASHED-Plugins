@@ -27,6 +27,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Sync to framework release
         run: |
@@ -36,6 +40,14 @@ jobs:
           else
             npm run update-framework -- --version="$VERSION"
           fi
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Drift checks against the synced framework
+        run: SLASHED_FRAMEWORK_DIR=.framework npm run check
 
       - name: Rebuild plugin zip
         run: npm run build:zip

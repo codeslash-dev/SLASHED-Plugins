@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  verify:
-    name: Tests + version-sync guard
+  quality:
+    name: Lint, test, version & drift checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,11 +18,34 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
-      # Unit tests (editor-app libs) + the version-metadata consistency guard.
-      # Both are dependency-free; the plugin root has no npm dependencies.
-      - name: Run tests
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests (editor-app libs + version guard)
         run: npm test
 
       - name: Verify version metadata is in sync
         run: npm run verify
+
+      - name: Lint CSS (stylelint)
+        run: npm run lint:css
+
+      - name: Lint PHP (php -l)
+        run: npm run lint:php
+
+      - name: Cheatsheet coverage
+        run: npm run check:cheatsheet
+
+      - name: Admin-app ↔ framework drift
+        run: |
+          REF=$(grep -oE "define\( *'SLASHED_CSS_REF', *'[^']*'" SLASHED-for-WP/slashed.php | grep -oE "v[0-9][^']*")
+          echo "Cloning framework $REF for admin-app drift check"
+          git clone --depth 1 --branch "$REF" https://github.com/codeslash-dev/SLASHED.git .framework
+          SLASHED_FRAMEWORK_DIR=.framework npm run check:admin-app

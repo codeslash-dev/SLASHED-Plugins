@@ -24,7 +24,17 @@
     "build:plugin": "node scripts/zip-plugin.js",
     "version-sync": "node scripts/version-sync.js",
     "verify": "node scripts/verify-sync.js",
+    "lint:css": "stylelint \"SLASHED-for-WP/**/*.css\"",
+    "lint:css:fix": "stylelint \"SLASHED-for-WP/**/*.css\" --fix",
+    "lint:php": "node scripts/lint-php.js",
+    "lint": "npm run lint:css && npm run lint:php",
+    "check:cheatsheet": "node scripts/check-cheatsheet.js",
+    "check:admin-app": "node scripts/check-admin-app.js",
     "check": "node scripts/check-admin-app.js && node scripts/check-cheatsheet.js",
     "test": "node --test tests/*.test.js"
+  },
+  "devDependencies": {
+    "stylelint": "^17.11.1",
+    "stylelint-config-standard": "^40.0.0"
   }
 }
