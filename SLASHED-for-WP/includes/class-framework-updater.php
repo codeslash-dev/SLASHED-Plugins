@@ -24,14 +24,14 @@ class Slashed_Framework_Updater {
 	const LOCAL_VER_OPTION = 'slashed_local_framework_version';
 	// Per-version CSS comes from the framework's GitHub Release assets (immutable
 	// per tag). %1$s = version tag (e.g. v0.5.21), %2$s = bundle filename.
-	const CDN_BASE         = 'https://github.com/codeslash-dev/SLASHED/releases/download/%s/%s';
+	const CDN_BASE = 'https://github.com/codeslash-dev/SLASHED/releases/download/%s/%s';
 	// jsDelivr package metadata lists the framework repo's git tags (works
 	// independently of where the built CSS lives).
-	const METADATA_URL     = 'https://data.jsdelivr.com/v1/packages/gh/codeslash-dev/SLASHED';
+	const METADATA_URL = 'https://data.jsdelivr.com/v1/packages/gh/codeslash-dev/SLASHED';
 
 	public function __construct() {
-		add_action( 'wp_ajax_slashed_check_framework_update',  array( $this, 'ajax_check_update' ) );
-		add_action( 'wp_ajax_slashed_do_framework_update',    array( $this, 'ajax_do_update' ) );
+		add_action( 'wp_ajax_slashed_check_framework_update', array( $this, 'ajax_check_update' ) );
+		add_action( 'wp_ajax_slashed_do_framework_update', array( $this, 'ajax_do_update' ) );
 		add_action( 'wp_ajax_slashed_list_framework_versions', array( $this, 'ajax_list_versions' ) );
 	}
 
@@ -126,11 +126,13 @@ class Slashed_Framework_Updater {
 			);
 
 			if ( is_wp_error( $response ) ) {
-				foreach ( $staged as $f ) { $wp_filesystem->delete( $f ); }
+				foreach ( $staged as $f ) {
+					$wp_filesystem->delete( $f ); }
 				return $response;
 			}
 			if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-				foreach ( $staged as $f ) { $wp_filesystem->delete( $f ); }
+				foreach ( $staged as $f ) {
+					$wp_filesystem->delete( $f ); }
 				return new WP_Error(
 					'download_failed',
 					/* translators: %1$s: filename, %2$d: HTTP status code */
@@ -140,7 +142,8 @@ class Slashed_Framework_Updater {
 
 			$content = wp_remote_retrieve_body( $response );
 			if ( ! $wp_filesystem->put_contents( $tmp_path, $content, FS_CHMOD_FILE ) ) {
-				foreach ( $staged as $f ) { $wp_filesystem->delete( $f ); }
+				foreach ( $staged as $f ) {
+					$wp_filesystem->delete( $f ); }
 				return new WP_Error(
 					'write_failed',
 					/* translators: %s: filename */
@@ -158,7 +161,8 @@ class Slashed_Framework_Updater {
 			$final_path = $dist_dir . $filename;
 
 			if ( ! $wp_filesystem->move( $tmp_path, $final_path, true ) ) {
-				foreach ( $staged as $f ) { $wp_filesystem->delete( $f ); }
+				foreach ( $staged as $f ) {
+					$wp_filesystem->delete( $f ); }
 				return new WP_Error(
 					'rename_failed',
 					/* translators: %s: filename */
@@ -193,13 +197,11 @@ class Slashed_Framework_Updater {
 
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			wp_send_json_error( array( 'message' => __( 'Could not fetch version list. Try again later.', 'slashed' ) ) );
-			return;
 		}
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 		if ( ! is_array( $body ) || empty( $body['versions'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'No versions found.', 'slashed' ) ) );
-			return;
 		}
 
 		$versions = array();
@@ -251,13 +253,11 @@ class Slashed_Framework_Updater {
 		}
 		if ( ! $version ) {
 			wp_send_json_error( array( 'message' => __( 'Could not determine version to download.', 'slashed' ) ) );
-			return;
 		}
 
 		$result = self::download_files( $version );
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
-			return;
 		}
 
 		wp_send_json_success(

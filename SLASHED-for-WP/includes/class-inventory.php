@@ -47,8 +47,8 @@ class Slashed_Inventory {
 	 *
 	 * @var array<string, array>
 	 */
-	private static $cache = array();
-	private static $hex_map_cache = array();
+	private static $cache              = array();
+	private static $hex_map_cache      = array();
 	private static $hex_map_dark_cache = array();
 
 	// ---------------------------------------------------------------
@@ -192,7 +192,7 @@ class Slashed_Inventory {
 		foreach ( array_keys( $base ) as $key ) {
 			// color_values is an associative map, not a sortable list.
 			if ( 'color_values' === $key ) {
-				$raw_map = isset( $inventory[ $key ] ) && is_array( $inventory[ $key ] )
+				$raw_map    = isset( $inventory[ $key ] ) && is_array( $inventory[ $key ] )
 					? $inventory[ $key ]
 					: array();
 				$normalized = array();
@@ -308,7 +308,7 @@ class Slashed_Inventory {
 			return array();
 		}
 
-		$settings = $tokens['colors'];
+		$settings  = $tokens['colors'];
 		$overrides = array();
 
 		// Brand families: 'base' is the source token (--sf-color-base-light);
@@ -721,7 +721,11 @@ class Slashed_Inventory {
 	 * @return array Inventory shape (may be empty on read failure).
 	 */
 	private static function parse_path_with_cache( $path ) {
-		$mtime = @filemtime( $path );
+		if ( ! is_readable( $path ) ) {
+			return Slashed_CSS_Parser::empty_inventory();
+		}
+
+		$mtime = filemtime( $path );
 		if ( false === $mtime ) {
 			return Slashed_CSS_Parser::empty_inventory();
 		}
@@ -732,7 +736,8 @@ class Slashed_Inventory {
 			return $cached;
 		}
 
-		$css = @file_get_contents( $path );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a local bundled CSS file on disk, not a remote URL.
+		$css = file_get_contents( $path );
 		if ( false === $css || '' === $css ) {
 			return Slashed_CSS_Parser::empty_inventory();
 		}

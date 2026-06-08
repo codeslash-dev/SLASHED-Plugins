@@ -9,6 +9,28 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-06-08
+
+### Changed
+
+- Clear residual PHPCS warnings and the PHPStan baseline
+- Adopt full WordPress coding standard and tighten PHPStan
+
+### Fixed
+
+- Remove duplicate import in WcagTab, add actions:read to CodeQL
+
+## [0.1.2] - 2026-06-08
+
+### Changed
+
+- Clear residual PHPCS warnings and the PHPStan baseline
+- Adopt full WordPress coding standard and tighten PHPStan
+
+### Fixed
+
+- Remove duplicate import in WcagTab, add actions:read to CodeQL
+
 ## [0.1.1] - 2026-06-08
 
 ### Changed

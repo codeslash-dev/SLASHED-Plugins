@@ -77,7 +77,7 @@ class Slashed_Token_Page {
 		}
 
 		if ( defined( 'SLASHED_URL' ) ) {
-			$plugin_url  = SLASHED_URL  . 'integrations/bricks/';
+			$plugin_url  = SLASHED_URL . 'integrations/bricks/';
 			$plugin_path = SLASHED_PATH . 'integrations/bricks/';
 		} else {
 			// Standalone Bricks plugin: SLASHED_BRICKS_* already point to integrations/bricks/.

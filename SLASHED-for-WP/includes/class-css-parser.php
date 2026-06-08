@@ -138,9 +138,9 @@ class Slashed_CSS_Parser {
 	/**
 	 * Extract --sf-color-* variable names and their declared values.
 	 *
-	 * Captures both regular declarations (--sf-color-X: value;) and
-	 * @property initial-value declarations. Returns an associative array
-	 * mapping variable names to their raw declared values.
+	 * Captures both regular declarations (--sf-color-X: value;) and the CSS
+	 * `@property` at-rule initial-value declarations. Returns an associative
+	 * array mapping variable names to their raw declared values.
 	 *
 	 * @param string $css CSS with comments removed.
 	 * @return array<string, string> Map of variable name to declared value.

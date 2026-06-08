@@ -1,0 +1,31 @@
+includes:
+  # WordPress function/class/constant stubs + WP-aware rules.
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+  level: 5
+
+  paths:
+    - SLASHED-for-WP
+
+  # Plugin constants are define()'d at runtime; declare them for static analysis.
+  bootstrapFiles:
+    - phpstan-bootstrap.php
+
+  excludePaths:
+    - SLASHED-for-WP/dist/*
+    - SLASHED-for-WP/data/*
+    - SLASHED-for-WP/integrations/bricks/data/*
+
+  # The plugin floor is PHP 7.4.
+  phpVersion: 70400
+
+  # PHPDoc array/scalar types aren't enforced at runtime, so defensive
+  # is_array()/is_string() guards on PHPDoc-typed values are legitimate, not
+  # "always true" dead code.
+  treatPhpDocTypesAsCertain: false
+
+  ignoreErrors:
+    # require_once paths are built from runtime PATH constants; they resolve
+    # correctly when the plugin loads but not during isolated static analysis.
+    - identifier: requireOnce.fileNotFound
