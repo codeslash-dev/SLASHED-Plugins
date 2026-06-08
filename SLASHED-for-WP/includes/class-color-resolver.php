@@ -326,7 +326,7 @@ class Slashed_Color_Resolver {
 		$sources = array();
 
 		foreach ( self::default_sources() as $family => $default_oklch ) {
-			$var_name = '--sf-color-' . $family . '-light';
+			$var_name  = '--sf-color-' . $family . '-light';
 			$oklch_str = $default_oklch;
 
 			if ( isset( $color_values[ $var_name ] ) ) {
@@ -398,10 +398,10 @@ class Slashed_Color_Resolver {
 		// ---- Border tokens ----
 		// Light-mode formula: oklch(from neutral_light, clamp(min, L + offset, max), chroma, hue).
 		if ( isset( $sources['neutral'] ) ) {
-			list( $nl, , $nh ) = $sources['neutral'];
+			list( $nl, , $nh )                    = $sources['neutral'];
 			$hex_map['--sf-color-border']         = self::oklch_to_hex( max( 0.70, min( $nl + 0.35, 0.95 ) ), 0.005, $nh );
 			$hex_map['--sf-color-border--subtle'] = self::oklch_to_hex( max( 0.75, min( $nl + 0.40, 0.97 ) ), 0.005, $nh );
-			$hex_map['--sf-color-border--strong'] = self::oklch_to_hex( max( 0.55, min( $nl + 0.10, 0.85 ) ), 0.02,  $nh );
+			$hex_map['--sf-color-border--strong'] = self::oklch_to_hex( max( 0.55, min( $nl + 0.10, 0.85 ) ), 0.02, $nh );
 		} else {
 			$hex_map['--sf-color-border']         = '#d4d4de';
 			$hex_map['--sf-color-border--subtle'] = '#e5e5ec';
@@ -410,8 +410,8 @@ class Slashed_Color_Resolver {
 		$hex_map['--sf-color-border--muted'] = $hex_map['--sf-color-border--subtle']; // legacy alias
 		$hex_map['--sf-color-border--focus'] = $hex_map['--sf-color-action'] ?? '#0097b4';
 		// disabled: desaturated border--subtle at 50% opacity over white.
-		$border_subtle_rgb = self::hex_to_rgb( $hex_map['--sf-color-border--subtle'] );
-		$hex_map['--sf-color-border--disabled']    = self::rgb_to_hex( self::mix_rgb( $border_subtle_rgb, $white_rgb, 0.50 ) );
+		$border_subtle_rgb                      = self::hex_to_rgb( $hex_map['--sf-color-border--subtle'] );
+		$hex_map['--sf-color-border--disabled'] = self::rgb_to_hex( self::mix_rgb( $border_subtle_rgb, $white_rgb, 0.50 ) );
 		// translucent: neutral at 15% opacity over white.
 		$hex_map['--sf-color-border--translucent'] = self::rgb_to_hex( self::mix_rgb( $neutral_rgb, $white_rgb, 0.15 ) );
 
@@ -419,19 +419,19 @@ class Slashed_Color_Resolver {
 		// Alpha-composited over white (opaque approximation of transparent overlays).
 		$hex_map['--sf-color-bg--hover']    = self::rgb_to_hex( self::mix_rgb( $neutral_rgb, $white_rgb, 0.08 ) );
 		$hex_map['--sf-color-bg--active']   = self::rgb_to_hex( self::mix_rgb( $neutral_rgb, $white_rgb, 0.12 ) );
-		$hex_map['--sf-color-bg--selected'] = self::rgb_to_hex( self::mix_rgb( $action_rgb,  $white_rgb, 0.10 ) );
-		$hex_map['--sf-color-bg--focus']    = self::rgb_to_hex( self::mix_rgb( $action_rgb,  $white_rgb, 0.06 ) );
+		$hex_map['--sf-color-bg--selected'] = self::rgb_to_hex( self::mix_rgb( $action_rgb, $white_rgb, 0.10 ) );
+		$hex_map['--sf-color-bg--focus']    = self::rgb_to_hex( self::mix_rgb( $action_rgb, $white_rgb, 0.06 ) );
 		$hex_map['--sf-color-bg--disabled'] = $hex_map['--sf-color-surface']; // = well ≈ surface
 
 		// ---- Well, raised, inverse, overlay ----
 		if ( isset( $sources['base'] ) ) {
-			list( $bl, $bc, $bh ) = $sources['base'];
-			$hex_map['--sf-color-inset']    = self::oklch_to_hex( max( 0.0, $bl - 0.02 ), $bc, $bh );
+			list( $bl, $bc, $bh )          = $sources['base'];
+			$hex_map['--sf-color-inset']   = self::oklch_to_hex( max( 0.0, $bl - 0.02 ), $bc, $bh );
 			$hex_map['--sf-color-raised']  = self::oklch_to_hex( min( 1.0, $bl + 0.04 ), $bc, $bh );
 			$hex_map['--sf-color-inverse'] = self::oklch_to_hex( 1.0 - $bl, $bc, $bh );
 			$hex_map['--sf-color-overlay'] = $hex_map['--sf-color-surface'];
 		} else {
-			$hex_map['--sf-color-inset']    = '#f0f2f5';
+			$hex_map['--sf-color-inset']   = '#f0f2f5';
 			$hex_map['--sf-color-raised']  = '#ffffff';
 			$hex_map['--sf-color-inverse'] = '#0a0a12';
 			$hex_map['--sf-color-overlay'] = '#fafafa';
@@ -447,13 +447,13 @@ class Slashed_Color_Resolver {
 		// ---- Link states (light-mode approximation) ----
 		// Light-mode formula: min(L − offset, cap) keeps link contrast-safe vs page bg.
 		if ( isset( $sources['action'] ) ) {
-			list( $al, $ac, $ah ) = $sources['action'];
-			$l_link   = max( 0.0, min( $al - 0.07, 0.48 ) );
-			$l_hover  = max( 0.0, min( $al - 0.15, 0.40 ) );
-			$l_active = max( 0.0, min( $al - 0.21, 0.34 ) );
-			$hex_map['--sf-color-link']          = self::oklch_to_hex( $l_link,   $ac, $ah );
-			$hex_map['--sf-color-link--hover']   = self::oklch_to_hex( $l_hover,  $ac, $ah );
-			$hex_map['--sf-color-link--active']  = self::oklch_to_hex( $l_active, $ac, $ah );
+			list( $al, $ac, $ah )               = $sources['action'];
+			$l_link                             = max( 0.0, min( $al - 0.07, 0.48 ) );
+			$l_hover                            = max( 0.0, min( $al - 0.15, 0.40 ) );
+			$l_active                           = max( 0.0, min( $al - 0.21, 0.34 ) );
+			$hex_map['--sf-color-link']         = self::oklch_to_hex( $l_link, $ac, $ah );
+			$hex_map['--sf-color-link--hover']  = self::oklch_to_hex( $l_hover, $ac, $ah );
+			$hex_map['--sf-color-link--active'] = self::oklch_to_hex( $l_active, $ac, $ah );
 			// visited: same lightness clamp, +60° hue shift.
 			$hex_map['--sf-color-link--visited'] = self::oklch_to_hex( $l_link, $ac, fmod( $ah + 60.0, 360.0 ) );
 		} else {
@@ -465,7 +465,7 @@ class Slashed_Color_Resolver {
 		// underline: action at 30% opacity over white.
 		$hex_map['--sf-color-link--underline'] = self::rgb_to_hex( self::mix_rgb( $action_rgb, $white_rgb, 0.30 ) );
 		// disabled: = text--disabled.
-		$hex_map['--sf-color-link--disabled']  = $hex_map['--sf-color-text--disabled'];
+		$hex_map['--sf-color-link--disabled'] = $hex_map['--sf-color-text--disabled'];
 
 		// ---- Text-on-color contrast tokens ----
 		// CSS: oklch(clamp(0.1, sign(threshold − L) × 999, 0.95) 0 0)
@@ -487,11 +487,11 @@ class Slashed_Color_Resolver {
 
 		// ---- Selection and mark ----
 		// selection-bg: action at light opacity; approximate as bg--selected.
-		$hex_map['--sf-color-selection-bg']   = $hex_map['--sf-color-bg--selected'];
+		$hex_map['--sf-color-selection-bg'] = $hex_map['--sf-color-bg--selected'];
 		// selection-text / mark-text: both are `inherit` in CSS — show as current text color.
 		$hex_map['--sf-color-selection-text'] = $dark_text;
 		// mark-bg: warning at 25% opacity over white.
-		$hex_map['--sf-color-mark-bg']  = self::rgb_to_hex( self::mix_rgb( $warning_rgb, $white_rgb, 0.25 ) );
+		$hex_map['--sf-color-mark-bg']   = self::rgb_to_hex( self::mix_rgb( $warning_rgb, $white_rgb, 0.25 ) );
 		$hex_map['--sf-color-mark-text'] = $dark_text;
 
 		// ---- Status strong variants (light-mode: source L minus offset) ----
@@ -507,7 +507,7 @@ class Slashed_Color_Resolver {
 			if ( ! isset( $sources[ $family ] ) ) {
 				continue;
 			}
-			list( $sl, $sc, $sh ) = $sources[ $family ];
+			list( $sl, $sc, $sh )                           = $sources[ $family ];
 			$hex_map[ '--sf-color-' . $family . '-strong' ] = self::oklch_to_hex(
 				max( 0.0, $sl - $l_offset ),
 				$sc,
@@ -549,7 +549,7 @@ class Slashed_Color_Resolver {
 			$hex_map['--sf-color-base']    = $surface_hex;
 			$hex_map['--sf-color-surface'] = $surface_hex;
 			$hex_map['--sf-color-bg']      = self::oklch_to_hex( min( 1.0, $bl + 0.02 ), $bc, $bh );
-			$hex_map['--sf-color-inset']    = self::oklch_to_hex( max( 0.0, $bl - 0.02 ), $bc, $bh );
+			$hex_map['--sf-color-inset']   = self::oklch_to_hex( max( 0.0, $bl - 0.02 ), $bc, $bh );
 			$hex_map['--sf-color-raised']  = self::oklch_to_hex( min( 1.0, $bl + 0.04 ), $bc, $bh );
 			$hex_map['--sf-color-overlay'] = $surface_hex;
 			$hex_map['--sf-color-inverse'] = self::oklch_to_hex( max( 0.0, 1.0 - $bl ), $bc, $bh );
@@ -558,21 +558,21 @@ class Slashed_Color_Resolver {
 		// ---- Neutral-derived text + border (dark formulas) ----
 		if ( isset( $d['neutral'] ) ) {
 			list( $nl, $nc, $nh ) = $d['neutral'];
-			$neutral_hex = isset( $hex_map['--sf-color-neutral'] ) ? $hex_map['--sf-color-neutral'] : self::oklch_to_hex( $nl, $nc, $nh );
-			$neutral_rgb = self::hex_to_rgb( $neutral_hex );
+			$neutral_hex          = isset( $hex_map['--sf-color-neutral'] ) ? $hex_map['--sf-color-neutral'] : self::oklch_to_hex( $nl, $nc, $nh );
+			$neutral_rgb          = self::hex_to_rgb( $neutral_hex );
 
-			$hex_map['--sf-color-text']             = self::oklch_to_hex( max( 0.70, min( $nl + 0.25, 1.0 ) ), $nc, $nh );
-			$hex_map['--sf-color-heading']          = $hex_map['--sf-color-text'];
-			$hex_map['--sf-color-text--secondary']  = self::oklch_to_hex( max( 0.55, min( $nl + 0.1, 0.90 ) ), $nc, $nh );
-			$hex_map['--sf-color-text--muted']      = $neutral_hex;
-			$hex_map['--sf-color-text--placeholder']= self::oklch_to_hex( max( 0.35, min( $nl - 0.1, 0.65 ) ), $nc, $nh );
-			$hex_map['--sf-color-text--disabled']   = self::oklch_to_hex( max( 0.25, min( $nl - 0.2, 0.55 ) ), $nc, $nh );
-			$hex_map['--sf-color-text--inverse']    = self::oklch_to_hex( max( 0.05, min( $nl - 0.4, 0.35 ) ), $nc, $nh );
+			$hex_map['--sf-color-text']              = self::oklch_to_hex( max( 0.70, min( $nl + 0.25, 1.0 ) ), $nc, $nh );
+			$hex_map['--sf-color-heading']           = $hex_map['--sf-color-text'];
+			$hex_map['--sf-color-text--secondary']   = self::oklch_to_hex( max( 0.55, min( $nl + 0.1, 0.90 ) ), $nc, $nh );
+			$hex_map['--sf-color-text--muted']       = $neutral_hex;
+			$hex_map['--sf-color-text--placeholder'] = self::oklch_to_hex( max( 0.35, min( $nl - 0.1, 0.65 ) ), $nc, $nh );
+			$hex_map['--sf-color-text--disabled']    = self::oklch_to_hex( max( 0.25, min( $nl - 0.2, 0.55 ) ), $nc, $nh );
+			$hex_map['--sf-color-text--inverse']     = self::oklch_to_hex( max( 0.05, min( $nl - 0.4, 0.35 ) ), $nc, $nh );
 
-			$hex_map['--sf-color-border']         = self::oklch_to_hex( max( 0.25, min( $nl - 0.3, 0.55 ) ), 0.005, $nh );
-			$hex_map['--sf-color-border--subtle'] = self::oklch_to_hex( max( 0.20, min( $nl - 0.38, 0.45 ) ), 0.005, $nh );
-			$hex_map['--sf-color-border--strong'] = self::oklch_to_hex( max( 0.38, min( $nl - 0.1, 0.65 ) ), 0.02, $nh );
-			$hex_map['--sf-color-border--muted']  = $hex_map['--sf-color-border--subtle'];
+			$hex_map['--sf-color-border']              = self::oklch_to_hex( max( 0.25, min( $nl - 0.3, 0.55 ) ), 0.005, $nh );
+			$hex_map['--sf-color-border--subtle']      = self::oklch_to_hex( max( 0.20, min( $nl - 0.38, 0.45 ) ), 0.005, $nh );
+			$hex_map['--sf-color-border--strong']      = self::oklch_to_hex( max( 0.38, min( $nl - 0.1, 0.65 ) ), 0.02, $nh );
+			$hex_map['--sf-color-border--muted']       = $hex_map['--sf-color-border--subtle'];
 			$hex_map['--sf-color-border--translucent'] = self::rgb_to_hex( self::mix_rgb( $neutral_rgb, $surface_rgb, 0.15 ) );
 			$hex_map['--sf-color-border--disabled']    = self::rgb_to_hex( self::mix_rgb( self::hex_to_rgb( $hex_map['--sf-color-border--subtle'] ), $surface_rgb, 0.5 ) );
 
@@ -585,13 +585,13 @@ class Slashed_Color_Resolver {
 		// ---- Action-derived links (dark formulas: lighten toward a floor) ----
 		if ( isset( $d['action'] ) ) {
 			list( $al, $ac, $ah ) = $d['action'];
-			$action_hex = isset( $hex_map['--sf-color-action'] ) ? $hex_map['--sf-color-action'] : self::oklch_to_hex( $al, $ac, $ah );
-			$action_rgb = self::hex_to_rgb( $action_hex );
+			$action_hex           = isset( $hex_map['--sf-color-action'] ) ? $hex_map['--sf-color-action'] : self::oklch_to_hex( $al, $ac, $ah );
+			$action_rgb           = self::hex_to_rgb( $action_hex );
 
-			$hex_map['--sf-color-link']          = self::oklch_to_hex( max( 0.68, $al ), $ac, $ah );
-			$hex_map['--sf-color-link--hover']   = self::oklch_to_hex( max( $al + 0.10, 0.68 ), $ac, $ah );
-			$hex_map['--sf-color-link--active']  = self::oklch_to_hex( max( $al + 0.15, 0.74 ), $ac, $ah );
-			$hex_map['--sf-color-link--visited'] = self::oklch_to_hex( max( 0.68, $al ), $ac, fmod( $ah + 60.0, 360.0 ) );
+			$hex_map['--sf-color-link']            = self::oklch_to_hex( max( 0.68, $al ), $ac, $ah );
+			$hex_map['--sf-color-link--hover']     = self::oklch_to_hex( max( $al + 0.10, 0.68 ), $ac, $ah );
+			$hex_map['--sf-color-link--active']    = self::oklch_to_hex( max( $al + 0.15, 0.74 ), $ac, $ah );
+			$hex_map['--sf-color-link--visited']   = self::oklch_to_hex( max( 0.68, $al ), $ac, fmod( $ah + 60.0, 360.0 ) );
 			$hex_map['--sf-color-link--underline'] = self::rgb_to_hex( self::mix_rgb( $action_rgb, $surface_rgb, 0.30 ) );
 
 			$hex_map['--sf-color-bg--selected'] = self::rgb_to_hex( self::mix_rgb( $action_rgb, $surface_rgb, 0.10 ) );
@@ -620,9 +620,9 @@ class Slashed_Color_Resolver {
 		// ---- Selection + mark ----
 		// Dark selection-bg references action-LIGHT lightness; composite at ~0.55 over base.
 		if ( isset( $light_sources['action'] ) ) {
-			list( $la, $lc, $lh ) = $light_sources['action'];
-			$sel_l   = max( 0.62, min( 0.93 - $la * 0.4, 0.78 ) );
-			$sel_rgb = self::hex_to_rgb( self::oklch_to_hex( $sel_l, $lc, $lh ) );
+			list( $la, $lc, $lh )               = $light_sources['action'];
+			$sel_l                              = max( 0.62, min( 0.93 - $la * 0.4, 0.78 ) );
+			$sel_rgb                            = self::hex_to_rgb( self::oklch_to_hex( $sel_l, $lc, $lh ) );
 			$hex_map['--sf-color-selection-bg'] = self::rgb_to_hex( self::mix_rgb( $sel_rgb, $surface_rgb, 0.55 ) );
 		} elseif ( isset( $hex_map['--sf-color-bg--selected'] ) ) {
 			$hex_map['--sf-color-selection-bg'] = $hex_map['--sf-color-bg--selected'];
@@ -646,7 +646,7 @@ class Slashed_Color_Resolver {
 			if ( ! isset( $d[ $family ] ) ) {
 				continue;
 			}
-			list( $sl, $sc, $sh ) = $d[ $family ];
+			list( $sl, $sc, $sh )                           = $d[ $family ];
 			$hex_map[ '--sf-color-' . $family . '-strong' ] = self::oklch_to_hex( max( 0.0, min( $sl + $l_offset, 1.0 ) ), $sc, $sh );
 		}
 

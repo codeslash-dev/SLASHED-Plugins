@@ -428,10 +428,10 @@ class Slashed_CSS_Generator {
 	private static function generate_paired_clamp_declarations( $settings, $key_prefix, $mobile_var, $desktop_var, $computed_var, $vp_min = self::VIEWPORT_MIN, $vp_max = self::VIEWPORT_MAX ) {
 		$declarations = array();
 
-		$mobile_raw  = $settings[ $key_prefix . '_mobile' ]  ?? '';
+		$mobile_raw  = $settings[ $key_prefix . '_mobile' ] ?? '';
 		$desktop_raw = $settings[ $key_prefix . '_desktop' ] ?? '';
 
-		$mobile_num  = ( '' !== $mobile_raw  && is_numeric( $mobile_raw ) )  ? (float) $mobile_raw  : null;
+		$mobile_num  = ( '' !== $mobile_raw && is_numeric( $mobile_raw ) ) ? (float) $mobile_raw : null;
 		$desktop_num = ( '' !== $desktop_raw && is_numeric( $desktop_raw ) ) ? (float) $desktop_raw : null;
 
 		if ( null === $mobile_num && null === $desktop_num ) {
@@ -453,10 +453,10 @@ class Slashed_CSS_Generator {
 				// zero (a collapsed header) and mobile may exceed desktop (a
 				// header that shrinks as the viewport grows), so the clamp
 				// bounds are the sorted pair, not mobile/desktop in order.
-				$slope  = ( $desktop_num - $mobile_num ) / ( $vp_max - $vp_min );
-				$lower  = min( $mobile_num, $desktop_num );
-				$upper  = max( $mobile_num, $desktop_num );
-				$middle = 'calc(' . round( $slope, 6 ) . ' * (100vw - ' . $vp_min . 'rem) + ' . round( $mobile_num, 4 ) . 'rem)';
+				$slope          = ( $desktop_num - $mobile_num ) / ( $vp_max - $vp_min );
+				$lower          = min( $mobile_num, $desktop_num );
+				$upper          = max( $mobile_num, $desktop_num );
+				$middle         = 'calc(' . round( $slope, 6 ) . ' * (100vw - ' . $vp_min . 'rem) + ' . round( $mobile_num, 4 ) . 'rem)';
 				$declarations[] = $computed_var . ': clamp(' . round( $lower, 4 ) . 'rem, ' . $middle . ', ' . round( $upper, 4 ) . 'rem);';
 			}
 		} elseif ( null !== $mobile_num ) {
@@ -506,9 +506,9 @@ class Slashed_CSS_Generator {
 		for ( $i = 0; $i < $len; $i++ ) {
 			$ch = $value[ $i ];
 			if ( '(' === $ch ) {
-				$depth++;
+				++$depth;
 			} elseif ( ')' === $ch ) {
-				$depth--;
+				--$depth;
 				if ( $depth < 0 ) {
 					return false;
 				}

@@ -30,9 +30,9 @@ class Slashed_Settings {
 	 */
 	const KNOWN_INTEGRATIONS = array( 'bricks', 'gutenberg' );
 
-	const ALLOWED_BUNDLES  = array( 'essential', 'optimal', 'full' );
+	const ALLOWED_BUNDLES = array( 'essential', 'optimal', 'full' );
 
-	const ALLOWED_SOURCES  = array( 'local', 'cdn' );
+	const ALLOWED_SOURCES = array( 'local', 'cdn' );
 
 	/**
 	 * Read settings from the database, applying defaults.
@@ -170,12 +170,15 @@ class Slashed_Settings {
 			$cdn_version = '';
 		}
 
-		return update_option( self::OPTION_KEY, array(
-			'integrations' => $integrations,
-			'css_bundle'   => $bundle,
-			'css_source'   => $source,
-			'cdn_version'  => $cdn_version,
-		) );
+		return update_option(
+			self::OPTION_KEY,
+			array(
+				'integrations' => $integrations,
+				'css_bundle'   => $bundle,
+				'css_source'   => $source,
+				'cdn_version'  => $cdn_version,
+			)
+		);
 	}
 
 	/**

@@ -18,8 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Slashed_Admin {
 
-	const PAGE_SLUG  = 'slashed';
-	const NONCE_KEY  = 'slashed_settings_save';
+	const PAGE_SLUG    = 'slashed';
+	const NONCE_KEY    = 'slashed_settings_save';
 	const NONCE_ACTION = 'slashed_save_settings';
 
 	public function __construct() {
@@ -94,10 +94,12 @@ class Slashed_Admin {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$raw_class_hints = isset( $_POST['show_class_hints'] );
 
-		Slashed_Token_Store::update_plugin_settings( array(
-			'html_font_size'   => in_array( $raw_font_size, $allowed_font_sizes, true ) ? $raw_font_size : '',
-			'show_class_hints' => $raw_class_hints,
-		) );
+		Slashed_Token_Store::update_plugin_settings(
+			array(
+				'html_font_size'   => in_array( $raw_font_size, $allowed_font_sizes, true ) ? $raw_font_size : '',
+				'show_class_hints' => $raw_class_hints,
+			)
+		);
 
 		wp_safe_redirect(
 			add_query_arg( 'slashed_saved', '1', admin_url( 'admin.php?page=' . self::PAGE_SLUG ) )

@@ -125,7 +125,7 @@ class Slashed_Bricks_ReBEMer_REST {
 			if ( ! is_array( $cls ) || empty( $cls['id'] ) ) {
 				continue;
 			}
-			$processed_classes++;
+			++$processed_classes;
 			$id    = (string) $cls['id'];
 			$count = isset( $reference_counts['counts'][ $id ] )
 				? (int) $reference_counts['counts'][ $id ]
@@ -218,8 +218,8 @@ class Slashed_Bricks_ReBEMer_REST {
 		// with reproducible content rather than whatever order MySQL
 		// happened to return rows in.
 		$rows = $wpdb->get_col(
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a list of literal %s built from a constant key list; the values are bound through prepare().
 			$wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"SELECT meta_value FROM {$wpdb->postmeta}
 				 WHERE meta_key IN ($placeholders)
 				   AND meta_value != ''
@@ -227,6 +227,7 @@ class Slashed_Bricks_ReBEMer_REST {
 				 LIMIT %d",
 				array_merge( self::BRICKS_CONTENT_META_KEYS, array( $cap + 1 ) )
 			)
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		);
 
 		if ( ! is_array( $rows ) ) {
@@ -279,7 +280,7 @@ class Slashed_Bricks_ReBEMer_REST {
 				if ( is_array( $ids ) ) {
 					foreach ( $ids as $cid ) {
 						if ( is_string( $cid ) && isset( $counts[ $cid ] ) ) {
-							$counts[ $cid ]++;
+							++$counts[ $cid ];
 						}
 					}
 				}

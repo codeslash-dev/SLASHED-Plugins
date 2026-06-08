@@ -13,7 +13,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 /**
@@ -25,10 +25,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the standalone Bricks plugin and the unified SLASHED plugin are active.
  */
 if ( ! defined( 'SLASHED_BRICKS_VERSION' ) ) {
-    define( 'SLASHED_BRICKS_VERSION', '0.0.1' );
-    define( 'SLASHED_BRICKS_PATH', plugin_dir_path( __FILE__ ) );
-    define( 'SLASHED_BRICKS_URL', plugin_dir_url( __FILE__ ) );
-    define( 'SLASHED_BRICKS_CSS_REF', 'v0.5.23' );
+	define( 'SLASHED_BRICKS_VERSION', '0.0.1' );
+	define( 'SLASHED_BRICKS_PATH', plugin_dir_path( __FILE__ ) );
+	define( 'SLASHED_BRICKS_URL', plugin_dir_url( __FILE__ ) );
+	define( 'SLASHED_BRICKS_CSS_REF', 'v0.5.23' );
 }
 
 /**
@@ -37,24 +37,27 @@ if ( ! defined( 'SLASHED_BRICKS_VERSION' ) ) {
  * everything from the shared includes directory two levels up.
  */
 if ( ! defined( 'SLASHED_VERSION' ) ) {
-	add_action( 'init', function () {
-		load_plugin_textdomain( 'slashed-bricks', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-	} );
+	add_action(
+		'init',
+		function () {
+			load_plugin_textdomain( 'slashed-bricks', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		}
+	);
 }
 
 if ( ! class_exists( 'Slashed_Token_Store' ) ) {
-	$_slashed_shared = SLASHED_BRICKS_PATH . '../../includes/';
-	require_once $_slashed_shared . 'class-settings.php';
-	require_once $_slashed_shared . 'class-css-loader.php';
-	require_once $_slashed_shared . 'class-core-enqueue.php';
-	require_once $_slashed_shared . 'class-token-store.php';
-	require_once $_slashed_shared . 'class-token-sanitizer.php';
-	require_once $_slashed_shared . 'class-token-defaults.php';
-	require_once $_slashed_shared . 'class-tab-registry.php';
-	require_once $_slashed_shared . 'class-css-generator.php';
-	require_once $_slashed_shared . 'class-rest-controller.php';
-	require_once $_slashed_shared . 'class-token-page.php';
-	unset( $_slashed_shared );
+	$slashed_shared = SLASHED_BRICKS_PATH . '../../includes/';
+	require_once $slashed_shared . 'class-settings.php';
+	require_once $slashed_shared . 'class-css-loader.php';
+	require_once $slashed_shared . 'class-core-enqueue.php';
+	require_once $slashed_shared . 'class-token-store.php';
+	require_once $slashed_shared . 'class-token-sanitizer.php';
+	require_once $slashed_shared . 'class-token-defaults.php';
+	require_once $slashed_shared . 'class-tab-registry.php';
+	require_once $slashed_shared . 'class-css-generator.php';
+	require_once $slashed_shared . 'class-rest-controller.php';
+	require_once $slashed_shared . 'class-token-page.php';
+	unset( $slashed_shared );
 }
 
 /**
@@ -66,15 +69,15 @@ if ( ! class_exists( 'Slashed_Token_Store' ) ) {
  * @return string One of 'essential', 'optimal', 'full'.
  */
 function slashed_bricks_get_css_bundle() {
-    if ( class_exists( 'Slashed_CSS_Loader' ) ) {
-        return Slashed_CSS_Loader::get_bundle();
-    }
-    $settings = Slashed_Token_Store::get_plugin_settings();
-    $bundle   = isset( $settings['css_bundle'] ) ? (string) $settings['css_bundle'] : 'optimal';
-    if ( ! in_array( $bundle, Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true ) ) {
-        $bundle = 'optimal';
-    }
-    return $bundle;
+	if ( class_exists( 'Slashed_CSS_Loader' ) ) {
+		return Slashed_CSS_Loader::get_bundle();
+	}
+	$settings = Slashed_Token_Store::get_plugin_settings();
+	$bundle   = isset( $settings['css_bundle'] ) ? (string) $settings['css_bundle'] : 'optimal';
+	if ( ! in_array( $bundle, Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true ) ) {
+		$bundle = 'optimal';
+	}
+	return $bundle;
 }
 
 /**
@@ -90,28 +93,28 @@ function slashed_bricks_get_css_bundle() {
  * @return string URL to the CSS bundle.
  */
 function slashed_bricks_get_css_url() {
-    if ( class_exists( 'Slashed_CSS_Loader' ) ) {
-        return apply_filters( 'slashed_bricks/css_bundle_url', Slashed_CSS_Loader::get_url() );
-    }
+	if ( class_exists( 'Slashed_CSS_Loader' ) ) {
+		return apply_filters( 'slashed_bricks/css_bundle_url', Slashed_CSS_Loader::get_url() );
+	}
 
-    // Standalone fallback.
-    $bundle      = slashed_bricks_get_css_bundle();
-    $filename    = 'slashed.' . $bundle . '.css';
-    $default_url = sprintf(
-        'https://github.com/codeslash-dev/SLASHED/releases/download/%s/%s',
-        rawurlencode( SLASHED_BRICKS_CSS_REF ),
-        $filename
-    );
+	// Standalone fallback.
+	$bundle      = slashed_bricks_get_css_bundle();
+	$filename    = 'slashed.' . $bundle . '.css';
+	$default_url = sprintf(
+		'https://github.com/codeslash-dev/SLASHED/releases/download/%s/%s',
+		rawurlencode( SLASHED_BRICKS_CSS_REF ),
+		$filename
+	);
 
-    // Check plugin root dist/ first (two levels up: integrations/bricks/ → plugin root).
-    $plugin_dist = SLASHED_BRICKS_PATH . '../../dist/' . $filename;
-    if ( file_exists( $plugin_dist ) ) {
-        $default_url = SLASHED_BRICKS_URL . '../../dist/' . $filename;
-    } elseif ( file_exists( SLASHED_BRICKS_PATH . 'dist/' . $filename ) ) {
-        $default_url = SLASHED_BRICKS_URL . 'dist/' . $filename;
-    }
+	// Check plugin root dist/ first (two levels up: integrations/bricks/ → plugin root).
+	$plugin_dist = SLASHED_BRICKS_PATH . '../../dist/' . $filename;
+	if ( file_exists( $plugin_dist ) ) {
+		$default_url = SLASHED_BRICKS_URL . '../../dist/' . $filename;
+	} elseif ( file_exists( SLASHED_BRICKS_PATH . 'dist/' . $filename ) ) {
+		$default_url = SLASHED_BRICKS_URL . 'dist/' . $filename;
+	}
 
-    return apply_filters( 'slashed_bricks/css_bundle_url', $default_url );
+	return apply_filters( 'slashed_bricks/css_bundle_url', $default_url );
 }
 
 /**
@@ -125,22 +128,22 @@ function slashed_bricks_get_css_url() {
  * @return string
  */
 function slashed_bricks_get_bricks_version() {
-    if ( defined( 'BRICKS_VERSION' ) ) {
-        return (string) BRICKS_VERSION;
-    }
+	if ( defined( 'BRICKS_VERSION' ) ) {
+		return (string) BRICKS_VERSION;
+	}
 
-    $theme = wp_get_theme();
+	$theme = wp_get_theme();
 
-    if ( 'bricks' === strtolower( $theme->get_template() ) ) {
-        $parent = $theme->parent();
-        return $parent ? (string) $parent->get( 'Version' ) : (string) $theme->get( 'Version' );
-    }
+	if ( 'bricks' === strtolower( $theme->get_template() ) ) {
+		$parent = $theme->parent();
+		return $parent ? (string) $parent->get( 'Version' ) : (string) $theme->get( 'Version' );
+	}
 
-    if ( 'bricks' === strtolower( $theme->get( 'Name' ) ) ) {
-        return (string) $theme->get( 'Version' );
-    }
+	if ( 'bricks' === strtolower( $theme->get( 'Name' ) ) ) {
+		return (string) $theme->get( 'Version' );
+	}
 
-    return '';
+	return '';
 }
 
 /**
@@ -149,13 +152,13 @@ function slashed_bricks_get_bricks_version() {
  * @return bool
  */
 function slashed_bricks_is_bricks_active() {
-    $version = slashed_bricks_get_bricks_version();
+	$version = slashed_bricks_get_bricks_version();
 
-    if ( '' === $version ) {
-        return false;
-    }
+	if ( '' === $version ) {
+		return false;
+	}
 
-    return version_compare( $version, '1.9.2', '>=' );
+	return version_compare( $version, '1.9.2', '>=' );
 }
 
 // Token admin page (Slashed_Token_Page) and the main REST controller
@@ -166,14 +169,21 @@ if ( ! defined( 'SLASHED_VERSION' ) ) {
 	// in unified mode — CSS delivery, token REST API, admin page, override injection.
 	new Slashed_Core_Enqueue();
 
-	add_action( 'rest_api_init', function () {
-		( new Slashed_REST_Controller() )->register_routes();
-	} );
+	add_action(
+		'rest_api_init',
+		function () {
+			( new Slashed_REST_Controller() )->register_routes();
+		}
+	);
 
 	if ( is_admin() ) {
-		add_action( 'plugins_loaded', function () {
-			new Slashed_Token_Page();
-		}, 20 );
+		add_action(
+			'plugins_loaded',
+			function () {
+				new Slashed_Token_Page();
+			},
+			20
+		);
 	}
 
 	if ( ! function_exists( 'slashed_inject_token_overrides' ) ) {
@@ -199,13 +209,13 @@ if ( ! defined( 'SLASHED_VERSION' ) ) {
  * Only Bricks-specific endpoints (reBEMer, fonts) are registered here.
  */
 function slashed_bricks_rest_routes_init() {
-    // Slashed_REST_Controller (token CRUD) is registered globally by slashed.php.
-    // Register only the Bricks-specific endpoints here.
-    require_once SLASHED_BRICKS_PATH . 'includes/class-rebemer-rest.php';
-    require_once SLASHED_BRICKS_PATH . 'includes/class-fonts-rest.php';
+	// Slashed_REST_Controller (token CRUD) is registered globally by slashed.php.
+	// Register only the Bricks-specific endpoints here.
+	require_once SLASHED_BRICKS_PATH . 'includes/class-rebemer-rest.php';
+	require_once SLASHED_BRICKS_PATH . 'includes/class-fonts-rest.php';
 
-    ( new Slashed_Bricks_ReBEMer_REST() )->register_routes();
-    ( new Slashed_Bricks_Fonts_REST() )->register_routes();
+	( new Slashed_Bricks_ReBEMer_REST() )->register_routes();
+	( new Slashed_Bricks_Fonts_REST() )->register_routes();
 }
 add_action( 'rest_api_init', 'slashed_bricks_rest_routes_init' );
 
@@ -219,9 +229,9 @@ add_action( 'rest_api_init', 'slashed_bricks_rest_routes_init' );
  * other has already run. Idempotent via require_once.
  */
 function slashed_bricks_require_data_classes() {
-    require_once SLASHED_BRICKS_PATH . 'includes/class-css-parser.php';
-    require_once SLASHED_BRICKS_PATH . 'includes/class-color-resolver.php';
-    require_once SLASHED_BRICKS_PATH . 'includes/class-inventory.php';
+	require_once SLASHED_BRICKS_PATH . 'includes/class-css-parser.php';
+	require_once SLASHED_BRICKS_PATH . 'includes/class-color-resolver.php';
+	require_once SLASHED_BRICKS_PATH . 'includes/class-inventory.php';
 }
 
 /**
@@ -237,29 +247,29 @@ function slashed_bricks_require_data_classes() {
  * simply never fire, which is harmless.
  */
 function slashed_bricks_data_init() {
-    // Bail early on non-Bricks sites to avoid loading classes needlessly.
-    if ( 'bricks' !== strtolower( (string) get_option( 'template', '' ) ) ) {
-        return;
-    }
+	// Bail early on non-Bricks sites to avoid loading classes needlessly.
+	if ( 'bricks' !== strtolower( (string) get_option( 'template', '' ) ) ) {
+		return;
+	}
 
-    slashed_bricks_require_data_classes();
-    require_once SLASHED_BRICKS_PATH . 'includes/class-variables.php';
-    require_once SLASHED_BRICKS_PATH . 'includes/class-classes.php';
+	slashed_bricks_require_data_classes();
+	require_once SLASHED_BRICKS_PATH . 'includes/class-variables.php';
+	require_once SLASHED_BRICKS_PATH . 'includes/class-classes.php';
 
-    new Slashed_Bricks_Variables();
-    new Slashed_Bricks_Classes();
+	new Slashed_Bricks_Variables();
+	new Slashed_Bricks_Classes();
 
-    // Invalidate the Bricks Font-Manager CPT cache on every custom-font save.
-    // Registered here (plugins_loaded, all request types) rather than from REST
-    // route registration so the cache is busted on normal admin saves too, not
-    // only during REST requests. The collector + transient live in the
-    // always-loaded Slashed_Token_Page.
-    if ( class_exists( 'Slashed_Token_Page' ) ) {
-        add_action(
-            'save_post_' . Slashed_Token_Page::get_bricks_fonts_post_type(),
-            array( 'Slashed_Token_Page', 'flush_bricks_fonts_cache' )
-        );
-    }
+	// Invalidate the Bricks Font-Manager CPT cache on every custom-font save.
+	// Registered here (plugins_loaded, all request types) rather than from REST
+	// route registration so the cache is busted on normal admin saves too, not
+	// only during REST requests. The collector + transient live in the
+	// always-loaded Slashed_Token_Page.
+	if ( class_exists( 'Slashed_Token_Page' ) ) {
+		add_action(
+			'save_post_' . Slashed_Token_Page::get_bricks_fonts_post_type(),
+			array( 'Slashed_Token_Page', 'flush_bricks_fonts_cache' )
+		);
+	}
 }
 add_action( 'plugins_loaded', 'slashed_bricks_data_init', 20 );
 
@@ -270,15 +280,15 @@ add_action( 'plugins_loaded', 'slashed_bricks_data_init', 20 );
  * Data managers (variables, classes, colors) are already initialized above.
  */
 function slashed_bricks_init() {
-    if ( ! slashed_bricks_is_bricks_active() ) {
-        add_action( 'admin_notices', 'slashed_bricks_missing_bricks_notice' );
-        return;
-    }
+	if ( ! slashed_bricks_is_bricks_active() ) {
+		add_action( 'admin_notices', 'slashed_bricks_missing_bricks_notice' );
+		return;
+	}
 
-    slashed_bricks_require_data_classes();
-    require_once SLASHED_BRICKS_PATH . 'includes/class-enqueue.php';
+	slashed_bricks_require_data_classes();
+	require_once SLASHED_BRICKS_PATH . 'includes/class-enqueue.php';
 
-    new Slashed_Bricks_Enqueue();
+	new Slashed_Bricks_Enqueue();
 }
 add_action( 'after_setup_theme', 'slashed_bricks_init' );
 
@@ -294,12 +304,12 @@ add_action( 'after_setup_theme', 'slashed_bricks_init' );
  * notice from slashed_bricks_init() already covers that case.
  */
 function slashed_bricks_rebemer_init() {
-    if ( ! slashed_bricks_is_bricks_active() ) {
-        return;
-    }
+	if ( ! slashed_bricks_is_bricks_active() ) {
+		return;
+	}
 
-    require_once SLASHED_BRICKS_PATH . 'includes/class-rebemer-enqueue.php';
-    new Slashed_Bricks_ReBEMer_Enqueue();
+	require_once SLASHED_BRICKS_PATH . 'includes/class-rebemer-enqueue.php';
+	new Slashed_Bricks_ReBEMer_Enqueue();
 }
 add_action( 'after_setup_theme', 'slashed_bricks_rebemer_init', 20 );
 
@@ -307,13 +317,13 @@ add_action( 'after_setup_theme', 'slashed_bricks_rebemer_init', 20 );
  * Display admin notice when Bricks Builder is not active.
  */
 function slashed_bricks_missing_bricks_notice() {
-    ?>
-    <div class="notice notice-error">
-        <p>
-            <strong>SLASHED for Bricks</strong> requires Bricks Builder to be installed and active.
-        </p>
-    </div>
-    <?php
+	?>
+	<div class="notice notice-error">
+		<p>
+			<strong>SLASHED for Bricks</strong> requires Bricks Builder to be installed and active.
+		</p>
+	</div>
+	<?php
 }
 
 // ─── Stale inventory / version detection ────────────────────────────────────
@@ -410,7 +420,7 @@ function slashed_bricks_deactivation_cleanup() {
 	}
 }
 if ( ! defined( 'SLASHED_VERSION' ) ) {
-    register_deactivation_hook( __FILE__, 'slashed_bricks_deactivation_cleanup' );
+	register_deactivation_hook( __FILE__, 'slashed_bricks_deactivation_cleanup' );
 }
 
 /**
