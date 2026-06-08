@@ -28,7 +28,15 @@ const FRAMEWORK = process.env.SLASHED_FRAMEWORK_DIR
   : fs.existsSync(path.join(ROOT, '.framework'))
     ? path.join(ROOT, '.framework')
     : path.resolve(ROOT, '..', 'SLASHED');
-const OUT  = path.join(ROOT, 'SLASHED-for-WP', 'integrations', 'bricks', 'data', 'inventory.json');
+// The same canonical inventory ships in two places, both bundled in the zip:
+//   - the unified plugin fallback (SLASHED_PATH/data/inventory.json), loaded by
+//     includes/class-inventory.php and the Gutenberg integration; and
+//   - the standalone Bricks fallback (SLASHED_BRICKS_PATH/data/inventory.json).
+// They must be byte-identical, so write both from this single generator.
+const OUTPUTS = [
+  path.join(ROOT, 'SLASHED-for-WP', 'data', 'inventory.json'),
+  path.join(ROOT, 'SLASHED-for-WP', 'integrations', 'bricks', 'data', 'inventory.json'),
+];
 
 function stripComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -91,10 +99,12 @@ const inventory = {
   is_classes: isClasses,
 };
 
-fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, JSON.stringify(inventory, null, 2) + '\n');
-
-console.log(
-  `[gen-bricks-inventory] → ${path.relative(ROOT, OUT)} ` +
-  `(${variables.length} vars, ${sfClasses.length} .sf-, ${isClasses.length} .is-)`
-);
+const json = JSON.stringify(inventory, null, 2) + '\n';
+for (const out of OUTPUTS) {
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  fs.writeFileSync(out, json);
+  console.log(
+    `[gen-bricks-inventory] → ${path.relative(ROOT, out)} ` +
+    `(${variables.length} vars, ${sfClasses.length} .sf-, ${isClasses.length} .is-)`
+  );
+}

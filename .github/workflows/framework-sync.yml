@@ -1,0 +1,71 @@
+name: Sync framework version
+
+# Keeps the bundled SLASHED CSS (and the SLASHED_*_CSS_REF constants) tracking
+# the latest published framework release. Runs daily and on demand; opens a PR
+# when a newer release exists. Nothing is pushed straight to main.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # daily 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Framework version to sync to (e.g. 0.5.23 or "latest")'
+        required: false
+        default: 'latest'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sync to framework release
+        run: |
+          VERSION="${{ github.event.inputs.version || 'latest' }}"
+          if [ "$VERSION" = "latest" ]; then
+            npm run update-framework
+          else
+            npm run update-framework -- --version="$VERSION"
+          fi
+
+      - name: Rebuild plugin zip
+        run: npm run build:zip
+
+      - name: Detect the synced framework version
+        id: ref
+        run: |
+          REF=$(grep -oE "define\( *'SLASHED_CSS_REF', *'[^']*'" SLASHED-for-WP/slashed.php | grep -oE "v[0-9][^']*")
+          echo "tag=$REF" >> "$GITHUB_OUTPUT"
+
+      - name: Open PR if anything changed
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore: sync bundled framework CSS to ${{ steps.ref.outputs.tag }}"
+          branch: chore/framework-sync
+          delete-branch: true
+          title: "chore: sync bundled framework CSS to ${{ steps.ref.outputs.tag }}"
+          body: |
+            Automated sync of the bundled SLASHED framework CSS and
+            `SLASHED_*_CSS_REF` constants to **${{ steps.ref.outputs.tag }}**.
+
+            - dist bundles downloaded from the framework's GitHub Release assets
+            - `data/inventory.json` + `data/classes-hints.json` regenerated
+            - `npm run verify` passed as part of `update-framework`
+
+            Review the diff and merge to ship the update.
+          add-paths: |
+            SLASHED-for-WP/dist/
+            SLASHED-for-WP/data/
+            SLASHED-for-WP/integrations/bricks/data/
+            SLASHED-for-WP/slashed.php
+            SLASHED-for-WP/integrations/bricks/slashed-bricks.php
+            SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php

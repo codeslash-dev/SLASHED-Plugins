@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Tests + version-sync guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Unit tests (editor-app libs) + the version-metadata consistency guard.
+      # Both are dependency-free; the plugin root has no npm dependencies.
+      - name: Run tests
+        run: npm test
+
+      - name: Verify version metadata is in sync
+        run: npm run verify

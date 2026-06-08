@@ -532,23 +532,23 @@
     "category": "Macros"
   },
   "sf-surface--primary": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-surface--secondary": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-surface--tertiary": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-surface--action": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-surface--neutral": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-surface--inverse": {
@@ -556,23 +556,23 @@
     "category": "Macros"
   },
   "sf-surface--success": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-surface--warning": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-surface--error": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-surface--info": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-surface--danger": {
-    "description": "Sets background + auto-flipped foreground in one class.",
+    "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
   },
   "sf-scrim": {

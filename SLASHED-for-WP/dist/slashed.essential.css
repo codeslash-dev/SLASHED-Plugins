@@ -1,4 +1,4 @@
-/* SLASHED v0.5.0-beta5 — slashed.essential.css */
+/* SLASHED v0.5.23 — slashed.essential.css */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -76,12 +76,38 @@
     --sf-color-bg:    hsl(var(--sf-base-h) var(--sf-base-s) calc(var(--sf-base-l) + 2%));
     --sf-color-inset: hsl(var(--sf-base-h) var(--sf-base-s) calc(var(--sf-base-l) - 3%));
     --sf-color-raised: hsl(var(--sf-base-h) var(--sf-base-s) calc(var(--sf-base-l) + 4%));
+    /* Inverse surface — dark in light-mode fallback (modern flips lightness
+       via oklch). Overlay — the page bg at 0.9 alpha for scrim/backdrop use. */
+    --sf-color-inverse: hsl(var(--sf-neutral-h) 18% 14%);
+    --sf-color-overlay: hsl(var(--sf-base-h) var(--sf-base-s) calc(var(--sf-base-l) + 2%) / 0.9);
 
     /* ── Text (neutral-derived) ───────────────────────────────────────────── */
 
-    --sf-color-text:            hsl(var(--sf-neutral-h) 15%  12%);
-    --sf-color-text--secondary:  hsl(var(--sf-neutral-h) 10%  35%);
-    --sf-color-heading:          hsl(var(--sf-neutral-h) 20%   8%);
+    --sf-color-text:            hsl(var(--sf-neutral-h) 15% 12%);
+    --sf-color-text--secondary: hsl(var(--sf-neutral-h) 10% 35%);
+    --sf-color-heading:         hsl(var(--sf-neutral-h) 20% 8%);
+
+    /* ── Text-on-color ────────────────────────────────────────────────────────
+       Modern CSS auto-picks black/white per background luminance via the
+       sign() formula in tokens.css. That formula needs oklch relative color,
+       so on this fallback tier we hardcode the choice from each channel's
+       known lightness: white on the dark brand/status fills, dark text on the
+       light ones (base/surface) and on warning (perceptually light yellow).
+       Without these, every ungated `.sf-surface--*` rule would keep its
+       background but inherit unreadable body text. */
+    --sf-color-text--on-primary:   hsl(0 0% 100%);
+    --sf-color-text--on-secondary: hsl(0 0% 100%);
+    --sf-color-text--on-tertiary:  hsl(0 0% 100%);
+    --sf-color-text--on-action:    hsl(0 0% 100%);
+    --sf-color-text--on-neutral:   hsl(0 0% 100%);
+    --sf-color-text--on-base:      hsl(var(--sf-neutral-h) 15% 12%);
+    --sf-color-text--on-surface:   hsl(var(--sf-neutral-h) 15% 12%);
+    --sf-color-text--on-success:   hsl(0 0% 100%);
+    --sf-color-text--on-warning:   hsl(var(--sf-neutral-h) 15% 12%);
+    --sf-color-text--on-error:     hsl(0 0% 100%);
+    --sf-color-text--on-info:      hsl(0 0% 100%);
+    --sf-color-text--on-danger:    hsl(0 0% 100%);
+    --sf-color-text--on-inverse:   hsl(0 0% 100%);
 
     /* ── Borders (neutral-derived) ────────────────────────────────────────── */
 
@@ -99,6 +125,7 @@
 
     /* ── Shadows (neutral-derived) ────────────────────────────────────────── */
 
+    --sf-shadow-none: none;
     --sf-shadow-xs: 0 1px 2px 0
                     hsl(var(--sf-neutral-h) 20% 10% / 0.06);
     --sf-shadow-s:  0 1px 3px 0 hsl(var(--sf-neutral-h) 20% 10% / 0.10),
@@ -107,6 +134,23 @@
                     0 2px 4px -2px hsl(var(--sf-neutral-h) 20% 10% / 0.06);
     --sf-shadow-l:  0 10px 15px -3px hsl(var(--sf-neutral-h) 20% 10% / 0.10),
                     0 4px 6px -4px hsl(var(--sf-neutral-h) 20% 10% / 0.06);
+    --sf-shadow-xl: 0 20px 25px -5px hsl(var(--sf-neutral-h) 20% 10% / 0.10),
+                    0 8px 10px -6px hsl(var(--sf-neutral-h) 20% 10% / 0.10);
+    --sf-shadow-2xl: 0 25px 50px -12px hsl(var(--sf-neutral-h) 20% 10% / 0.25);
+    --sf-shadow-inner: inset 0 2px 4px 0 hsl(var(--sf-neutral-h) 20% 10% / 0.10);
+
+    /* ── Text shadows (neutral-derived) ───────────────────────────────────── */
+
+    --sf-text-shadow-none: none;
+    --sf-text-shadow-s: 0 1px 2px hsl(var(--sf-neutral-h) 20% 10% / 0.18);
+    --sf-text-shadow-m: 0 2px 4px hsl(var(--sf-neutral-h) 20% 10% / 0.24);
+    --sf-text-shadow-l: 0 4px 8px hsl(var(--sf-neutral-h) 20% 10% / 0.30);
+
+    /* ── Drop shadows (neutral-derived) ───────────────────────────────────── */
+
+    --sf-drop-shadow-s: drop-shadow(0 1px 2px hsl(var(--sf-neutral-h) 20% 10% / 0.18));
+    --sf-drop-shadow-m: drop-shadow(0 4px 6px hsl(var(--sf-neutral-h) 20% 10% / 0.24));
+    --sf-drop-shadow-l: drop-shadow(0 8px 16px hsl(var(--sf-neutral-h) 20% 10% / 0.30));
   }
 }
 
@@ -163,11 +207,11 @@
    PUBLIC — everyday knobs, prominently documented:
      · brand source tokens (--sf-color-{primary,secondary,tertiary,action,neutral,base}-light)
      · status source tokens (--sf-color-{success,warning,error,info,danger}-light)
-     · resolved semantic colors (--sf-color-{primary,...,danger}, surfaces, text, borders, links, interactive bg, selection)
+     · resolved semantic colors (--sf-color-{primary,...,danger}, surfaces, text, borders, links, interactive bg, selection, mark, --sf-color-dim)
      · numeric shade scales (--sf-color-{family}-{50..950}) — available for the 6 brand families
        (primary/secondary/tertiary/action/neutral/base) via optional/tokens.palette.css only;
        status families (success/warning/error/info/danger) intentionally have no numeric scale
-     · semantic shade aliases (--sf-color-{family}-{superlight,xlight,lighter,darker,xdark,superdark,hover,active,subtle,muted,ghost}) — auto-adapts to dark mode
+     · semantic shade aliases (--sf-color-{primary,secondary,tertiary,action,neutral,base}-{superlight,xlight,lighter,darker,xdark,superdark,hover,active,subtle,muted,ghost}) — auto-adapts to dark mode; brand families only (status families use the triplets below)
      · text-on-color (--sf-color-text--on-*)
      · code colors (--sf-color-code-bg, --sf-color-code-text)
      · status triplets (--sf-color-{success,...,danger}-{subtle,strong,muted})
@@ -194,11 +238,11 @@
      · radius (--sf-radius-{none,xs,s,m,l,xl,2xl,3xl,4xl,full,pill})
      · duration (--sf-duration-{none,instant,fast,normal,slow,slower})
      · easing (--sf-ease-{linear,out,in,in-out,spring,elastic,bounce,overshoot})
-     · transitions (--sf-transition-{all,colors,transform,opacity,shadow,fast,slow,enter,exit})
+     · transitions (--sf-transition-{all,colors,transform,opacity,shadow,fast,slow,enter,exit,overlay})
      · animations (--sf-animation-{fade-in,fade-out,slide-in-*,scale-*,color-pulse,ping,blink,float,spin,shimmer})
      · animation delays (--sf-animation-delay-{1..5})
      · z-index (--sf-z-{below,base,raised,low,mid,high,top,max})
-     · header/sticky (--sf-header-height, --sf-sticky-offset)
+     · header/sticky (--sf-header-height{,-mobile,-desktop}, --sf-sticky-offset{,-mobile,-desktop})
      · touch target (--sf-touch-target)
      · focus ring (--sf-focus-ring-{width,offset,style,color})
      · caret (--sf-caret-color)
@@ -207,6 +251,7 @@
        --sf-field-required-marker, --sf-link-external-marker)
      · section padding (--sf-section-pad, --sf-section-pad--{xs,s,m,l,xl,2xl})
      · typography aliases (--sf-body-*, --sf-code-font-size, --sf-heading-*, --sf-h{1..6}-*)
+     · link geometry (--sf-link-underline-offset, --sf-link-underline-thickness)
      · current-font-weight (--sf-current-font-weight)
      · color scheme (--sf-color-scheme)
      · color anchors (--sf-color-white, --sf-color-black)
@@ -772,67 +817,6 @@
     --sf-color-base-muted:      oklch(from var(--sf-color-base) l c h / 0.30);
     --sf-color-base-ghost:      oklch(from var(--sf-color-base) l c h / 0.05);
 
-    /* ─── success ───────────────────────────────────────────── */
-
-    --sf-color-success-superlight: color-mix(in oklab, var(--sf-color-success)  4%, var(--sf-color-surface));
-    --sf-color-success-xlight:     color-mix(in oklab, var(--sf-color-success) 20%, var(--sf-color-surface));
-    --sf-color-success-lighter:    color-mix(in oklab, var(--sf-color-success) 65%, var(--sf-color-surface));
-    --sf-color-success-darker:     color-mix(in oklab, var(--sf-color-success) 82%, var(--sf-color-text));
-    --sf-color-success-xdark:      color-mix(in oklab, var(--sf-color-success) 38%, var(--sf-color-text));
-    --sf-color-success-superdark:  color-mix(in oklab, var(--sf-color-success)  8%, var(--sf-color-text));
-    --sf-color-success-hover:      var(--sf-color-success-darker);
-    --sf-color-success-active:     var(--sf-color-success-xdark);
-    --sf-color-success-ghost:      oklch(from var(--sf-color-success) l c h / 0.05);
-
-    /* ─── warning ───────────────────────────────────────────── */
-
-    --sf-color-warning-superlight: color-mix(in oklab, var(--sf-color-warning)  4%, var(--sf-color-surface));
-    --sf-color-warning-xlight:     color-mix(in oklab, var(--sf-color-warning) 20%, var(--sf-color-surface));
-    --sf-color-warning-lighter:    color-mix(in oklab, var(--sf-color-warning) 65%, var(--sf-color-surface));
-    --sf-color-warning-darker:     color-mix(in oklab, var(--sf-color-warning) 82%, var(--sf-color-text));
-    --sf-color-warning-xdark:      color-mix(in oklab, var(--sf-color-warning) 38%, var(--sf-color-text));
-    --sf-color-warning-superdark:  color-mix(in oklab, var(--sf-color-warning)  8%, var(--sf-color-text));
-    --sf-color-warning-hover:      var(--sf-color-warning-darker);
-    --sf-color-warning-active:     var(--sf-color-warning-xdark);
-    --sf-color-warning-ghost:      oklch(from var(--sf-color-warning) l c h / 0.05);
-
-    /* ─── error ─────────────────────────────────────────────── */
-
-    --sf-color-error-superlight: color-mix(in oklab, var(--sf-color-error)  4%, var(--sf-color-surface));
-    --sf-color-error-xlight:     color-mix(in oklab, var(--sf-color-error) 20%, var(--sf-color-surface));
-    --sf-color-error-lighter:    color-mix(in oklab, var(--sf-color-error) 65%, var(--sf-color-surface));
-    --sf-color-error-darker:     color-mix(in oklab, var(--sf-color-error) 82%, var(--sf-color-text));
-    --sf-color-error-xdark:      color-mix(in oklab, var(--sf-color-error) 38%, var(--sf-color-text));
-    --sf-color-error-superdark:  color-mix(in oklab, var(--sf-color-error)  8%, var(--sf-color-text));
-    --sf-color-error-hover:      var(--sf-color-error-darker);
-    --sf-color-error-active:     var(--sf-color-error-xdark);
-    --sf-color-error-ghost:      oklch(from var(--sf-color-error) l c h / 0.05);
-
-    /* ─── info ──────────────────────────────────────────────── */
-
-    --sf-color-info-superlight: color-mix(in oklab, var(--sf-color-info)  4%, var(--sf-color-surface));
-    --sf-color-info-xlight:     color-mix(in oklab, var(--sf-color-info) 20%, var(--sf-color-surface));
-    --sf-color-info-lighter:    color-mix(in oklab, var(--sf-color-info) 65%, var(--sf-color-surface));
-    --sf-color-info-darker:     color-mix(in oklab, var(--sf-color-info) 82%, var(--sf-color-text));
-    --sf-color-info-xdark:      color-mix(in oklab, var(--sf-color-info) 38%, var(--sf-color-text));
-    --sf-color-info-superdark:  color-mix(in oklab, var(--sf-color-info)  8%, var(--sf-color-text));
-    --sf-color-info-hover:      var(--sf-color-info-darker);
-    --sf-color-info-active:     var(--sf-color-info-xdark);
-    --sf-color-info-ghost:      oklch(from var(--sf-color-info) l c h / 0.05);
-
-    /* ─── danger ────────────────────────────────────────────── */
-
-    --sf-color-danger-superlight: color-mix(in oklab, var(--sf-color-danger)  4%, var(--sf-color-surface));
-    --sf-color-danger-xlight:     color-mix(in oklab, var(--sf-color-danger) 20%, var(--sf-color-surface));
-    --sf-color-danger-lighter:    color-mix(in oklab, var(--sf-color-danger) 65%, var(--sf-color-surface));
-    --sf-color-danger-darker:     color-mix(in oklab, var(--sf-color-danger) 82%, var(--sf-color-text));
-    --sf-color-danger-xdark:      color-mix(in oklab, var(--sf-color-danger) 38%, var(--sf-color-text));
-    --sf-color-danger-superdark:  color-mix(in oklab, var(--sf-color-danger)  8%, var(--sf-color-text));
-    --sf-color-danger-hover:      var(--sf-color-danger-darker);
-    --sf-color-danger-active:     var(--sf-color-danger-xdark);
-    --sf-color-danger-ghost:      oklch(from var(--sf-color-danger) l c h / 0.05);
-
-
     }
   }
 
@@ -895,19 +879,19 @@
     /* ----------------------------------------------------------
        Font sizes — fluid
        ---------------------------------------------------------- */
-    --sf-text-2xs: clamp(0.51rem, calc(0.00029629629629629656 * (100vw - 22.5rem) + 0.51rem), 0.53rem);
-    --sf-text-xs:  clamp(0.64rem, calc(0.0008888888888888881  * (100vw - 22.5rem) + 0.64rem), 0.7rem);
-    --sf-text-s:   clamp(0.8rem,  calc(0.002074074074074073   * (100vw - 22.5rem) + 0.8rem),  0.94rem);
-    --sf-text-m:   clamp(1rem,    calc(0.003703703703703704   * (100vw - 22.5rem) + 1rem),    1.25rem);
-    --sf-text-l:   clamp(1.25rem, calc(0.006222222222222221   * (100vw - 22.5rem) + 1.25rem), 1.67rem);
-    --sf-text-xl:  clamp(1.56rem, calc(0.00977777777777778    * (100vw - 22.5rem) + 1.56rem), 2.22rem);
-    --sf-text-2xl: clamp(1.95rem, calc(0.014962962962962963   * (100vw - 22.5rem) + 1.95rem), 2.96rem);
-    --sf-text-3xl: clamp(2.44rem, calc(0.022370370370370374   * (100vw - 22.5rem) + 2.44rem), 3.95rem);
-    --sf-text-4xl: clamp(3.05rem, calc(0.03274074074074074    * (100vw - 22.5rem) + 3.05rem), 5.26rem);
+    --sf-text-2xs: calc(clamp(0.51rem, calc(0.00029629629629629656 * (100vw - 22.5rem) + 0.51rem), 0.53rem) * var(--sf-text-scale));
+    --sf-text-xs:  calc(clamp(0.64rem, calc(0.0008888888888888881  * (100vw - 22.5rem) + 0.64rem), 0.7rem)  * var(--sf-text-scale));
+    --sf-text-s:   calc(clamp(0.8rem,  calc(0.002074074074074073   * (100vw - 22.5rem) + 0.8rem),  0.94rem) * var(--sf-text-scale));
+    --sf-text-m:   calc(clamp(1rem,    calc(0.003703703703703704   * (100vw - 22.5rem) + 1rem),    1.25rem) * var(--sf-text-scale));
+    --sf-text-l:   calc(clamp(1.25rem, calc(0.006222222222222221   * (100vw - 22.5rem) + 1.25rem), 1.67rem) * var(--sf-text-scale));
+    --sf-text-xl:  calc(clamp(1.56rem, calc(0.00977777777777778    * (100vw - 22.5rem) + 1.56rem), 2.22rem) * var(--sf-text-scale));
+    --sf-text-2xl: calc(clamp(1.95rem, calc(0.014962962962962963   * (100vw - 22.5rem) + 1.95rem), 2.96rem) * var(--sf-text-scale));
+    --sf-text-3xl: calc(clamp(2.44rem, calc(0.022370370370370374   * (100vw - 22.5rem) + 2.44rem), 3.95rem) * var(--sf-text-scale));
+    --sf-text-4xl: calc(clamp(3.05rem, calc(0.03274074074074074    * (100vw - 22.5rem) + 3.05rem), 5.26rem) * var(--sf-text-scale));
 
-    --sf-text-display-s: clamp(2.4rem,  calc(0.00888888888888889   * (100vw - 22.5rem) + 2.4rem),  3rem);
-    --sf-text-display-m: clamp(3rem,    calc(0.014814814814814815  * (100vw - 22.5rem) + 3rem),    4rem);
-    --sf-text-display-l: clamp(3.75rem, calc(0.023407407407407408  * (100vw - 22.5rem) + 3.75rem), 5.33rem);
+    --sf-text-display-s: calc(clamp(2.4rem,  calc(0.00888888888888889   * (100vw - 22.5rem) + 2.4rem),  3rem)  * var(--sf-text-display-scale));
+    --sf-text-display-m: calc(clamp(3rem,    calc(0.014814814814814815  * (100vw - 22.5rem) + 3rem),    4rem)  * var(--sf-text-display-scale));
+    --sf-text-display-l: calc(clamp(3.75rem, calc(0.023407407407407408  * (100vw - 22.5rem) + 3.75rem), 5.33rem) * var(--sf-text-display-scale));
 
     /* ----------------------------------------------------------
        Line heights & letter spacing
@@ -1022,7 +1006,6 @@
        rewriting the rule.
        ---------------------------------------------------------- */
     --sf-border-style:        solid;     /* default */
-    --sf-border-style-strong: solid;     /* alias for emphasis */
     --sf-border-style-soft:   dashed;
     --sf-border-style-dotted: dotted;
 
@@ -1184,15 +1167,46 @@
     --sf-z-top:   900;
     --sf-z-max:  9999;
 
+    /* Semantic z-index aliases — map UI roles onto the numeric ladder
+       above so component authors target intent, not magic integers.
+       Every role that can overlap another on the scroll plane gets its
+       OWN rung, ordered: raised < sticky < fixed < dropdown < toast.
+       Notably --sf-z-dropdown sits ABOVE sticky and fixed so a navbar
+       menu clears the sticky header it opens from (and any fixed chrome).
+       Modal / popover / tooltip are intentionally absent: SLASHED's
+       dialog & popover components render in the browser TOP LAYER (native
+       <dialog> / [popover]), which is ordered above the page and its
+       ::backdrop independently of z-index — a z token there would be dead.
+       The --sf-z-overlay fallback is provided only for non-top-layer
+       implementations that still need to beat everything else. */
+    --sf-z-sticky:   var(--sf-z-low);   /* 10   sticky headers / sidebars      */
+    --sf-z-fixed:    var(--sf-z-mid);   /* 100  fixed app chrome (navbar, FAB)  */
+    --sf-z-dropdown: var(--sf-z-high);  /* 500  menus — clear sticky + fixed    */
+    --sf-z-toast:    var(--sf-z-top);   /* 900  transient notifications         */
+    --sf-z-overlay:  var(--sf-z-max);   /* 9999 non-top-layer modal/popover fallback */
+
     /* ----------------------------------------------------------
        Layout & a11y
        ---------------------------------------------------------- */
+    /* Header height fluidly interpolates between the mobile and desktop
+       tokens across the framework viewport range (22.5rem → 90rem), the
+       same range used by the fluid type/space scales. Override either
+       endpoint to retune; set both equal for a fixed height. The slope
+       (0.0222…) matches the default 3.5rem→5rem delta; clamp() keeps the
+       result bounded to the endpoints even when they are overridden.
+       This mirrors the clamp the WP plugin's CSS generator emits. */
     --sf-header-height-mobile:  3.5rem;
     --sf-header-height-desktop: 5rem;
-    --sf-header-height:         5rem;
+    --sf-header-height: clamp(
+      var(--sf-header-height-mobile),
+      calc(0.022222222222222223 * (100vw - 22.5rem) + var(--sf-header-height-mobile)),
+      var(--sf-header-height-desktop));
     --sf-sticky-offset-mobile:  var(--sf-header-height-mobile);
     --sf-sticky-offset-desktop: var(--sf-header-height-desktop);
-    --sf-sticky-offset:         var(--sf-header-height);
+    --sf-sticky-offset: clamp(
+      var(--sf-sticky-offset-mobile),
+      calc(0.022222222222222223 * (100vw - 22.5rem) + var(--sf-sticky-offset-mobile)),
+      var(--sf-sticky-offset-desktop));
     --sf-focus-ring-width:  2px;
     --sf-focus-ring-offset: 2px;
     --sf-focus-ring-style:  solid;
@@ -1380,7 +1394,17 @@
 
        --sf-transition-all transitions ALL properties — convenient but
        a performance footgun (forces the browser to watch every computed
-       value). Prefer the granular tokens below for production UI.
+       value). It is the ONLY token here that uses `all`; reach for it
+       only as a deliberate escape hatch. Every other token below names
+       an explicit property set.
+
+       The tempo presets (fast / slow / enter / exit) transition a curated
+       "common interactive + entrance" set — color, background-color,
+       border-color, box-shadow, opacity, transform, filter — covering what
+       buttons, cards, links, and entering elements realistically animate,
+       without watching every property. They differ from each other only in
+       duration + easing. (Changed in this release: they previously used
+       `all`, contradicting the warning above — see CHANGELOG.)
        ---------------------------------------------------------- */
     --sf-transition-all:       all var(--sf-duration-normal) var(--sf-ease-out);
     --sf-transition-colors:
@@ -1394,10 +1418,38 @@
     --sf-transition-opacity:   opacity var(--sf-duration-normal) var(--sf-ease-out);
     --sf-transition-shadow:    box-shadow var(--sf-duration-normal) var(--sf-ease-out);
 
-    --sf-transition-fast:  all var(--sf-duration-fast)   var(--sf-ease-out);
-    --sf-transition-slow:  all var(--sf-duration-slow)   var(--sf-ease-in-out);
-    --sf-transition-enter: all var(--sf-duration-normal) var(--sf-ease-out);
-    --sf-transition-exit:  all var(--sf-duration-fast)   var(--sf-ease-in);
+    --sf-transition-fast:
+      color var(--sf-duration-fast) var(--sf-ease-out),
+      background-color var(--sf-duration-fast) var(--sf-ease-out),
+      border-color var(--sf-duration-fast) var(--sf-ease-out),
+      box-shadow var(--sf-duration-fast) var(--sf-ease-out),
+      opacity var(--sf-duration-fast) var(--sf-ease-out),
+      transform var(--sf-duration-fast) var(--sf-ease-out),
+      filter var(--sf-duration-fast) var(--sf-ease-out);
+    --sf-transition-slow:
+      color var(--sf-duration-slow) var(--sf-ease-in-out),
+      background-color var(--sf-duration-slow) var(--sf-ease-in-out),
+      border-color var(--sf-duration-slow) var(--sf-ease-in-out),
+      box-shadow var(--sf-duration-slow) var(--sf-ease-in-out),
+      opacity var(--sf-duration-slow) var(--sf-ease-in-out),
+      transform var(--sf-duration-slow) var(--sf-ease-in-out),
+      filter var(--sf-duration-slow) var(--sf-ease-in-out);
+    --sf-transition-enter:
+      color var(--sf-duration-normal) var(--sf-ease-out),
+      background-color var(--sf-duration-normal) var(--sf-ease-out),
+      border-color var(--sf-duration-normal) var(--sf-ease-out),
+      box-shadow var(--sf-duration-normal) var(--sf-ease-out),
+      opacity var(--sf-duration-normal) var(--sf-ease-out),
+      transform var(--sf-duration-normal) var(--sf-ease-out),
+      filter var(--sf-duration-normal) var(--sf-ease-out);
+    --sf-transition-exit:
+      color var(--sf-duration-fast) var(--sf-ease-in),
+      background-color var(--sf-duration-fast) var(--sf-ease-in),
+      border-color var(--sf-duration-fast) var(--sf-ease-in),
+      box-shadow var(--sf-duration-fast) var(--sf-ease-in),
+      opacity var(--sf-duration-fast) var(--sf-ease-in),
+      transform var(--sf-duration-fast) var(--sf-ease-in),
+      filter var(--sf-duration-fast) var(--sf-ease-in);
 
     /* Top-layer transition building block (dialog, [popover]).
        transition-behavior: allow-discrete keeps the discrete `display`
@@ -2113,7 +2165,7 @@
      The dark-side input falls back to -light when -dark isn't
      explicitly set, so this works even without per-mode overrides.
 
-     Requires CSS relative color syntax (Chrome 119+, Safari 17.2+,
+     Requires CSS relative color syntax (Chrome 119+, Safari 16.4+,
      Firefox 128+). Wrapped in @supports — unsupporting engines skip
      the block silently; brand colors remain unmodified. */
   @supports (color: oklch(from red l c h)) {
@@ -2157,7 +2209,7 @@
      headers, sections, cards, or any subtree with [data-theme] fully
      independent of the root's colour mode.
 
-     Requires relative colour syntax (Chrome 119+, Safari 17.2+,
+     Requires relative colour syntax (Chrome 119+, Safari 16.4+,
      Firefox 128+). Engines that don't support it skip the whole
      @supports block and fall back to the :root values — a graceful
      degradation with no visible breakage on older browsers. On :root
@@ -3192,6 +3244,31 @@
     }
   } /* end @supports (color: oklch(from red l c h)) — surface contextual cascade */
 
+  /* -- Surface shadow tint -------------------------------------
+     Sets background + auto-flipped foreground in one class. Shadows
+     re-derive from surface background for in-family cast shadows.
+     Re-derive --sf-shadow-color from each surface's OWN background
+     so box-shadow / text-shadow / drop-shadow on a colored surface
+     read as an in-family cast shadow rather than a neutral-grey slab.
+     Mirrors the default formula (oklch …0.15 c h) but seeds it with
+     the surface background instead of --sf-color-neutral. Completes
+     the contextual cascade so elevated children (cards, popovers)
+     elevated ON a surface inherit a correctly tinted shadow.
+     Inverse is intentionally omitted: its background is the page text
+     color, so the neutral default already matches. */
+  @supports (color: oklch(from red l c h)) {
+    .sf-surface--primary   { --sf-shadow-color: oklch(from var(--sf-color-primary)   0.15 c h); }
+    .sf-surface--secondary { --sf-shadow-color: oklch(from var(--sf-color-secondary) 0.15 c h); }
+    .sf-surface--tertiary  { --sf-shadow-color: oklch(from var(--sf-color-tertiary)  0.15 c h); }
+    .sf-surface--action    { --sf-shadow-color: oklch(from var(--sf-color-action)    0.15 c h); }
+    .sf-surface--neutral   { --sf-shadow-color: oklch(from var(--sf-color-neutral)   0.15 c h); }
+    .sf-surface--success   { --sf-shadow-color: oklch(from var(--sf-color-success)   0.15 c h); }
+    .sf-surface--warning   { --sf-shadow-color: oklch(from var(--sf-color-warning)   0.15 c h); }
+    .sf-surface--error     { --sf-shadow-color: oklch(from var(--sf-color-error)     0.15 c h); }
+    .sf-surface--info      { --sf-shadow-color: oklch(from var(--sf-color-info)      0.15 c h); }
+    .sf-surface--danger    { --sf-shadow-color: oklch(from var(--sf-color-danger)    0.15 c h); }
+  }
+
   /* -- Scrim ---------------------------------------------------
      Darkening overlay for text placed over a background image, so
      the text clears contrast without dimming the whole picture.
@@ -4027,6 +4104,28 @@
     ::backdrop {
       background-color: var(--sf-color-neutral);
       opacity:          1;
+    }
+  }
+
+  /* ----------------------------------------------------------
+     Reduced data — Save-Data / metered-connection preference.
+     Enhancement, not a barrier (left normal, no !important): we
+     only neutralise the framework's paint-heaviest *decorative*
+     output via its own master knobs, so layout and legibility are
+     untouched. --sf-shadow-strength: 0 zeroes every box/text/drop
+     shadow and the glow in one step (they all derive their alpha
+     from it); the blur tokens collapse so backdrop/filter blurs
+     stop compositing expensive layers. Progressive enhancement —
+     engines without prefers-reduced-data simply ignore this block.
+     ---------------------------------------------------------- */
+  @media (prefers-reduced-data: reduce) {
+    :root {
+      --sf-shadow-strength: 0;
+      --sf-blur-xs: 0px;
+      --sf-blur-s:  0px;
+      --sf-blur-m:  0px;
+      --sf-blur-l:  0px;
+      --sf-blur-xl: 0px;
     }
   }
 
