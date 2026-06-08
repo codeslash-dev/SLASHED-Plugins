@@ -24,6 +24,7 @@
     "build": "npm run build:data && npm run sync-dist && npm run build:apps && npm run build:zip",
     "build:plugin": "node scripts/zip-plugin.js",
     "version-sync": "node scripts/version-sync.js",
+    "changelog": "node scripts/changelog-release.js",
     "verify": "node scripts/verify-sync.js",
     "lint:css": "stylelint \"SLASHED-for-WP/**/*.css\"",
     "lint:css:fix": "stylelint \"SLASHED-for-WP/**/*.css\" --fix",

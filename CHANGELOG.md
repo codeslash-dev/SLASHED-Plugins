@@ -9,6 +9,27 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+### Changed
+
+- Settings page rebuilt: bundle cards, version rollback UI, renamed menus, merged tab
+  layout for a cleaner admin experience
+- Tab consolidation: Bundle and Hooks settings migrated from Svelte SPA to PHP-rendered
+  tab; WCAG palette optimizer added to color admin
+
+### Fixed
+
+- Correct stale `SLASHED_VERSION`, `SLASHED_BRICKS_VERSION`, and
+  `SLASHED_GUTENBERG_VERSION` constants that did not match the WordPress plugin header
+- Release workflow: handle pre-existing GitHub Releases without erroring; add
+  `workflow_dispatch` retry support so the zip can be rebuilt without re-pushing the tag
+
+### Infrastructure
+
+- Contributor scaffolding: `CONTRIBUTING.md`, Git commit-msg and pre-push hooks,
+  Dependabot config, issue/PR templates, `SECURITY.md`
+- Dependency updates: `actions/checkout` v4 → v6, `actions/setup-node` v4 → v6,
+  `peter-evans/create-pull-request` v7 → v8, Svelte and vite-plugin-svelte
+
 ## [0.0.1] - 2026-06-08
 
 First standalone release. Bundles the Bricks Builder and Gutenberg integrations
@@ -147,4 +168,4 @@ previously developed in the SLASHED framework repo.
 
 ---
 
-*Generated from 54 merged PRs — Last Updated: 2026-06-08*
+*Generated from 54 merged PRs — auto-updated by release workflow on each tag push*
