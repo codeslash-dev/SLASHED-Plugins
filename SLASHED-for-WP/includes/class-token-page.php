@@ -42,8 +42,8 @@ class Slashed_Token_Page {
 		if ( defined( 'SLASHED_VERSION' ) ) {
 			$this->hook_suffix = (string) add_submenu_page(
 				'slashed',
-				__( 'Tokens', 'slashed' ),
-				__( 'Tokens', 'slashed' ),
+				__( 'Design Settings', 'slashed' ),
+				__( 'Design Settings', 'slashed' ),
 				'manage_options',
 				self::PAGE_SLUG,
 				array( $this, 'render_page' )

@@ -79,10 +79,12 @@ require_once SLASHED_PATH . 'includes/class-token-page.php'; // also used on fro
 
 if ( is_admin() ) {
 	require_once SLASHED_PATH . 'includes/class-admin.php';
+	require_once SLASHED_PATH . 'includes/class-hooks-page.php';
 	add_action( 'plugins_loaded', function () {
 		new Slashed_Admin();
 		new Slashed_Token_Page();
 		new Slashed_Framework_Updater();
+		new Slashed_Hooks_Page();
 	} );
 }
 

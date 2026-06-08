@@ -37,6 +37,16 @@ class Slashed_Admin {
 			'dashicons-art',
 			59
 		);
+
+		// Override the auto-generated first submenu entry label.
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Plugin Settings', 'slashed' ),
+			__( 'Plugin Settings', 'slashed' ),
+			'manage_options',
+			self::PAGE_SLUG,
+			array( $this, 'render_page' )
+		);
 	}
 
 	/**
@@ -76,6 +86,19 @@ class Slashed_Admin {
 
 		Slashed_Settings::save( $data );
 
+		// Save plugin behavioural settings (html_font_size, show_class_hints).
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$allowed_font_sizes = array( '', '100', '62.5' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$raw_font_size = isset( $_POST['html_font_size'] ) ? sanitize_text_field( wp_unslash( $_POST['html_font_size'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$raw_class_hints = isset( $_POST['show_class_hints'] );
+
+		Slashed_Token_Store::update_plugin_settings( array(
+			'html_font_size'   => in_array( $raw_font_size, $allowed_font_sizes, true ) ? $raw_font_size : '',
+			'show_class_hints' => $raw_class_hints,
+		) );
+
 		wp_safe_redirect(
 			add_query_arg( 'slashed_saved', '1', admin_url( 'admin.php?page=' . self::PAGE_SLUG ) )
 		);
@@ -94,10 +117,100 @@ class Slashed_Admin {
 		$cdn_version  = $settings['cdn_version'];
 		$saved        = ! empty( $_GET['slashed_saved'] ); // phpcs:ignore WordPress.Security.NonceVerification
 
-		$local_version  = Slashed_Framework_Updater::get_local_version();
-		$local_file_ok  = file_exists( SLASHED_PATH . 'dist/slashed.' . $css_bundle . '.css' );
-		$update_nonce   = wp_create_nonce( 'slashed_framework_update' );
+		$local_version    = Slashed_Framework_Updater::get_local_version();
+		$local_file_ok    = file_exists( SLASHED_PATH . 'dist/slashed.' . $css_bundle . '.css' );
+		$update_nonce     = wp_create_nonce( 'slashed_framework_update' );
+		$plugin_settings  = Slashed_Token_Store::get_plugin_settings();
+		$html_font_size   = $plugin_settings['html_font_size'] ?? '';
+		$show_class_hints = ! empty( $plugin_settings['show_class_hints'] );
 		?>
+		<style>
+		.slashed-bundle-grid {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 12px;
+			max-width: 920px;
+			margin: 12px 0 24px;
+		}
+		.slashed-bundle-card {
+			display: block;
+			border: 2px solid #c3c4c7;
+			border-radius: 6px;
+			padding: 16px;
+			cursor: pointer;
+			position: relative;
+			background: #fff;
+		}
+		.slashed-bundle-card:hover { border-color: #2271b1; }
+		.slashed-bundle-card.is-selected { border-color: #2271b1; background: #f0f6fc; }
+		.slashed-bundle-card input[type=radio] {
+			position: absolute;
+			top: 16px;
+			right: 14px;
+			margin: 0;
+		}
+		.slashed-bundle-card__name {
+			font-size: 14px;
+			font-weight: 600;
+			display: block;
+			margin-bottom: 3px;
+			padding-right: 22px;
+			color: #1e1e1e;
+		}
+		.slashed-bundle-card__tagline {
+			font-size: 12px;
+			color: #50575e;
+			display: block;
+			margin-bottom: 10px;
+		}
+		.slashed-bundle-card__badge {
+			display: inline-block;
+			background: #00a32a;
+			color: #fff;
+			font-size: 10px;
+			font-weight: 600;
+			padding: 1px 7px;
+			border-radius: 10px;
+			text-transform: uppercase;
+			letter-spacing: .04em;
+			margin-left: 5px;
+			vertical-align: middle;
+		}
+		.slashed-bundle-card hr {
+			border: none;
+			border-top: 1px solid #e2e4e7;
+			margin: 10px 0 8px;
+		}
+		.slashed-bundle-card__list {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			font-size: 12px;
+			color: #3c434a;
+			line-height: 1.6;
+		}
+		.slashed-bundle-card__list li {
+			padding-left: 16px;
+			position: relative;
+		}
+		.slashed-bundle-card__list li::before {
+			content: '✓';
+			position: absolute;
+			left: 0;
+			color: #00a32a;
+			font-size: 11px;
+			line-height: 1.6;
+		}
+		.slashed-bundle-card__list li.added::before {
+			content: '+';
+			color: #2271b1;
+			font-weight: 700;
+		}
+		@media (max-width: 900px) {
+			.slashed-bundle-grid { grid-template-columns: 1fr; }
+		}
+		</style>
+
 		<div class="wrap">
 			<h1><?php esc_html_e( 'SLASHED', 'slashed' ); ?> <span style="font-weight:400;font-size:13px;color:#999;"><?php echo esc_html( SLASHED_VERSION ); ?></span></h1>
 
@@ -115,27 +228,78 @@ class Slashed_Admin {
 					&nbsp;<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . \Slashed_Token_Page::PAGE_SLUG ) ); ?>"><?php esc_html_e( 'Customize design tokens →', 'slashed' ); ?></a>
 				</p>
 
-				<table class="form-table" role="presentation">
-					<?php
-					$bundles = array(
-						'essential' => __( 'Essential — core layer only: tokens, reset, layout, states, motion', 'slashed' ),
-						'optimal'   => __( 'Optimal — + color palette, forms, legacy support (recommended)', 'slashed' ),
-						'full'      => __( 'Full — + components + utilities', 'slashed' ),
-					);
-					foreach ( $bundles as $value => $label ) :
-						?>
-						<tr>
-							<th scope="row" style="padding-top:6px;padding-bottom:6px;">
-								<label for="bundle-<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $label ); ?></label>
-							</th>
-							<td style="padding-top:6px;padding-bottom:6px;">
-								<input type="radio" id="bundle-<?php echo esc_attr( $value ); ?>"
-									name="css_bundle" value="<?php echo esc_attr( $value ); ?>"
-									<?php checked( $css_bundle, $value ); ?>>
-							</td>
-						</tr>
+				<?php
+				$bundles = array(
+					'essential' => array(
+						'label'   => __( 'Essential', 'slashed' ),
+						'tagline' => __( 'Core layer only', 'slashed' ),
+						'items'   => array(
+							__( 'Design tokens — color, type, spacing, layout, motion, shadows, radius, z-index', 'slashed' ),
+							__( 'HSL fallbacks for oklch/light-dark() (broad browser support)', 'slashed' ),
+							__( 'CSS reset &amp; base element styles', 'slashed' ),
+							__( 'Layout primitives — container, grid, stack, cluster', 'slashed' ),
+							__( 'Interaction states (.is-* classes)', 'slashed' ),
+							__( 'Themes — light &amp; dark mode', 'slashed' ),
+							__( 'Motion &amp; animation scale', 'slashed' ),
+							__( 'Accessibility &amp; print layers', 'slashed' ),
+						),
+					),
+					'optimal'   => array(
+						'label'   => __( 'Optimal', 'slashed' ),
+						'tagline' => __( 'Recommended for most sites', 'slashed' ),
+						'badge'   => __( 'Recommended', 'slashed' ),
+						'base'    => __( 'Everything in Essential, plus:', 'slashed' ),
+						'items'   => array(
+							__( 'Extended color palette — surface tints, tonal steps', 'slashed' ),
+							__( 'Extended size tokens — fluid type scale, fractional spacing', 'slashed' ),
+							__( 'Form element styles — inputs, selects, checkboxes, buttons', 'slashed' ),
+							__( 'Legacy browser support — CSS grid fallbacks, older resets', 'slashed' ),
+						),
+					),
+					'full'      => array(
+						'label'   => __( 'Full', 'slashed' ),
+						'tagline' => __( 'All layers', 'slashed' ),
+						'base'    => __( 'Everything in Optimal, plus:', 'slashed' ),
+						'items'   => array(
+							__( 'Component tokens — card, button, badge, dialog, table, nav…', 'slashed' ),
+							__( 'UI component styles — .sf-card, .sf-btn, .sf-badge, .sf-dialog…', 'slashed' ),
+							__( 'Utility classes — .sf-flex, .sf-grid, .sf-text-*, .sf-bg-*…', 'slashed' ),
+						),
+					),
+				);
+				?>
+				<div class="slashed-bundle-grid">
+					<?php foreach ( $bundles as $value => $bundle ) : ?>
+					<label class="slashed-bundle-card<?php echo $css_bundle === $value ? ' is-selected' : ''; ?>" for="bundle-<?php echo esc_attr( $value ); ?>">
+						<input type="radio"
+							id="bundle-<?php echo esc_attr( $value ); ?>"
+							name="css_bundle"
+							value="<?php echo esc_attr( $value ); ?>"
+							<?php checked( $css_bundle, $value ); ?>>
+						<span class="slashed-bundle-card__name">
+							<?php echo esc_html( $bundle['label'] ); ?>
+							<?php if ( ! empty( $bundle['badge'] ) ) : ?>
+								<span class="slashed-bundle-card__badge"><?php echo esc_html( $bundle['badge'] ); ?></span>
+							<?php endif; ?>
+						</span>
+						<span class="slashed-bundle-card__tagline"><?php echo esc_html( $bundle['tagline'] ); ?></span>
+						<hr>
+						<?php if ( ! empty( $bundle['base'] ) ) : ?>
+							<p style="margin:0 0 4px;font-size:12px;color:#50575e;"><?php echo esc_html( $bundle['base'] ); ?></p>
+						<?php endif; ?>
+						<ul class="slashed-bundle-card__list">
+							<?php foreach ( $bundle['items'] as $item ) : ?>
+								<li<?php echo ! empty( $bundle['base'] ) ? ' class="added"' : ''; ?>>
+									<?php
+									// Items may contain safe HTML like &amp; — output through wp_kses.
+									echo wp_kses( $item, array( 'code' => array() ) );
+									?>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					</label>
 					<?php endforeach; ?>
-				</table>
+				</div>
 
 				<h2 style="margin-top:1.5em;"><?php esc_html_e( 'CSS delivery', 'slashed' ); ?></h2>
 				<p class="description"><?php esc_html_e( 'Choose how the framework CSS is loaded. Local files ship with the plugin; CDN lets you pin any release tag.', 'slashed' ); ?></p>
@@ -158,6 +322,21 @@ class Slashed_Admin {
 								<button type="button" id="slashed-check-btn" class="button button-small"><?php esc_html_e( 'Check for updates', 'slashed' ); ?></button>
 								<button type="button" id="slashed-update-btn" class="button button-small button-primary" style="margin-left:4px;"><?php esc_html_e( 'Update framework', 'slashed' ); ?></button>
 								<span id="slashed-update-msg" style="margin-left:8px;font-style:italic;"></span>
+
+								<div style="margin-top:10px;">
+									<button type="button" id="slashed-rollback-toggle" class="button button-small" style="color:#646970;">
+										<?php esc_html_e( 'Install a previous version ▾', 'slashed' ); ?>
+									</button>
+									<div id="slashed-rollback-controls" style="display:none;margin-top:8px;align-items:center;gap:8px;flex-wrap:wrap;">
+										<select id="slashed-version-select" style="min-width:160px;" disabled>
+											<option value=""><?php esc_html_e( 'Loading versions…', 'slashed' ); ?></option>
+										</select>
+										<button type="button" id="slashed-install-ver-btn" class="button button-small" disabled>
+											<?php esc_html_e( 'Install selected', 'slashed' ); ?>
+										</button>
+										<span id="slashed-rollback-msg" style="font-style:italic;font-size:12px;"></span>
+									</div>
+								</div>
 							</div>
 
 							<label style="display:block;">
@@ -178,6 +357,10 @@ class Slashed_Admin {
 								<p class="description" style="margin-top:4px;">
 									<?php esc_html_e( 'Enter a release tag, e.g.', 'slashed' ); ?>
 									<code><?php echo esc_html( SLASHED_CSS_REF ); ?></code><?php esc_html_e( ', or', 'slashed' ); ?> <code>latest</code><?php esc_html_e( ' to always track the newest release. Leave blank to track the version this plugin ships with.', 'slashed' ); ?>
+								</p>
+								<p class="description" style="margin-top:4px;">
+									<?php esc_html_e( 'To roll back, enter any older release tag (e.g.', 'slashed' ); ?>
+									<code>v0.4.0</code><?php esc_html_e( ') and save.', 'slashed' ); ?>
 								</p>
 							</div>
 						</td>
@@ -225,6 +408,36 @@ class Slashed_Admin {
 					</tr>
 				</table>
 
+				<h2><?php esc_html_e( 'Site behaviour', 'slashed' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Fine-tune how SLASHED integrates with your site.', 'slashed' ); ?></p>
+
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row">
+							<label for="slashed-html-font-size"><?php esc_html_e( 'HTML font size', 'slashed' ); ?></label>
+						</th>
+						<td>
+							<select id="slashed-html-font-size" name="html_font_size">
+								<option value="" <?php selected( $html_font_size, '' ); ?>><?php esc_html_e( 'Default (don\'t override)', 'slashed' ); ?></option>
+								<option value="100" <?php selected( $html_font_size, '100' ); ?>><?php esc_html_e( 'Force 100%', 'slashed' ); ?></option>
+								<option value="62.5" <?php selected( $html_font_size, '62.5' ); ?>><?php esc_html_e( 'Force 62.5%', 'slashed' ); ?></option>
+							</select>
+							<p class="description"><?php esc_html_e( 'Override the HTML root font-size when your theme or builder conflicts with rem-based framework values.', 'slashed' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Class hints', 'slashed' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="show_class_hints" <?php checked( $show_class_hints ); ?>>
+								<?php esc_html_e( 'Show class hints in Bricks editor', 'slashed' ); ?>
+								<span style="display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;background:#f0f4ff;color:#2563eb;border:1px solid #bfdbfe;margin-left:4px;">Bricks</span>
+							</label>
+							<p class="description"><?php esc_html_e( 'When enabled, hovering a SLASHED class in the Bricks class manager shows a short description of what it does.', 'slashed' ); ?></p>
+						</td>
+					</tr>
+				</table>
+
 				<?php submit_button( __( 'Save settings', 'slashed' ) ); ?>
 			</form>
 
@@ -242,8 +455,17 @@ class Slashed_Admin {
 
 		<script>
 		(function() {
-			var nonce = <?php echo wp_json_encode( $update_nonce ); ?>;
+			var nonce   = <?php echo wp_json_encode( $update_nonce ); ?>;
 			var ajaxUrl = <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>;
+
+			// Highlight selected bundle card on change.
+			document.querySelectorAll('.slashed-bundle-card input[type=radio]').forEach(function(radio) {
+				radio.addEventListener('change', function() {
+					document.querySelectorAll('.slashed-bundle-card').forEach(function(card) {
+						card.classList.toggle('is-selected', card.querySelector('input[type=radio]').checked);
+					});
+				});
+			});
 
 			// Toggle local / CDN control sections.
 			document.querySelectorAll('input[name="css_source"]').forEach(function(radio) {
@@ -255,6 +477,12 @@ class Slashed_Admin {
 
 			function setMsg(msg, color) {
 				var el = document.getElementById('slashed-update-msg');
+				el.textContent = msg;
+				el.style.color = color || '';
+			}
+
+			function setRollbackMsg(msg, color) {
+				var el = document.getElementById('slashed-rollback-msg');
 				el.textContent = msg;
 				el.style.color = color || '';
 			}
@@ -296,6 +524,68 @@ class Slashed_Admin {
 					}
 				})
 				.catch(function(){ setMsg(<?php echo wp_json_encode( __( 'Request failed.', 'slashed' ) ); ?>, '#c33'); });
+			});
+
+			// Version rollback: fetch list on toggle, then install on confirm.
+			var rollbackLoaded = false;
+			document.getElementById('slashed-rollback-toggle').addEventListener('click', function() {
+				var controls = document.getElementById('slashed-rollback-controls');
+				var open = controls.style.display !== 'none';
+				controls.style.display = open ? 'none' : 'flex';
+
+				if (!open && !rollbackLoaded) {
+					rollbackLoaded = true;
+					setRollbackMsg(<?php echo wp_json_encode( __( 'Loading versions…', 'slashed' ) ); ?>);
+					fetch(ajaxUrl, {
+						method: 'POST',
+						headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+						body: new URLSearchParams({action: 'slashed_list_framework_versions', nonce: nonce})
+					})
+					.then(function(r){ return r.json(); })
+					.then(function(data) {
+						var sel = document.getElementById('slashed-version-select');
+						var btn = document.getElementById('slashed-install-ver-btn');
+						if (data.success && data.data.versions && data.data.versions.length) {
+							sel.innerHTML = '';
+							data.data.versions.forEach(function(ver) {
+								var opt = document.createElement('option');
+								opt.value = ver;
+								opt.textContent = ver;
+								sel.appendChild(opt);
+							});
+							sel.disabled = false;
+							btn.disabled = false;
+							setRollbackMsg('');
+						} else {
+							setRollbackMsg((data.data && data.data.message) || <?php echo wp_json_encode( __( 'Could not load versions.', 'slashed' ) ); ?>, '#c33');
+						}
+					})
+					.catch(function(){ setRollbackMsg(<?php echo wp_json_encode( __( 'Request failed.', 'slashed' ) ); ?>, '#c33'); });
+				}
+			});
+
+			document.getElementById('slashed-install-ver-btn').addEventListener('click', function() {
+				var sel = document.getElementById('slashed-version-select');
+				var ver = sel.value;
+				if (!ver) return;
+				if (!confirm(<?php echo wp_json_encode( __( 'Install version', 'slashed' ) ); ?> + ' ' + ver + '?')) return;
+				setRollbackMsg(<?php echo wp_json_encode( __( 'Downloading…', 'slashed' ) ); ?>);
+				fetch(ajaxUrl, {
+					method: 'POST',
+					headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+					body: new URLSearchParams({action: 'slashed_do_framework_update', nonce: nonce, version: ver})
+				})
+				.then(function(r){ return r.json(); })
+				.then(function(data) {
+					if (data.success) {
+						setRollbackMsg(data.data.message, '#3c3');
+						var localVer = document.getElementById('slashed-local-version');
+						if (localVer) localVer.textContent = '✓ ' + data.data.version;
+					} else {
+						setRollbackMsg(data.data.message, '#c33');
+					}
+				})
+				.catch(function(){ setRollbackMsg(<?php echo wp_json_encode( __( 'Request failed.', 'slashed' ) ); ?>, '#c33'); });
 			});
 		}());
 		</script>

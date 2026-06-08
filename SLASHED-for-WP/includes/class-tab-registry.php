@@ -49,15 +49,15 @@ class Slashed_Tab_Registry {
 	/**
 	 * Read-only view tabs available only in the Svelte SPA.
 	 *
+	 * - Variables/Classes are consolidated into Cheatsheet (search + filter toggle).
+	 * - Bundle settings moved to the PHP Plugin Settings page.
+	 * - Hooks moved to a standalone PHP subpage (class-hooks-page.php).
+	 *
 	 * @return array<string,string> Slug → display label.
 	 */
 	public static function get_view_tabs() {
 		return array(
-			'variables'  => 'Variables',
-			'classes'    => 'Classes',
-			'bundle'     => 'Bundle',
 			'export'     => 'Export / Import',
-			'hooks'      => 'Hooks',
 			'cheatsheet' => 'Cheatsheet',
 			'wcag'       => 'WCAG',
 		);

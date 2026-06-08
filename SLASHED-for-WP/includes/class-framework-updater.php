@@ -30,8 +30,9 @@ class Slashed_Framework_Updater {
 	const METADATA_URL     = 'https://data.jsdelivr.com/v1/packages/gh/codeslash-dev/SLASHED';
 
 	public function __construct() {
-		add_action( 'wp_ajax_slashed_check_framework_update', array( $this, 'ajax_check_update' ) );
-		add_action( 'wp_ajax_slashed_do_framework_update',   array( $this, 'ajax_do_update' ) );
+		add_action( 'wp_ajax_slashed_check_framework_update',  array( $this, 'ajax_check_update' ) );
+		add_action( 'wp_ajax_slashed_do_framework_update',    array( $this, 'ajax_do_update' ) );
+		add_action( 'wp_ajax_slashed_list_framework_versions', array( $this, 'ajax_list_versions' ) );
 	}
 
 	/**
@@ -170,6 +171,46 @@ class Slashed_Framework_Updater {
 		delete_transient( self::TRANSIENT_KEY );
 
 		return true;
+	}
+
+	/**
+	 * AJAX: return all available version tags for the rollback picker.
+	 * Returns up to 20 stable releases (pre-release tags included).
+	 */
+	public function ajax_list_versions() {
+		check_ajax_referer( 'slashed_framework_update', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die();
+		}
+
+		$response = wp_remote_get(
+			self::METADATA_URL,
+			array(
+				'timeout'    => 10,
+				'user-agent' => 'SLASHED/' . SLASHED_VERSION . '; WordPress/' . get_bloginfo( 'version' ),
+			)
+		);
+
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			wp_send_json_error( array( 'message' => __( 'Could not fetch version list. Try again later.', 'slashed' ) ) );
+			return;
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $body ) || empty( $body['versions'] ) ) {
+			wp_send_json_error( array( 'message' => __( 'No versions found.', 'slashed' ) ) );
+			return;
+		}
+
+		$versions = array();
+		foreach ( $body['versions'] as $entry ) {
+			$ver = isset( $entry['version'] ) ? (string) $entry['version'] : '';
+			if ( $ver && preg_match( '/^v?\d+\.\d+\.\d/', $ver ) ) {
+				$versions[] = 'v' . ltrim( $ver, 'v' );
+			}
+		}
+
+		wp_send_json_success( array( 'versions' => array_slice( $versions, 0, 20 ) ) );
 	}
 
 	/**
