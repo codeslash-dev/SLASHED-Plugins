@@ -6,7 +6,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 /**
@@ -47,184 +47,190 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Slashed_Bricks_Classes {
 
-    /**
-     * Prefix used on every class id and category id this integration injects.
-     * Used to identify our entries when stripping on save.
-     */
-    const ID_PREFIX = 'slashed-';
+	/**
+	 * Prefix used on every class id and category id this integration injects.
+	 * Used to identify our entries when stripping on save.
+	 */
+	const ID_PREFIX = 'slashed-';
 
-    /**
-     * Stable category ids. These live in `bricks_global_classes_categories`
-     * and each class entry references one via its `category` field.
-     */
-    const CATEGORY_LAYOUT = 'slashed-cat-layout';
-    const CATEGORY_STATE  = 'slashed-cat-state';
+	/**
+	 * Stable category ids. These live in `bricks_global_classes_categories`
+	 * and each class entry references one via its `category` field.
+	 */
+	const CATEGORY_LAYOUT = 'slashed-cat-layout';
+	const CATEGORY_STATE  = 'slashed-cat-state';
 
-    /**
-     * Constructor. Register option filters.
-     */
-    public function __construct() {
-        // Inject SLASHED classes when Bricks reads the option. Run late
-        // so any other plugin's additions are preserved.
-        add_filter( 'option_bricks_global_classes', array( $this, 'inject_classes' ), 20 );
-        add_filter( 'default_option_bricks_global_classes', array( $this, 'inject_classes' ), 20 );
+	/**
+	 * Constructor. Register option filters.
+	 */
+	public function __construct() {
+		// Inject SLASHED classes when Bricks reads the option. Run late
+		// so any other plugin's additions are preserved.
+		add_filter( 'option_bricks_global_classes', array( $this, 'inject_classes' ), 20 );
+		add_filter( 'default_option_bricks_global_classes', array( $this, 'inject_classes' ), 20 );
 
-        // Strip SLASHED classes before they are persisted back to the DB.
-        // pre_update_option_* hooks must never widen the stored type from
-        // array to scalar - that would break Bricks' own loader, which
-        // iterates over the option.
-        add_filter( 'pre_update_option_bricks_global_classes', array( $this, 'strip_classes' ), 10, 1 );
+		// Strip SLASHED classes before they are persisted back to the DB.
+		// pre_update_option_* hooks must never widen the stored type from
+		// array to scalar - that would break Bricks' own loader, which
+		// iterates over the option.
+		add_filter( 'pre_update_option_bricks_global_classes', array( $this, 'strip_classes' ), 10, 1 );
 
-        // Same managed/virtual pattern for class categories (Bricks 1.9.5+).
-        add_filter( 'option_bricks_global_classes_categories', array( $this, 'inject_categories' ), 20 );
-        add_filter( 'default_option_bricks_global_classes_categories', array( $this, 'inject_categories' ), 20 );
-        add_filter( 'pre_update_option_bricks_global_classes_categories', array( $this, 'strip_categories' ), 10, 1 );
-    }
+		// Same managed/virtual pattern for class categories (Bricks 1.9.5+).
+		add_filter( 'option_bricks_global_classes_categories', array( $this, 'inject_categories' ), 20 );
+		add_filter( 'default_option_bricks_global_classes_categories', array( $this, 'inject_categories' ), 20 );
+		add_filter( 'pre_update_option_bricks_global_classes_categories', array( $this, 'strip_categories' ), 10, 1 );
+	}
 
-    /**
-     * Inject SLASHED classes into the Bricks global classes list.
-     *
-     * Idempotent: any existing SLASHED-prefixed entries are removed first
-     * so multiple read passes don't create duplicates.
-     *
-     * @param mixed $classes Existing value of bricks_global_classes option.
-     * @return array
-     */
-    public function inject_classes( $classes ) {
-        if ( ! is_array( $classes ) ) {
-            $classes = array();
-        }
+	/**
+	 * Inject SLASHED classes into the Bricks global classes list.
+	 *
+	 * Idempotent: any existing SLASHED-prefixed entries are removed first
+	 * so multiple read passes don't create duplicates.
+	 *
+	 * @param mixed $classes Existing value of bricks_global_classes option.
+	 * @return array
+	 */
+	public function inject_classes( $classes ) {
+		if ( ! is_array( $classes ) ) {
+			$classes = array();
+		}
 
-        $classes = $this->strip_classes( $classes );
+		$classes = $this->strip_classes( $classes );
 
-        foreach ( $this->build_classes() as $entry ) {
-            $classes[] = $entry;
-        }
+		foreach ( $this->build_classes() as $entry ) {
+			$classes[] = $entry;
+		}
 
-        return $classes;
-    }
+		return $classes;
+	}
 
-    /**
-     * Remove SLASHED-prefixed entries from a global classes array.
-     *
-     * Always returns a clean array, even when the option is malformed.
-     *
-     * @param mixed $classes Value of bricks_global_classes option.
-     * @return array
-     */
-    public function strip_classes( $classes ) {
-        return $this->strip_prefixed( $classes );
-    }
+	/**
+	 * Remove SLASHED-prefixed entries from a global classes array.
+	 *
+	 * Always returns a clean array, even when the option is malformed.
+	 *
+	 * @param mixed $classes Value of bricks_global_classes option.
+	 * @return array
+	 */
+	public function strip_classes( $classes ) {
+		return $this->strip_prefixed( $classes );
+	}
 
-    /**
-     * Inject SLASHED class category entries.
-     *
-     * @param mixed $categories Existing value of bricks_global_classes_categories option.
-     * @return array
-     */
-    public function inject_categories( $categories ) {
-        if ( ! is_array( $categories ) ) {
-            $categories = array();
-        }
+	/**
+	 * Inject SLASHED class category entries.
+	 *
+	 * @param mixed $categories Existing value of bricks_global_classes_categories option.
+	 * @return array
+	 */
+	public function inject_categories( $categories ) {
+		if ( ! is_array( $categories ) ) {
+			$categories = array();
+		}
 
-        $categories = $this->strip_categories( $categories );
+		$categories = $this->strip_categories( $categories );
 
-        foreach ( $this->build_categories() as $cat ) {
-            $categories[] = $cat;
-        }
+		foreach ( $this->build_categories() as $cat ) {
+			$categories[] = $cat;
+		}
 
-        return $categories;
-    }
+		return $categories;
+	}
 
-    /**
-     * Remove SLASHED-prefixed categories from a categories array.
-     *
-     * @param mixed $categories Value of bricks_global_classes_categories option.
-     * @return array
-     */
-    public function strip_categories( $categories ) {
-        return $this->strip_prefixed( $categories );
-    }
+	/**
+	 * Remove SLASHED-prefixed categories from a categories array.
+	 *
+	 * @param mixed $categories Value of bricks_global_classes_categories option.
+	 * @return array
+	 */
+	public function strip_categories( $categories ) {
+		return $this->strip_prefixed( $categories );
+	}
 
-    /**
-     * Shared "strip every entry whose id starts with our prefix" helper.
-     *
-     * @param mixed $entries Possibly malformed list of `{id,...}` entries.
-     * @return array
-     */
-    private function strip_prefixed( $entries ) {
-        if ( ! is_array( $entries ) ) {
-            return array();
-        }
+	/**
+	 * Shared "strip every entry whose id starts with our prefix" helper.
+	 *
+	 * @param mixed $entries Possibly malformed list of `{id,...}` entries.
+	 * @return array
+	 */
+	private function strip_prefixed( $entries ) {
+		if ( ! is_array( $entries ) ) {
+			return array();
+		}
 
-        $kept = array();
-        foreach ( $entries as $entry ) {
-            if ( is_array( $entry )
-                && isset( $entry['id'] )
-                && is_string( $entry['id'] )
-                && 0 === strpos( $entry['id'], self::ID_PREFIX )
-            ) {
-                continue;
-            }
-            $kept[] = $entry;
-        }
+		$kept = array();
+		foreach ( $entries as $entry ) {
+			if ( is_array( $entry )
+				&& isset( $entry['id'] )
+				&& is_string( $entry['id'] )
+				&& 0 === strpos( $entry['id'], self::ID_PREFIX )
+			) {
+				continue;
+			}
+			$kept[] = $entry;
+		}
 
-        return array_values( $kept );
-    }
+		return array_values( $kept );
+	}
 
-    /**
-     * Build SLASHED class entries from the inventory.
-     *
-     * Each entry follows the Bricks-native shape:
-     *   { id, name, settings: { locked: true }, category }
-     *
-     * - `id` is a stable slashed-* slug so strip_classes() can find it
-     *   reliably across read passes; Bricks accepts any unique string.
-     * - `name` is the actual class name users will apply (e.g. "sf-stack").
-     * - `settings.locked` puts the entry in the Class Manager's Locked
-     *   filter so framework classes aren't accidentally edited.
-     * - `category` references one of our stable category ids.
-     *
-     * @return array<int, array<string,mixed>>
-     */
-    public function build_classes() {
-        $entries = array();
+	/**
+	 * Build SLASHED class entries from the inventory.
+	 *
+	 * Each entry follows the Bricks-native shape:
+	 *   { id, name, settings: { locked: true }, category }
+	 *
+	 * - `id` is a stable slashed-* slug so strip_classes() can find it
+	 *   reliably across read passes; Bricks accepts any unique string.
+	 * - `name` is the actual class name users will apply (e.g. "sf-stack").
+	 * - `settings.locked` puts the entry in the Class Manager's Locked
+	 *   filter so framework classes aren't accidentally edited.
+	 * - `category` references one of our stable category ids.
+	 *
+	 * @return array<int, array<string,mixed>>
+	 */
+	public function build_classes() {
+		$entries = array();
 
-        foreach ( Slashed_Bricks_Inventory::get_sf_classes() as $name ) {
-            $entries[] = array(
-                'id'       => self::ID_PREFIX . sanitize_key( $name ),
-                'name'     => $name,
-                'settings' => array( 'locked' => true ),
-                'category' => self::CATEGORY_LAYOUT,
-            );
-        }
+		foreach ( Slashed_Bricks_Inventory::get_sf_classes() as $name ) {
+			$entries[] = array(
+				'id'       => self::ID_PREFIX . sanitize_key( $name ),
+				'name'     => $name,
+				'settings' => array( 'locked' => true ),
+				'category' => self::CATEGORY_LAYOUT,
+			);
+		}
 
-        foreach ( Slashed_Bricks_Inventory::get_is_classes() as $name ) {
-            $entries[] = array(
-                'id'       => self::ID_PREFIX . sanitize_key( $name ),
-                'name'     => $name,
-                'settings' => array( 'locked' => true ),
-                'category' => self::CATEGORY_STATE,
-            );
-        }
+		foreach ( Slashed_Bricks_Inventory::get_is_classes() as $name ) {
+			$entries[] = array(
+				'id'       => self::ID_PREFIX . sanitize_key( $name ),
+				'name'     => $name,
+				'settings' => array( 'locked' => true ),
+				'category' => self::CATEGORY_STATE,
+			);
+		}
 
-        /**
-         * Filter the SLASHED class entries before injection.
-         *
-         * @param array $entries Class entries.
-         */
-        return apply_filters( 'slashed_bricks/registered_classes', $entries );
-    }
+		/**
+		 * Filter the SLASHED class entries before injection.
+		 *
+		 * @param array $entries Class entries.
+		 */
+		return apply_filters( 'slashed_bricks/registered_classes', $entries );
+	}
 
-    /**
-     * Build SLASHED class category entries.
-     *
-     * @return array<int, array<string,string>>
-     */
-    public function build_categories() {
-        return array(
-            array( 'id' => self::CATEGORY_LAYOUT, 'name' => __( 'SLASHED Layout', 'slashed-bricks' ) ),
-            array( 'id' => self::CATEGORY_STATE,  'name' => __( 'SLASHED State', 'slashed-bricks' ) ),
-        );
-    }
+	/**
+	 * Build SLASHED class category entries.
+	 *
+	 * @return array<int, array<string,string>>
+	 */
+	public function build_categories() {
+		return array(
+			array(
+				'id'   => self::CATEGORY_LAYOUT,
+				'name' => __( 'SLASHED Layout', 'slashed-bricks' ),
+			),
+			array(
+				'id'   => self::CATEGORY_STATE,
+				'name' => __( 'SLASHED State', 'slashed-bricks' ),
+			),
+		);
+	}
 }

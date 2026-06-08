@@ -62,8 +62,18 @@ class Slashed_Gutenberg_Presets {
 	 * Curated order for named semantic aliases within a family.
 	 */
 	const ALIAS_ORDER = array(
-		'superlight', 'xlight', 'lighter', 'darker', 'xdark', 'superdark',
-		'hover', 'active', 'strong', 'subtle', 'muted', 'ghost',
+		'superlight',
+		'xlight',
+		'lighter',
+		'darker',
+		'xdark',
+		'superdark',
+		'hover',
+		'active',
+		'strong',
+		'subtle',
+		'muted',
+		'ghost',
 	);
 
 	/**
@@ -198,8 +208,8 @@ class Slashed_Gutenberg_Presets {
 		$vars = $this->color_variables();
 
 		// Bucket every token by family + kind.
-		$families  = array();  // family => kind => [ [order, var] ]
-		$semantic  = array();  // [ [key, var] ]
+		$families = array();  // family => kind => [ [order, var] ]
+		$semantic = array();  // [ [key, var] ]
 
 		foreach ( $vars as $var ) {
 			$info = $this->classify_color( $var );
@@ -246,7 +256,7 @@ class Slashed_Gutenberg_Presets {
 
 		// Semantic tokens: keep the inventory's natural (sorted) order.
 		foreach ( $semantic as $item ) {
-			$info = array(
+			$info      = array(
 				'family' => 'semantic',
 				'kind'   => 'semantic',
 				'key'    => $item[0],
@@ -316,17 +326,32 @@ class Slashed_Gutenberg_Presets {
 		$suffix = ( false === $dash ) ? '' : substr( $key, $dash + 1 );
 
 		if ( '' === $suffix ) {
-			return array( 'family' => $family, 'kind' => 'base', 'key' => $key, 'order' => -1 );
+			return array(
+				'family' => $family,
+				'kind'   => 'base',
+				'key'    => $key,
+				'order'  => -1,
+			);
 		}
 		// The `-light` source duplicates the resolved base swatch — skip.
 		if ( 'light' === $suffix ) {
 			return null;
 		}
 		if ( preg_match( '/^[0-9]+$/', $suffix ) ) {
-			return array( 'family' => $family, 'kind' => 'scale', 'key' => $key, 'order' => (int) $suffix );
+			return array(
+				'family' => $family,
+				'kind'   => 'scale',
+				'key'    => $key,
+				'order'  => (int) $suffix,
+			);
 		}
 		if ( preg_match( '/^a[0-9]+$/', $suffix ) ) {
-			return array( 'family' => $family, 'kind' => 'alpha', 'key' => $key, 'order' => (int) substr( $suffix, 1 ) );
+			return array(
+				'family' => $family,
+				'kind'   => 'alpha',
+				'key'    => $key,
+				'order'  => (int) substr( $suffix, 1 ),
+			);
 		}
 		$alias_idx = array_search( $suffix, self::ALIAS_ORDER, true );
 		return array(

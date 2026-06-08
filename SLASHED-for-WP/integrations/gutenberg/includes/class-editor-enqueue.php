@@ -57,7 +57,7 @@ class Slashed_Gutenberg_Editor_Enqueue {
 			return;
 		}
 
-		$js_ver  = (string) filemtime( $js_path );
+		$js_ver   = (string) filemtime( $js_path );
 		$css_path = $base_path . 'panel.css';
 		$css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : $js_ver;
 

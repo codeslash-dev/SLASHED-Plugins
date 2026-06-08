@@ -63,7 +63,7 @@ class Slashed_Token_Defaults {
 	 */
 	public static function get_colors() {
 		return array(
-			'brand' => array(
+			'brand'                 => array(
 				'primary'   => 'oklch(0.47 0.27 264)',
 				'secondary' => 'oklch(0.22 0.04 264)',
 				'tertiary'  => 'oklch(0.42 0.22 295)',
@@ -71,7 +71,7 @@ class Slashed_Token_Defaults {
 				'neutral'   => 'oklch(0.52 0.025 260)',
 				'base'      => 'oklch(0.96 0.006 250)',
 			),
-			'brand_dark' => array(
+			'brand_dark'            => array(
 				'primary'   => '',
 				'secondary' => '',
 				'tertiary'  => '',
@@ -79,21 +79,21 @@ class Slashed_Token_Defaults {
 				'neutral'   => '',
 				'base'      => '',
 			),
-			'status' => array(
+			'status'                => array(
 				'success' => 'oklch(0.50 0.16 145)',
 				'warning' => 'oklch(0.75 0.17 80)',
 				'error'   => 'oklch(0.50 0.20 25)',
 				'info'    => 'oklch(0.48 0.18 235)',
 				'danger'  => 'oklch(0.48 0.22 12)',
 			),
-			'status_dark' => array(
+			'status_dark'           => array(
 				'success' => '',
 				'warning' => '',
 				'error'   => '',
 				'info'    => '',
 				'danger'  => '',
 			),
-			'brand_hex_hints' => array(
+			'brand_hex_hints'       => array(
 				'primary'   => '#4a30d0',
 				'secondary' => '#141530',
 				'tertiary'  => '#5c20cc',
@@ -101,7 +101,7 @@ class Slashed_Token_Defaults {
 				'neutral'   => '#5e6880',
 				'base'      => '#f8f9ff',
 			),
-			'brand_dark_hex_hints' => array(
+			'brand_dark_hex_hints'  => array(
 				'primary'   => '#9080f0',
 				'secondary' => '#c0c8e0',
 				'tertiary'  => '#b07ae8',
@@ -109,7 +109,7 @@ class Slashed_Token_Defaults {
 				'neutral'   => '#8a96b4',
 				'base'      => '#141924',
 			),
-			'status_hex_hints' => array(
+			'status_hex_hints'      => array(
 				'success' => '#1a8040',
 				'warning' => '#ca8a04',
 				'error'   => '#c42010',
@@ -133,7 +133,7 @@ class Slashed_Token_Defaults {
 	 */
 	public static function get_typography() {
 		return array(
-			'font_families' => array(
+			'font_families'     => array(
 				'body'      => 'system-ui, -apple-system, sans-serif',
 				'heading'   => 'var(--sf-font-body)',
 				'mono'      => 'ui-monospace, monospace',
@@ -142,19 +142,55 @@ class Slashed_Token_Defaults {
 				'geometric' => '"Avenir", "Montserrat", "Corbel", "URW Gothic", source-sans-pro, sans-serif',
 				'slab'      => '"Rockwell", "Rockwell Nova", "Roboto Slab", "DejaVu Serif", "Sitka Small", serif',
 			),
-			'font_sizes' => array(
-				'2xs'       => array( 'min' => 0.51, 'max' => 0.53 ),
-				'xs'        => array( 'min' => 0.64, 'max' => 0.70 ),
-				's'         => array( 'min' => 0.80, 'max' => 0.94 ),
-				'm'         => array( 'min' => 1.00, 'max' => 1.25 ),
-				'l'         => array( 'min' => 1.25, 'max' => 1.67 ),
-				'xl'        => array( 'min' => 1.56, 'max' => 2.22 ),
-				'2xl'       => array( 'min' => 1.95, 'max' => 2.96 ),
-				'3xl'       => array( 'min' => 2.44, 'max' => 3.95 ),
-				'4xl'       => array( 'min' => 3.05, 'max' => 5.26 ),
-				'display-s' => array( 'min' => 2.40, 'max' => 3.00 ),
-				'display-m' => array( 'min' => 3.00, 'max' => 4.00 ),
-				'display-l' => array( 'min' => 3.75, 'max' => 5.33 ),
+			'font_sizes'        => array(
+				'2xs'       => array(
+					'min' => 0.51,
+					'max' => 0.53,
+				),
+				'xs'        => array(
+					'min' => 0.64,
+					'max' => 0.70,
+				),
+				's'         => array(
+					'min' => 0.80,
+					'max' => 0.94,
+				),
+				'm'         => array(
+					'min' => 1.00,
+					'max' => 1.25,
+				),
+				'l'         => array(
+					'min' => 1.25,
+					'max' => 1.67,
+				),
+				'xl'        => array(
+					'min' => 1.56,
+					'max' => 2.22,
+				),
+				'2xl'       => array(
+					'min' => 1.95,
+					'max' => 2.96,
+				),
+				'3xl'       => array(
+					'min' => 2.44,
+					'max' => 3.95,
+				),
+				'4xl'       => array(
+					'min' => 3.05,
+					'max' => 5.26,
+				),
+				'display-s' => array(
+					'min' => 2.40,
+					'max' => 3.00,
+				),
+				'display-m' => array(
+					'min' => 3.00,
+					'max' => 4.00,
+				),
+				'display-l' => array(
+					'min' => 3.75,
+					'max' => 5.33,
+				),
 			),
 			'scale_multipliers' => array(
 				'text_scale'         => 1,
@@ -170,25 +206,52 @@ class Slashed_Token_Defaults {
 	 */
 	public static function get_spacing() {
 		return array(
-			'space_scale'    => 1,
-			'viewport_min'   => 22.5,
-			'viewport_max'   => 90,
-			'space_sizes'    => array(
-				'2xs' => array( 'min' => 0.51, 'max' => 0.84 ),
-				'xs'  => array( 'min' => 0.64, 'max' => 1.13 ),
-				's'   => array( 'min' => 0.80, 'max' => 1.50 ),
-				'm'   => array( 'min' => 1.00, 'max' => 2.00 ),
-				'l'   => array( 'min' => 1.25, 'max' => 2.67 ),
-				'xl'  => array( 'min' => 1.56, 'max' => 3.55 ),
-				'2xl' => array( 'min' => 1.95, 'max' => 4.74 ),
-				'3xl' => array( 'min' => 2.44, 'max' => 6.31 ),
-				'4xl' => array( 'min' => 3.05, 'max' => 8.42 ),
+			'space_scale'   => 1,
+			'viewport_min'  => 22.5,
+			'viewport_max'  => 90,
+			'space_sizes'   => array(
+				'2xs' => array(
+					'min' => 0.51,
+					'max' => 0.84,
+				),
+				'xs'  => array(
+					'min' => 0.64,
+					'max' => 1.13,
+				),
+				's'   => array(
+					'min' => 0.80,
+					'max' => 1.50,
+				),
+				'm'   => array(
+					'min' => 1.00,
+					'max' => 2.00,
+				),
+				'l'   => array(
+					'min' => 1.25,
+					'max' => 2.67,
+				),
+				'xl'  => array(
+					'min' => 1.56,
+					'max' => 3.55,
+				),
+				'2xl' => array(
+					'min' => 1.95,
+					'max' => 4.74,
+				),
+				'3xl' => array(
+					'min' => 2.44,
+					'max' => 6.31,
+				),
+				'4xl' => array(
+					'min' => 3.05,
+					'max' => 8.42,
+				),
 			),
-			'gutter'         => 'var(--sf-space-l)',
-			'gap'            => 'var(--sf-space-m)',
-			'content_gap'    => 'var(--sf-space-s)',
-			'component_pad'  => 'var(--sf-space-m)',
-			'section_pad'    => 'var(--sf-section-pad--m)',
+			'gutter'        => 'var(--sf-space-l)',
+			'gap'           => 'var(--sf-space-m)',
+			'content_gap'   => 'var(--sf-space-s)',
+			'component_pad' => 'var(--sf-space-m)',
+			'section_pad'   => 'var(--sf-section-pad--m)',
 		);
 	}
 
@@ -203,42 +266,42 @@ class Slashed_Token_Defaults {
 	public static function get_layouts() {
 		return array(
 			// Containers
-			'container_narrow'    => '38rem',
-			'container_prose'     => '65ch',
-			'container_default'   => '75rem',
-			'container_wide'      => '90rem',
+			'container_narrow'      => '38rem',
+			'container_prose'       => '65ch',
+			'container_default'     => '75rem',
+			'container_wide'        => '90rem',
 			// Grid
-			'grid_min'            => '16rem',
-			'grid_min_xs'         => '10rem',
-			'grid_min_s'          => '13rem',
-			'grid_min_l'          => '20rem',
-			'grid_min_xl'         => '24rem',
-			'grid_min_2xl'        => '28rem',
+			'grid_min'              => '16rem',
+			'grid_min_xs'           => '10rem',
+			'grid_min_s'            => '13rem',
+			'grid_min_l'            => '20rem',
+			'grid_min_xl'           => '24rem',
+			'grid_min_2xl'          => '28rem',
 			// Switcher
-			'switcher_threshold'  => '30rem',
+			'switcher_threshold'    => '30rem',
 			// Bento
-			'bento_cols'          => '3',
-			'bento_row_default'   => '10rem',
-			'bento_row_compact'   => '6rem',
-			'bento_row_tall'      => '16rem',
+			'bento_cols'            => '3',
+			'bento_row_default'     => '10rem',
+			'bento_row_compact'     => '6rem',
+			'bento_row_tall'        => '16rem',
 			// Content grid
-			'content_width'       => 'var(--sf-container-default)',
-			'breakout_width'      => 'var(--sf-container-wide)',
+			'content_width'         => 'var(--sf-container-default)',
+			'breakout_width'        => 'var(--sf-container-wide)',
 			// Sidebar
-			'sidebar_width'       => '18rem',
-			'sidebar_min_width'   => '50%',
+			'sidebar_width'         => '18rem',
+			'sidebar_min_width'     => '50%',
 			// Cover
-			'cover_min_height'    => '100dvh',
-			'cover_padding'       => 'var(--sf-section-pad)',
+			'cover_min_height'      => '100dvh',
+			'cover_padding'         => 'var(--sf-section-pad)',
 			// Frame
-			'frame_ratio'         => '16 / 9',
+			'frame_ratio'           => '16 / 9',
 			// Reel
-			'reel_item_width'     => 'max-content',
-			'reel_height'         => 'auto',
+			'reel_item_width'       => 'max-content',
+			'reel_height'           => 'auto',
 			// Imposter
-			'imposter_margin'     => 'var(--sf-space-m)',
+			'imposter_margin'       => 'var(--sf-space-m)',
 			// Equal columns
-			'equal_cols'          => '2',
+			'equal_cols'            => '2',
 			// Header & sticky (numeric rem values, empty = use framework default)
 			'header_height_mobile'  => '',
 			'header_height_desktop' => '',

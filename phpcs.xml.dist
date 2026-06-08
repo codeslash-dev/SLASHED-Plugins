@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="SLASHED for WP">
-  <description>Coding standards for the SLASHED for WordPress plugin.</description>
+  <description>WordPress coding standards for the SLASHED for WordPress plugin.</description>
 
   <!-- What to scan. -->
   <file>SLASHED-for-WP</file>
@@ -13,35 +13,65 @@
 
   <!-- Only PHP. -->
   <arg name="extensions" value="php"/>
-  <!-- Show sniff codes, use colour, run in parallel, progress dots. -->
+  <!-- Show sniff codes, colour, parallel, progress dots. -->
   <arg name="colors"/>
   <arg value="sp"/>
   <arg name="parallel" value="8"/>
   <arg name="basepath" value="."/>
 
-  <!--
-    Start with high-signal correctness & security sniffs rather than the full
-    WordPress formatting ruleset. This catches real bugs (unsanitised input,
-    unprepared SQL, unescaped output, deprecated/unsafe functions) without
-    blocking on whitespace/alignment style that the existing code predates.
-    Broaden toward WordPress-Extra over time once the codebase is reformatted.
-  -->
-  <rule ref="WordPress.Security"/>
-  <rule ref="WordPress.DB"/>
-  <rule ref="WordPress.WP.DeprecatedFunctions"/>
-  <rule ref="WordPress.WP.DeprecatedParameters"/>
-  <rule ref="WordPress.WP.EnqueuedResources"/>
-  <rule ref="WordPress.PHP.NoSilencedErrors"/>
-  <rule ref="WordPress.PHP.StrictInArray"/>
-
-  <!-- PHP cross-version compatibility for the plugin's declared floor. -->
+  <!-- Full WordPress coding standard (Core + Extra) plus cross-version
+       PHP compatibility for the plugin's declared PHP 7.4 floor. -->
+  <rule ref="WordPress-Extra"/>
   <rule ref="PHPCompatibilityWP"/>
   <config name="testVersion" value="7.4-"/>
 
-  <!-- Tell the i18n/security sniffs about the plugin's conventions. -->
-  <config name="text_domain" value="slashed"/>
+  <!-- Plugin conventions for the i18n / prefix / capability sniffs.
+       Each integration ships as its own standalone plugin with a matching
+       text domain, while the shared code uses 'slashed'; all three are valid. -->
+  <config name="text_domain" value="slashed,slashed-bricks,slashed-gutenberg"/>
 
-  <!-- Advisory warnings (e.g. object-cache suggestions) inform but don't fail
-       the build; only errors block a merge. -->
+  <!-- Class files follow the project's `class-{short-name}.php` convention
+       (e.g. class-admin.php for Slashed_Admin) rather than deriving the file
+       name from the fully-prefixed class name. The lowercase-hyphenated file
+       name rule (NotHyphenatedLowercase) still applies. -->
+  <rule ref="WordPress.Files.FileName.InvalidClassFileName">
+    <severity>0</severity>
+  </rule>
+
+  <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+    <properties>
+      <property name="prefixes" type="array">
+        <element value="slashed"/>
+        <element value="SLASHED"/>
+        <element value="Slashed"/>
+      </property>
+    </properties>
+  </rule>
+
+  <!-- Custom capabilities registered by the plugin's settings screen. -->
+  <rule ref="WordPress.WP.Capabilities">
+    <properties>
+      <property name="custom_capabilities" type="array">
+        <element value="manage_options"/>
+      </property>
+    </properties>
+  </rule>
+
+  <!-- Hook names use the `slashed/...` namespacing convention, so allow the
+       slash and hyphen as word delimiters rather than forcing underscores. -->
+  <rule ref="WordPress.NamingConventions.ValidHookName">
+    <properties>
+      <property name="additionalWordDelimiters" value="/-"/>
+    </properties>
+  </rule>
+
+  <!-- WordPress hook/filter callbacks must keep their full signature even when
+       a parameter is unused, so this is noise rather than a real defect. -->
+  <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
+    <severity>0</severity>
+  </rule>
+
+  <!-- Advisory warnings (object-cache hints, etc.) inform but don't fail the
+       build; only errors block a merge. -->
   <config name="ignore_warnings_on_exit" value="1"/>
 </ruleset>

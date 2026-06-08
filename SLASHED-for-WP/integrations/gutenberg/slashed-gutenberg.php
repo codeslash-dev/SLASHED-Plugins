@@ -25,10 +25,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * plugin they are not yet set and are defined here as usual.
  */
 if ( ! defined( 'SLASHED_GUTENBERG_VERSION' ) ) {
-	define( 'SLASHED_GUTENBERG_VERSION',  '0.0.1' );
-	define( 'SLASHED_GUTENBERG_PATH',     plugin_dir_path( __FILE__ ) );
-	define( 'SLASHED_GUTENBERG_URL',      plugin_dir_url( __FILE__ ) );
-	define( 'SLASHED_GUTENBERG_CSS_REF',  'v0.5.23' );
+	define( 'SLASHED_GUTENBERG_VERSION', '0.0.1' );
+	define( 'SLASHED_GUTENBERG_PATH', plugin_dir_path( __FILE__ ) );
+	define( 'SLASHED_GUTENBERG_URL', plugin_dir_url( __FILE__ ) );
+	define( 'SLASHED_GUTENBERG_CSS_REF', 'v0.5.23' );
 }
 
 define( 'SLASHED_GUTENBERG_ALLOWED_BUNDLES', array( 'essential', 'optimal', 'full' ) );
@@ -51,17 +51,17 @@ define( 'SLASHED_GUTENBERG_ALLOWED_BUNDLES', array( 'essential', 'optimal', 'ful
  * multiple integrations together.
  */
 if ( ! class_exists( 'Slashed_Token_Store' ) ) {
-	$_slashed_shared = SLASHED_GUTENBERG_PATH . '../../includes/';
-	require_once $_slashed_shared . 'class-settings.php';
-	require_once $_slashed_shared . 'class-css-loader.php';
-	require_once $_slashed_shared . 'class-token-store.php';
-	require_once $_slashed_shared . 'class-token-sanitizer.php';
-	require_once $_slashed_shared . 'class-token-defaults.php';
-	require_once $_slashed_shared . 'class-tab-registry.php';
-	require_once $_slashed_shared . 'class-css-generator.php';
-	require_once $_slashed_shared . 'class-rest-controller.php';
-	require_once $_slashed_shared . 'class-token-page.php';
-	unset( $_slashed_shared );
+	$slashed_shared = SLASHED_GUTENBERG_PATH . '../../includes/';
+	require_once $slashed_shared . 'class-settings.php';
+	require_once $slashed_shared . 'class-css-loader.php';
+	require_once $slashed_shared . 'class-token-store.php';
+	require_once $slashed_shared . 'class-token-sanitizer.php';
+	require_once $slashed_shared . 'class-token-defaults.php';
+	require_once $slashed_shared . 'class-tab-registry.php';
+	require_once $slashed_shared . 'class-css-generator.php';
+	require_once $slashed_shared . 'class-rest-controller.php';
+	require_once $slashed_shared . 'class-token-page.php';
+	unset( $slashed_shared );
 }
 
 /**
@@ -122,9 +122,12 @@ function slashed_gutenberg_get_css_url() {
 }
 
 if ( ! defined( 'SLASHED_VERSION' ) ) {
-	add_action( 'init', function () {
-		load_plugin_textdomain( 'slashed-gutenberg', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-	} );
+	add_action(
+		'init',
+		function () {
+			load_plugin_textdomain( 'slashed-gutenberg', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		}
+	);
 }
 
 /**
@@ -138,14 +141,21 @@ if ( ! defined( 'SLASHED_VERSION' ) ) {
  * mode, so Slashed_Core_Enqueue is not instantiated here.
  */
 if ( ! defined( 'SLASHED_VERSION' ) ) {
-	add_action( 'rest_api_init', function () {
-		( new Slashed_REST_Controller() )->register_routes();
-	} );
+	add_action(
+		'rest_api_init',
+		function () {
+			( new Slashed_REST_Controller() )->register_routes();
+		}
+	);
 
 	if ( is_admin() ) {
-		add_action( 'plugins_loaded', function () {
-			new Slashed_Token_Page();
-		}, 20 );
+		add_action(
+			'plugins_loaded',
+			function () {
+				new Slashed_Token_Page();
+			},
+			20
+		);
 	}
 
 	// Shared with the Bricks standalone bootstrap via the !function_exists guard,

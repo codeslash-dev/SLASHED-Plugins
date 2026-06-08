@@ -47,8 +47,8 @@ class Slashed_Inventory {
 	 *
 	 * @var array<string, array>
 	 */
-	private static $cache = array();
-	private static $hex_map_cache = array();
+	private static $cache              = array();
+	private static $hex_map_cache      = array();
 	private static $hex_map_dark_cache = array();
 
 	// ---------------------------------------------------------------
@@ -192,7 +192,7 @@ class Slashed_Inventory {
 		foreach ( array_keys( $base ) as $key ) {
 			// color_values is an associative map, not a sortable list.
 			if ( 'color_values' === $key ) {
-				$raw_map = isset( $inventory[ $key ] ) && is_array( $inventory[ $key ] )
+				$raw_map    = isset( $inventory[ $key ] ) && is_array( $inventory[ $key ] )
 					? $inventory[ $key ]
 					: array();
 				$normalized = array();
@@ -308,7 +308,7 @@ class Slashed_Inventory {
 			return array();
 		}
 
-		$settings = $tokens['colors'];
+		$settings  = $tokens['colors'];
 		$overrides = array();
 
 		// Brand families: 'base' is the source token (--sf-color-base-light);

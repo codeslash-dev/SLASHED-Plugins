@@ -131,7 +131,7 @@ class Slashed_REST_Controller {
 							'type'              => 'string',
 							'required'          => false,
 							'sanitize_callback' => 'sanitize_text_field',
-							'validate_callback' => function( $value ) {
+							'validate_callback' => function ( $value ) {
 								return in_array( (string) $value, array( '', '100', '62.5' ), true );
 							},
 						),
@@ -139,7 +139,7 @@ class Slashed_REST_Controller {
 							'type'              => 'string',
 							'required'          => false,
 							'sanitize_callback' => 'sanitize_key',
-							'validate_callback' => function( $value ) {
+							'validate_callback' => function ( $value ) {
 								return in_array( (string) $value, Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true );
 							},
 						),
@@ -177,10 +177,12 @@ class Slashed_REST_Controller {
 		$sanitized = Slashed_Token_Sanitizer::sanitize_section( $section, $values );
 		Slashed_Token_Store::update_section( $section, $sanitized );
 
-		return rest_ensure_response( array(
-			'section' => $section,
-			'values'  => $sanitized,
-		) );
+		return rest_ensure_response(
+			array(
+				'section' => $section,
+				'values'  => $sanitized,
+			)
+		);
 	}
 
 	public function validate_section( WP_REST_Request $request ) {
@@ -206,20 +208,28 @@ class Slashed_REST_Controller {
 		foreach ( $values as $key => $raw_value ) {
 			$raw = (string) $raw_value;
 			if ( ! array_key_exists( $key, $sanitized ) ) {
-				$changed[ $key ] = array( 'original' => $raw, 'sanitized' => '' );
+				$changed[ $key ] = array(
+					'original'  => $raw,
+					'sanitized' => '',
+				);
 				continue;
 			}
 			$clean = (string) $sanitized[ $key ];
 			if ( $raw !== $clean ) {
-				$changed[ $key ] = array( 'original' => $raw, 'sanitized' => $clean );
+				$changed[ $key ] = array(
+					'original'  => $raw,
+					'sanitized' => $clean,
+				);
 			}
 		}
 
-		return rest_ensure_response( array(
-			'section'   => $section,
-			'sanitized' => $sanitized,
-			'changed'   => $changed,
-		) );
+		return rest_ensure_response(
+			array(
+				'section'   => $section,
+				'sanitized' => $sanitized,
+				'changed'   => $changed,
+			)
+		);
 	}
 
 	public function reset_section( WP_REST_Request $request ) {
@@ -227,7 +237,12 @@ class Slashed_REST_Controller {
 
 		if ( '' === $section ) {
 			Slashed_Token_Store::delete_settings();
-			return rest_ensure_response( array( 'section' => '', 'settings' => array() ) );
+			return rest_ensure_response(
+				array(
+					'section'  => '',
+					'settings' => array(),
+				)
+			);
 		}
 
 		if ( ! $this->is_known_section( $section ) ) {
@@ -240,7 +255,12 @@ class Slashed_REST_Controller {
 		}
 
 		$all = Slashed_Token_Store::delete_section( $section );
-		return rest_ensure_response( array( 'section' => $section, 'settings' => $all ) );
+		return rest_ensure_response(
+			array(
+				'section'  => $section,
+				'settings' => $all,
+			)
+		);
 	}
 
 	public function get_settings( WP_REST_Request $request ) {
@@ -273,13 +293,15 @@ class Slashed_REST_Controller {
 	}
 
 	public function export_tokens() {
-		return rest_ensure_response( array(
-			'schema_version'  => '1',
-			'plugin_version'  => SLASHED_VERSION,
-			'exported_at'     => gmdate( 'c' ),
-			'tokens'          => Slashed_Token_Store::get_settings(),
-			'plugin_settings' => Slashed_Token_Store::get_plugin_settings(),
-		) );
+		return rest_ensure_response(
+			array(
+				'schema_version'  => '1',
+				'plugin_version'  => SLASHED_VERSION,
+				'exported_at'     => gmdate( 'c' ),
+				'tokens'          => Slashed_Token_Store::get_settings(),
+				'plugin_settings' => Slashed_Token_Store::get_plugin_settings(),
+			)
+		);
 	}
 
 	public function import_tokens( WP_REST_Request $request ) {
@@ -319,8 +341,8 @@ class Slashed_REST_Controller {
 			if ( isset( $raw['css_bundle'] )
 				&& in_array( (string) $raw['css_bundle'], Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true )
 			) {
-				$existing['css_bundle']  = (string) $raw['css_bundle'];
-				$settings_imported       = true;
+				$existing['css_bundle'] = (string) $raw['css_bundle'];
+				$settings_imported      = true;
 			}
 			if ( isset( $raw['html_font_size'] )
 				&& in_array( (string) $raw['html_font_size'], array( '', '100', '62.5' ), true )
@@ -338,12 +360,14 @@ class Slashed_REST_Controller {
 			}
 		}
 
-		return rest_ensure_response( array(
-			'imported'          => $imported,
-			'settings_imported' => $settings_imported,
-			'tokens'            => Slashed_Token_Store::get_settings(),
-			'plugin_settings'   => Slashed_Token_Store::get_plugin_settings(),
-		) );
+		return rest_ensure_response(
+			array(
+				'imported'          => $imported,
+				'settings_imported' => $settings_imported,
+				'tokens'            => Slashed_Token_Store::get_settings(),
+				'plugin_settings'   => Slashed_Token_Store::get_plugin_settings(),
+			)
+		);
 	}
 
 	private function is_known_section( $section ) {
