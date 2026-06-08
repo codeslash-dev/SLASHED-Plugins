@@ -59,7 +59,7 @@ jobs:
           echo "tag=$REF" >> "$GITHUB_OUTPUT"
 
       - name: Open PR if anything changed
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "chore: sync bundled framework CSS to ${{ steps.ref.outputs.tag }}"
           branch: chore/framework-sync
