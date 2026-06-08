@@ -29,7 +29,7 @@ define( 'SLASHED_URL',      plugin_dir_url( __FILE__ ) );
  * artifacts (GitHub Release assets per version; the `dist` branch for
  * "latest") — see Slashed_CSS_Loader and Slashed_Framework_Updater.
  */
-define( 'SLASHED_CSS_REF',  'v0.5.21' );
+define( 'SLASHED_CSS_REF',  'v0.5.23' );
 
 add_action( 'init', function () {
 	load_plugin_textdomain( 'slashed', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
