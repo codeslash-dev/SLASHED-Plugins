@@ -197,13 +197,11 @@ class Slashed_Framework_Updater {
 
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			wp_send_json_error( array( 'message' => __( 'Could not fetch version list. Try again later.', 'slashed' ) ) );
-			return;
 		}
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 		if ( ! is_array( $body ) || empty( $body['versions'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'No versions found.', 'slashed' ) ) );
-			return;
 		}
 
 		$versions = array();
@@ -255,13 +253,11 @@ class Slashed_Framework_Updater {
 		}
 		if ( ! $version ) {
 			wp_send_json_error( array( 'message' => __( 'Could not determine version to download.', 'slashed' ) ) );
-			return;
 		}
 
 		$result = self::download_files( $version );
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
-			return;
 		}
 
 		wp_send_json_success(

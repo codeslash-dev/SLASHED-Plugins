@@ -175,7 +175,7 @@ class Slashed_Bricks_Variables {
 			$kept[] = $entry;
 		}
 
-		return array_values( $kept );
+		return $kept;
 	}
 
 	// ---------------------------------------------------------------

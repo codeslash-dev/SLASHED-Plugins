@@ -169,7 +169,7 @@ class Slashed_Bricks_Classes {
 			$kept[] = $entry;
 		}
 
-		return array_values( $kept );
+		return $kept;
 	}
 
 	/**

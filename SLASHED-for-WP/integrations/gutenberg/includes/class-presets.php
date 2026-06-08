@@ -208,8 +208,8 @@ class Slashed_Gutenberg_Presets {
 		$vars = $this->color_variables();
 
 		// Bucket every token by family + kind.
-		$families = array();  // family => kind => [ [order, var] ]
-		$semantic = array();  // [ [key, var] ]
+		$families = array(); // Keyed by family, then kind; holds order/var/info tuples.
+		$semantic = array(); // Holds key/var tuples for semantic tokens.
 
 		foreach ( $vars as $var ) {
 			$info = $this->classify_color( $var );
@@ -406,7 +406,15 @@ class Slashed_Gutenberg_Presets {
 	private function humanize( $key ) {
 		$key   = str_replace( '--', '-', $key );
 		$parts = preg_split( '/-+/', $key );
-		$parts = array_map( 'ucfirst', array_filter( $parts, 'strlen' ) );
+		$parts = array_map(
+			'ucfirst',
+			array_filter(
+				$parts,
+				static function ( $part ) {
+					return '' !== $part;
+				}
+			)
+		);
 		return implode( ' ', $parts );
 	}
 

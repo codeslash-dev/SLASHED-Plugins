@@ -83,6 +83,10 @@ class Slashed_Gutenberg_Editor_Enqueue {
 		$inv = 'Slashed_Gutenberg_Inventory';
 
 		$class_hints = array();
+		// Slashed_Token_Page ships in the shared plugin; in standalone Gutenberg
+		// mode it isn't loaded, so this guard is genuinely needed even though
+		// whole-project static analysis can see the class.
+		// @phpstan-ignore function.alreadyNarrowedType
 		if ( class_exists( 'Slashed_Token_Page' ) && method_exists( 'Slashed_Token_Page', 'get_class_hints' ) ) {
 			$hints = Slashed_Token_Page::get_class_hints();
 			if ( is_array( $hints ) ) {

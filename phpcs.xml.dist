@@ -48,11 +48,13 @@
     </properties>
   </rule>
 
-  <!-- Custom capabilities registered by the plugin's settings screen. -->
+  <!-- Custom capabilities: WordPress core's manage_options plus Bricks
+       builder's own bricks_full_access capability, both used in cap checks. -->
   <rule ref="WordPress.WP.Capabilities">
     <properties>
       <property name="custom_capabilities" type="array">
         <element value="manage_options"/>
+        <element value="bricks_full_access"/>
       </property>
     </properties>
   </rule>
@@ -63,6 +65,20 @@
     <properties>
       <property name="additionalWordDelimiters" value="/-"/>
     </properties>
+  </rule>
+
+  <!-- Dynamic hook names are composed from the static::filter_slug() helper,
+       which already supplies the plugin prefix; the sniff can't see through
+       the method call, so this is a false positive. -->
+  <rule ref="WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound">
+    <severity>0</severity>
+  </rule>
+
+  <!-- `$var` is used pervasively as an idiomatic loop/parameter name. The
+       "reserved keyword" here is the obsolete `var` property keyword, not a
+       real conflict, so this advisory naming sniff is disabled. -->
+  <rule ref="Universal.NamingConventions.NoReservedKeywordParameterNames">
+    <severity>0</severity>
   </rule>
 
   <!-- WordPress hook/filter callbacks must keep their full signature even when

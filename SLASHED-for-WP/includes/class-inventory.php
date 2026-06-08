@@ -721,7 +721,11 @@ class Slashed_Inventory {
 	 * @return array Inventory shape (may be empty on read failure).
 	 */
 	private static function parse_path_with_cache( $path ) {
-		$mtime = @filemtime( $path );
+		if ( ! is_readable( $path ) ) {
+			return Slashed_CSS_Parser::empty_inventory();
+		}
+
+		$mtime = filemtime( $path );
 		if ( false === $mtime ) {
 			return Slashed_CSS_Parser::empty_inventory();
 		}
@@ -732,7 +736,8 @@ class Slashed_Inventory {
 			return $cached;
 		}
 
-		$css = @file_get_contents( $path );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a local bundled CSS file on disk, not a remote URL.
+		$css = file_get_contents( $path );
 		if ( false === $css || '' === $css ) {
 			return Slashed_CSS_Parser::empty_inventory();
 		}

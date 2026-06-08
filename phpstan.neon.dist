@@ -1,10 +1,6 @@
 includes:
   # WordPress function/class/constant stubs + WP-aware rules.
   - vendor/szepeviktor/phpstan-wordpress/extension.neon
-  # Existing findings are frozen here so the gate fails only on NEW issues.
-  # Regenerate after intentionally addressing/adding code with:
-  #   composer phpstan -- --generate-baseline phpstan-baseline.neon
-  - phpstan-baseline.neon
 
 parameters:
   level: 5
