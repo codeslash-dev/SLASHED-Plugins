@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+# Lint staged CSS files (skip if stylelint is unavailable).
+STAGED_CSS=$(git diff --cached --name-only --diff-filter=ACM | grep '\.css$' || true)
+if [ -n "$STAGED_CSS" ]; then
+  echo "$STAGED_CSS" | tr '\n' '\0' | xargs -0 npx --no -- stylelint
+fi
+
+# Syntax-check staged PHP files. A parse error is a fatal white screen on
+# plugin activation. Skipped when php is not installed locally (CI enforces it).
+STAGED_PHP=$(git diff --cached --name-only --diff-filter=ACM | grep '\.php$' || true)
+if [ -n "$STAGED_PHP" ] && command -v php >/dev/null 2>&1; then
+  echo "$STAGED_PHP" | while IFS= read -r file; do
+    [ -n "$file" ] && php -l "$file" >/dev/null
+  done
+fi

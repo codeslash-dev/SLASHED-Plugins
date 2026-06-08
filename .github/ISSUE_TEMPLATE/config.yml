@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: SLASHED framework (CSS, tokens, classes)
+    url: https://github.com/codeslash-dev/SLASHED/issues
+    about: Report issues with the CSS framework itself, not the WordPress integration.
+  - name: Security vulnerability
+    url: https://github.com/codeslash-dev/SLASHED-Plugins/security/advisories/new
+    about: Report security issues privately (see SECURITY.md). Do not open a public issue.

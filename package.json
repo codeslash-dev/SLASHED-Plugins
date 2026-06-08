@@ -11,6 +11,7 @@
     "url": "https://github.com/codeslash-dev/slashed-for-wp.git"
   },
   "scripts": {
+    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks && chmod +x .githooks/* || true",
     "inventory": "node scripts/gen-bricks-inventory.js",
     "class-hints": "node scripts/gen-class-hints.js",
     "update-framework": "node scripts/update-framework.js",
@@ -34,6 +35,8 @@
     "test": "node --test tests/*.test.js"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.1",
+    "@commitlint/config-conventional": "^21.0.1",
     "stylelint": "^17.11.1",
     "stylelint-config-standard": "^40.0.0"
   }
