@@ -1,0 +1,53 @@
+name: Bug report
+description: Something in the Bricks or Gutenberg integration is broken
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What went wrong, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: dropdown
+    id: integration
+    attributes:
+      label: Integration
+      options:
+        - Bricks Builder
+        - Gutenberg
+        - Both
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      description: SLASHED for WordPress version (Plugins screen or readme.txt Stable tag).
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: WordPress, PHP, and Bricks versions; browser.
+      placeholder: WP 6.6, PHP 8.2, Bricks 1.10, Chrome 126
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console / PHP errors
+      description: Relevant browser console output or PHP log lines, if any.
+      render: text
