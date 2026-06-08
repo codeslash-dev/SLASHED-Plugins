@@ -19,3 +19,8 @@ SLASHED-for-WP/integrations/bricks/assets/editor-app/*.map
 .DS_Store
 .agents/
 .claude/
+
+
+# PHP Composer dependencies (PHPCS/WPCS + PHPStan tooling).
+# composer.json + composer.lock are tracked; the installed tree is not.
+/vendor/

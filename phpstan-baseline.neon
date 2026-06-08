@@ -1,0 +1,232 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Constant SLASHED_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/includes/class-admin.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: SLASHED-for-WP/includes/class-css-generator.php
+
+		-
+			message: '#^Constant SLASHED_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: SLASHED-for-WP/includes/class-css-loader.php
+
+		-
+			message: '#^Constant SLASHED_URL not found\.$#'
+			identifier: constant.notFound
+			count: 3
+			path: SLASHED-for-WP/includes/class-css-loader.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: SLASHED-for-WP/includes/class-css-parser.php
+
+		-
+			message: '''
+				#^PHPDoc tag @property has invalid value \(initial\-value declarations\. Returns an associative array
+				mapping variable names to their raw declared values\.\)\: Unexpected token "declarations", expected variable at offset 169 on line 5$#
+			'''
+			identifier: phpDoc.parseError
+			count: 1
+			path: SLASHED-for-WP/includes/class-css-parser.php
+
+		-
+			message: '#^Constant SLASHED_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/includes/class-framework-updater.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 4
+			path: SLASHED-for-WP/includes/class-framework-updater.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: SLASHED-for-WP/includes/class-inventory.php
+
+		-
+			message: '#^Offset ''color_values'' on array\{variables\: array\<string\>, sf_classes\: array\<string\>, is_classes\: array\<string\>\} on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 2
+			path: SLASHED-for-WP/includes/class-inventory.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: SLASHED-for-WP/includes/class-rest-controller.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: SLASHED-for-WP/includes/class-tab-registry.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/includes/class-token-page.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/includes/class-token-page.php
+
+		-
+			message: '#^Constant SLASHED_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/includes/class-token-page.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: SLASHED-for-WP/includes/class-token-sanitizer.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<mixed\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-classes.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-color-resolver.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-css-parser.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-enqueue.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 3
+			path: SLASHED-for-WP/integrations/bricks/includes/class-inventory.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-inventory.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-rebemer-enqueue.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-rebemer-enqueue.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-rebemer-rest.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-variables.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<mixed\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: SLASHED-for-WP/integrations/bricks/includes/class-variables.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 12
+			path: SLASHED-for-WP/integrations/bricks/slashed-bricks.php
+
+		-
+			message: '#^Constant SLASHED_BRICKS_URL not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: SLASHED-for-WP/integrations/bricks/slashed-bricks.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: SLASHED-for-WP/integrations/gutenberg/includes/class-editor-enqueue.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Slashed_Token_Page'' and ''get_class_hints'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: SLASHED-for-WP/integrations/gutenberg/includes/class-editor-enqueue.php
+
+		-
+			message: '#^Constant SLASHED_GUTENBERG_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/integrations/gutenberg/includes/class-editor-enqueue.php
+
+		-
+			message: '#^Constant SLASHED_GUTENBERG_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/integrations/gutenberg/includes/class-editor-enqueue.php
+
+		-
+			message: '#^Constant SLASHED_GUTENBERG_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: SLASHED-for-WP/integrations/gutenberg/includes/class-enqueue.php
+
+		-
+			message: '#^Constant SLASHED_GUTENBERG_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: SLASHED-for-WP/integrations/gutenberg/includes/class-inventory.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(string\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: SLASHED-for-WP/integrations/gutenberg/includes/class-presets.php
+
+		-
+			message: '#^Constant SLASHED_GUTENBERG_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 9
+			path: SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php
+
+		-
+			message: '#^Constant SLASHED_GUTENBERG_URL not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php
