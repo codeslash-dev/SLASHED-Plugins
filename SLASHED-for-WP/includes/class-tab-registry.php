@@ -49,12 +49,13 @@ class Slashed_Tab_Registry {
 	/**
 	 * Read-only view tabs available only in the Svelte SPA.
 	 *
+	 * Variables and Classes are consolidated into the Cheatsheet tab,
+	 * which already provides search + filter toggle between them.
+	 *
 	 * @return array<string,string> Slug → display label.
 	 */
 	public static function get_view_tabs() {
 		return array(
-			'variables'  => 'Variables',
-			'classes'    => 'Classes',
 			'bundle'     => 'Bundle',
 			'export'     => 'Export / Import',
 			'hooks'      => 'Hooks',
