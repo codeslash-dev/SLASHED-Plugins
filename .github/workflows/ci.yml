@@ -9,6 +9,42 @@ permissions:
   contents: read
 
 jobs:
+  build-editor-app:
+    name: Build editor-app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: SLASHED-for-WP/integrations/bricks/editor-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --prefix SLASHED-for-WP/integrations/bricks/editor-app
+
+      - name: Build
+        run: npm --prefix SLASHED-for-WP/integrations/bricks/editor-app run build
+
+  build-admin-app:
+    name: Build admin-app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: SLASHED-for-WP/integrations/bricks/admin-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --prefix SLASHED-for-WP/integrations/bricks/admin-app
+
+      - name: Build
+        run: npm --prefix SLASHED-for-WP/integrations/bricks/admin-app run build
+
   quality:
     name: Lint, test, version & drift checks
     runs-on: ubuntu-latest
