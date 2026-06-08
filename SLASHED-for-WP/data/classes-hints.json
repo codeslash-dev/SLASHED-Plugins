@@ -1,0 +1,734 @@
+{
+  "sf-section": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-section--xs": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-section--s": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-section--m": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-section--l": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-section--xl": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-section--2xl": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-section-group": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-section--collapse": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-divider": {
+    "description": "Standalone separator primitive. Token-driven; pairs with the",
+    "category": "Layout"
+  },
+  "sf-divider--vertical": {
+    "description": "Standalone separator primitive. Token-driven; pairs with the",
+    "category": "Layout"
+  },
+  "sf-divider--soft": {
+    "description": "Standalone separator primitive. Token-driven; pairs with the",
+    "category": "Layout"
+  },
+  "sf-divider--strong": {
+    "description": "Standalone separator primitive. Token-driven; pairs with the",
+    "category": "Layout"
+  },
+  "sf-divider--dashed": {
+    "description": "Standalone separator primitive. Token-driven; pairs with the",
+    "category": "Layout"
+  },
+  "sf-divider--dotted": {
+    "description": "Standalone separator primitive. Token-driven; pairs with the",
+    "category": "Layout"
+  },
+  "sf-divider--gradient": {
+    "description": "Standalone separator primitive. Token-driven; pairs with the",
+    "category": "Layout"
+  },
+  "sf-container": {
+    "description": "Max-width container, centered with side gutters. Establishes",
+    "category": "Layout"
+  },
+  "sf-container--narrow": {
+    "description": "Max-width container, centered with side gutters. Establishes",
+    "category": "Layout"
+  },
+  "sf-container--prose": {
+    "description": "Max-width container, centered with side gutters. Establishes",
+    "category": "Layout"
+  },
+  "sf-container--wide": {
+    "description": "Max-width container, centered with side gutters. Establishes",
+    "category": "Layout"
+  },
+  "sf-container--full": {
+    "description": "Max-width container, centered with side gutters. Establishes",
+    "category": "Layout"
+  },
+  "sf-stack": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-stack--xs": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-stack--s": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-stack--m": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-stack--l": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-stack--xl": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-stack--2xl": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-stack--center": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-stack--end": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-stack--stretch": {
+    "description": "Flex column with even vertical spacing between children.",
+    "category": "Layout"
+  },
+  "sf-gap": {
+    "description": "Injects gap into any existing flex or grid container without",
+    "category": "Layout"
+  },
+  "sf-gap--xs": {
+    "description": "Injects gap into any existing flex or grid container without",
+    "category": "Layout"
+  },
+  "sf-gap--s": {
+    "description": "Injects gap into any existing flex or grid container without",
+    "category": "Layout"
+  },
+  "sf-gap--m": {
+    "description": "Injects gap into any existing flex or grid container without",
+    "category": "Layout"
+  },
+  "sf-gap--l": {
+    "description": "Injects gap into any existing flex or grid container without",
+    "category": "Layout"
+  },
+  "sf-gap--xl": {
+    "description": "Injects gap into any existing flex or grid container without",
+    "category": "Layout"
+  },
+  "sf-gap--2xl": {
+    "description": "Injects gap into any existing flex or grid container without",
+    "category": "Layout"
+  },
+  "sf-box": {
+    "description": "Isolated unit with padding and an optional border.",
+    "category": "Layout"
+  },
+  "sf-center": {
+    "description": "Centers content with a max-inline-size and side gutters.",
+    "category": "Layout"
+  },
+  "sf-center--intrinsic": {
+    "description": "Centers content with a max-inline-size and side gutters.",
+    "category": "Layout"
+  },
+  "sf-cluster": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--xs": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--s": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--m": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--l": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--xl": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--2xl": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--no-wrap": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--center": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--end": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-cluster--between": {
+    "description": "Flex-wrap group of variable-width items.",
+    "category": "Layout"
+  },
+  "sf-sidebar": {
+    "description": "Two-column layout: first-child = sidebar, last-child = main content.",
+    "category": "Layout"
+  },
+  "sf-sidebar--right": {
+    "description": "Two-column layout: first-child = sidebar, last-child = main content.",
+    "category": "Layout"
+  },
+  "sf-sidebar--narrow": {
+    "description": "Two-column layout: first-child = sidebar, last-child = main content.",
+    "category": "Layout"
+  },
+  "sf-sidebar--wide": {
+    "description": "Two-column layout: first-child = sidebar, last-child = main content.",
+    "category": "Layout"
+  },
+  "sf-switcher": {
+    "description": "Switches between a column (narrow viewport) and a row (wide).",
+    "category": "Layout"
+  },
+  "sf-switcher--no-wrap": {
+    "description": "Switches between a column (narrow viewport) and a row (wide).",
+    "category": "Layout"
+  },
+  "sf-switcher--vertical": {
+    "description": "Switches between a column (narrow viewport) and a row (wide).",
+    "category": "Layout"
+  },
+  "sf-grid": {
+    "description": "Auto-fill CSS grid with no breakpoints. .sf-grid--fit switches to auto-fit.",
+    "category": "Layout"
+  },
+  "sf-grid--fit": {
+    "description": "Auto-fill CSS grid with no breakpoints. .sf-grid--fit switches to auto-fit.",
+    "category": "Layout"
+  },
+  "sf-grid--xs": {
+    "description": "Auto-fill CSS grid with no breakpoints. .sf-grid--fit switches to auto-fit.",
+    "category": "Layout"
+  },
+  "sf-grid--s": {
+    "description": "Auto-fill CSS grid with no breakpoints. .sf-grid--fit switches to auto-fit.",
+    "category": "Layout"
+  },
+  "sf-grid--m": {
+    "description": "Auto-fill CSS grid with no breakpoints. .sf-grid--fit switches to auto-fit.",
+    "category": "Layout"
+  },
+  "sf-grid--l": {
+    "description": "Auto-fill CSS grid with no breakpoints. .sf-grid--fit switches to auto-fit.",
+    "category": "Layout"
+  },
+  "sf-grid--xl": {
+    "description": "Auto-fill CSS grid with no breakpoints. .sf-grid--fit switches to auto-fit.",
+    "category": "Layout"
+  },
+  "sf-grid--2xl": {
+    "description": "Auto-fill CSS grid with no breakpoints. .sf-grid--fit switches to auto-fit.",
+    "category": "Layout"
+  },
+  "sf-grid--dense": {
+    "description": "Auto-fill CSS grid with no breakpoints. .sf-grid--fit switches to auto-fit.",
+    "category": "Layout"
+  },
+  "sf-icon": {
+    "description": "Inline icon sizing primitive. Uses em-based --sf-icon-* tokens",
+    "category": "Layout"
+  },
+  "sf-icon--xs": {
+    "description": "Inline icon sizing primitive. Uses em-based --sf-icon-* tokens",
+    "category": "Layout"
+  },
+  "sf-icon--s": {
+    "description": "Inline icon sizing primitive. Uses em-based --sf-icon-* tokens",
+    "category": "Layout"
+  },
+  "sf-icon--m": {
+    "description": "Inline icon sizing primitive. Uses em-based --sf-icon-* tokens",
+    "category": "Layout"
+  },
+  "sf-icon--l": {
+    "description": "Inline icon sizing primitive. Uses em-based --sf-icon-* tokens",
+    "category": "Layout"
+  },
+  "sf-icon--xl": {
+    "description": "Inline icon sizing primitive. Uses em-based --sf-icon-* tokens",
+    "category": "Layout"
+  },
+  "sf-icon--2xl": {
+    "description": "Inline icon sizing primitive. Uses em-based --sf-icon-* tokens",
+    "category": "Layout"
+  },
+  "sf-icon--boxed": {
+    "description": "Inline icon sizing primitive. Uses em-based --sf-icon-* tokens",
+    "category": "Layout"
+  },
+  "sf-cover": {
+    "description": "Full-height flex column. A .sf-cover__center child is",
+    "category": "Layout"
+  },
+  "sf-cover__center": {
+    "description": "Full-height flex column. A .sf-cover__center child is",
+    "category": "Layout"
+  },
+  "sf-cover--min": {
+    "description": "Full-height flex column. A .sf-cover__center child is",
+    "category": "Layout"
+  },
+  "sf-cover--max": {
+    "description": "Full-height flex column. A .sf-cover__center child is",
+    "category": "Layout"
+  },
+  "sf-cover--padding-s": {
+    "description": "Full-height flex column. A .sf-cover__center child is",
+    "category": "Layout"
+  },
+  "sf-cover--padding-l": {
+    "description": "Full-height flex column. A .sf-cover__center child is",
+    "category": "Layout"
+  },
+  "sf-frame": {
+    "description": "Aspect-ratio container. Media children: fill + cover.",
+    "category": "Layout"
+  },
+  "sf-frame--square": {
+    "description": "Aspect-ratio container. Media children: fill + cover.",
+    "category": "Layout"
+  },
+  "sf-frame--video": {
+    "description": "Aspect-ratio container. Media children: fill + cover.",
+    "category": "Layout"
+  },
+  "sf-frame--cinema": {
+    "description": "Aspect-ratio container. Media children: fill + cover.",
+    "category": "Layout"
+  },
+  "sf-frame--portrait": {
+    "description": "Aspect-ratio container. Media children: fill + cover.",
+    "category": "Layout"
+  },
+  "sf-frame--4-3": {
+    "description": "Aspect-ratio container. Media children: fill + cover.",
+    "category": "Layout"
+  },
+  "sf-frame--3-2": {
+    "description": "Aspect-ratio container. Media children: fill + cover.",
+    "category": "Layout"
+  },
+  "sf-frame--golden": {
+    "description": "Aspect-ratio container. Media children: fill + cover.",
+    "category": "Layout"
+  },
+  "sf-reel": {
+    "description": "Horizontal scroll with scroll-snap. Each child snaps to start.",
+    "category": "Layout"
+  },
+  "sf-imposter": {
+    "description": "Element centered absolutely within its parent.",
+    "category": "Layout"
+  },
+  "sf-imposter--fixed": {
+    "description": "Element centered absolutely within its parent.",
+    "category": "Layout"
+  },
+  "sf-imposter--contain": {
+    "description": "Element centered absolutely within its parent.",
+    "category": "Layout"
+  },
+  "sf-alternate": {
+    "description": "Alternating two-column layouts (container-query responsive).",
+    "category": "Layout"
+  },
+  "sf-pancake": {
+    "description": "Grid with three rows: header / main(1fr) / footer.",
+    "category": "Layout"
+  },
+  "sf-grid-1": {
+    "description": "Responsive fixed-column grids with no media queries.",
+    "category": "Layout"
+  },
+  "sf-grid-2": {
+    "description": "Responsive fixed-column grids with no media queries.",
+    "category": "Layout"
+  },
+  "sf-grid-3": {
+    "description": "Responsive fixed-column grids with no media queries.",
+    "category": "Layout"
+  },
+  "sf-grid-4": {
+    "description": "Responsive fixed-column grids with no media queries.",
+    "category": "Layout"
+  },
+  "sf-grid-6": {
+    "description": "Responsive fixed-column grids with no media queries.",
+    "category": "Layout"
+  },
+  "sf-grid-1-2": {
+    "description": "Two-column ratio grids, container-query responsive.",
+    "category": "Layout"
+  },
+  "sf-grid-2-1": {
+    "description": "Two-column ratio grids, container-query responsive.",
+    "category": "Layout"
+  },
+  "sf-grid-1-3": {
+    "description": "Two-column ratio grids, container-query responsive.",
+    "category": "Layout"
+  },
+  "sf-grid-3-1": {
+    "description": "Two-column ratio grids, container-query responsive.",
+    "category": "Layout"
+  },
+  "sf-equal": {
+    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "category": "Layout"
+  },
+  "sf-equal--2": {
+    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "category": "Layout"
+  },
+  "sf-equal--3": {
+    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "category": "Layout"
+  },
+  "sf-equal--4": {
+    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "category": "Layout"
+  },
+  "sf-equal--6": {
+    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "category": "Layout"
+  },
+  "sf-content-grid": {
+    "description": "Full-width grid that lets items break out to breakout or full",
+    "category": "Layout"
+  },
+  "sf-breakout": {
+    "description": "Full-width grid that lets items break out to breakout or full",
+    "category": "Layout"
+  },
+  "sf-full-bleed": {
+    "description": "Full-width grid that lets items break out to breakout or full",
+    "category": "Layout"
+  },
+  "sf-bento": {
+    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "category": "Layout"
+  },
+  "sf-bento--2": {
+    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "category": "Layout"
+  },
+  "sf-bento--4": {
+    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "category": "Layout"
+  },
+  "sf-bento--compact": {
+    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "category": "Layout"
+  },
+  "sf-bento--tall": {
+    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "category": "Layout"
+  },
+  "sf-subgrid": {
+    "description": "A grid child that inherits its parent's tracks.",
+    "category": "Layout"
+  },
+  "sf-subgrid-rows": {
+    "description": "A grid child that inherits its parent's tracks.",
+    "category": "Layout"
+  },
+  "sf-prose": {
+    "description": "Long-form text column with automatic vertical rhythm.",
+    "category": "Macros"
+  },
+  "sf-not-prose": {
+    "description": "Long-form text column with automatic vertical rhythm.",
+    "category": "Macros"
+  },
+  "sf-flow": {
+    "description": "Heydon Pickering's \"lobotomized owl\" — every flow child gets",
+    "category": "Macros"
+  },
+  "sf-truncate": {
+    "description": "Single-line ellipsis (.sf-truncate) and N-line clamp",
+    "category": "Macros"
+  },
+  "sf-line-clamp-2": {
+    "description": "Single-line ellipsis (.sf-truncate) and N-line clamp",
+    "category": "Macros"
+  },
+  "sf-line-clamp-3": {
+    "description": "Single-line ellipsis (.sf-truncate) and N-line clamp",
+    "category": "Macros"
+  },
+  "sf-line-clamp-N": {
+    "description": "Single-line ellipsis (.sf-truncate) and N-line clamp",
+    "category": "Macros"
+  },
+  "sf-equal-height": {
+    "description": "Force grid/flex children to share the tallest one's height.",
+    "category": "Macros"
+  },
+  "sf-aspect": {
+    "description": "Generic aspect-ratio container. Distinct from layout's",
+    "category": "Macros"
+  },
+  "sf-scroll-shadow": {
+    "description": "Top + bottom mask gradient that reveals when content is",
+    "category": "Macros"
+  },
+  "sf-scroll-snap": {
+    "description": "Vertical scroll-snap container for vertically stacked sections.",
+    "category": "Macros"
+  },
+  "sf-overflow-fade": {
+    "description": "End-edge horizontal fade for clipped inline content",
+    "category": "Macros"
+  },
+  "sf-no-tap-highlight": {
+    "description": "Suppresses the WebKit/Android grey tap-highlight overlay on",
+    "category": "Macros"
+  },
+  "sf-surface--primary": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--secondary": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--tertiary": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--action": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--neutral": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--inverse": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--success": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--warning": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--error": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--info": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-surface--danger": {
+    "description": "Sets background + auto-flipped foreground in one class.",
+    "category": "Macros"
+  },
+  "sf-scrim": {
+    "description": "Darkening overlay for text placed over a background image, so",
+    "category": "Macros"
+  },
+  "sf-scrim--top": {
+    "description": "Darkening overlay for text placed over a background image, so",
+    "category": "Macros"
+  },
+  "sf-scrim--bottom": {
+    "description": "Darkening overlay for text placed over a background image, so",
+    "category": "Macros"
+  },
+  "sf-scrim--full": {
+    "description": "Darkening overlay for text placed over a background image, so",
+    "category": "Macros"
+  },
+  "sf-text-protect": {
+    "description": "Lighter-weight alternative to .sf-scrim: protects legibility",
+    "category": "Macros"
+  },
+  "sf-text-gradient": {
+    "description": "Fills text with a gradient. Defaults to --sf-gradient-primary",
+    "category": "Macros"
+  },
+  "sf-link-external": {
+    "description": "Adds an external-link glyph after the link text. Opt-in per",
+    "category": "Macros"
+  },
+  "sf-content-auto": {
+    "description": "Skip rendering (layout + paint) for offscreen content until it",
+    "category": "Macros"
+  },
+  "sf-tabular-nums": {
+    "description": "Fixed-width digits so numbers align in vertical columns",
+    "category": "Macros"
+  },
+  "sf-link--subtle": {
+    "description": "Opt-in link treatments composed from the link tokens. They",
+    "category": "Macros"
+  },
+  "sf-link--reverse": {
+    "description": "Opt-in link treatments composed from the link tokens. They",
+    "category": "Macros"
+  },
+  "is-hidden": {
+    "description": "Hides the element (display: none). Toggled by JS or ARIA.",
+    "category": "States"
+  },
+  "is-invisible": {
+    "description": "Makes the element invisible but still occupies space.",
+    "category": "States"
+  },
+  "is-visible": {
+    "description": "Forces visibility: visible on a hidden element.",
+    "category": "States"
+  },
+  "is-disabled": {
+    "description": "Marks the element as non-interactive. Reduces opacity and blocks pointer events.",
+    "category": "States"
+  },
+  "is-readonly": {
+    "description": "Marks the element as read-only. Reduces opacity; pointer events still active.",
+    "category": "States"
+  },
+  "is-loading": {
+    "description": "Indicates the element is in a loading state. Shows a spinner cursor.",
+    "category": "States"
+  },
+  "is-current": {
+    "description": "Marks the element as the current item (e.g. active nav link).",
+    "category": "States"
+  },
+  "is-active": {
+    "description": "Marks the element as active/selected.",
+    "category": "States"
+  },
+  "is-selected": {
+    "description": "Marks the element as selected.",
+    "category": "States"
+  },
+  "is-expanded": {
+    "description": "Marks the element as expanded (e.g. accordion open).",
+    "category": "States"
+  },
+  "is-collapsed": {
+    "description": "Marks the element as collapsed.",
+    "category": "States"
+  },
+  "is-open": {
+    "description": "Marks the element as open (e.g. dropdown visible).",
+    "category": "States"
+  },
+  "is-closed": {
+    "description": "Marks the element as closed.",
+    "category": "States"
+  },
+  "is-checked": {
+    "description": "Marks the element as checked.",
+    "category": "States"
+  },
+  "is-indeterminate": {
+    "description": "Marks a checkbox as indeterminate.",
+    "category": "States"
+  },
+  "is-valid": {
+    "description": "Marks a form field as passing validation.",
+    "category": "States"
+  },
+  "is-invalid": {
+    "description": "Marks a form field as failing validation.",
+    "category": "States"
+  },
+  "is-required": {
+    "description": "Marks a form field as required.",
+    "category": "States"
+  },
+  "is-error": {
+    "description": "Marks the element as being in an error state.",
+    "category": "States"
+  },
+  "is-success": {
+    "description": "Marks the element as being in a success state.",
+    "category": "States"
+  },
+  "is-warning": {
+    "description": "Marks the element as being in a warning state.",
+    "category": "States"
+  },
+  "is-info": {
+    "description": "Marks the element as carrying informational state.",
+    "category": "States"
+  },
+  "is-sticky": {
+    "description": "Applies position: sticky with top: 0.",
+    "category": "States"
+  },
+  "is-fixed": {
+    "description": "Applies position: fixed.",
+    "category": "States"
+  },
+  "is-pinned": {
+    "description": "Alias for sticky positioning.",
+    "category": "States"
+  },
+  "is-scrolled": {
+    "description": "Applied by JS when the page has scrolled past a threshold.",
+    "category": "States"
+  },
+  "is-truncated": {
+    "description": "Truncates text with an ellipsis (single line).",
+    "category": "States"
+  },
+  "is-sr-only": {
+    "description": "Visually hidden but accessible to screen readers.",
+    "category": "States"
+  }
+}
