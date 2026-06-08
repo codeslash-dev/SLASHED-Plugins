@@ -14,6 +14,10 @@
   const totalSfClassCount = meta.inventory?.sf_classes?.length ?? 0;
   const totalIsClassCount = meta.inventory?.is_classes?.length ?? 0;
 
+  const BUNDLE_LABELS = { essential: 'Essential', optimal: 'Optimal', full: 'Full' };
+  const activeBundle = meta.pluginSettings?.css_bundle ?? 'optimal';
+  const settingsUrl  = window.slashedApp?.settingsUrl ?? '';
+
   let filteredVariableGroups = $derived(filterGroups(variableGroups, 'tokens'));
   let filteredClassGroups = $derived(filterGroups(classGroups, 'classes'));
   let filteredMiscTokens = $derived(
@@ -48,9 +52,17 @@
 
 <div class="cheatsheet">
   <div class="cheatsheet__header">
-    <h2>API Cheatsheet</h2>
+    <div class="cheatsheet__header-top">
+      <h2>API Cheatsheet</h2>
+      <span class="cheatsheet__bundle-pill">
+        {BUNDLE_LABELS[activeBundle] ?? activeBundle} bundle
+        {#if settingsUrl}
+          · <a href={settingsUrl} class="cheatsheet__settings-link">change →</a>
+        {/if}
+      </span>
+    </div>
     <p class="cheatsheet__counts">
-      {totalVarCount} variables | {totalSfClassCount} layout/utility classes | {totalIsClassCount} state classes
+      {totalVarCount} variables · {totalSfClassCount} layout/utility classes · {totalIsClassCount} state classes
     </p>
   </div>
 
@@ -160,9 +172,33 @@
   }
 
   .cheatsheet__header h2 {
-    margin: 0 0 4px;
+    margin: 0;
     font-size: 18px;
   }
+
+  .cheatsheet__header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+
+  .cheatsheet__bundle-pill {
+    font-size: 12px;
+    color: #50575e;
+    background: #f0f0f1;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  .cheatsheet__settings-link {
+    color: #2271b1;
+    text-decoration: none;
+  }
+  .cheatsheet__settings-link:hover { text-decoration: underline; }
 
   .cheatsheet__counts {
     margin: 0;

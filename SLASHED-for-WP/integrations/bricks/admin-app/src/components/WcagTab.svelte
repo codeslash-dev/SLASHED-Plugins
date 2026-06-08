@@ -169,6 +169,122 @@
     fg = fgName;
     bg = bgName;
   }
+
+  // ── Palette Optimizer ─────────────────────────────────────────────────
+
+  import { tokens } from '../lib/stores.svelte.js';
+  import { saveSection } from '../lib/api.js';
+
+  let suggestion  = $state(null);
+  let optimizing  = $state(false);
+  let applying    = $state(false);
+  let applyStatus = $state('');
+
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (max === r)      h = (g - b) / d + (g < b ? 6 : 0);
+      else if (max === g) h = (b - r) / d + 2;
+      else                h = (r - g) / d + 4;
+      h /= 6;
+    }
+    return [h * 360, s * 100, l * 100];
+  }
+
+  function runOptimizer() {
+    optimizing  = true;
+    suggestion  = null;
+    applyStatus = '';
+
+    const baseRgb    = resolveToRgb(colorValue('base'));
+    const neutralRgb = resolveToRgb(colorValue('neutral'));
+    const actionRgb  = resolveToRgb(colorValue('action'));
+
+    if (!baseRgb || !neutralRgb || !actionRgb) {
+      optimizing = false;
+      return;
+    }
+
+    const [bH, bS] = rgbToHsl(...baseRgb);
+    const [nH, nS] = rgbToHsl(...neutralRgb);
+    const [aH, aS] = rgbToHsl(...actionRgb);
+
+    // BASE: very light surface — preserve hue tint, cap saturation.
+    const baseS     = Math.min(bS, 8);
+    const baseColor = `hsl(${bH.toFixed(1)} ${baseS.toFixed(1)}% 97%)`;
+    const baseResolved = resolveToRgb(baseColor);
+    if (!baseResolved) { optimizing = false; return; }
+
+    // NEUTRAL: lightest dark value achieving AAA (7:1) on proposed BASE.
+    // Searching dark→light so the last passing entry is the lightest winner.
+    const neutralS = Math.min(nS, 15);
+    let neutralBest = null;
+    for (let l = 8; l <= 32; l += 0.25) {
+      const c   = `hsl(${nH.toFixed(1)} ${neutralS.toFixed(1)}% ${l.toFixed(2)}%)`;
+      const rgb = resolveToRgb(c);
+      if (!rgb) continue;
+      const r = contrastRatio(rgb, baseResolved);
+      if (r >= 7) neutralBest = { color: c, rgb, ratio: r };
+      else break;
+    }
+
+    // ACTION: lightest value achieving AA (4.5:1) on proposed BASE,
+    // with saturation bumped to keep visual richness.
+    const actionS = Math.max(aS, 80);
+    let actionBest = null;
+    for (let l = 15; l <= 58; l += 0.25) {
+      const c   = `hsl(${aH.toFixed(1)} ${actionS.toFixed(1)}% ${l.toFixed(2)}%)`;
+      const rgb = resolveToRgb(c);
+      if (!rgb) continue;
+      const r = contrastRatio(rgb, baseResolved);
+      if (r >= 4.5) actionBest = { color: c, rgb, ratio: r };
+      else break;
+    }
+
+    suggestion = {
+      base:    { color: baseColor,    rgb: baseResolved, ratio: null },
+      neutral: neutralBest,
+      action:  actionBest,
+    };
+    optimizing = false;
+  }
+
+  async function applySuggestions() {
+    if (!suggestion) return;
+    applying    = true;
+    applyStatus = '';
+    try {
+      const updates = {};
+      if (suggestion.base)    updates.brand_base    = suggestion.base.color;
+      if (suggestion.neutral) updates.brand_neutral = suggestion.neutral.color;
+      if (suggestion.action)  updates.brand_action  = suggestion.action.color;
+
+      const merged = { ...(tokens.colors ?? {}), ...updates };
+      await saveSection('colors', merged);
+
+      // Update reactive state so the grid re-renders immediately.
+      tokens.colors ??= {};
+      Object.assign(tokens.colors, updates);
+
+      applyStatus = 'Applied ✓';
+      setTimeout(() => { applyStatus = ''; }, 3000);
+      suggestion  = null;
+    } catch (e) {
+      applyStatus = 'Error: ' + (e.message || 'save failed');
+    } finally {
+      applying = false;
+    }
+  }
+
+  function dismissSuggestion() {
+    suggestion  = null;
+    applyStatus = '';
+  }
 </script>
 
 <section>
@@ -305,6 +421,97 @@
     <span class="legend-item"><span class="legend-dot legend-dot--aa"></span> AA (≥ 4.5:1)</span>
     <span class="legend-item"><span class="legend-dot legend-dot--aa-large"></span> AA large only (≥ 3:1)</span>
     <span class="legend-item"><span class="legend-dot legend-dot--fail"></span> Fail (&lt; 3:1)</span>
+  </div>
+
+  <!-- ── Palette Optimizer ─────────────────────────────────────────── -->
+  <div class="optimizer">
+    <h3 class="optimizer__heading">Palette Optimizer</h3>
+    <p class="hint">
+      Keep your brand colors (Primary, Secondary, Tertiary) and let SLASHED find the most
+      accessible <strong>BASE</strong>, <strong>Neutral</strong>, and <strong>Action</strong>
+      values — the ones that give you the best possible WCAG scores without touching your
+      core brand identity.
+    </p>
+
+    <button
+      type="button"
+      class="optimizer__btn"
+      onclick={runOptimizer}
+      disabled={optimizing}
+    >
+      {optimizing ? 'Analyzing…' : 'Suggest accessible palette'}
+    </button>
+
+    {#if applyStatus && !suggestion}
+      <span class="optimizer__status optimizer__status--ok">{applyStatus}</span>
+    {/if}
+
+    {#if suggestion}
+      <div class="optimizer__results">
+        <div class="optimizer__row">
+          <span class="optimizer__swatch" style="background:{suggestion.base.color};border:1px solid rgba(0,0,0,.12);"></span>
+          <div class="optimizer__info">
+            <strong>BASE</strong>
+            <code class="optimizer__value">{suggestion.base.color}</code>
+          </div>
+          <span class="badge badge--neutral">Background</span>
+        </div>
+
+        {#if suggestion.neutral}
+          <div class="optimizer__row">
+            <span class="optimizer__swatch" style="background:{suggestion.neutral.color};"></span>
+            <div class="optimizer__info">
+              <strong>Neutral</strong>
+              <code class="optimizer__value">{suggestion.neutral.color}</code>
+            </div>
+            <span class="badge {levelClass(wcagLevel(suggestion.neutral.ratio))}">
+              {suggestion.neutral.ratio.toFixed(2)}:1 &nbsp;{wcagLevel(suggestion.neutral.ratio)}
+            </span>
+          </div>
+        {:else}
+          <div class="optimizer__row optimizer__row--warn">
+            <span class="optimizer__swatch" style="background:#888;"></span>
+            <div class="optimizer__info"><strong>Neutral</strong><span>No value reaches AAA on this BASE hue</span></div>
+          </div>
+        {/if}
+
+        {#if suggestion.action}
+          <div class="optimizer__row">
+            <span class="optimizer__swatch" style="background:{suggestion.action.color};"></span>
+            <div class="optimizer__info">
+              <strong>Action</strong>
+              <code class="optimizer__value">{suggestion.action.color}</code>
+            </div>
+            <span class="badge {levelClass(wcagLevel(suggestion.action.ratio))}">
+              {suggestion.action.ratio.toFixed(2)}:1 &nbsp;{wcagLevel(suggestion.action.ratio)}
+            </span>
+          </div>
+        {:else}
+          <div class="optimizer__row optimizer__row--warn">
+            <span class="optimizer__swatch" style="background:#888;"></span>
+            <div class="optimizer__info"><strong>Action</strong><span>No value reaches AA on this BASE hue</span></div>
+          </div>
+        {/if}
+
+        <div class="optimizer__actions">
+          <button
+            type="button"
+            class="optimizer__apply-btn"
+            onclick={applySuggestions}
+            disabled={applying}
+          >{applying ? 'Saving…' : 'Apply to tokens'}</button>
+          <button
+            type="button"
+            class="optimizer__dismiss-btn"
+            onclick={dismissSuggestion}
+            disabled={applying}
+          >Dismiss</button>
+          {#if applyStatus}
+            <span class="optimizer__status optimizer__status--ok">{applyStatus}</span>
+          {/if}
+        </div>
+      </div>
+    {/if}
   </div>
 </section>
 
@@ -506,4 +713,116 @@
   .legend-dot--aa       { background: #d8e9f7; border: 1px solid #2271b1; }
   .legend-dot--aa-large { background: #fdf2d0; border: 1px solid #dba617; }
   .legend-dot--fail     { background: #fde8e8; border: 1px solid #d63638; }
+
+  /* ── Optimizer ───────────────────────────────────────────────────── */
+  .optimizer {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e4e7;
+  }
+
+  .optimizer__heading { margin: 0 0 6px; font-size: 15px; }
+
+  .optimizer__btn {
+    background: #2271b1;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+  .optimizer__btn:hover:not(:disabled) { background: #135e96; }
+  .optimizer__btn:disabled { opacity: .6; cursor: not-allowed; }
+
+  .optimizer__results {
+    margin-top: 16px;
+    border: 1px solid #c3c4c7;
+    border-radius: 6px;
+    overflow: hidden;
+    max-width: 580px;
+  }
+
+  .optimizer__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #e2e4e7;
+    background: #fff;
+  }
+  .optimizer__row:last-of-type { border-bottom: none; }
+  .optimizer__row--warn { opacity: .7; }
+
+  .optimizer__swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .optimizer__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .optimizer__info strong { font-size: 13px; }
+  .optimizer__info span   { font-size: 12px; color: #50575e; }
+
+  .optimizer__value {
+    font-size: 11px;
+    background: #f0f0f1;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #1e1e1e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .badge--neutral { background: #f0f0f1; color: #50575e; border: 1px solid #c3c4c7; }
+
+  .optimizer__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    background: #f6f7f7;
+    border-top: 1px solid #e2e4e7;
+    flex-wrap: wrap;
+  }
+
+  .optimizer__apply-btn {
+    background: #00a32a;
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .optimizer__apply-btn:hover:not(:disabled) { background: #007017; }
+  .optimizer__apply-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+  .optimizer__dismiss-btn {
+    background: transparent;
+    color: #50575e;
+    border: 1px solid #c3c4c7;
+    padding: 7px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .optimizer__dismiss-btn:hover:not(:disabled) { background: #f0f0f1; }
+
+  .optimizer__status { font-size: 13px; font-weight: 500; }
+  .optimizer__status--ok { color: #00a32a; }
 </style>
