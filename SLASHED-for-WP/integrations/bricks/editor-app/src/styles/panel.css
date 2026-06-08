@@ -1,0 +1,1096 @@
+/*
+ * reBEMer panel styles — MVP.
+ * Scoped to .rebemer-* so nothing leaks into Bricks UI.
+ */
+
+#slashed-rebemer-host {
+  --rebemer-bg: #161a1d;
+  --rebemer-fg: #e1e1e1;
+  --rebemer-fg-muted: #8a8d95;
+  --rebemer-border: #3d4752;
+  --rebemer-accent: #e2b93b;
+  --rebemer-accent-hover: #ffd042;
+  --rebemer-input-bg: #293038;
+  --rebemer-input-border: #3d4752;
+  --rebemer-error: #ff4c4c;
+  --rebemer-success: #4ade80;
+  --rebemer-radius: 4px;
+  --rebemer-font: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Badge — uses fallbacks because badges are injected outside #slashed-rebemer-host
+ *
+ * Visual goal: read as a small inline word inside the structure-panel
+ * row, sitting between the element label and Bricks' own action icons,
+ * AND behave the same way as those action icons:
+ *
+ *   - Hidden by default.
+ *   - Revealed when the user hovers the row (or tabs into it).
+ *   - Sized comparably to a single action-icon glyph so it doesn't
+ *     dominate the row.
+ *
+ * The host span uses inline-flex so it slots cleanly into whatever
+ * layout Bricks uses for the row (currently flex with space-between).
+ * `flex: 0 0 auto` prevents it from competing with the title for
+ * width when the row is narrow.
+ */
+.rebemer-badge-host {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  flex: 0 0 auto;
+  margin: 0 4px;
+  /* Hidden by default. Revealed by the row-hover rules below — same
+     pattern Bricks uses to show its own .actions on row hover. We use
+     opacity (not display) so the row layout doesn't shift on reveal,
+     and pointer-events:none while hidden so the invisible badge can't
+     swallow clicks meant for the row. */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 80ms linear;
+}
+
+/* Reveal on row hover.
+ *
+ * Two selector pairs cover both injection paths used by main.js:
+ *   1. `.structure-item:hover` — the preferred mount point. Bricks'
+ *      `.structure-item` wraps only the row's own content (title +
+ *      actions), so hovering a nested child does NOT trigger this on
+ *      the parent — exactly the behavior we want.
+ *   2. `li[data-id]:hover > .rebemer-badge-host` — the fallback for
+ *      Bricks builds without `.structure-item`. The direct-child
+ *      combinator stops nested-row hover from revealing ancestor
+ *      badges in that fallback path.
+ *
+ * `:focus-within` keeps the badge keyboard-reachable: tabbing into
+ * any focusable child of the row (including the badge itself) reveals
+ * it, matching how Bricks reveals its own action buttons on focus. */
+.structure-item:hover .rebemer-badge-host,
+.structure-item:focus-within .rebemer-badge-host,
+li[data-id]:hover > .rebemer-badge-host,
+li[data-id]:focus-within > .rebemer-badge-host {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.rebemer-badge {
+  /* Sized to read like one of Bricks' own action-icon glyphs:
+     small, single-line, no chip styling. Bricks' structure rows
+     apply text-transform: uppercase to descendants in some builds,
+     so we explicitly reset it — otherwise "reBEM" renders as
+     "REBEM" and loses the BEM-cased branding. */
+  font: 600 9px/1 var(--rebemer-font, "Inter", -apple-system, BlinkMacSystemFont, sans-serif);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--rebemer-fg-muted, #8a8d95);
+  display: inline;
+  background: transparent;
+  padding: 1px 3px;
+  margin: 0;
+  cursor: pointer;
+  border-radius: 2px;
+  /* Stop Bricks' row click handler from firing when the user clicks
+     the badge — its parent <li> is interactive in some Bricks builds. */
+  pointer-events: auto;
+}
+.rebemer-badge:hover {
+  color: var(--rebemer-accent, #e2b93b);
+  background: rgba(226, 185, 59, .08);
+}
+.rebemer-badge:focus-visible {
+  outline: 1px dotted var(--rebemer-accent, #e2b93b);
+  outline-offset: 1px;
+  color: var(--rebemer-accent, #e2b93b);
+}
+
+/* Panel */
+.rebemer-panel {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 440px;
+  max-width: calc(100vw - 40px);
+  max-height: 80vh;
+  z-index: 100000;
+  background: var(--rebemer-bg);
+  color: var(--rebemer-fg);
+  border: 1px solid var(--rebemer-border);
+  border-radius: var(--rebemer-radius);
+  box-shadow: 0 10px 40px rgba(0,0,0,.6);
+  display: flex;
+  flex-direction: column;
+  font: 12px/1.45 var(--rebemer-font);
+  overflow: hidden;
+  outline: none;
+}
+.rebemer-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--rebemer-border);
+}
+.rebemer-panel__title { margin: 0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #fff; }
+.rebemer-panel__subject { color: var(--rebemer-accent); text-transform: none; font-weight: 500; }
+.rebemer-panel__close { background: transparent; border: 0; font-size: 18px; color: var(--rebemer-fg-muted); cursor: pointer; padding: 2px 6px; }
+.rebemer-panel__close:hover { color: #fff; }
+
+/* Toolbar */
+.rebemer-panel__toolbar {
+  padding: 10px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--rebemer-border);
+}
+.rebemer-field { display: flex; flex-direction: column; gap: 4px; font-size: 11px; }
+.rebemer-field--inline { flex-direction: row; align-items: center; gap: 6px; }
+.rebemer-field__label { color: var(--rebemer-fg-muted); text-transform: uppercase; letter-spacing: .5px; font-size: 10px; }
+.rebemer-field select,
+.rebemer-field input[type="text"] {
+  background: var(--rebemer-input-bg);
+  border: 1px solid var(--rebemer-input-border);
+  border-radius: var(--rebemer-radius);
+  color: var(--rebemer-fg);
+  padding: 4px 6px;
+  font: inherit;
+}
+.rebemer-field select:focus,
+.rebemer-field input:focus { outline: 1px solid var(--rebemer-accent); }
+
+/* Mode hint — one-liner describing the active operation. */
+.rebemer-panel__mode-hint {
+  margin: 0;
+  padding: 5px 14px;
+  font-size: 11px;
+  color: var(--rebemer-fg-muted);
+  background: var(--rebemer-bg);
+  border-bottom: 1px solid var(--rebemer-border);
+  line-height: 1.4;
+}
+
+/* Notice strip — currently used for the migrate-mode summary, but
+   structured so future preflight warnings can reuse it. */
+.rebemer-panel__notice {
+  margin: 0;
+  padding: 8px 14px;
+  background: rgba(226,185,59,.08);
+  border-bottom: 1px solid var(--rebemer-border);
+  color: var(--rebemer-fg);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.rebemer-panel__notice--warn { background: rgba(226,185,59,.16); }
+.rebemer-panel__notice strong { color: var(--rebemer-accent); font-weight: 600; }
+.rebemer-panel__notice-skip { display: block; margin-top: 2px; color: var(--rebemer-fg-muted); }
+
+/* Body / Rows */
+.rebemer-panel__body { flex: 1; overflow-y: auto; padding: 8px 14px; display: flex; flex-direction: column; gap: 6px; }
+
+.rebemer-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--rebemer-radius);
+  background: rgba(255,255,255,.02);
+  margin-left: calc(var(--rebemer-row-depth, 0) * 12px);
+}
+.rebemer-row:hover { background: rgba(255,255,255,.04); }
+.rebemer-row--disabled { opacity: .45; }
+
+.rebemer-row__include input { cursor: pointer; }
+.rebemer-row__meta { display: flex; gap: 6px; align-items: baseline; min-width: 0; }
+.rebemer-row__label { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rebemer-row__type { font-size: 9px; color: var(--rebemer-fg-muted); text-transform: uppercase; letter-spacing: .3px; }
+/* Block-root toggle button — same visual as the static span by default */
+.rebemer-row__type--toggle {
+  background: transparent; border: 0; padding: 1px 3px; border-radius: 2px;
+  cursor: pointer; line-height: 1;
+}
+.rebemer-row__type--toggle:hover:not(:disabled) {
+  color: var(--rebemer-fg); background: rgba(255,255,255,.06);
+}
+.rebemer-row__type--toggle:disabled { cursor: default; opacity: .5; }
+.rebemer-row__type--block { color: var(--rebemer-accent); background: rgba(226,185,59,.12); }
+.rebemer-row__type--block:hover:not(:disabled) { background: rgba(226,185,59,.2); }
+.rebemer-row__hint {
+  font-size: 9px;
+  color: var(--rebemer-accent);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  background: rgba(226,185,59,.12);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.rebemer-row__inputs { grid-column: 1 / -1; display: flex; gap: 6px; align-items: center; }
+.rebemer-row__name {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  background: var(--rebemer-input-bg);
+  border: 1px solid var(--rebemer-input-border);
+  border-radius: var(--rebemer-radius);
+  overflow: hidden;
+}
+.rebemer-row__prefix { padding: 4px 6px; background: rgba(0,0,0,.25); color: var(--rebemer-fg-muted); font-size: 11px; border-right: 1px solid var(--rebemer-input-border); white-space: nowrap; }
+.rebemer-row__name input { background: transparent; border: 0; outline: 0; color: var(--rebemer-fg); font: inherit; padding: 4px 6px; flex: 1; min-width: 0; }
+/* Suggested rows — the user hasn't touched the input yet. Italic +
+   muted color so they read as "we filled this in, you might want to
+   change it" rather than authoritative input. */
+.rebemer-row--suggested .rebemer-row__name input:not(:focus) {
+  color: var(--rebemer-fg-muted);
+  font-style: italic;
+}
+.rebemer-row__modifier { background: var(--rebemer-input-bg); border: 1px solid var(--rebemer-input-border); border-radius: var(--rebemer-radius); color: var(--rebemer-fg); font: inherit; padding: 4px 6px; width: 90px; }
+/* Multi-modifier stack */
+.rebemer-row__modifiers { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.rebemer-row__modifier-row { display: flex; align-items: center; gap: 4px; }
+.rebemer-row__modifier-row .rebemer-row__modifier { flex: 1; width: auto; }
+.rebemer-row__modifier-remove {
+  background: transparent; border: 1px solid var(--rebemer-input-border);
+  border-radius: var(--rebemer-radius); color: var(--rebemer-fg-muted);
+  font-size: 13px; line-height: 1; padding: 2px 6px; cursor: pointer; flex: 0 0 auto;
+}
+.rebemer-row__modifier-remove:hover:not(:disabled) { border-color: var(--rebemer-error); color: var(--rebemer-error); }
+.rebemer-row__modifier-add {
+  background: transparent; border: 1px dashed var(--rebemer-input-border);
+  border-radius: var(--rebemer-radius); color: var(--rebemer-fg-muted);
+  font: inherit; font-size: 10px; padding: 3px 7px; cursor: pointer;
+  text-align: left; width: fit-content;
+}
+.rebemer-row__modifier-add:hover:not(:disabled) { border-color: var(--rebemer-fg-muted); color: var(--rebemer-fg); }
+
+/* Per-row op toggle in All-in-one (mixed) mode. */
+.rebemer-row__op-toggle {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--rebemer-input-border);
+  border-radius: var(--rebemer-radius);
+  overflow: hidden;
+  width: fit-content;
+  margin-top: 2px;
+}
+.rebemer-row__op-btn {
+  background: var(--rebemer-input-bg);
+  border: 0;
+  border-left: 1px solid var(--rebemer-input-border);
+  color: var(--rebemer-fg-muted);
+  font: 600 10px/1 var(--rebemer-font);
+  padding: 4px 9px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  white-space: nowrap;
+}
+.rebemer-row__op-btn:first-child { border-left: 0; }
+.rebemer-row__op-btn--on {
+  color: var(--rebemer-accent);
+  background: rgba(226,185,59,.12);
+}
+.rebemer-row__op-btn:hover:not(.rebemer-row__op-btn--on) {
+  color: var(--rebemer-fg);
+  background: rgba(255,255,255,.06);
+}
+
+/* Family picker — shown when Rename is selected and the element has multiple families. */
+.rebemer-row__family {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 3px;
+}
+.rebemer-row__family-label {
+  font-size: 9px;
+  color: var(--rebemer-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.rebemer-row__family-select {
+  background: var(--rebemer-input-bg);
+  border: 1px solid var(--rebemer-input-border);
+  border-radius: var(--rebemer-radius);
+  color: var(--rebemer-fg);
+  padding: 3px 6px;
+  font: inherit;
+  font-size: 11px;
+  flex: 1;
+  min-width: 0;
+}
+.rebemer-row__family-select:focus { outline: 1px solid var(--rebemer-accent); }
+
+/* code inside info/warn notes */
+.rebemer-row__info code,
+.rebemer-row__warn code {
+  background: rgba(0,0,0,.3);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font: 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--rebemer-accent);
+}
+
+/* Per-row recommendation hint (use-existing-class affordance). */
+.rebemer-row__recommend {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 6px 8px;
+  background: rgba(74,222,128,.08);
+  border-left: 2px solid var(--rebemer-success);
+  border-radius: 2px;
+  color: var(--rebemer-fg);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.rebemer-row__recommend code {
+  background: rgba(0,0,0,.3);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font: 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--rebemer-accent);
+}
+
+/* Inline warn/info notes on individual rows. */
+.rebemer-row__warn,
+.rebemer-row__info {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 5px 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  border-radius: 2px;
+}
+.rebemer-row__warn {
+  background: rgba(226,185,59,.12);
+  border-left: 2px solid #e2b93b;
+  color: var(--rebemer-fg);
+}
+.rebemer-row__info {
+  background: rgba(99,179,237,.10);
+  border-left: 2px solid #63b3ed;
+  color: var(--rebemer-fg-muted);
+}
+
+/* Migrate-mode chip strip. */
+.rebemer-row__chips {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0 0;
+  font-size: 10px;
+}
+.rebemer-row__chips-label,
+.rebemer-row__chips-empty,
+.rebemer-row__chips-skip {
+  color: var(--rebemer-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-size: 9px;
+}
+.rebemer-row__chips-skip {
+  margin-left: auto;
+  cursor: help;
+  color: #c8a038;
+}
+.rebemer-chip {
+  font: 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: rgba(0,0,0,.3);
+  border: 1px solid var(--rebemer-input-border);
+  color: var(--rebemer-fg);
+  padding: 2px 5px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+/* Footer */
+.rebemer-panel__footer { display: flex; justify-content: flex-end; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--rebemer-border); }
+.rebemer-btn { background: var(--rebemer-input-bg); border: 1px solid var(--rebemer-input-border); color: var(--rebemer-fg); padding: 6px 12px; border-radius: var(--rebemer-radius); font: inherit; cursor: pointer; }
+.rebemer-btn:hover { border-color: var(--rebemer-fg-muted); }
+.rebemer-btn--primary { background: var(--rebemer-accent); border-color: var(--rebemer-accent); color: var(--rebemer-bg); font-weight: 600; }
+.rebemer-btn--primary:hover { background: var(--rebemer-accent-hover); border-color: var(--rebemer-accent-hover); }
+
+/* Toast */
+.rebemer-toast { position: fixed; bottom: 16px; right: 16px; z-index: 100002; background: var(--rebemer-input-bg); color: var(--rebemer-fg); border: 1px solid var(--rebemer-border); border-radius: var(--rebemer-radius); padding: 8px 12px; font: 12px/1.45 var(--rebemer-font); cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.4); }
+.rebemer-toast--success { border-color: var(--rebemer-success); }
+.rebemer-toast--error { border-color: var(--rebemer-error); color: var(--rebemer-error); }
+
+/* Class hint tooltip — shown on hover over a SLASHED class in the
+   Bricks settings panel / class manager. Positioned imperatively
+   (fixed top/left set in class-hints.js); styling only here. */
+.rebemer-class-hint {
+  position: fixed;
+  z-index: 100003;
+  max-width: 280px;
+  background: var(--rebemer-bg);
+  color: var(--rebemer-fg);
+  border: 1px solid var(--rebemer-border);
+  border-radius: var(--rebemer-radius);
+  padding: 8px 10px;
+  font: 12px/1.45 var(--rebemer-font);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .5);
+  pointer-events: none;
+}
+.rebemer-class-hint[hidden] { display: none; }
+.rebemer-class-hint__name {
+  font: 600 11px/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--rebemer-accent);
+}
+.rebemer-class-hint__cat {
+  margin-left: 6px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--rebemer-fg-muted);
+}
+.rebemer-class-hint__cat[hidden] { display: none; }
+.rebemer-class-hint__desc { margin: 4px 0 0; color: var(--rebemer-fg); }
+
+/* "?" info icon injected beside a class row's own action icons. The
+   tooltip above is bound to THIS element only (not the whole row), so it
+   surfaces on deliberate hover/focus and never obscures the row controls.
+   The glyph is a ::before so the icon contributes no textContent — the
+   reconciler reads the row text back to re-resolve which class it is. */
+.rebemer-class-hint-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin-inline-start: 4px;
+  border-radius: 50%;
+  /* Injected outside #slashed-rebemer-host, so the --rebemer-* vars need
+     fallbacks (mirrors .rebemer-badge-host). */
+  border: 1px solid var(--rebemer-border, #3d4752);
+  background: transparent;
+  color: var(--rebemer-fg-muted, #8a8d95);
+  font: 700 10px/1 var(--rebemer-font, "Inter", -apple-system, BlinkMacSystemFont, sans-serif);
+  cursor: help;
+  opacity: 0.7;
+  vertical-align: middle;
+  transition: opacity 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.rebemer-class-hint-btn::before { content: '?'; }
+.rebemer-class-hint-btn:hover,
+.rebemer-class-hint-btn:focus-visible {
+  opacity: 1;
+  color: var(--rebemer-accent, #e2b93b);
+  border-color: var(--rebemer-accent, #e2b93b);
+  outline: none;
+}
+
+/* =====================================================================
+   Color System panel
+   ---------------------------------------------------------------------
+   A floating browser for the framework's --sf-color-* tokens. Scoped to
+   .slashed-cp* so nothing leaks into the Bricks UI; inherits the shared
+   --rebemer-* theme vars declared on #slashed-rebemer-host above.
+   ===================================================================== */
+
+/* Launcher pill — pinned bottom-right, out of Bricks' toolbar paths. */
+.slashed-cp-launch {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 99999;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  background: var(--rebemer-bg);
+  color: var(--rebemer-fg);
+  border: 1px solid var(--rebemer-border);
+  border-radius: 999px;
+  font: 600 11px/1 var(--rebemer-font);
+  letter-spacing: .3px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .45);
+  transition: border-color 120ms, color 120ms, transform 120ms;
+}
+.slashed-cp-launch:hover { border-color: var(--rebemer-fg-muted); transform: translateY(-1px); }
+.slashed-cp-launch--on { border-color: var(--rebemer-accent); color: #fff; }
+.slashed-cp-launch__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  /* A four-stop conic ring nods at the brand families (primary → action). */
+  background: conic-gradient(from 210deg, #5b8cff, #b07cff, #ff6b6b, #ffd24a, #4ade80, #5b8cff);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25);
+}
+.slashed-cp-launch__txt { text-transform: uppercase; }
+
+/* Panel shell — right-docked, tall, scrolls internally. */
+.slashed-cp {
+  position: fixed;
+  top: 64px;
+  right: 16px;
+  bottom: 64px;
+  width: 372px;
+  max-width: calc(100vw - 32px);
+  z-index: 100001;
+  display: flex;
+  flex-direction: column;
+  background: var(--rebemer-bg);
+  color: var(--rebemer-fg);
+  border: 1px solid var(--rebemer-border);
+  border-radius: var(--rebemer-radius);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, .6);
+  font: 12px/1.45 var(--rebemer-font);
+  overflow: hidden;
+  outline: none;
+}
+
+.slashed-cp__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rebemer-border);
+}
+.slashed-cp__title {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: #fff;
+  flex: 1;
+}
+.slashed-cp__close {
+  background: transparent;
+  border: 0;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--rebemer-fg-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.slashed-cp__close:hover { color: #fff; }
+
+/* Segmented control (preview mode) + chips (apply target) share a look. */
+.slashed-cp__seg { display: inline-flex; border: 1px solid var(--rebemer-input-border); border-radius: var(--rebemer-radius); overflow: hidden; }
+.slashed-cp__seg-btn {
+  background: var(--rebemer-input-bg);
+  border: 0;
+  border-left: 1px solid var(--rebemer-input-border);
+  color: var(--rebemer-fg-muted);
+  font: 600 10px/1 var(--rebemer-font);
+  padding: 5px 9px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.slashed-cp__seg-btn:first-child { border-left: 0; }
+.slashed-cp__seg-btn--on { background: var(--rebemer-accent); color: var(--rebemer-bg); }
+
+.slashed-cp__toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rebemer-border);
+}
+.slashed-cp__search {
+  width: 100%;
+  background: var(--rebemer-input-bg);
+  border: 1px solid var(--rebemer-input-border);
+  border-radius: var(--rebemer-radius);
+  color: var(--rebemer-fg);
+  font: inherit;
+  padding: 6px 8px;
+  box-sizing: border-box;
+}
+.slashed-cp__search:focus { outline: 1px solid var(--rebemer-accent); }
+.slashed-cp__target { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.slashed-cp__target-label { font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--rebemer-fg-muted); }
+.slashed-cp__chip {
+  background: var(--rebemer-input-bg);
+  border: 1px solid var(--rebemer-input-border);
+  border-radius: 999px;
+  color: var(--rebemer-fg-muted);
+  font: 600 10px/1 var(--rebemer-font);
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.slashed-cp__chip--on { background: var(--rebemer-accent); border-color: var(--rebemer-accent); color: var(--rebemer-bg); }
+
+.slashed-cp__body { flex: 1; overflow-y: auto; padding: 6px 12px 12px; }
+.slashed-cp__empty { color: var(--rebemer-fg-muted); font-size: 11px; padding: 12px 2px; }
+
+.slashed-cp__group { padding: 10px 0 6px; border-bottom: 1px solid rgba(255, 255, 255, .05); }
+.slashed-cp__group:last-child { border-bottom: 0; }
+.slashed-cp__group-head { margin: 0 0 8px; }
+.slashed-cp__group-title {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: capitalize;
+}
+.slashed-cp__group-tag {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--rebemer-fg-muted);
+  text-transform: none;
+}
+.slashed-cp__group-count {
+  margin-left: auto;
+  font: 600 9px/1 var(--rebemer-font);
+  color: var(--rebemer-fg-muted);
+  background: rgba(255, 255, 255, .06);
+  border-radius: 999px;
+  padding: 2px 6px;
+  text-transform: none;
+}
+.slashed-cp__group-use {
+  margin: 2px 0 0;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--rebemer-fg-muted);
+}
+.slashed-cp__section-label {
+  margin: 8px 0 5px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--rebemer-fg-muted);
+}
+
+/* Family grid: small captioned squares. */
+.slashed-cp__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 7px 6px; }
+.slashed-cp__cell { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
+.slashed-cp__cap { font-size: 9px; color: var(--rebemer-fg-muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Semantic list: swatch + label + token name. */
+.slashed-cp__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.slashed-cp__list-item { display: flex; align-items: center; gap: 8px; }
+.slashed-cp__list-name { font-size: 11px; color: var(--rebemer-fg); flex: 0 0 auto; }
+.slashed-cp__list-var {
+  font: 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--rebemer-fg-muted);
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The swatch itself. */
+.slashed-cp-swatch {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid rgba(127, 127, 127, .45);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.slashed-cp-swatch:hover { border-color: var(--rebemer-accent); }
+.slashed-cp-swatch:focus-visible { outline: 2px solid var(--rebemer-accent); outline-offset: 1px; }
+.slashed-cp-swatch__fill { position: absolute; inset: 0; background: var(--cp-solid); }
+/* Both-mode: diagonal split — light top-left, dark bottom-right, hairline seam. */
+.slashed-cp-swatch--split .slashed-cp-swatch__fill {
+  background: linear-gradient(
+    135deg,
+    var(--cp-l) 0 calc(50% - 0.5px),
+    rgba(0, 0, 0, .35) calc(50% - 0.5px) calc(50% + 0.5px),
+    var(--cp-d) calc(50% + 0.5px) 100%
+  );
+}
+/* Translucent tokens: dashed ring hints the value is non-opaque (the
+   resolved hex is an opaque approximation, so real alpha can't show). */
+.slashed-cp-swatch--alpha { border-style: dashed; }
+
+.slashed-cp__footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--rebemer-border);
+  font-size: 10px;
+  color: var(--rebemer-fg-muted);
+}
+.slashed-cp__hint { margin-left: auto; }
+.slashed-cp__hint code,
+.slashed-cp__footer code { font: 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--rebemer-accent); }
+.slashed-cp__legend { display: inline-flex; align-items: center; gap: 5px; }
+.slashed-cp__legend-sw {
+  width: 12px; height: 12px; border-radius: 3px;
+  border: 1px solid rgba(127, 127, 127, .45);
+  background: linear-gradient(135deg, #fff 0 50%, #222 50% 100%);
+}
+
+/* Info-variant toast (Color panel copy-only feedback). */
+.rebemer-toast--info { border-color: #63b3ed; }
+
+/* SF Colors button — injected after the Variables icon inside Bricks'
+   colour control field ([data-control="color"] > … > .color-input).
+   Sits inline next to the variable-picker-button and dynamic-tag buttons. */
+.slashed-sf-color-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* flex: 0 0 + min-width keep the button square in Bricks' flex row;
+     flex-shrink:0 alone isn't enough when the row is already compressed. */
+  flex: 0 0 28px;
+  min-width: 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 120ms, background 120ms;
+}
+.slashed-sf-color-btn:hover { opacity: 1; background: rgba(91, 140, 255, .15); }
+/* Active state — shown after a colour is picked; dot background is set
+   inline by JS to the resolved hex. */
+.slashed-sf-color-btn--active { opacity: 1; }
+.slashed-sf-color-btn--active:hover { background: rgba(255, 255, 255, .06); }
+
+.slashed-sf-color-btn__dot {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: conic-gradient(from 210deg, #5b8cff, #b07cff, #ff6b6b, #ffd24a, #4ade80, #5b8cff);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2);
+  flex-shrink: 0;
+  transition: width 80ms, height 80ms, border-radius 120ms;
+}
+/* After a pick the dot expands to fill the button as a solid colour swatch. */
+.slashed-sf-color-btn--active .slashed-sf-color-btn__dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  transition: width 80ms, height 80ms, border-radius 120ms;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18), 0 0 0 1.5px rgba(255, 255, 255, .22);
+}
+
+/* Variable-picker colour swatch — a small square prepended to each
+   `--sf-color-*` row in the Bricks variable dropdown by
+   color-swatches.js. The colour is set inline via the
+   `--slashed-swatch-color` custom property; everything else lives here.
+   The checkerboard underlay shows through translucent (alpha) tokens. */
+.slashed-var-swatch {
+  flex: 0 0 auto;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 7px;
+  vertical-align: middle;
+  border-radius: 3px;
+  border: 1px solid rgba(127, 127, 127, .45);
+  /* Layer order: the resolved colour sits on top (opaque tokens hide the
+     checkerboard entirely); translucent/alpha tokens let the checkerboard
+     show through so transparency reads at a glance. */
+  background-color: #fff;
+  background-image:
+    linear-gradient(var(--slashed-swatch-color, transparent), var(--slashed-swatch-color, transparent)),
+    linear-gradient(45deg, rgba(127, 127, 127, .35) 25%, transparent 25%, transparent 75%, rgba(127, 127, 127, .35) 75%),
+    linear-gradient(45deg, rgba(127, 127, 127, .35) 25%, transparent 25%, transparent 75%, rgba(127, 127, 127, .35) 75%);
+  background-position: 0 0, 0 0, 4px 4px;
+  background-size: auto, 8px 8px, 8px 8px;
+}
+
+/* =====================================================================
+   NEW PANEL LAYOUT — Quick Use + Palette sections.
+   All new swatch-like elements (quick use cells, scanner previews, scale
+   strip, family banner) use --sw-l / --sw-d CSS variables set inline and
+   a data-mode attribute on .slashed-cp to drive the background rendering.
+   ===================================================================== */
+
+/* Docked mode — picker panel anchored to the right edge of the Bricks
+   settings panel so it feels attached rather than floating. */
+.slashed-cp--docked {
+  top: 0;
+  bottom: 0;
+  left: var(--cp-dock-left, 320px);
+  right: auto;
+  width: 360px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: 6px 0 32px rgba(0, 0, 0, .55);
+}
+
+/* ── Shared mode-driven backgrounds ───────────────────────────────────
+   Applied to every new swatch element that exposes --sw-l / --sw-d.
+   Grouped here so the diagonal-split logic lives in exactly one place. */
+.slashed-cp[data-mode="both"] .slashed-cp__qu-sw,
+.slashed-cp[data-mode="both"] .slashed-cp__scan-base,
+.slashed-cp[data-mode="both"] .slashed-cp__scan-pre-sw,
+.slashed-cp[data-mode="both"] .slashed-cp__fam-banner,
+.slashed-cp[data-mode="both"] .slashed-cp__strip-sw {
+  background: linear-gradient(
+    135deg,
+    var(--sw-l) 0 calc(50% - 0.5px),
+    rgba(0, 0, 0, .35) calc(50% - 0.5px) calc(50% + 0.5px),
+    var(--sw-d) calc(50% + 0.5px) 100%
+  );
+}
+.slashed-cp[data-mode="light"] .slashed-cp__qu-sw,
+.slashed-cp[data-mode="light"] .slashed-cp__scan-base,
+.slashed-cp[data-mode="light"] .slashed-cp__scan-pre-sw,
+.slashed-cp[data-mode="light"] .slashed-cp__fam-banner,
+.slashed-cp[data-mode="light"] .slashed-cp__strip-sw { background: var(--sw-l); }
+
+.slashed-cp[data-mode="dark"] .slashed-cp__qu-sw,
+.slashed-cp[data-mode="dark"] .slashed-cp__scan-base,
+.slashed-cp[data-mode="dark"] .slashed-cp__scan-pre-sw,
+.slashed-cp[data-mode="dark"] .slashed-cp__fam-banner,
+.slashed-cp[data-mode="dark"] .slashed-cp__strip-sw  { background: var(--sw-d); }
+
+/* ── Section wrapper ──────────────────────────────────────────────── */
+.slashed-cp__sec {
+  padding: 10px 0 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, .05);
+}
+.slashed-cp__sec:last-child { border-bottom: 0; }
+.slashed-cp__sec-title {
+  margin: 0 0 10px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--rebemer-fg-muted);
+}
+.slashed-cp__sec--pal { padding-top: 12px; }
+
+/* ── Quick Use ─────────────────────────────────────────────────────── */
+.slashed-cp__qu-group { margin-bottom: 10px; }
+.slashed-cp__qu-group:last-child { margin-bottom: 0; }
+
+.slashed-cp__qu-label {
+  margin: 0 0 4px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--rebemer-fg-muted);
+}
+
+.slashed-cp__qu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+
+.slashed-cp__qu-cell {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 6px;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  color: var(--rebemer-fg);
+  font: 11px/1.3 var(--rebemer-font);
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+  transition: background 80ms;
+}
+.slashed-cp__qu-cell:hover { background: rgba(255, 255, 255, .06); }
+
+.slashed-cp__qu-sw {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 5px;
+  border: 1px solid rgba(127, 127, 127, .35);
+  transition: border-color 80ms;
+}
+.slashed-cp__qu-sw--alpha { border-style: dashed; }
+.slashed-cp__qu-cell:hover .slashed-cp__qu-sw { border-color: var(--rebemer-accent); }
+
+.slashed-cp__qu-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Palette category header ──────────────────────────────────────── */
+.slashed-cp__pal-cat {
+  margin: 10px 0 5px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--rebemer-fg-muted);
+}
+.slashed-cp__pal-cat:first-of-type { margin-top: 2px; }
+
+/* ── Scanner table ────────────────────────────────────────────────── */
+.slashed-cp__scanner {
+  border: 1px solid var(--rebemer-border);
+  border-radius: var(--rebemer-radius);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.slashed-cp__scan-item + .slashed-cp__scan-item { border-top: 1px solid var(--rebemer-border); }
+
+.slashed-cp__scan-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  background: transparent;
+  border: 0;
+  color: var(--rebemer-fg);
+  font: 11px/1 var(--rebemer-font);
+  cursor: pointer;
+  text-align: left;
+  transition: background 80ms;
+}
+.slashed-cp__scan-row:hover,
+.slashed-cp__scan-row--open { background: rgba(255, 255, 255, .04); }
+
+.slashed-cp__scan-base {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 4px;
+  border: 1px solid rgba(127, 127, 127, .3);
+}
+.slashed-cp__scan-name {
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+.slashed-cp__scan-tagline {
+  font-size: 10px;
+  color: var(--rebemer-fg-muted);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.slashed-cp__scan-pre {
+  display: flex;
+  gap: 3px;
+  flex: 0 0 auto;
+}
+.slashed-cp__scan-pre-sw {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(127, 127, 127, .2);
+}
+.slashed-cp__scan-chev {
+  flex: 0 0 auto;
+  font-size: 10px;
+  color: var(--rebemer-fg-muted);
+}
+
+/* ── Expanded family detail ───────────────────────────────────────── */
+.slashed-cp__fam {
+  padding: 10px 10px 12px;
+  border-top: 1px solid var(--rebemer-border);
+  background: rgba(0, 0, 0, .12);
+}
+
+.slashed-cp__fam-banner {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 52px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: opacity 120ms;
+  box-sizing: border-box;
+}
+.slashed-cp__fam-banner:hover { opacity: .85; }
+.slashed-cp__fam-banner-lbl {
+  font: 700 9px/1 var(--rebemer-font);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, .9);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .6);
+}
+
+.slashed-cp__fam-sec {
+  margin: 8px 0 6px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--rebemer-fg-muted);
+}
+.slashed-cp__fam-sec:first-child { margin-top: 0; }
+.slashed-cp__fam-sec-range {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, .25);
+}
+
+/* ── Scale / alpha strip ──────────────────────────────────────────── */
+.slashed-cp__strip {
+  display: flex;
+  height: 24px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.slashed-cp__strip--alpha { margin-top: 4px; opacity: .8; }
+
+.slashed-cp__strip-sw {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  transition: flex 100ms ease-out;
+  position: relative;
+}
+.slashed-cp__strip-sw:hover { flex: 2; box-shadow: inset 0 0 0 2px var(--rebemer-accent); }
+.slashed-cp__strip-sw--alpha { box-shadow: inset 0 0 0 1px rgba(127, 127, 127, .4); }
+.slashed-cp__strip-sw--alpha:hover { box-shadow: inset 0 0 0 2px var(--rebemer-accent); }
+.slashed-cp__strip-sw:focus-visible { outline: 2px solid var(--rebemer-accent); outline-offset: -2px; z-index: 1; }
+
+/* ── Alpha expand toggle ──────────────────────────────────────────── */
+.slashed-cp__alpha-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--rebemer-fg-muted);
+  font: 10px/1 var(--rebemer-font);
+  cursor: pointer;
+}
+.slashed-cp__alpha-btn:hover { color: var(--rebemer-fg); }
+.slashed-cp__alpha-btn:focus-visible { outline: 1px dotted var(--rebemer-accent); outline-offset: 2px; color: var(--rebemer-fg); }
+
+/* ── Focus-visible for interactive panel elements ─────────────────── */
+.slashed-cp__qu-cell:focus-visible {
+  outline: 2px solid var(--rebemer-accent);
+  outline-offset: -2px;
+}
+.slashed-cp__scan-row:focus-visible {
+  outline: 2px solid var(--rebemer-accent);
+  outline-offset: -2px;
+}
+.slashed-cp__fam-banner:focus-visible {
+  outline: 2px solid var(--rebemer-accent);
+  outline-offset: -2px;
+}

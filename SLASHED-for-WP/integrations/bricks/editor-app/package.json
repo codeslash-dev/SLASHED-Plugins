@@ -1,0 +1,17 @@
+{
+  "name": "slashed-bricks-editor-app",
+  "private": true,
+  "version": "0.1.0",
+  "description": "reBEMer — Bricks Builder structure-panel BEM tool, mounted inside the Bricks builder DOM by the SLASHED for Bricks plugin.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "svelte": "^5.19.0",
+    "vite": "^6.0.7"
+  }
+}

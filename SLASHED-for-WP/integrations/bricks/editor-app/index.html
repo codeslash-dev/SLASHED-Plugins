@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>reBEMer dev harness</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root { color-scheme: dark; }
+      body { font: 13px/1.45 system-ui, sans-serif; margin: 0; background: #1f242a; color: #e1e1e1; }
+      .harness { padding: 20px; max-width: 720px; margin: 0 auto; }
+      .harness h1 { font-size: 14px; letter-spacing: .5px; text-transform: uppercase; color: #e2b93b; margin: 0 0 12px; }
+      .harness p { color: #8a8d95; font-size: 12px; }
+      .harness code { font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; background: rgba(0,0,0,.3); padding: 1px 4px; border-radius: 2px; }
+      #bricks-structure { background: #161a1d; border: 1px solid #3d4752; border-radius: 4px; padding: 12px; }
+      #bricks-structure .structure-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 4px 6px;
+      }
+      #bricks-structure .structure-item .title { font-size: 12px; color: #e1e1e1; flex: 1; min-width: 0; }
+      #bricks-structure .structure-item ul.actions { list-style: none; margin: 0; padding: 0; opacity: .6; flex: 0 0 auto; }
+      #bricks-structure ul { padding-left: 16px; margin: 0; list-style: none; }
+      #bricks-structure li { padding: 2px 0; }
+      [data-v-app] { display: contents; }
+    </style>
+  </head>
+  <body>
+    <!--
+      Dev harness for the reBEMer editor.
+
+      The harness fakes just enough of the Bricks Vue surface to exercise
+      the badge injector, the panel, and the apply-time logic in
+      isolation:
+
+        1. A mock element tree is mounted at  __vue_app__.config.
+           globalProperties.$_state, with element types that match real
+           Bricks (heading, image, button, container, …) so the
+           element-type-aware row pre-fill is exercised.
+
+        2. A mock bricks_global_classes array seeds one class with a
+           name a row will collide with, so the "use existing" client-
+           side recommendation hint is visible.
+
+      For end-to-end verification, install the plugin in a real Bricks
+      install. This page is only for UX iteration.
+    -->
+    <div data-v-app>
+      <div class="harness">
+        <h1>reBEMer dev harness</h1>
+        <p>
+          Click the <code>reBEM</code> badge on any structure-panel row.
+          The card subtree below seeds existing class
+          <code>card__title</code> in the mock global registry so the
+          "use existing" recommendation shows up on the title row.
+        </p>
+        <ul id="bricks-structure">
+          <li data-id="root-1">
+            <div class="structure-item">
+              <div class="title">Section</div>
+              <ul class="actions"><li>•</li></ul>
+            </div>
+            <ul>
+              <li data-id="card-1">
+                <div class="structure-item">
+                  <div class="title">Card</div>
+                  <ul class="actions"><li>•</li></ul>
+                </div>
+                <ul>
+                  <li data-id="card-image">
+                    <div class="structure-item">
+                      <div class="title"></div>
+                      <ul class="actions"><li>•</li></ul>
+                    </div>
+                  </li>
+                  <li data-id="card-title">
+                    <div class="structure-item">
+                      <div class="title"></div>
+                      <ul class="actions"><li>•</li></ul>
+                    </div>
+                  </li>
+                  <li data-id="card-text">
+                    <div class="structure-item">
+                      <div class="title"></div>
+                      <ul class="actions"><li>•</li></ul>
+                    </div>
+                  </li>
+                  <li data-id="card-cta">
+                    <div class="structure-item">
+                      <div class="title"></div>
+                      <ul class="actions"><li>•</li></ul>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      // Mock Bricks Vue state. Mirrors the shape probed by
+      // src/lib/bricks-api.js (config.globalProperties.$_state with a
+      // `content` array of element trees and a `globalClasses` array).
+      // Element types match real Bricks element.name slugs.
+      (function () {
+        const elements = [
+          {
+            id: 'root-1', name: 'section', label: 'Section',
+            settings: {}, children: ['card-1'], parent: 0,
+          },
+          {
+            id: 'card-1', name: 'block', label: 'Card',
+            settings: { _padding: '20px', _borderRadius: '8px' },
+            children: ['card-image', 'card-title', 'card-text', 'card-cta'],
+            parent: 'root-1',
+          },
+          {
+            id: 'card-image', name: 'image', label: '',
+            settings: { _aspectRatio: '16/9', _objectFit: 'cover' },
+            children: [], parent: 'card-1',
+          },
+          {
+            id: 'card-title', name: 'heading', label: '',
+            settings: { _fontSize: '24px', _fontWeight: '600', _color: '#fff' },
+            children: [], parent: 'card-1',
+          },
+          {
+            id: 'card-text', name: 'text-basic', label: '',
+            settings: { _color: '#8a8d95', _lineHeight: '1.5' },
+            children: [], parent: 'card-1',
+          },
+          {
+            id: 'card-cta', name: 'button', label: '',
+            settings: { _padding: '8px 16px', _backgroundColor: '#e2b93b' },
+            children: [], parent: 'card-1',
+          },
+        ];
+
+        const state = {
+          header: [],
+          content: elements,
+          footer: [],
+          globalClasses: [
+            // Seeded so the recommendation hint fires on the title row.
+            { id: 'abc12345', name: 'card__title', settings: {} },
+          ],
+        };
+
+        const appEl = document.querySelector('[data-v-app]');
+        appEl.__vue_app__ = {
+          config: { globalProperties: { $_state: state } },
+        };
+      })();
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
