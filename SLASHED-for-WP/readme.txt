@@ -3,7 +3,7 @@ Contributors: jackgranatowski
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.5.21
+Stable tag: 0.0.1
 Requires PHP: 7.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT

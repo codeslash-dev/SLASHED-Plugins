@@ -6,14 +6,25 @@ Gutenberg integrations) are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 > **History note:** this plugin was split out of the
-> [SLASHED framework](https://github.com/codeslash-dev/SLASHED) repository.
-> Entries below were migrated from that repo's changelog; earlier framework
-> versions (`0.2.11` and below) predate the plugin.
+> [SLASHED framework](https://github.com/codeslash-dev/SLASHED) repository into
+> its own repo. It starts a fresh, independent version line at `0.0.1`; the
+> framework version it bundles is tracked separately via the
+> `SLASHED_*_CSS_REF` constants. The work below was developed while the plugin
+> still lived in the framework repo (so it predates this repo's history) and is
+> consolidated here as the first standalone release, in the order it landed.
 
 ## [Unreleased]
 
+## [0.0.1] - 2026-06-08
+
+First standalone release of the SLASHED WordPress plugin. Bundles the
+Bricks Builder and Gutenberg integrations developed in the framework repo.
+
 ### Added
 
+- **Bricks Builder integration** — WordPress plugin for one-click SLASHED
+  loading in Bricks Builder themes. (Originally landed 2026-05-23 while bundled
+  in the framework repo, PR #71.)
 - **reBEMer** (`integrations/bricks/`) — Subtree-scoped BEM class manager
   for the Bricks Builder structure panel. Adds a "BEM" badge to every
   structure-panel item; clicking it opens a draggable modal that names a
@@ -33,12 +44,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   as number fields and generates a fluid `clamp()` for `--sf-header-height` /
   `--sf-sticky-offset` when the two values differ. Tracks the matching framework
   token additions.
-
-## [0.2.12] - 2026-05-23
-
-Initial Bricks Builder integration.
-
-### Added
-
-- **Bricks Builder integration** — WordPress plugin for one-click SLASHED
-  loading in Bricks Builder themes (PR #71)

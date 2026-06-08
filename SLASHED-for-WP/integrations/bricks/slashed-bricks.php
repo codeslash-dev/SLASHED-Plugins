@@ -3,7 +3,7 @@
  * Plugin Name: SLASHED for Bricks
  * Plugin URI: https://github.com/codeslash-dev/SLASHED
  * Description: Integrates the SLASHED cascade-layer CSS framework with Bricks Builder - providing CSS variables, utility classes, and color palette synchronization.
- * Version: 0.5.21
+ * Version: 0.0.1
  * Author: jackgranatowski
  * Author URI: https://github.com/codeslash-dev/SLASHED
  * License: MIT

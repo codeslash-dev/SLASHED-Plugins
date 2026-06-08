@@ -1,6 +1,6 @@
 {
   "name": "slashed-for-wp",
-  "version": "0.5.21",
+  "version": "0.0.1",
   "type": "module",
   "private": true,
   "description": "SLASHED for WordPress — Bricks Builder and Gutenberg integrations for the SLASHED cascade-layer CSS framework.",
