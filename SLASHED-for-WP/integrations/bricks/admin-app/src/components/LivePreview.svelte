@@ -23,7 +23,7 @@
    * both light and dark, for any brand palette the user picks.
    */
   import { tokens, meta } from '../lib/stores.svelte.js';
-  import { generateExportCSS } from '../lib/export.js';
+  import { generateExportCSS, sanitizeValue } from '../lib/export.js';
 
   const brand = ['primary', 'secondary', 'tertiary', 'action', 'neutral', 'base'];
   const statuses = ['success', 'warning', 'error', 'info', 'danger'];
@@ -75,18 +75,21 @@
     })();
 
     // 1. Source light/dark colors (swatch lookups read these by mode).
+    // Sanitize every user-entered value before it lands in the inline-style
+    // string: a pasted Advanced value containing ';' or '}' would otherwise
+    // break out of the style attribute (same guard the CSS export uses).
     for (const name of brand) {
-      const v = colors[`brand_${name}`] ?? defaultColors.brand_hex_hints?.[name];
+      const v = sanitizeValue(colors[`brand_${name}`] ?? defaultColors.brand_hex_hints?.[name]);
       if (v) pairs.push(`--sf-color-${name}-light:${v}`);
       const darkEnabled = colors.dark_overrides_enabled !== '0';
-      const storedDark = darkEnabled ? colors[`brand_dark_${name}`] : '';
+      const storedDark = darkEnabled ? sanitizeValue(colors[`brand_dark_${name}`]) : '';
       pairs.push(`--sf-color-${name}-dark:${storedDark || autoDark(name)}`);
     }
     for (const name of statuses) {
-      const v = colors[`status_${name}`] ?? defaultColors.status_hex_hints?.[name];
+      const v = sanitizeValue(colors[`status_${name}`] ?? defaultColors.status_hex_hints?.[name]);
       if (v) pairs.push(`--sf-color-${name}-light:${v}`);
       const darkEnabled = colors.dark_overrides_enabled !== '0';
-      const storedDark = darkEnabled ? colors[`status_dark_${name}`] : '';
+      const storedDark = darkEnabled ? sanitizeValue(colors[`status_dark_${name}`]) : '';
       pairs.push(`--sf-color-${name}-dark:${storedDark || autoDark(name)}`);
     }
 
@@ -127,8 +130,8 @@
     }
 
     // 6. Font families.
-    if (typography.font_body)    pairs.push(`--sf-font-body:${typography.font_body}`);
-    if (typography.font_heading) pairs.push(`--sf-font-heading:${typography.font_heading}`);
+    if (typography.font_body)    pairs.push(`--sf-font-body:${sanitizeValue(typography.font_body)}`);
+    if (typography.font_heading) pairs.push(`--sf-font-heading:${sanitizeValue(typography.font_heading)}`);
 
     // 7. Radius + shadow preview vars.
     const rs = parseFloat(radius.radius_scale ?? meta.defaults?.radius?.radius_scale ?? 1) || 1;

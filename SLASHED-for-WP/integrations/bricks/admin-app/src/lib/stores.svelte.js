@@ -43,6 +43,13 @@ export const ui = $state({
   saving: false,
   lastSavedAt: null,
   error: '',
+  /**
+   * CSS export framing for the Export/Import tab: 'layer' wraps output in
+   * `@layer slashed.overrides`, 'root' emits a bare `:root` rule. Mirrors the
+   * framework configurator's output-framing toggle. Session-only (not persisted)
+   * since the chosen framing only affects ad-hoc CSS downloads/copies.
+   */
+  outputMode: 'layer',
 });
 
 /**

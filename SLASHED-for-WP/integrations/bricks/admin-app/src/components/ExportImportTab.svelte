@@ -1,13 +1,27 @@
 <script>
   import { exportTokens, importTokens } from '../lib/api.js';
-  import { tokens } from '../lib/stores.svelte.js';
+  import { tokens, ui, meta } from '../lib/stores.svelte.js';
   import { generateExportCSS } from '../lib/export.js';
 
   // ── Export ────────────────────────────────────────────────────────────────
   let exporting = $state(false);
   let exportError = $state('');
+  let copied = $state(false);
+  let copyError = $state('');
 
-  const exportCSS = $derived(generateExportCSS(tokens));
+  /** Version stamped into the generated CSS banner (framework first, then plugin). */
+  const bannerVersion = $derived(meta.versions?.framework || meta.versions?.plugin || '');
+
+  // Generated override CSS, reframed live by the @layer / :root toggle and
+  // carrying a generated-by banner — mirrors the framework configurator's
+  // OutputPanel so the downloaded/copied file is self-describing.
+  const exportCSS = $derived(
+    generateExportCSS(tokens, {
+      mode: ui.outputMode,
+      banner: true,
+      version: bannerVersion,
+    })
+  );
   const canExportCSS = $derived(exportCSS.length > 0);
 
   function downloadCSS() {
@@ -19,6 +33,23 @@
     a.download = `slashed-custom-${new Date().toISOString().slice(0, 10)}.css`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Copy the generated CSS to the clipboard with a transient "Copied" pill.
+   * Falls back to an inline hint when the Clipboard API is blocked (insecure
+   * context, denied permission) so the user knows to select the text manually.
+   */
+  async function copyCSS() {
+    if (!exportCSS) return;
+    copyError = '';
+    try {
+      await navigator.clipboard.writeText(exportCSS);
+      copied = true;
+      setTimeout(() => (copied = false), 1400);
+    } catch {
+      copyError = 'Clipboard blocked — select the CSS below and copy manually.';
+    }
   }
 
   async function handleExport() {
@@ -99,12 +130,61 @@
       <button type="button" class="btn btn--primary" onclick={handleExport} disabled={exporting}>
         {exporting ? 'Exporting…' : 'Download token file (.json)'}
       </button>
-      <button type="button" class="btn btn--secondary" onclick={downloadCSS} disabled={!canExportCSS} title={canExportCSS ? 'Download overrides as a standalone CSS file' : 'No overrides set yet'}>
-        Download CSS file
-      </button>
       {#if exportError}
         <span class="status status--err">{exportError}</span>
       {/if}
+    </div>
+
+    <!-- ── CSS export ───────────────────────────────────────────────────────
+         Standalone override stylesheet. The @layer / :root toggle and live
+         preview mirror the framework configurator's output panel so users can
+         pick the framing that fits their project (cascade layers or not). -->
+    <div class="css-export">
+      <div class="css-export__head">
+        <span class="css-export__title">Standalone CSS</span>
+        <div class="seg" role="group" aria-label="Output framing">
+          <button
+            type="button"
+            class="seg__btn"
+            class:seg__btn--on={ui.outputMode === 'layer'}
+            onclick={() => (ui.outputMode = 'layer')}
+            title="Wrap output in @layer slashed.overrides (recommended)"
+          >@layer</button>
+          <button
+            type="button"
+            class="seg__btn"
+            class:seg__btn--on={ui.outputMode === 'root'}
+            onclick={() => (ui.outputMode = 'root')}
+            title="Emit a bare :root rule (no cascade layers)"
+          >:root</button>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button
+          type="button"
+          class="btn btn--secondary"
+          onclick={downloadCSS}
+          disabled={!canExportCSS}
+          title={canExportCSS ? 'Download overrides as a standalone CSS file' : 'No overrides set yet'}
+        >
+          Download CSS file
+        </button>
+        <button
+          type="button"
+          class="btn btn--secondary"
+          onclick={copyCSS}
+          disabled={!canExportCSS}
+          title={canExportCSS ? 'Copy the generated CSS to the clipboard' : 'No overrides set yet'}
+        >
+          {copied ? 'Copied ✓' : 'Copy CSS'}
+        </button>
+        {#if copyError}
+          <span class="status status--err">{copyError}</span>
+        {/if}
+      </div>
+
+      <pre class="css-export__code"><code>{exportCSS || '/* No overrides set yet — adjust a token to generate CSS. */'}</code></pre>
     </div>
   </div>
 
@@ -223,6 +303,58 @@
   .btn--secondary:hover:not(:disabled) { background: #e0e0e0; }
 
   .file-input { font-size: 13px; }
+
+  /* ── CSS export (framing toggle + code preview) ─────────────────────────── */
+  .css-export {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #e9eaeb;
+  }
+  .css-export__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .css-export__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+  }
+  .seg {
+    display: inline-flex;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .seg__btn {
+    background: #f0f0f1;
+    color: #50575e;
+    border: none;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    cursor: pointer;
+  }
+  .seg__btn + .seg__btn { border-left: 1px solid #8c8f94; }
+  .seg__btn--on { background: #2271b1; color: #fff; }
+
+  .css-export__code {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    background: #f6f7f7;
+    border: 1px solid #e9eaeb;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #2c3338;
+    white-space: pre;
+    overflow: auto;
+    max-height: 220px;
+  }
 
   .status { font-size: 13px; font-weight: 500; }
   .status--ok { color: #00a32a; }
