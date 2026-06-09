@@ -19,12 +19,23 @@ const MODULES = ['color.js', 'scale.js', 'fonts.js'];
 
 describe('shared module parity with the framework configurator', () => {
   const haveFramework = existsSync(frameworkLib);
+  const havePlugin = existsSync(pluginLib);
 
   for (const mod of MODULES) {
-    test(`${mod} is byte-identical to the configurator`, { skip: !haveFramework ? 'framework checkout not present' : false }, () => {
-      const a = readFileSync(resolve(pluginLib, mod), 'utf8');
-      const b = readFileSync(resolve(frameworkLib, mod), 'utf8');
-      assert.equal(a, b, `${mod} drifted from SLASHED/configurator — re-sync the parity module`);
-    });
+    test(
+      `${mod} is byte-identical to the configurator`,
+      {
+        skip: !haveFramework
+          ? 'framework checkout not present'
+          : !havePlugin
+            ? 'plugin lib path not present'
+            : false,
+      },
+      () => {
+        const a = readFileSync(resolve(pluginLib, mod), 'utf8');
+        const b = readFileSync(resolve(frameworkLib, mod), 'utf8');
+        assert.equal(a, b, `${mod} drifted from SLASHED/configurator — re-sync the parity module`);
+      }
+    );
   }
 });
