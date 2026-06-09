@@ -46,15 +46,12 @@
   const bricksEnabled = meta.activeIntegrations?.bricks ?? true;
 
   onMount(async () => {
-    const initialSource = source;
     try {
-      const fresh = await fetchBricksFonts();
-      bricksFonts = fresh;
-      // Re-infer source: a font present only in the live list would have
-      // been misclassified as 'manual' at init time.
-      if (source === initialSource && initialSource === 'manual' && detectSource(effectiveValue) === 'bricks') {
-        source = 'bricks';
-      }
+      // Refresh the live Bricks list. `source` re-derives automatically when
+      // bricksFonts changes (a font present only in the live list would have
+      // been classified as 'manual' until now) — unless the user has already
+      // picked a tab explicitly.
+      bricksFonts = await fetchBricksFonts();
     } catch {
       // Keep bootstrap data if the fetch fails.
     }
@@ -83,11 +80,17 @@
     return 'manual';
   }
 
-  let source = $state(detectSource(effectiveValue));
+  // `source` follows auto-detection until the user explicitly picks a tab.
+  // `userSource = null` → derive from the current value (+ the live Bricks
+  // list); a string is the user's sticky choice. Keeping it derived rather
+  // than a seeded `$state` makes it re-evaluate when the value or the fetched
+  // font list changes, and silences the `state_referenced_locally` warning.
+  let userSource = $state(null);
+  const source = $derived(userSource ?? detectSource(effectiveValue));
 
   // ── Source switch ─────────────────────────────────────────────────
   function switchSource(next) {
-    source = next;
+    userSource = next;
     // Pre-select sensible first value when switching into a dropdown mode.
     if (next === 'system') {
       const match = SYSTEM_STACKS.find(s => s.value.toLowerCase() === effectiveValue.toLowerCase());
