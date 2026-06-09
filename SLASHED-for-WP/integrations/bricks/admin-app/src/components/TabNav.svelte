@@ -37,15 +37,21 @@
     font-size: 14px;
     color: #2c3338;
     border-radius: 4px 4px 0 0;
+    transition: background 0.12s ease, color 0.12s ease;
   }
   .tab-nav__btn:hover {
     background: #f0f0f1;
+  }
+  .tab-nav__btn:focus-visible {
+    outline: 2px solid #2271b1;
+    outline-offset: -2px;
   }
   .tab-nav__btn.active {
     background: white;
     border-color: #c3c4c7;
     margin-bottom: -1px;
     color: #1d2327;
-    font-weight: 500;
+    font-weight: 600;
+    box-shadow: inset 0 2px 0 #2271b1;
   }
 </style>
