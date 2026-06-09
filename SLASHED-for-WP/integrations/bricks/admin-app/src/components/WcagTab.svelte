@@ -17,6 +17,14 @@
    */
   import { meta, tokens } from '../lib/stores.svelte.js';
   import { saveSection } from '../lib/api.js';
+  import {
+    resolveToRgb,
+    contrastRatio,
+    wcagLevel,
+    wcagLevelLarge,
+    levelClass,
+    suggestAccessiblePalette,
+  } from '../lib/color.js';
 
   // ── Color inventory ──────────────────────────────────────────────────
   const defaultColors = meta.defaults?.colors ?? {};
@@ -45,61 +53,8 @@
     );
   }
 
-  // ── Color resolution (browser-native) ────────────────────────────────
-
-  /** Resolve any CSS color string to [r, g, b] via canvas, or null. */
-  function resolveToRgb(cssValue) {
-    if (!cssValue || typeof document === 'undefined') return null;
-    if (typeof CSS !== 'undefined' && !CSS.supports('color', cssValue)) return null;
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1;
-      canvas.height = 1;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = cssValue;
-      ctx.fillRect(0, 0, 1, 1);
-      const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
-      if (a === 0) return null;
-      return [r, g, b];
-    } catch {
-      return null;
-    }
-  }
-
-  // ── WCAG maths ───────────────────────────────────────────────────────
-
-  function toLinear(c) {
-    c /= 255;
-    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-  }
-
-  function relativeLuminance([r, g, b]) {
-    return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
-  }
-
-  function contrastRatio(rgb1, rgb2) {
-    const l1 = relativeLuminance(rgb1);
-    const l2 = relativeLuminance(rgb2);
-    const lighter = Math.max(l1, l2);
-    const darker  = Math.min(l1, l2);
-    return (lighter + 0.05) / (darker + 0.05);
-  }
-
-  /** WCAG level for a given ratio. */
-  function wcagLevel(ratio) {
-    if (ratio >= 7)   return 'AAA';
-    if (ratio >= 4.5) return 'AA';
-    if (ratio >= 3)   return 'AA-large';
-    return 'fail';
-  }
-
-  /** CSS class for a WCAG level badge. */
-  function levelClass(level) {
-    if (level === 'AAA')      return 'badge--aaa';
-    if (level === 'AA')       return 'badge--aa';
-    if (level === 'AA-large') return 'badge--aa-large';
-    return 'badge--fail';
-  }
+  // ── Color resolution + WCAG maths (shared with the framework configurator,
+  //    see ../lib/color.js — kept in lockstep via the parity test suite) ──
 
   // ── Resolved RGB cache (computed once per render) ─────────────────────
 
@@ -125,12 +80,7 @@
 
   const normalText = $derived(ratio !== null ? wcagLevel(ratio) : null);
 
-  const largeText = $derived.by(() => {
-    if (ratio === null) return null;
-    if (ratio >= 4.5) return 'AAA';
-    if (ratio >= 3)   return 'AA';
-    return 'fail';
-  });
+  const largeText = $derived(ratio !== null ? wcagLevelLarge(ratio) : null);
 
   // ── Grid ─────────────────────────────────────────────────────────────
 
@@ -178,77 +128,19 @@
   let applying    = $state(false);
   let applyStatus = $state('');
 
-  function rgbToHsl(r, g, b) {
-    r /= 255; g /= 255; b /= 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h = 0, s = 0;
-    const l = (max + min) / 2;
-    if (max !== min) {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      if (max === r)      h = (g - b) / d + (g < b ? 6 : 0);
-      else if (max === g) h = (b - r) / d + 2;
-      else                h = (r - g) / d + 4;
-      h /= 6;
-    }
-    return [h * 360, s * 100, l * 100];
-  }
-
   function runOptimizer() {
     optimizing  = true;
     suggestion  = null;
     applyStatus = '';
 
-    const baseRgb    = resolveToRgb(colorValue('base'));
-    const neutralRgb = resolveToRgb(colorValue('neutral'));
-    const actionRgb  = resolveToRgb(colorValue('action'));
-
-    if (!baseRgb || !neutralRgb || !actionRgb) {
-      optimizing = false;
-      return;
-    }
-
-    const [bH, bS] = rgbToHsl(...baseRgb);
-    const [nH, nS] = rgbToHsl(...neutralRgb);
-    const [aH, aS] = rgbToHsl(...actionRgb);
-
-    // BASE: very light surface — preserve hue tint, cap saturation.
-    const baseS     = Math.min(bS, 8);
-    const baseColor = `hsl(${bH.toFixed(1)} ${baseS.toFixed(1)}% 97%)`;
-    const baseResolved = resolveToRgb(baseColor);
-    if (!baseResolved) { optimizing = false; return; }
-
-    // NEUTRAL: lightest dark value achieving AAA (7:1) on proposed BASE.
-    // Searching dark→light so the last passing entry is the lightest winner.
-    const neutralS = Math.min(nS, 15);
-    let neutralBest = null;
-    for (let l = 8; l <= 32; l += 0.25) {
-      const c   = `hsl(${nH.toFixed(1)} ${neutralS.toFixed(1)}% ${l.toFixed(2)}%)`;
-      const rgb = resolveToRgb(c);
-      if (!rgb) continue;
-      const r = contrastRatio(rgb, baseResolved);
-      if (r >= 7) neutralBest = { color: c, rgb, ratio: r };
-      else break;
-    }
-
-    // ACTION: lightest value achieving AA (4.5:1) on proposed BASE,
-    // with saturation bumped to keep visual richness.
-    const actionS = Math.max(aS, 80);
-    let actionBest = null;
-    for (let l = 15; l <= 58; l += 0.25) {
-      const c   = `hsl(${aH.toFixed(1)} ${actionS.toFixed(1)}% ${l.toFixed(2)}%)`;
-      const rgb = resolveToRgb(c);
-      if (!rgb) continue;
-      const r = contrastRatio(rgb, baseResolved);
-      if (r >= 4.5) actionBest = { color: c, rgb, ratio: r };
-      else break;
-    }
-
-    suggestion = {
-      base:    { color: baseColor,    rgb: baseResolved, ratio: null },
-      neutral: neutralBest,
-      action:  actionBest,
-    };
+    // Maths lives in ../lib/color.js (shared with the configurator). It keeps
+    // each brand hue and searches lightness for the best WCAG score on the
+    // proposed BASE surface.
+    suggestion = suggestAccessiblePalette({
+      baseRgb:    resolveToRgb(colorValue('base')),
+      neutralRgb: resolveToRgb(colorValue('neutral')),
+      actionRgb:  resolveToRgb(colorValue('action')),
+    });
     optimizing = false;
   }
 

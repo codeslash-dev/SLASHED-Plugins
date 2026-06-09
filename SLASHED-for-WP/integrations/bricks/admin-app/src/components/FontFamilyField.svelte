@@ -21,6 +21,7 @@
   import { onMount } from 'svelte';
   import { meta, tokens, writeField } from '../lib/stores.svelte.js';
   import { fetchBricksFonts } from '../lib/api.js';
+  import { SYSTEM_STACKS, detectSystemStack } from '../lib/fonts.js';
   import FieldRow from './FieldRow.svelte';
 
   let {
@@ -33,22 +34,8 @@
   } = $props();
 
   // ── System font stacks (modern-font-stacks catalogue) ──────────────
-  const SYSTEM_STACKS = [
-    { label: 'System UI',           value: 'system-ui, sans-serif' },
-    { label: 'Neo-Grotesque',       value: "Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif" },
-    { label: 'Geometric Humanist',  value: "Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif" },
-    { label: 'Classical Humanist',  value: "Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif" },
-    { label: 'Humanist Sans',       value: "Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro, sans-serif" },
-    { label: 'Industrial Sans',     value: "'Bahnschrift', 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif" },
-    { label: 'Rounded Sans',        value: "ui-rounded, 'Hiragino Maru Gothic ProN', Quicksand, Comfortaa, Manjari, 'Arial Rounded MT Bold', Calibri, source-sans-pro, sans-serif" },
-    { label: 'Transitional Serif',  value: "Charter, 'Bitstream Charter', 'Sitka Text', Cambria, serif" },
-    { label: 'Old Style Serif',     value: "'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif" },
-    { label: 'Slab Serif',          value: "Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif" },
-    { label: 'Antique Serif',       value: "Superclarendon, 'Bookman Old Style', 'URW Bookman', 'URW Bookman L', 'Georgia Pro', Georgia, serif" },
-    { label: 'Didone Serif',        value: "Didact Gothic, 'Bodoni MT', 'Bodoni 72', Didot, 'Playfair Display', serif" },
-    { label: 'Monospace',           value: "ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace" },
-    { label: 'Handwritten',         value: "'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive" },
-  ];
+  // Curated stacks live in the shared ../lib/fonts.js (identical to the
+  // framework configurator, guarded by the parity test suite).
 
   // ── Bricks fonts: bootstrap then live refresh ────────────────────────
   // Start from the PHP bootstrap so the dropdown is populated immediately,
@@ -59,15 +46,12 @@
   const bricksEnabled = meta.activeIntegrations?.bricks ?? true;
 
   onMount(async () => {
-    const initialSource = source;
     try {
-      const fresh = await fetchBricksFonts();
-      bricksFonts = fresh;
-      // Re-infer source: a font present only in the live list would have
-      // been misclassified as 'manual' at init time.
-      if (source === initialSource && initialSource === 'manual' && detectSource(effectiveValue) === 'bricks') {
-        source = 'bricks';
-      }
+      // Refresh the live Bricks list. `source` re-derives automatically when
+      // bricksFonts changes (a font present only in the live list would have
+      // been classified as 'manual' until now) — unless the user has already
+      // picked a tab explicitly.
+      bricksFonts = await fetchBricksFonts();
     } catch {
       // Keep bootstrap data if the fetch fails.
     }
@@ -92,15 +76,21 @@
   function detectSource(value) {
     const v = (value || String(defaultValue)).trim().toLowerCase();
     if (bricksEnabled && bricksFonts.some(f => v === f.family.toLowerCase())) return 'bricks';
-    if (SYSTEM_STACKS.some(s => v === s.value.toLowerCase())) return 'system';
+    if (detectSystemStack(value || String(defaultValue))) return 'system';
     return 'manual';
   }
 
-  let source = $state(detectSource(effectiveValue));
+  // `source` follows auto-detection until the user explicitly picks a tab.
+  // `userSource = null` → derive from the current value (+ the live Bricks
+  // list); a string is the user's sticky choice. Keeping it derived rather
+  // than a seeded `$state` makes it re-evaluate when the value or the fetched
+  // font list changes, and silences the `state_referenced_locally` warning.
+  let userSource = $state(null);
+  const source = $derived(userSource ?? detectSource(effectiveValue));
 
   // ── Source switch ─────────────────────────────────────────────────
   function switchSource(next) {
-    source = next;
+    userSource = next;
     // Pre-select sensible first value when switching into a dropdown mode.
     if (next === 'system') {
       const match = SYSTEM_STACKS.find(s => s.value.toLowerCase() === effectiveValue.toLowerCase());

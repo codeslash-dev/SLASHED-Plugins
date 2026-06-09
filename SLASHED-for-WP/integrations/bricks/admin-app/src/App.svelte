@@ -54,6 +54,7 @@
 <div class="slashed-svelte-admin">
   <header class="slashed-svelte-admin__header">
     <div class="slashed-svelte-admin__header-top">
+      <span class="slashed-svelte-admin__mark" aria-hidden="true">/</span>
       <h1>SLASHED Design Tokens</h1>
       <div class="slashed-svelte-admin__versions">
         {#if meta.versions.framework}
@@ -115,6 +116,20 @@
     flex-wrap: wrap;
   }
 
+  .slashed-svelte-admin__mark {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 7px;
+    background: #2271b1;
+    color: #fff;
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1;
+  }
+
   .slashed-svelte-admin__header h1 {
     margin: 0;
   }
@@ -144,7 +159,8 @@
   .slashed-svelte-admin__body {
     background: white;
     border: 1px solid #c3c4c7;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 </style>

@@ -10,20 +10,7 @@
    * the TypographyTab rows and the live preview update immediately.
    */
   import { tokens, markDirty } from '../lib/stores.svelte.js';
-
-  /** Named scale ratios common in typographic practice. */
-  const RATIOS = [
-    { label: 'Minor Second  (1.067)',  value: 1.067 },
-    { label: 'Major Second  (1.125)',  value: 1.125 },
-    { label: 'Minor Third   (1.200)',  value: 1.200 },
-    { label: 'Major Third   (1.250)',  value: 1.250 },
-    { label: 'Perfect Fourth (1.333)', value: 1.333 },
-    { label: 'Aug. Fourth   (1.414)',  value: 1.414 },
-    { label: 'Perfect Fifth (1.500)',  value: 1.500 },
-    { label: 'Golden Ratio  (1.618)',  value: 1.618 },
-    { label: 'Major Sixth   (1.667)',  value: 1.667 },
-    { label: 'Octave        (2.000)',  value: 2.000 },
-  ];
+  import { RATIOS, modularValue, round } from '../lib/scale.js';
 
   /** Step index relative to `m` (base = 0). */
   const TEXT_STEPS = [
@@ -57,8 +44,9 @@
   const preview = $derived(TEXT_STEPS.map(({ name, idx }) => {
     const isDisplay = name.startsWith('display');
     const factor = isDisplay ? displayBaseFactor : 1;
-    const min = +(baseMin * factor * Math.pow(ratioMobile, idx)).toFixed(4);
-    const max = +(baseMax * factor * Math.pow(ratioDesktop, idx)).toFixed(4);
+    // Shared modular-scale maths (../lib/scale.js), identical to the configurator.
+    const min = round(modularValue(baseMin * factor, ratioMobile, idx));
+    const max = round(modularValue(baseMax * factor, ratioDesktop, idx));
     return { name, min, max };
   }));
 
