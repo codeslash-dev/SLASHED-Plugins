@@ -9,6 +9,36 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-09
+
+### Added
+
+- Bring configurator-parity CSS export to the WP panel
+
+### Changed
+
+- Share WCAG/scale/font logic with the configurator + DX polish
+
+### Fixed
+
+- A11y + robustness from review feedback
+- Derive FontFamilyField source to clear state_referenced_locally
+
+## [0.2.0] - 2026-06-09
+
+### Added
+
+- Bring configurator-parity CSS export to the WP panel
+
+### Changed
+
+- Share WCAG/scale/font logic with the configurator + DX polish
+
+### Fixed
+
+- A11y + robustness from review feedback
+- Derive FontFamilyField source to clear state_referenced_locally
+
 ## [0.1.2] - 2026-06-08
 
 ### Changed
