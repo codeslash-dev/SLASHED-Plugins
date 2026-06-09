@@ -129,9 +129,12 @@
       pairs.push(`--tint-${name}:oklch(from var(--c-${name}) l c h / 0.14)`);
     }
 
-    // 6. Font families.
-    if (typography.font_body)    pairs.push(`--sf-font-body:${sanitizeValue(typography.font_body)}`);
-    if (typography.font_heading) pairs.push(`--sf-font-heading:${sanitizeValue(typography.font_heading)}`);
+    // 6. Font families. Gate on the sanitized result so a value that sanitizes
+    //    to empty doesn't emit a valueless `--sf-font-*:` declaration.
+    const fontBody = sanitizeValue(typography.font_body);
+    if (fontBody) pairs.push(`--sf-font-body:${fontBody}`);
+    const fontHeading = sanitizeValue(typography.font_heading);
+    if (fontHeading) pairs.push(`--sf-font-heading:${fontHeading}`);
 
     // 7. Radius + shadow preview vars.
     const rs = parseFloat(radius.radius_scale ?? meta.defaults?.radius?.radius_scale ?? 1) || 1;

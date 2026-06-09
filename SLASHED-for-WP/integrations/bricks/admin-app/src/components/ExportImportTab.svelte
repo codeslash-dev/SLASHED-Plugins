@@ -147,6 +147,7 @@
             type="button"
             class="seg__btn"
             class:seg__btn--on={ui.outputMode === 'layer'}
+            aria-pressed={ui.outputMode === 'layer'}
             onclick={() => (ui.outputMode = 'layer')}
             title="Wrap output in @layer slashed.overrides (recommended)"
           >@layer</button>
@@ -154,6 +155,7 @@
             type="button"
             class="seg__btn"
             class:seg__btn--on={ui.outputMode === 'root'}
+            aria-pressed={ui.outputMode === 'root'}
             onclick={() => (ui.outputMode = 'root')}
             title="Emit a bare :root rule (no cascade layers)"
           >:root</button>
