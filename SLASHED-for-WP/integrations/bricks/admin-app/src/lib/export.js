@@ -86,6 +86,31 @@ function hasValue(v) {
 }
 
 /**
+ * Sanitize a single declaration value so it cannot break out of its CSS
+ * declaration. Ported from the framework configurator (configurator/src/lib/css.js).
+ *
+ * A legitimate custom-property value never needs a top-level `;`, `{`, or `}`,
+ * nor comment delimiters — stripping them prevents a pasted or fat-fingered
+ * Advanced value like `red; } body { display:none } /*` from corrupting the
+ * generated `:root {}` block or the live preview. PHP sanitizes again on save,
+ * but the admin page also generates CSS purely client-side (the "Download CSS"
+ * / "Copy CSS" buttons and the live-preview caption) where no server pass runs,
+ * so this guard keeps that output well-formed.
+ *
+ * @param {string|number} value raw value
+ * @returns {string} value safe to interpolate into a declaration
+ */
+export function sanitizeValue(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/\/\*[\s\S]*?\*\//g, ' ') // drop comment blocks
+    .replace(/[;{}]/g, ' ') // strip structural characters
+    .replace(/[/*]{2,}/g, ' ') // neutralise stray comment delimiters
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
  * Generate CSS declarations for color tokens.
  *
  * @param {Object} settings Color section settings.
@@ -102,7 +127,8 @@ function generateColorDeclarations(settings) {
   for (const color of brandColors) {
     const key = `brand_${color}`;
     if (hasValue(settings[key])) {
-      declarations.push(`--sf-color-${color}-light: ${settings[key]};`);
+      const val = sanitizeValue(settings[key]);
+      if (val) declarations.push(`--sf-color-${color}-light: ${val};`);
     }
   }
 
@@ -111,7 +137,8 @@ function generateColorDeclarations(settings) {
   for (const color of statusColors) {
     const key = `status_${color}`;
     if (hasValue(settings[key])) {
-      declarations.push(`--sf-color-${color}-light: ${settings[key]};`);
+      const val = sanitizeValue(settings[key]);
+      if (val) declarations.push(`--sf-color-${color}-light: ${val};`);
     }
   }
 
@@ -123,13 +150,15 @@ function generateColorDeclarations(settings) {
     for (const color of brandColors) {
       const key = `brand_dark_${color}`;
       if (hasValue(settings[key])) {
-        declarations.push(`--sf-color-${color}-dark: ${settings[key]};`);
+        const val = sanitizeValue(settings[key]);
+        if (val) declarations.push(`--sf-color-${color}-dark: ${val};`);
       }
     }
     for (const color of statusColors) {
       const key = `status_dark_${color}`;
       if (hasValue(settings[key])) {
-        declarations.push(`--sf-color-${color}-dark: ${settings[key]};`);
+        const val = sanitizeValue(settings[key]);
+        if (val) declarations.push(`--sf-color-${color}-dark: ${val};`);
       }
     }
   }
@@ -153,16 +182,19 @@ function generateTypographyDeclarations(settings, vpRange) {
   for (const name of fontStacks) {
     const key = `font_${name}`;
     if (hasValue(settings[key])) {
-      declarations.push(`--sf-font-${name}: ${settings[key]};`);
+      const val = sanitizeValue(settings[key]);
+      if (val) declarations.push(`--sf-font-${name}: ${val};`);
     }
   }
 
   // Scale multipliers.
   if (hasValue(settings.text_scale)) {
-    declarations.push(`--sf-text-scale: ${settings.text_scale};`);
+    const val = sanitizeValue(settings.text_scale);
+    if (val) declarations.push(`--sf-text-scale: ${val};`);
   }
   if (hasValue(settings.text_display_scale)) {
-    declarations.push(`--sf-text-display-scale: ${settings.text_display_scale};`);
+    const val = sanitizeValue(settings.text_display_scale);
+    if (val) declarations.push(`--sf-text-display-scale: ${val};`);
   }
 
   // Font sizes: size_X_min + size_X_max -> --sf-text-X with clamp().
@@ -195,7 +227,8 @@ function generateSpacingDeclarations(settings, vpRange) {
   const declarations = [];
 
   if (hasValue(settings.space_scale)) {
-    declarations.push(`--sf-space-scale: ${settings.space_scale};`);
+    const val = sanitizeValue(settings.space_scale);
+    if (val) declarations.push(`--sf-space-scale: ${val};`);
   }
 
   const steps = ['2xs', 'xs', 's', 'm', 'l', 'xl', '2xl', '3xl', '4xl'];
@@ -220,7 +253,8 @@ function generateSpacingDeclarations(settings, vpRange) {
 
   for (const [key, property] of Object.entries(aliases)) {
     if (hasValue(settings[key])) {
-      declarations.push(`${property}: ${settings[key]};`);
+      const val = sanitizeValue(settings[key]);
+      if (val) declarations.push(`${property}: ${val};`);
     }
   }
 
@@ -237,7 +271,8 @@ function generateRadiusDeclarations(settings) {
   const declarations = [];
 
   if (hasValue(settings.radius_scale)) {
-    declarations.push(`--sf-radius-scale: ${settings.radius_scale};`);
+    const val = sanitizeValue(settings.radius_scale);
+    if (val) declarations.push(`--sf-radius-scale: ${val};`);
   }
 
   return declarations;
@@ -253,11 +288,13 @@ function generateShadowDeclarations(settings) {
   const declarations = [];
 
   if (hasValue(settings.shadow_strength)) {
-    declarations.push(`--sf-shadow-strength: calc(${settings.shadow_strength} + var(--sf-is-dark) * 0.17);`);
+    const val = sanitizeValue(settings.shadow_strength);
+    if (val) declarations.push(`--sf-shadow-strength: calc(${val} + var(--sf-is-dark) * 0.17);`);
   }
 
   if (hasValue(settings.glow_color)) {
-    declarations.push(`--sf-shadow-glow-color: ${settings.glow_color};`);
+    const val = sanitizeValue(settings.glow_color);
+    if (val) declarations.push(`--sf-shadow-glow-color: ${val};`);
   }
 
   return declarations;
@@ -273,7 +310,8 @@ function generateMotionDeclarations(settings) {
   const declarations = [];
 
   if (hasValue(settings.motion_scale)) {
-    declarations.push(`--sf-motion-scale: ${settings.motion_scale};`);
+    const val = sanitizeValue(settings.motion_scale);
+    if (val) declarations.push(`--sf-motion-scale: ${val};`);
   }
 
   // Duration values: duration_instant -> --sf-duration-instant: calc(Xms * var(--sf-motion-scale));
@@ -281,7 +319,8 @@ function generateMotionDeclarations(settings) {
   for (const name of durations) {
     const key = `duration_${name}`;
     if (hasValue(settings[key])) {
-      declarations.push(`--sf-duration-${name}: calc(${settings[key]}ms * var(--sf-motion-scale));`);
+      const val = sanitizeValue(settings[key]);
+      if (val) declarations.push(`--sf-duration-${name}: calc(${val}ms * var(--sf-motion-scale));`);
     }
   }
 
@@ -354,9 +393,18 @@ function generateContrastDeclarations(settings) {
  * Generate the full CSS export string from all token sections.
  *
  * @param {Object} allTokens The full tokens store object (keyed by section).
+ * @param {Object} [opts]
+ * @param {'layer'|'root'} [opts.mode='layer'] Output framing. 'layer' wraps the
+ *   declarations in `@layer slashed.overrides { :root { … } }` (the framework's
+ *   reserved consumer escape hatch); 'root' emits a bare `:root { … }` for
+ *   consumers who don't use cascade layers. Mirrors the framework configurator's
+ *   output-framing toggle (configurator/src/lib/css.js).
+ * @param {boolean} [opts.banner=false] Prepend a generated-by header comment.
+ * @param {string} [opts.version=''] Framework/plugin version stamped into the banner.
  * @returns {string} CSS output or empty string if no overrides.
  */
-export function generateExportCSS(allTokens) {
+export function generateExportCSS(allTokens, opts = {}) {
+  const { mode = 'layer', banner = false, version = '' } = opts;
   const declarations = [];
 
   // Shared by typography and spacing — mirrors how Slashed_CSS_Generator
@@ -399,11 +447,29 @@ export function generateExportCSS(allTokens) {
 
   if (declarations.length === 0) return '';
 
-  let css = '@layer slashed.overrides {\n\t:root {\n';
-  for (const decl of declarations) {
-    css += `\t\t${decl}\n`;
+  let css = '';
+
+  if (banner) {
+    const v = version ? ` v${version}` : '';
+    const n = declarations.length;
+    css +=
+      `/* SLASHED override tokens${v} — generated by the SLASHED for WordPress admin.\n` +
+      `   Load this AFTER the SLASHED stylesheet. ${n} declaration${n === 1 ? '' : 's'}. */\n`;
   }
-  css += '\t}\n}';
+
+  if (mode === 'root') {
+    css += ':root {\n';
+    for (const decl of declarations) {
+      css += `\t${decl}\n`;
+    }
+    css += '}';
+  } else {
+    css += '@layer slashed.overrides {\n\t:root {\n';
+    for (const decl of declarations) {
+      css += `\t\t${decl}\n`;
+    }
+    css += '\t}\n}';
+  }
 
   return css;
 }
