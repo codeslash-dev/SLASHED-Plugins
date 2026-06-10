@@ -18,6 +18,7 @@ import {
   suggestAccessiblePalette,
   bestOklchOnSurface,
   rgbToOklch,
+  oklchToRgb,
   suggestBrandPalette,
   farthestHue,
   suggestPalette,
@@ -297,5 +298,27 @@ describe('suggestPalette (unified generator)', () => {
 
   test('returns null without a base', () => {
     assert.equal(suggestPalette({ roles: { primary: [1, 2, 3] } }), null);
+  });
+});
+
+describe('OKLCH generation — review fixes', () => {
+  test('bestOklchOnSurface emits a color whose chroma round-trips to its rgb', () => {
+    const hit = bestOklchOnSurface(0.4, 30, [255, 255, 255], 4.5);
+    assert.ok(hit);
+    const m = /^oklch\(([\d.]+) ([\d.]+) ([\d.]+)\)$/.exec(hit.color);
+    assert.ok(m, `parseable: ${hit.color}`);
+    const [, L, C, H] = m.map(Number);
+    const rt = oklchToRgb(L, C, H);
+    assert.deepEqual(rt, hit.rgb, 'emitted color re-renders to the measured rgb');
+    assert.ok(C < 0.4, `chroma fitted below request: ${C}`);
+  });
+
+  test('a single non-primary present role keeps its own hue (no phantom hue 0)', () => {
+    const red = [200, 40, 80];
+    const ownHue = rgbToOklch(...red)[2];
+    const out = suggestBrandPalette({ roles: { secondary: red }, surfaceRgb: [255, 255, 255] });
+    const genHue = rgbToOklch(...out.secondary.rgb)[2];
+    const dist = Math.min(Math.abs(genHue - ownHue), 360 - Math.abs(genHue - ownHue));
+    assert.ok(dist < 20, `secondary kept ~its hue (own ${ownHue.toFixed(0)}, got ${genHue.toFixed(0)})`);
   });
 });

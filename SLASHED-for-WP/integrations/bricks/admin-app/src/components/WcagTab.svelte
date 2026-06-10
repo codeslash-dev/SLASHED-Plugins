@@ -53,7 +53,6 @@
     { key: 'bg',      label: 'Background', cssVar: '--c-bg' },
     { key: 'surface', label: 'Surface',   cssVar: '--c-surface' },
     { key: 'inset',   label: 'Inset',     cssVar: '--c-inset' },
-    { key: 'base',    label: 'Base',      cssVar: '--c-base' },
     { key: 'primary', label: 'Primary',   cssVar: '--c-primary' },
     { key: 'action',  label: 'Action',    cssVar: '--c-action' },
   ];
@@ -442,6 +441,14 @@
               {:else}
                 <span class="badge badge--neutral">Surface</span>
               {/if}
+            </div>
+          {:else if s === null}
+            <div class="optimizer__row optimizer__row--warn">
+              <span class="optimizer__swatch" style="background:{roleValue(role)};"></span>
+              <div class="optimizer__info">
+                <strong>{cap(role)}</strong>
+                <span>No accessible value on this hue — left unchanged</span>
+              </div>
             </div>
           {/if}
         {/each}

@@ -217,16 +217,18 @@ function oklabToLinearRgb(L, A, B) {
 }
 
 /**
- * Convert OKLCH to a 0–255 [r,g,b] triplet. If the requested chroma is outside
- * the sRGB gamut at this lightness/hue, chroma is reduced (binary search) until
- * it fits — preserving L and H exactly, matching how browsers gamut-map oklch().
+ * Fit an OKLCH color to the sRGB gamut, preserving L and H. If the requested
+ * chroma is displayable it's kept; otherwise chroma is reduced (binary search)
+ * until the color fits. Returns BOTH the resulting 0–255 rgb AND the chroma
+ * actually used, so callers can serialise a `color` string that describes the
+ * exact same color whose contrast they measured (no requested-vs-rendered gap).
  *
  * @param {number} L lightness 0–1
- * @param {number} C chroma ≥ 0
+ * @param {number} C requested chroma ≥ 0
  * @param {number} H hue 0–360
- * @returns {[number,number,number]}
+ * @returns {{ rgb: [number,number,number], chroma: number }}
  */
-export function oklchToRgb(L, C, H) {
+export function fitOklchToGamut(L, C, H) {
   const h = (H * Math.PI) / 180;
   const at = (c) => oklabToLinearRgb(L, c * Math.cos(h), c * Math.sin(h));
   const inGamut = (lin) => lin.every((v) => v >= -0.0001 && v <= 1.0001);
@@ -242,7 +244,23 @@ export function oklchToRgb(L, C, H) {
     chroma = lo;
   }
   const lin = at(chroma);
-  return [linearToSrgbChannel(lin[0]), linearToSrgbChannel(lin[1]), linearToSrgbChannel(lin[2])];
+  return {
+    rgb: [linearToSrgbChannel(lin[0]), linearToSrgbChannel(lin[1]), linearToSrgbChannel(lin[2])],
+    chroma,
+  };
+}
+
+/**
+ * Convert OKLCH to a 0–255 [r,g,b] triplet, gamut-mapping chroma as needed
+ * (preserving L and H), matching how browsers gamut-map oklch().
+ *
+ * @param {number} L lightness 0–1
+ * @param {number} C chroma ≥ 0
+ * @param {number} H hue 0–360
+ * @returns {[number,number,number]}
+ */
+export function oklchToRgb(L, C, H) {
+  return fitOklchToGamut(L, C, H).rgb;
 }
 
 /* ────────────────────────────────────────────────────────────────────────
@@ -308,21 +326,25 @@ export function resolveToRgb(cssValue) {
  */
 export function bestOklchOnSurface(chroma, hue, surfaceRgb, target) {
   const surfaceLok = rgbToOklch(...surfaceRgb)[0];
-  const preferDark = relativeLuminance(surfaceRgb) >= 0.5;
+  // Use OKLab lightness for BOTH the direction choice and the in-direction
+  // test, so a surface near the crossover can't bias the search two ways.
+  const preferDark = surfaceLok >= 0.5;
   let best = null; // softest passing value in the preferred direction
   let bestAny = null; // softest passing value in any direction (fallback)
   for (let L = 0; L <= 1.0000001; L += 0.0025) {
-    const rgb = oklchToRgb(L, chroma, hue);
+    // Fit to gamut and capture the chroma actually used, so the emitted
+    // `color` string describes the exact color we measured the ratio on.
+    const { rgb, chroma: usedC } = fitOklchToGamut(L, chroma, hue);
     const ratio = contrastRatio(rgb, surfaceRgb);
     if (ratio < target) continue;
-    if (!bestAny || ratio < bestAny.ratio) bestAny = { L, rgb, ratio };
+    if (!bestAny || ratio < bestAny.ratio) bestAny = { L, rgb, ratio, usedC };
     const inDir = preferDark ? L <= surfaceLok : L >= surfaceLok;
-    if (inDir && (!best || ratio < best.ratio)) best = { L, rgb, ratio };
+    if (inDir && (!best || ratio < best.ratio)) best = { L, rgb, ratio, usedC };
   }
   const pick = best || bestAny;
   if (!pick) return null;
   return {
-    color: `oklch(${pick.L.toFixed(4)} ${chroma.toFixed(4)} ${hue.toFixed(2)})`,
+    color: `oklch(${pick.L.toFixed(4)} ${pick.usedC.toFixed(4)} ${hue.toFixed(2)})`,
     rgb: pick.rgb,
     ratio: pick.ratio,
     locked: false,
@@ -477,13 +499,22 @@ export function suggestBrandPalette({ roles = {}, surfaceRgb, locked = {}, targe
     : null;
 
   const result = {};
+
+  // 1. Locked anchors: echo untouched (their hues were seeded above).
   for (const role of order) {
-    // Locked role: keep as-is, report its measured contrast vs the surface.
     if (locked[role] && roles[role]) {
       const rgb = roles[role];
       result[role] = { color: null, rgb, ratio: contrastRatio(rgb, surfaceRgb), locked: true };
-      continue;
     }
+  }
+
+  // 2. Unlocked roles, PRESENT ones first so a real input anchors the scheme
+  //    when nothing is locked; absent roles then fill the remaining gaps. This
+  //    stops an absent leading role from seeding a phantom hue 0 that would
+  //    shove the present roles off their own hues.
+  const unlocked = order.filter((r) => !(locked[r] && roles[r]));
+  const ordered = [...unlocked.filter((r) => roles[r]), ...unlocked.filter((r) => !roles[r])];
+  for (const role of ordered) {
     // Pick a hue in the widest gap (or this role's own hue if nothing taken).
     const hue = usedHues.length
       ? farthestHue(usedHues)
