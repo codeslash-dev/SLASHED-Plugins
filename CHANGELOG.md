@@ -9,6 +9,36 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-06-10
+
+### Added
+
+- Unify palette generator + on-color usage preview
+- In-context WCAG resolution + color locks
+
+### Changed
+
+- Generate palettes in OKLCH, not HSL
+
+### Fixed
+
+- Address self-review of the WCAG checker + generator
+
+## [0.1.3] - 2026-06-10
+
+### Added
+
+- Unify palette generator + on-color usage preview
+- In-context WCAG resolution + color locks
+
+### Changed
+
+- Generate palettes in OKLCH, not HSL
+
+### Fixed
+
+- Address self-review of the WCAG checker + generator
+
 ## [0.2.0] - 2026-06-09
 
 ### Added
