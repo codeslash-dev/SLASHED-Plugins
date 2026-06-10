@@ -16,7 +16,8 @@ import {
   rgbToHsl,
   hslToRgb,
   suggestAccessiblePalette,
-  bestTextOnSurface,
+  bestOklchOnSurface,
+  rgbToOklch,
   suggestBrandPalette,
   farthestHue,
   suggestPalette,
@@ -100,7 +101,7 @@ describe('palette optimizer', () => {
       actionRgb: [40, 110, 220],
     });
     assert.ok(out, 'suggestion produced');
-    assert.match(out.base.color, /^hsl\(/);
+    assert.match(out.base.color, /^oklch\(/);
     assert.ok(out.neutral, 'neutral found');
     assert.ok(out.neutral.ratio >= 7, `neutral AAA: ${out.neutral.ratio}`);
     assert.ok(out.action, 'action found');
@@ -119,7 +120,7 @@ describe('palette optimizer — locks', () => {
     assert.equal(out.base.locked, false);
     assert.equal(out.neutral.locked, false);
     assert.equal(out.action.locked, false);
-    assert.match(out.base.color, /^hsl\(/);
+    assert.match(out.base.color, /^oklch\(/);
   });
 
   test('a locked role is echoed back untouched with its measured ratio', () => {
@@ -158,18 +159,18 @@ describe('palette optimizer — locks', () => {
   });
 });
 
-describe('bestTextOnSurface', () => {
+describe('bestOklchOnSurface', () => {
   test('finds a passing value and reports its true ratio', () => {
-    const hit = bestTextOnSurface(220, 80, [255, 255, 255], 4.5);
+    const hit = bestOklchOnSurface(0.15, 220, [255, 255, 255], 4.5);
     assert.ok(hit, 'value found');
     assert.ok(hit.ratio >= 4.5);
-    assert.match(hit.color, /^hsl\(/);
+    assert.match(hit.color, /^oklch\(/);
     assert.equal(hit.locked, false);
   });
 
   test('returns null when the target is unreachable on the line', () => {
-    // 21:1 is the absolute ceiling (black on white); 22 can never be met.
-    assert.equal(bestTextOnSurface(0, 0, [128, 128, 128], 22), null);
+    // ~5.3:1 is the ceiling on mid-grey; 22 can never be met.
+    assert.equal(bestOklchOnSurface(0.05, 0, [128, 128, 128], 22), null);
   });
 });
 
@@ -220,7 +221,7 @@ describe('suggestBrandPalette', () => {
       surfaceRgb: surface,
       locked: { primary: true, secondary: true },
     });
-    const hueOf = (rgb) => rgbToHsl(...rgb)[0];
+    const hueOf = (rgb) => rgbToOklch(...rgb)[2];
     const lockedHues = [hueOf([220, 40, 40]), hueOf([40, 200, 90])];
     for (const role of ['tertiary', 'action']) {
       const gh = hueOf(out[role].rgb);

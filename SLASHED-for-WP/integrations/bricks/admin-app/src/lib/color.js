@@ -149,6 +149,103 @@ export function hslToRgb(h, s, l) {
 }
 
 /* ────────────────────────────────────────────────────────────────────────
+ * RGB ↔ OKLab ↔ OKLCH (Björn Ottosson, 2020)
+ *
+ * The framework defines every main color in OKLCH (e.g. `oklch(0.47 0.27 264)`)
+ * and derives shades/dark-mode with `oklch(from …)`; OKLab is used only as the
+ * interpolation space inside `color-mix(in oklab, …)`. We mirror that here so
+ * the palette generator searches in the SAME perceptually-uniform space the
+ * framework renders in: equal L steps look equally bright across hues, so
+ * generated colors stay even and we can preserve hue while adjusting lightness.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Convert one 0–1 linear-light channel back to a 0–255 sRGB channel, clamped
+ * to the displayable range.
+ * @param {number} c linear-light value
+ * @returns {number} 0–255 sRGB channel
+ */
+function linearToSrgbChannel(c) {
+  const v = c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+  return Math.round(Math.max(0, Math.min(1, v)) * 255);
+}
+
+/**
+ * Convert 0–255 RGB to OKLCH [L(0–1), C(≥0), H(0–360)].
+ * @param {number} r
+ * @param {number} g
+ * @param {number} b
+ * @returns {[number,number,number]}
+ */
+export function rgbToOklch(r, g, b) {
+  const lr = toLinear(r);
+  const lg = toLinear(g);
+  const lb = toLinear(b);
+  const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
+  const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
+  const s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
+  const l_ = Math.cbrt(l);
+  const m_ = Math.cbrt(m);
+  const s_ = Math.cbrt(s);
+  const L = 0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_;
+  const A = 1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_;
+  const B = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_;
+  let H = (Math.atan2(B, A) * 180) / Math.PI;
+  if (H < 0) H += 360;
+  return [L, Math.hypot(A, B), H];
+}
+
+/**
+ * Convert OKLab to UNCLAMPED linear-light sRGB (used for gamut testing).
+ * @param {number} L
+ * @param {number} A
+ * @param {number} B
+ * @returns {[number,number,number]}
+ */
+function oklabToLinearRgb(L, A, B) {
+  const l_ = L + 0.3963377774 * A + 0.2158037573 * B;
+  const m_ = L - 0.1055613458 * A - 0.0638541728 * B;
+  const s_ = L - 0.0894841775 * A - 1.291485548 * B;
+  const l = l_ * l_ * l_;
+  const m = m_ * m_ * m_;
+  const s = s_ * s_ * s_;
+  return [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+  ];
+}
+
+/**
+ * Convert OKLCH to a 0–255 [r,g,b] triplet. If the requested chroma is outside
+ * the sRGB gamut at this lightness/hue, chroma is reduced (binary search) until
+ * it fits — preserving L and H exactly, matching how browsers gamut-map oklch().
+ *
+ * @param {number} L lightness 0–1
+ * @param {number} C chroma ≥ 0
+ * @param {number} H hue 0–360
+ * @returns {[number,number,number]}
+ */
+export function oklchToRgb(L, C, H) {
+  const h = (H * Math.PI) / 180;
+  const at = (c) => oklabToLinearRgb(L, c * Math.cos(h), c * Math.sin(h));
+  const inGamut = (lin) => lin.every((v) => v >= -0.0001 && v <= 1.0001);
+  let chroma = C;
+  if (!inGamut(at(chroma))) {
+    let lo = 0;
+    let hi = C;
+    for (let i = 0; i < 24; i += 1) {
+      const mid = (lo + hi) / 2;
+      if (inGamut(at(mid))) lo = mid;
+      else hi = mid;
+    }
+    chroma = lo;
+  }
+  const lin = at(chroma);
+  return [linearToSrgbChannel(lin[0]), linearToSrgbChannel(lin[1]), linearToSrgbChannel(lin[2])];
+}
+
+/* ────────────────────────────────────────────────────────────────────────
  * Browser color resolution
  * ──────────────────────────────────────────────────────────────────────── */
 
@@ -187,39 +284,45 @@ export function resolveToRgb(cssValue) {
  * ──────────────────────────────────────────────────────────────────────── */
 
 /**
- * Search a hue+saturation line for the value that clears a target WCAG
- * contrast ratio against a fixed surface, returning the *softest* passing
- * value — the one closest to the surface that still clears the bar — so
- * generated text/action colors are never needlessly heavy.
+ * Search the lightness axis of a fixed OKLCH (chroma, hue) line for the value
+ * that clears a target WCAG contrast ratio against a fixed surface, returning
+ * the *softest* passing value — the one closest in lightness to the surface
+ * that still clears the bar — so generated colors are never needlessly heavy.
  *
- * The search direction adapts to the surface luminance: on a light surface it
- * prefers darker values, on a dark surface lighter ones, so it produces a
- * legible color for ANY locked base (not just near-white surfaces). Falls back
- * to the opposite direction if the preferred one can't clear the target.
+ * Hue is preserved exactly (OKLCH H) and chroma held constant (gamut-reduced
+ * only where a lightness can't physically hold it), so the result keeps the
+ * source's character and varies only perceived lightness — the approach used
+ * by perceptual tools (Leonardo, ColorBox) and consistent with the framework's
+ * own `oklch(from …)` derivations.
  *
- * @param {number} hue 0–360, preserved from the source color
- * @param {number} sat 0–100 saturation held constant while scanning lightness
+ * The search direction adapts to the surface lightness: on a light surface it
+ * prefers darker values, on a dark surface lighter ones, so it works for ANY
+ * locked base. Falls back to the other direction if the preferred one can't
+ * clear the target.
+ *
+ * @param {number} chroma OKLCH chroma to hold (≥ 0)
+ * @param {number} hue OKLCH hue 0–360, preserved from the source color
  * @param {[number,number,number]} surfaceRgb background to contrast against
  * @param {number} target minimum contrast ratio to clear (e.g. 7 or 4.5)
  * @returns {{ color: string, rgb: [number,number,number], ratio: number, locked: false } | null}
  */
-export function bestTextOnSurface(hue, sat, surfaceRgb, target) {
-  const surfaceL = rgbToHsl(...surfaceRgb)[2];
+export function bestOklchOnSurface(chroma, hue, surfaceRgb, target) {
+  const surfaceLok = rgbToOklch(...surfaceRgb)[0];
   const preferDark = relativeLuminance(surfaceRgb) >= 0.5;
   let best = null; // softest passing value in the preferred direction
   let bestAny = null; // softest passing value in any direction (fallback)
-  for (let l = 0; l <= 100; l += 0.25) {
-    const rgb = hslToRgb(hue, sat, l);
+  for (let L = 0; L <= 1.0000001; L += 0.0025) {
+    const rgb = oklchToRgb(L, chroma, hue);
     const ratio = contrastRatio(rgb, surfaceRgb);
     if (ratio < target) continue;
-    if (!bestAny || ratio < bestAny.ratio) bestAny = { rgb, ratio, l };
-    const inDir = preferDark ? l <= surfaceL : l >= surfaceL;
-    if (inDir && (!best || ratio < best.ratio)) best = { rgb, ratio, l };
+    if (!bestAny || ratio < bestAny.ratio) bestAny = { L, rgb, ratio };
+    const inDir = preferDark ? L <= surfaceLok : L >= surfaceLok;
+    if (inDir && (!best || ratio < best.ratio)) best = { L, rgb, ratio };
   }
   const pick = best || bestAny;
   if (!pick) return null;
   return {
-    color: `hsl(${hue.toFixed(1)} ${sat.toFixed(1)}% ${pick.l.toFixed(2)}%)`,
+    color: `oklch(${pick.L.toFixed(4)} ${chroma.toFixed(4)} ${hue.toFixed(2)})`,
     rgb: pick.rgb,
     ratio: pick.ratio,
     locked: false,
@@ -261,33 +364,38 @@ export function suggestAccessiblePalette({ baseRgb, neutralRgb, actionRgb, locke
   const lockNeutral = !!locked.neutral;
   const lockAction = !!locked.action;
 
-  const [bH, bS] = rgbToHsl(...baseRgb);
-  const [nH, nS] = rgbToHsl(...neutralRgb);
-  const [aH, aS] = rgbToHsl(...actionRgb);
-
   // BASE / surface: locked → the user's actual color is the surface; unlocked
-  // → a very light surface that keeps the hue tint but caps saturation.
+  // → a very light OKLCH surface that keeps the hue tint but caps chroma
+  // (mirrors the framework's `oklch(0.96 0.006 250)` base-light).
   let baseColor;
   let baseResolved;
   if (lockBase) {
     baseResolved = baseRgb;
     baseColor = null;
   } else {
-    const baseS = Math.min(bS, 8);
-    baseColor = `hsl(${bH.toFixed(1)} ${baseS.toFixed(1)}% 97%)`;
-    baseResolved = hslToRgb(bH, baseS, 97);
+    const [, bC, bH] = rgbToOklch(...baseRgb);
+    const surC = Math.min(bC, 0.02);
+    baseColor = `oklch(0.96 ${surC.toFixed(4)} ${bH.toFixed(2)})`;
+    baseResolved = oklchToRgb(0.96, surC, bH);
   }
 
-  // NEUTRAL: value reaching AAA (7:1) on the surface; locked → kept as-is.
-  const neutral = lockNeutral
-    ? { color: null, rgb: neutralRgb, ratio: contrastRatio(neutralRgb, baseResolved), locked: true }
-    : bestTextOnSurface(nH, Math.min(nS, 15), baseResolved, 7);
+  // NEUTRAL: near-neutral body text reaching AAA (7:1); locked → kept as-is.
+  let neutral;
+  if (lockNeutral) {
+    neutral = { color: null, rgb: neutralRgb, ratio: contrastRatio(neutralRgb, baseResolved), locked: true };
+  } else {
+    const [, nC, nH] = rgbToOklch(...neutralRgb);
+    neutral = bestOklchOnSurface(Math.min(nC, 0.05), nH, baseResolved, 7);
+  }
 
-  // ACTION: value reaching AA (4.5:1) on the surface, richer saturation;
-  // locked → kept as-is.
-  const action = lockAction
-    ? { color: null, rgb: actionRgb, ratio: contrastRatio(actionRgb, baseResolved), locked: true }
-    : bestTextOnSurface(aH, Math.max(aS, 80), baseResolved, 4.5);
+  // ACTION: keeps its vivid chroma, reaching AA (4.5:1); locked → kept as-is.
+  let action;
+  if (lockAction) {
+    action = { color: null, rgb: actionRgb, ratio: contrastRatio(actionRgb, baseResolved), locked: true };
+  } else {
+    const [, aC, aH] = rgbToOklch(...actionRgb);
+    action = bestOklchOnSurface(Math.max(aC, 0.12), aH, baseResolved, 4.5);
+  }
 
   return {
     base: { color: baseColor, rgb: baseResolved, ratio: null, locked: lockBase },
@@ -337,9 +445,10 @@ export function farthestHue(usedHues) {
  *   2. clear a WCAG contrast target against the surface (default AA 4.5:1), so
  *      each generated color is usable as an accessible accent/text/link.
  *
- * Generated colors take their saturation from the average of the locked
- * anchors (so the set feels cohesive), with a floor so they stay lively. Pure
- * RGB in / RGB out — no DOM — so it is fully unit-testable.
+ * Generated colors take their chroma from the average of the locked anchors
+ * (so the set feels cohesive), with a floor so they stay lively. Hue gaps are
+ * computed in OKLCH so the spread is perceptually even. Pure RGB in / out — no
+ * DOM — so it is fully unit-testable.
  *
  * @param {object} input
  * @param {Record<string,[number,number,number]>} input.roles resolved RGB per
@@ -353,18 +462,18 @@ export function suggestBrandPalette({ roles = {}, surfaceRgb, locked = {}, targe
   if (!surfaceRgb) return null;
   const order = ['primary', 'secondary', 'tertiary', 'action'];
 
-  // Seed the scheme from the locked anchors' hues + saturations.
+  // Seed the scheme from the locked anchors' OKLCH hues + chromas.
   const usedHues = [];
-  const lockedSats = [];
+  const lockedChromas = [];
   for (const role of order) {
     if (locked[role] && roles[role]) {
-      const [h, s] = rgbToHsl(...roles[role]);
-      usedHues.push(h);
-      lockedSats.push(s);
+      const [, C, H] = rgbToOklch(...roles[role]);
+      usedHues.push(H);
+      lockedChromas.push(C);
     }
   }
-  const avgLockedSat = lockedSats.length
-    ? lockedSats.reduce((a, b) => a + b, 0) / lockedSats.length
+  const avgChroma = lockedChromas.length
+    ? lockedChromas.reduce((a, b) => a + b, 0) / lockedChromas.length
     : null;
 
   const result = {};
@@ -379,15 +488,15 @@ export function suggestBrandPalette({ roles = {}, surfaceRgb, locked = {}, targe
     const hue = usedHues.length
       ? farthestHue(usedHues)
       : roles[role]
-        ? rgbToHsl(...roles[role])[0]
+        ? rgbToOklch(...roles[role])[2]
         : 0;
     usedHues.push(hue);
-    // Cohesive, lively saturation.
-    let sat = avgLockedSat;
-    if (sat == null) sat = roles[role] ? rgbToHsl(...roles[role])[1] : 70;
-    sat = Math.max(sat, 45);
+    // Cohesive, lively chroma (OKLCH chroma floor keeps accents vivid).
+    let chroma = avgChroma;
+    if (chroma == null) chroma = roles[role] ? rgbToOklch(...roles[role])[1] : 0.15;
+    chroma = Math.max(chroma, 0.12);
     // Most surface-friendly value on that hue that still clears the target.
-    const hit = bestTextOnSurface(hue, sat, surfaceRgb, target);
+    const hit = bestOklchOnSurface(chroma, hue, surfaceRgb, target);
     result[role] = hit
       ? { color: hit.color, rgb: hit.rgb, ratio: hit.ratio, locked: false }
       : null;
@@ -422,29 +531,29 @@ export function suggestPalette({ roles = {}, locked = {}, neutralTarget = 7, acc
   if (!roles.base) return null;
 
   // 1. Surface = base. Locked → the user's base IS the surface; unlocked → a
-  //    light, lightly-tinted surface (keeps the hue, caps saturation).
-  const [bH, bS] = rgbToHsl(...roles.base);
+  //    light OKLCH surface (keeps the hue tint, caps chroma).
   let surfaceRgb;
   let baseColor;
   if (locked.base) {
     surfaceRgb = roles.base;
     baseColor = null;
   } else {
-    const s = Math.min(bS, 8);
-    baseColor = `hsl(${bH.toFixed(1)} ${s.toFixed(1)}% 97%)`;
-    surfaceRgb = hslToRgb(bH, s, 97);
+    const [, bC, bH] = rgbToOklch(...roles.base);
+    const surC = Math.min(bC, 0.02);
+    baseColor = `oklch(0.96 ${surC.toFixed(4)} ${bH.toFixed(2)})`;
+    surfaceRgb = oklchToRgb(0.96, surC, bH);
   }
 
   const out = {};
   out.base = { color: baseColor, rgb: surfaceRgb, ratio: null, locked: !!locked.base };
 
-  // 2. Neutral (body text) → AAA on the surface.
+  // 2. Neutral (body text) → AAA on the surface, near-neutral chroma.
   if (roles.neutral) {
     if (locked.neutral) {
       out.neutral = { color: null, rgb: roles.neutral, ratio: contrastRatio(roles.neutral, surfaceRgb), locked: true };
     } else {
-      const [nH, nS] = rgbToHsl(...roles.neutral);
-      out.neutral = bestTextOnSurface(nH, Math.min(nS, 15), surfaceRgb, neutralTarget);
+      const [, nC, nH] = rgbToOklch(...roles.neutral);
+      out.neutral = bestOklchOnSurface(Math.min(nC, 0.05), nH, surfaceRgb, neutralTarget);
     }
   }
 
