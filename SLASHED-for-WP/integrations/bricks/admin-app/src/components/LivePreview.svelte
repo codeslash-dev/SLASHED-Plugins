@@ -23,133 +23,21 @@
    * both light and dark, for any brand palette the user picks.
    */
   import { tokens, meta } from '../lib/stores.svelte.js';
-  import { generateExportCSS, sanitizeValue } from '../lib/export.js';
+  import { generateExportCSS } from '../lib/export.js';
+  import { buildPreviewVars, BRAND_NAMES, STATUS_NAMES } from '../lib/preview-vars.js';
 
-  const brand = ['primary', 'secondary', 'tertiary', 'action', 'neutral', 'base'];
-  const statuses = ['success', 'warning', 'error', 'info', 'danger'];
-  const defaultColors = meta.defaults?.colors ?? {};
-
-  // Auto-derivation formulas matching core/tokens.css verbatim.
-  // Module-level so they're defined once, not recreated per render.
-  const autoDarkStandard = (light) =>
-    `oklch(from var(${light}) clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h)`;
-  const autoDarkBase = (light) =>
-    `oklch(from var(${light}) clamp(0.16, calc(1.18 - l), 0.24) calc(c * 0.5) h)`;
-  const autoDark = (name) => {
-    const light = `--sf-color-${name}-light`;
-    return name === 'base' ? autoDarkBase(light) : autoDarkStandard(light);
-  };
+  const brand = BRAND_NAMES;
+  const statuses = STATUS_NAMES;
 
   /** Light / dark mode toggle for the preview panel. */
   let darkMode = $state(false);
 
-  /** The active color-mode suffix for all swatch/button lookups. */
-  const mode = $derived(darkMode ? 'dark' : 'light');
-
   /**
-   * Build inline CSS custom properties for the preview canvas. Includes
-   * source brand/status colors, resolved active-mode tokens, on-color
-   * text, surfaces, text hierarchy, borders, links, and preview-only
-   * radius/shadow vars so the whole showcase responds live.
+   * Inline CSS custom properties for the preview canvas. Derivation lives in
+   * lib/preview-vars.js (shared with the WCAG checker) so what you preview is
+   * exactly what the contrast checker measures — no drift between the two.
    */
-  const inlineStyle = $derived.by(() => {
-    const pairs = [];
-    const colors = tokens.colors ?? {};
-    const typography = tokens.typography ?? {};
-    const radius = tokens.radius ?? {};
-    const shadows = tokens.shadows ?? {};
-    const contrast = tokens.contrast ?? {};
-    const m = darkMode ? 'dark' : 'light';
-
-    // Contrast knobs — mirror the framework defaults so derived tokens
-    // match what the generator would emit.
-    const TH = (() => {
-      const v = contrast.contrast_threshold;
-      const n = v !== undefined && v !== '' ? parseFloat(v) : parseFloat(meta.defaults?.contrast?.contrast_threshold ?? 0.6);
-      return Number.isFinite(n) ? n : 0.6;
-    })();
-    const BIAS = (() => {
-      const v = contrast.contrast_bias;
-      const n = v !== undefined && v !== '' ? parseFloat(v) : parseFloat(meta.defaults?.contrast?.contrast_bias ?? 0);
-      return Number.isFinite(n) ? n : 0;
-    })();
-
-    // 1. Source light/dark colors (swatch lookups read these by mode).
-    // Sanitize every user-entered value before it lands in the inline-style
-    // string: a pasted Advanced value containing ';' or '}' would otherwise
-    // break out of the style attribute (same guard the CSS export uses).
-    for (const name of brand) {
-      const v = sanitizeValue(colors[`brand_${name}`] ?? defaultColors.brand_hex_hints?.[name]);
-      if (v) pairs.push(`--sf-color-${name}-light:${v}`);
-      const darkEnabled = colors.dark_overrides_enabled !== '0';
-      const storedDark = darkEnabled ? sanitizeValue(colors[`brand_dark_${name}`]) : '';
-      pairs.push(`--sf-color-${name}-dark:${storedDark || autoDark(name)}`);
-    }
-    for (const name of statuses) {
-      const v = sanitizeValue(colors[`status_${name}`] ?? defaultColors.status_hex_hints?.[name]);
-      if (v) pairs.push(`--sf-color-${name}-light:${v}`);
-      const darkEnabled = colors.dark_overrides_enabled !== '0';
-      const storedDark = darkEnabled ? sanitizeValue(colors[`status_dark_${name}`]) : '';
-      pairs.push(`--sf-color-${name}-dark:${storedDark || autoDark(name)}`);
-    }
-
-    // 2. Resolved active-mode color + auto-contrasting on-color text.
-    const onColor = (cvar) =>
-      `oklch(from ${cvar} clamp(0.1, sign(${TH} - l) * 999, 0.95) 0 0)`;
-    for (const name of [...brand, ...statuses]) {
-      pairs.push(`--c-${name}:var(--sf-color-${name}-${m})`);
-      pairs.push(`--on-${name}:${onColor(`var(--c-${name})`)}`);
-    }
-
-    // 3. Surfaces — derived from --c-base, matching tokens.css.
-    pairs.push(`--c-surface:var(--c-base)`);
-    pairs.push(`--c-bg:oklch(from var(--c-base) calc(l + 0.02) c h)`);
-    pairs.push(`--c-raised:oklch(from var(--c-base) calc(l + 0.04) c h)`);
-    pairs.push(`--c-inset:oklch(from var(--c-base) calc(l - 0.02) c h)`);
-
-    // 4. Text hierarchy — opposite formula directions per mode.
-    const neutralSrc = m === 'dark' ? 'var(--c-neutral)' : 'var(--sf-color-neutral-light)';
-    if (m === 'dark') {
-      pairs.push(`--c-text:oklch(from ${neutralSrc} clamp(0.70, calc(l + 0.25 + ${BIAS}), 1) c h)`);
-      pairs.push(`--c-text-secondary:oklch(from ${neutralSrc} clamp(0.55, calc(l + 0.1 + ${BIAS}), 0.90) c h)`);
-      pairs.push(`--c-border:oklch(from ${neutralSrc} clamp(0.25, calc(l - 0.3), 0.55) 0.005 h)`);
-      pairs.push(`--c-border-subtle:oklch(from ${neutralSrc} clamp(0.20, calc(l - 0.38), 0.45) 0.005 h)`);
-      pairs.push(`--c-link:oklch(from var(--c-action) clamp(0.68, l, 1) c h)`);
-    } else {
-      pairs.push(`--c-text:oklch(from ${neutralSrc} clamp(0.05, calc(l - 0.4 - ${BIAS}), 0.35) c h)`);
-      pairs.push(`--c-text-secondary:oklch(from ${neutralSrc} clamp(0.15, calc(l - 0.25 - ${BIAS}), 0.45) c h)`);
-      pairs.push(`--c-border:oklch(from ${neutralSrc} clamp(0.70, calc(l + 0.35), 0.95) 0.005 h)`);
-      pairs.push(`--c-border-subtle:oklch(from ${neutralSrc} clamp(0.75, calc(l + 0.4), 0.97) 0.005 h)`);
-      pairs.push(`--c-link:oklch(from var(--c-action) clamp(0, min(l - 0.07, 0.48), 1) c h)`);
-    }
-    pairs.push(`--c-text-muted:var(--c-neutral)`);
-
-    // 5. Status tints (translucent fills for alerts) + on-color already set.
-    for (const name of statuses) {
-      pairs.push(`--tint-${name}:oklch(from var(--c-${name}) l c h / 0.14)`);
-    }
-
-    // 6. Font families. Gate on the sanitized result so a value that sanitizes
-    //    to empty doesn't emit a valueless `--sf-font-*:` declaration.
-    const fontBody = sanitizeValue(typography.font_body);
-    if (fontBody) pairs.push(`--sf-font-body:${fontBody}`);
-    const fontHeading = sanitizeValue(typography.font_heading);
-    if (fontHeading) pairs.push(`--sf-font-heading:${fontHeading}`);
-
-    // 7. Radius + shadow preview vars.
-    const rs = parseFloat(radius.radius_scale ?? meta.defaults?.radius?.radius_scale ?? 1) || 1;
-    pairs.push(`--preview-radius-s:${Math.round(4 * rs)}px`);
-    pairs.push(`--preview-radius-m:${Math.round(8 * rs)}px`);
-    pairs.push(`--preview-radius-l:${Math.round(16 * rs)}px`);
-
-    const ssRaw = shadows.shadow_strength;
-    const ss = ssRaw !== undefined && ssRaw !== ''
-      ? parseFloat(ssRaw)
-      : parseFloat(meta.defaults?.shadows?.shadow_strength ?? 0.08);
-    pairs.push(`--preview-shadow:0 2px 8px 0 rgba(0,0,0,${(ss * 2).toFixed(3)}),0 1px 3px 0 rgba(0,0,0,${ss.toFixed(3)})`);
-
-    return pairs.join(';');
-  });
+  const inlineStyle = $derived(buildPreviewVars(tokens, meta, darkMode));
 
   /** Surfaces shown as elevation tiles. */
   const surfaceTiles = [

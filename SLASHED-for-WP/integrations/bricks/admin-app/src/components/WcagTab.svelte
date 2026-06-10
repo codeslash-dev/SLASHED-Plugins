@@ -2,145 +2,205 @@
   /**
    * WCAG Contrast Checker tab.
    *
-   * Lets the user pick any two SLASHED color tokens (foreground +
-   * background) and instantly sees the WCAG 2.1 contrast ratio plus
-   * AA / AAA pass/fail for normal text (4.5:1 / 7:1) and large text
-   * (3:1 / 4.5:1).
+   * Lets the user check the WCAG 2.1 contrast of the legibility-relevant token
+   * pairs (text-on-surface) and pick any pair for a detailed AA/AAA readout for
+   * normal and large text.
    *
-   * Below the picker, a compact reference grid shows every token pair
-   * colour-coded by its worst WCAG level: green (AAA), yellow (AA),
-   * orange (AA large only), red (fail all).
+   * ⚠ In-context resolution: the WP admin page does NOT load the SLASHED
+   * stylesheet, so a token like `--sf-color-text` (derived from neutral via
+   * relative-color syntax) has no value to read here. The old checker fed the
+   * RAW stored brand string to a canvas resolver, which silently failed for
+   * `var(...)`, derived surfaces, and dark-mode colors — so the grid was wrong.
    *
-   * Color resolution uses an offscreen canvas (fillStyle + getImageData)
-   * so hex, rgb/hsl, oklch — anything the browser parser accepts — is
-   * handled without a custom parser.
+   * Instead we now build the SAME derived CSS-var block the live preview uses
+   * (lib/preview-vars.js — one source of truth), apply it to a hidden probe
+   * root, and read back each measured token's computed `color`. That resolves
+   * surfaces, auto-contrasting text and dark mode exactly as the front-end
+   * would. Maths lives in the shared, unit-tested ../lib/color.js so the WP
+   * checker and the framework configurator never drift.
    */
-  import { meta, tokens } from '../lib/stores.svelte.js';
+  import { tokens, meta } from '../lib/stores.svelte.js';
   import { saveSection } from '../lib/api.js';
+  import { buildPreviewVars } from '../lib/preview-vars.js';
   import {
     resolveToRgb,
     contrastRatio,
     wcagLevel,
     wcagLevelLarge,
     levelClass,
-    suggestAccessiblePalette,
+    suggestPalette,
   } from '../lib/color.js';
 
-  // ── Color inventory ──────────────────────────────────────────────────
-  const defaultColors = meta.defaults?.colors ?? {};
+  // ── Light / dark toggle (parity with the framework WcagPanel) ────────
+  let darkMode = $state(false);
 
-  const BRAND_NAMES   = Object.keys(defaultColors.brand ?? {});
-  const STATUS_NAMES  = Object.keys(defaultColors.status ?? {});
-  const ALL_NAMES     = [...BRAND_NAMES, ...STATUS_NAMES];
+  // Derived CSS-var blocks: `active` follows the toggle (matrix + picker);
+  // `light` is always the light source palette (optimizer inputs, which feed
+  // light-mode brand overrides).
+  const declActive = $derived(buildPreviewVars(tokens, meta, darkMode));
+  const declLight  = $derived(buildPreviewVars(tokens, meta, false));
 
-  /** Display label for a color slug. */
-  function label(name) {
-    return name.charAt(0).toUpperCase() + name.slice(1);
+  // ── Curated, legibility-relevant tokens (mirrors framework WcagPanel) ─
+  const FG = [
+    { key: 'text',           label: 'Text',           cssVar: '--c-text' },
+    { key: 'text-secondary', label: 'Text secondary', cssVar: '--c-text-secondary' },
+    { key: 'text-muted',     label: 'Text muted',     cssVar: '--c-text-muted' },
+    { key: 'link',           label: 'Link',           cssVar: '--c-link' },
+    { key: 'primary',        label: 'Primary',        cssVar: '--c-primary' },
+    { key: 'action',         label: 'Action',         cssVar: '--c-action' },
+  ];
+  const BG = [
+    { key: 'bg',      label: 'Background', cssVar: '--c-bg' },
+    { key: 'surface', label: 'Surface',   cssVar: '--c-surface' },
+    { key: 'inset',   label: 'Inset',     cssVar: '--c-inset' },
+    { key: 'primary', label: 'Primary',   cssVar: '--c-primary' },
+    { key: 'action',  label: 'Action',    cssVar: '--c-action' },
+  ];
+
+  const fgByKey = new Map(FG.map((e) => [e.key, e]));
+  const bgByKey = new Map(BG.map((e) => [e.key, e]));
+  const fgVar = (key) => fgByKey.get(key)?.cssVar ?? '--c-text';
+  const bgVar = (key) => bgByKey.get(key)?.cssVar ?? '--c-bg';
+
+  // Unique cssVars to probe for the matrix + picker.
+  // "Used combinations" preview also needs each brand/status color + its
+  // auto-contrasting on-color text, resolved in the active (light/dark) mode.
+  const USAGE_ROLES = ['primary', 'secondary', 'tertiary', 'action', 'success', 'warning', 'error', 'info'];
+  const usageVars = USAGE_ROLES.flatMap((r) => [`--c-${r}`, `--on-${r}`]);
+  const measured = [...new Set([...[...FG, ...BG].map((e) => e.cssVar), ...usageVars])];
+
+  /** Parse a computed `rgb()` / `rgba()` string to [r,g,b] or null. */
+  function parseRgb(str) {
+    const m = /rgba?\(([^)]+)\)/.exec(str || '');
+    if (!m) return null;
+    const parts = m[1].split(/[ ,/]+/).map(Number).filter((n) => !Number.isNaN(n));
+    if (parts.length < 3) return null;
+    if (parts.length >= 4 && parts[3] === 0) return null;
+    return [parts[0], parts[1], parts[2]];
   }
 
-  /** Effective stored/default value for a token (light variant). */
-  function colorValue(name) {
-    const stored = BRAND_NAMES.includes(name)
-      ? tokens.colors?.[`brand_${name}`]
-      : tokens.colors?.[`status_${name}`];
-    if (stored) return stored;
-    return (
-      defaultColors.brand_hex_hints?.[name] ??
-      defaultColors.status_hex_hints?.[name] ??
-      defaultColors.brand?.[name] ??
-      defaultColors.status?.[name] ??
-      ''
-    );
-  }
+  // ── Probe DOM: name -> resolved [r,g,b] ──────────────────────────────
+  let probes = {};
+  let resolved = $state({});
 
-  // ── Color resolution + WCAG maths (shared with the framework configurator,
-  //    see ../lib/color.js — kept in lockstep via the parity test suite) ──
-
-  // ── Resolved RGB cache (computed once per render) ─────────────────────
-
-  const resolved = $derived.by(() => {
-    const map = new Map();
-    for (const name of ALL_NAMES) {
-      map.set(name, resolveToRgb(colorValue(name)));
+  $effect(() => {
+    void declActive; // re-read after any token/theme change hits the DOM
+    const next = {};
+    for (const cssVar of measured) {
+      const el = probes[cssVar];
+      if (!el) continue;
+      const computed = getComputedStyle(el).color;
+      next[cssVar] = parseRgb(computed) ?? resolveToRgb(computed);
     }
-    return map;
+    resolved = next;
   });
 
-  // ── Picker state ─────────────────────────────────────────────────────
+  // Optimizer inputs resolved from the LIGHT source palette.
+  // Generator inputs resolved from the LIGHT source palette. ONE lock set
+  // across every role so the foundation (base/neutral) and the brand accents
+  // (primary/secondary/tertiary/action) are generated coherently together.
+  const OPT_VARS = {
+    base: '--c-base',
+    neutral: '--c-neutral',
+    primary: '--c-primary',
+    secondary: '--c-secondary',
+    tertiary: '--c-tertiary',
+    action: '--c-action',
+  };
+  const OPT_ROLES = ['base', 'neutral', 'primary', 'secondary', 'tertiary', 'action'];
+  let optProbes = {};
+  let optResolved = $state({});
 
-  let fg = $state(ALL_NAMES[0] ?? '');
-  let bg = $state(ALL_NAMES[1] ?? ALL_NAMES[0] ?? '');
+  $effect(() => {
+    void declLight;
+    const next = {};
+    for (const role of OPT_ROLES) {
+      const el = optProbes[role];
+      if (!el) continue;
+      const computed = getComputedStyle(el).color;
+      next[role] = parseRgb(computed) ?? resolveToRgb(computed);
+    }
+    optResolved = next;
+  });
 
-  const fgRgb = $derived(resolved.get(fg) ?? null);
-  const bgRgb = $derived(resolved.get(bg) ?? null);
+  // ── Pair picker ──────────────────────────────────────────────────────
+  let fgKey = $state(FG[0].key);
+  let bgKey = $state(BG[0].key);
 
-  const ratio = $derived(
-    fgRgb && bgRgb ? contrastRatio(fgRgb, bgRgb) : null
+  const fgRgb = $derived(resolved[fgVar(fgKey)] ?? null);
+  const bgRgb = $derived(resolved[bgVar(bgKey)] ?? null);
+  const ratio = $derived(fgRgb && bgRgb ? contrastRatio(fgRgb, bgRgb) : null);
+  const normalText = $derived(ratio !== null ? wcagLevel(ratio) : null);
+  const largeText  = $derived(ratio !== null ? wcagLevelLarge(ratio) : null);
+
+  // ── Matrix: FG (rows) × BG (cols) ────────────────────────────────────
+  const grid = $derived(
+    FG.map((f) =>
+      BG.map((b) => {
+        const a = resolved[f.cssVar];
+        const c = resolved[b.cssVar];
+        if (!a || !c) return { ratio: null, level: null };
+        const r = contrastRatio(a, c);
+        return { ratio: r, level: wcagLevel(r) };
+      })
+    )
   );
 
-  const normalText = $derived(ratio !== null ? wcagLevel(ratio) : null);
+  function selectPair(fKey, bKey) {
+    fgKey = fKey;
+    bgKey = bKey;
+  }
 
-  const largeText = $derived(ratio !== null ? wcagLevelLarge(ratio) : null);
-
-  // ── Grid ─────────────────────────────────────────────────────────────
+  // On-color usage chips: contrast of on-color text against its color, in the
+  // active (light/dark) mode.
+  const usage = $derived(
+    USAGE_ROLES.map((role) => {
+      const c = resolved[`--c-${role}`];
+      const t = resolved[`--on-${role}`];
+      const r = c && t ? contrastRatio(t, c) : null;
+      return { role, ratio: r, level: r !== null ? wcagLevel(r) : null };
+    })
+  );
 
   /**
-   * For each (fg, bg) pair in the grid, compute the contrast ratio and
-   * level. Derived so it refreshes if tokens change.
+   * Swap the picker's foreground and background. FG and BG are curated, partly
+   * different lists, so a key is only carried across when it exists on the
+   * other side; otherwise that side keeps its current selection.
    */
-  const grid = $derived.by(() => {
-    const rows = [];
-    for (const fgName of ALL_NAMES) {
-      const row = [];
-      for (const bgName of ALL_NAMES) {
-        const r1 = resolved.get(fgName);
-        const r2 = resolved.get(bgName);
-        if (!r1 || !r2 || fgName === bgName) {
-          row.push({ ratio: null, level: null });
-        } else {
-          const r = contrastRatio(r1, r2);
-          row.push({ ratio: r, level: wcagLevel(r) });
-        }
-      }
-      rows.push(row);
-    }
-    return rows;
-  });
-
-  /** Hex approximation for swatch rendering. */
-  function swatchStyle(name) {
-    const v = colorValue(name);
-    return v ? `background:${v}` : 'background:#ccc';
+  function swapPair() {
+    const newFg = fgByKey.has(bgKey) ? bgKey : fgKey;
+    const newBg = bgByKey.has(fgKey) ? fgKey : bgKey;
+    fgKey = newFg;
+    bgKey = newBg;
   }
 
-  function setFg(name) { fg = name; }
-  function setBg(name) { bg = name; }
-
-  function selectPair(fgName, bgName) {
-    fg = fgName;
-    bg = bgName;
-  }
-
-  // ── Palette Optimizer ─────────────────────────────────────────────────
-
+  // ── Palette Optimizer + color locks ──────────────────────────────────
   let suggestion  = $state(null);
   let optimizing  = $state(false);
   let applying    = $state(false);
   let applyStatus = $state('');
+  let locked      = $state({
+    base: false,
+    neutral: false,
+    primary: false,
+    secondary: false,
+    tertiary: false,
+    action: false,
+  });
+
+  function toggleLock(role) {
+    locked[role] = !locked[role];
+    if (suggestion) runOptimizer();
+  }
 
   function runOptimizer() {
     optimizing  = true;
-    suggestion  = null;
     applyStatus = '';
-
-    // Maths lives in ../lib/color.js (shared with the configurator). It keeps
-    // each brand hue and searches lightness for the best WCAG score on the
-    // proposed BASE surface.
-    suggestion = suggestAccessiblePalette({
-      baseRgb:    resolveToRgb(colorValue('base')),
-      neutralRgb: resolveToRgb(colorValue('neutral')),
-      actionRgb:  resolveToRgb(colorValue('action')),
-    });
+    const roles = {};
+    for (const role of OPT_ROLES) {
+      if (optResolved[role]) roles[role] = optResolved[role];
+    }
+    suggestion = suggestPalette({ roles, locked: { ...locked } });
     optimizing = false;
   }
 
@@ -149,21 +209,21 @@
     applying    = true;
     applyStatus = '';
     try {
+      // Write only generated (unlocked) roles — locked anchors keep their value.
       const updates = {};
-      if (suggestion.base)    updates.brand_base    = suggestion.base.color;
-      if (suggestion.neutral) updates.brand_neutral = suggestion.neutral.color;
-      if (suggestion.action)  updates.brand_action  = suggestion.action.color;
-
+      for (const role of OPT_ROLES) {
+        const s = suggestion[role];
+        if (s && s.color && !s.locked) updates[`brand_${role}`] = s.color;
+      }
       const merged = { ...(tokens.colors ?? {}), ...updates };
       await saveSection('colors', merged);
 
-      // Update reactive state so the grid re-renders immediately.
       tokens.colors ??= {};
       Object.assign(tokens.colors, updates);
 
       applyStatus = 'Applied ✓';
       setTimeout(() => { applyStatus = ''; }, 3000);
-      suggestion  = null;
+      suggestion = null;
     } catch (e) {
       applyStatus = 'Error: ' + (e.message || 'save failed');
     } finally {
@@ -175,64 +235,70 @@
     suggestion  = null;
     applyStatus = '';
   }
+
+  /** Current light-source value for an optimizer role (for swatch rendering). */
+  function roleValue(role) {
+    return (
+      tokens.colors?.[`brand_${role}`] ??
+      meta.defaults?.colors?.brand_hex_hints?.[role] ??
+      meta.defaults?.colors?.brand?.[role] ??
+      '#888'
+    );
+  }
+
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 </script>
 
-<section>
-  <h2>WCAG Contrast Checker</h2>
-  <p class="hint">
-    Pick any two SLASHED color tokens to check their WCAG 2.1 contrast ratio. The
-    grid below shows every token pair — click any cell to load it into the picker.
-    Colors shown are the <em>light-mode</em> variants.
-  </p>
+<!-- Hidden resolution probes: derived vars applied, one span per measured token. -->
+<div class="wcag-probe" style={declActive} aria-hidden="true">
+  {#each measured as cssVar (cssVar)}
+    <span bind:this={probes[cssVar]} style="color: var({cssVar})"></span>
+  {/each}
+</div>
+<div class="wcag-probe" style={declLight} aria-hidden="true">
+  {#each OPT_ROLES as role (role)}
+    <span bind:this={optProbes[role]} style="color: var({OPT_VARS[role]})"></span>
+  {/each}
+</div>
+
+<section style={declActive}>
+  <div class="head">
+    <div>
+      <h2>WCAG Contrast Checker</h2>
+      <p class="hint">
+        Contrast for your token palette, resolved with the current overrides in
+        <strong>{darkMode ? 'dark' : 'light'}</strong> mode — including derived surfaces and
+        auto-contrasting text. Click any matrix cell to load it into the picker.
+      </p>
+    </div>
+    <div class="mode-toggle" role="group" aria-label="Preview theme">
+      <button class="mode-btn" class:active={!darkMode} onclick={() => (darkMode = false)}>☀ Light</button>
+      <button class="mode-btn" class:active={darkMode} onclick={() => (darkMode = true)}>☾ Dark</button>
+    </div>
+  </div>
 
   <!-- ── Pair picker ───────────────────────────────────────────────── -->
-  <div class="picker">
-    <div class="picker__col">
-      <h3 class="picker__heading">Foreground</h3>
-      <div class="swatch-strip">
-        {#each ALL_NAMES as name (name)}
-          <button
-            type="button"
-            class="swatch-btn"
-            class:swatch-btn--active={fg === name}
-            style={swatchStyle(name)}
-            title={label(name)}
-            onclick={() => setFg(name)}
-            aria-label="Set foreground to {label(name)}"
-          ></button>
-        {/each}
-      </div>
-      <div class="picker__selected">
-        <span class="swatch-dot" style={swatchStyle(fg)}></span>
-        {label(fg)}
-      </div>
+  <div class="checker">
+    <div class="checker__controls">
+      <label class="checker__field">
+        <span>Foreground</span>
+        <select bind:value={fgKey}>
+          {#each FG as e (e.key)}<option value={e.key}>{e.label}</option>{/each}
+        </select>
+      </label>
+      <button class="swap-btn" title="Swap foreground and background" aria-label="Swap colors"
+        onclick={swapPair}>⇅</button>
+      <label class="checker__field">
+        <span>Background</span>
+        <select bind:value={bgKey}>
+          {#each BG as e (e.key)}<option value={e.key}>{e.label}</option>{/each}
+        </select>
+      </label>
     </div>
 
-    <div class="picker__col">
-      <h3 class="picker__heading">Background</h3>
-      <div class="swatch-strip">
-        {#each ALL_NAMES as name (name)}
-          <button
-            type="button"
-            class="swatch-btn"
-            class:swatch-btn--active={bg === name}
-            style={swatchStyle(name)}
-            title={label(name)}
-            onclick={() => setBg(name)}
-            aria-label="Set background to {label(name)}"
-          ></button>
-        {/each}
-      </div>
-      <div class="picker__selected">
-        <span class="swatch-dot" style={swatchStyle(bg)}></span>
-        {label(bg)}
-      </div>
-    </div>
-
-    <!-- ── Result ─────────────────────────────────────────────────── -->
-    <div class="result" style="background:{colorValue(bg) || '#fff'}">
+    <div class="result" style="background: var({bgVar(bgKey)})">
       {#if ratio !== null}
-        <div class="result__sample" style="color:{colorValue(fg) || '#000'}">Aa</div>
+        <div class="result__sample" style="color: var({fgVar(fgKey)})">Aa</div>
         <div class="result__ratio">{ratio.toFixed(2)}:1</div>
         <div class="result__badges">
           <span class="result__badge-row">
@@ -248,57 +314,46 @@
           Normal: 4.5:1 AA · 7:1 AAA &nbsp;|&nbsp; Large: 3:1 AA · 4.5:1 AAA
         </div>
       {:else}
-        <div class="result__empty">Select different colors to compute contrast.</div>
+        <div class="result__empty">Could not resolve this pair.</div>
       {/if}
     </div>
   </div>
 
-  <!-- ── Reference grid ────────────────────────────────────────────── -->
-  <h3 class="grid-heading">All-pairs reference</h3>
-  <p class="hint">
-    Foreground → rows · Background → columns. Click any cell to load the pair into the picker above.
-  </p>
-
+  <!-- ── Text-on-background matrix ─────────────────────────────────── -->
+  <h3 class="grid-heading">Text on background</h3>
   <div class="grid-wrap">
     <table class="contrast-grid">
       <thead>
         <tr>
           <th class="grid-corner"></th>
-          {#each ALL_NAMES as bgName (bgName)}
-            <th class="grid-col-header" title={label(bgName)}>
-              <span class="grid-swatch" style={swatchStyle(bgName)}></span>
+          {#each BG as b (b.key)}
+            <th class="grid-col-header" title={b.label}>
+              <span class="grid-swatch" style="background: var({b.cssVar})"></span>
+              <span class="grid-lbl">{b.label}</span>
             </th>
           {/each}
         </tr>
       </thead>
       <tbody>
-        {#each ALL_NAMES as fgName, fi (fgName)}
+        {#each FG as f, fi (f.key)}
           <tr>
-            <td class="grid-row-header" title={label(fgName)}>
-              <span class="grid-swatch" style={swatchStyle(fgName)}></span>
-            </td>
-            {#each ALL_NAMES as bgName, bi (bgName)}
+            <th class="grid-row-header">{f.label}</th>
+            {#each BG as b, bi (b.key)}
               {@const cell = grid[fi][bi]}
               <td
                 class="grid-cell"
-                class:grid-cell--same={fgName === bgName}
                 class:grid-cell--aaa={cell.level === 'AAA'}
                 class:grid-cell--aa={cell.level === 'AA'}
                 class:grid-cell--aa-large={cell.level === 'AA-large'}
                 class:grid-cell--fail={cell.level === 'fail'}
-                class:grid-cell--active={fg === fgName && bg === bgName}
-                title="{label(fgName)} on {label(bgName)}: {cell.ratio !== null ? cell.ratio.toFixed(2) + ':1' : '—'}"
-                onclick={() => fgName !== bgName && selectPair(fgName, bgName)}
-                role={fgName !== bgName ? 'button' : undefined}
-                tabindex={fgName !== bgName ? 0 : undefined}
-                onkeydown={(e) => e.key === 'Enter' && fgName !== bgName && selectPair(fgName, bgName)}
-              >
-                {#if cell.ratio !== null}
-                  <span class="cell-ratio">{cell.ratio.toFixed(1)}</span>
-                {:else}
-                  <span class="cell-ratio cell-ratio--dash">—</span>
-                {/if}
-              </td>
+                class:grid-cell--na={cell.ratio === null}
+                class:grid-cell--active={fgKey === f.key && bgKey === b.key}
+                title="{f.label} on {b.label}: {cell.ratio !== null ? cell.ratio.toFixed(2) + ':1' : '—'}"
+                onclick={() => cell.ratio !== null && selectPair(f.key, b.key)}
+                role={cell.ratio !== null ? 'button' : undefined}
+                tabindex={cell.ratio !== null ? 0 : undefined}
+                onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && cell.ratio !== null && (e.preventDefault(), selectPair(f.key, b.key))}
+              >{cell.ratio !== null ? cell.ratio.toFixed(1) : '—'}</td>
             {/each}
           </tr>
         {/each}
@@ -313,23 +368,53 @@
     <span class="legend-item"><span class="legend-dot legend-dot--fail"></span> Fail (&lt; 3:1)</span>
   </div>
 
-  <!-- ── Palette Optimizer ─────────────────────────────────────────── -->
+  <!-- ── On-color usage preview ────────────────────────────────────── -->
+  <h3 class="grid-heading">Text on colors — used combinations</h3>
+  <p class="hint">
+    How the auto-contrasting on-color text reads on each brand &amp; status color in
+    <strong>{darkMode ? 'dark' : 'light'}</strong> mode (button labels, badges).
+  </p>
+  <div class="usage">
+    {#each usage as u (u.role)}
+      <div class="usage__chip" style="background: var(--c-{u.role}); color: var(--on-{u.role});">
+        <span class="usage__aa">Aa</span>
+        <span class="usage__role">{cap(u.role)}</span>
+        {#if u.ratio !== null}
+          <span class="badge {levelClass(u.level)}">{u.ratio.toFixed(1)}:1</span>
+        {/if}
+      </div>
+    {/each}
+  </div>
+
+  <!-- ── Accessible palette generator + color locks ────────────────── -->
   <div class="optimizer">
-    <h3 class="optimizer__heading">Palette Optimizer</h3>
+    <h3 class="optimizer__heading">Accessible palette generator</h3>
     <p class="hint">
-      Keep your brand colors (Primary, Secondary, Tertiary) and let SLASHED find the most
-      accessible <strong>BASE</strong>, <strong>Neutral</strong>, and <strong>Action</strong>
-      values — the ones that give you the best possible WCAG scores without touching your
-      core brand identity.
+      One coherent palette, generated against a single surface so the foundation
+      and brand accents never drift. <strong>Lock</strong> the one or two brand colors
+      a client gave you — the rest (and the neutral body text) are generated to clear
+      WCAG, with distinct hues spread around the unlocked colors.
     </p>
 
-    <button
-      type="button"
-      class="optimizer__btn"
-      onclick={runOptimizer}
-      disabled={optimizing}
-    >
-      {optimizing ? 'Analyzing…' : 'Suggest accessible palette'}
+    <div class="locks" role="group" aria-label="Lock colors as fixed anchors">
+      {#each OPT_ROLES as role (role)}
+        <button
+          type="button"
+          class="lock"
+          class:lock--on={locked[role]}
+          onclick={() => toggleLock(role)}
+          aria-pressed={locked[role]}
+          title={locked[role] ? `${cap(role)} is locked — kept as-is` : `Lock ${cap(role)} as a fixed anchor`}
+        >
+          <span class="lock__ico" aria-hidden="true">{locked[role] ? '🔒' : '🔓'}</span>
+          <span class="lock__sw" style="background:{roleValue(role)}"></span>
+          <span class="lock__name">{cap(role)}</span>
+        </button>
+      {/each}
+    </div>
+
+    <button type="button" class="optimizer__btn" onclick={runOptimizer} disabled={optimizing}>
+      {optimizing ? 'Analyzing…' : 'Generate accessible palette'}
     </button>
 
     {#if applyStatus && !suggestion}
@@ -338,64 +423,41 @@
 
     {#if suggestion}
       <div class="optimizer__results">
-        <div class="optimizer__row">
-          <span class="optimizer__swatch" style="background:{suggestion.base.color};border:1px solid rgba(0,0,0,.12);"></span>
-          <div class="optimizer__info">
-            <strong>BASE</strong>
-            <code class="optimizer__value">{suggestion.base.color}</code>
-          </div>
-          <span class="badge badge--neutral">Background</span>
-        </div>
-
-        {#if suggestion.neutral}
-          <div class="optimizer__row">
-            <span class="optimizer__swatch" style="background:{suggestion.neutral.color};"></span>
-            <div class="optimizer__info">
-              <strong>Neutral</strong>
-              <code class="optimizer__value">{suggestion.neutral.color}</code>
+        {#each OPT_ROLES as role (role)}
+          {@const s = suggestion[role]}
+          {#if s}
+            <div class="optimizer__row">
+              <span class="optimizer__swatch" style="background:{s.color ? s.color : roleValue(role)};"></span>
+              <div class="optimizer__info">
+                <strong>{cap(role)}{#if s.locked} 🔒{/if}</strong>
+                {#if s.color}
+                  <code class="optimizer__value">{s.color}</code>
+                {:else if s.locked}
+                  <span>Locked — kept unchanged</span>
+                {/if}
+              </div>
+              {#if s.ratio != null}
+                <span class="badge {levelClass(wcagLevel(s.ratio))}">{s.ratio.toFixed(2)}:1 &nbsp;{wcagLevel(s.ratio)}</span>
+              {:else}
+                <span class="badge badge--neutral">Surface</span>
+              {/if}
             </div>
-            <span class="badge {levelClass(wcagLevel(suggestion.neutral.ratio))}">
-              {suggestion.neutral.ratio.toFixed(2)}:1 &nbsp;{wcagLevel(suggestion.neutral.ratio)}
-            </span>
-          </div>
-        {:else}
-          <div class="optimizer__row optimizer__row--warn">
-            <span class="optimizer__swatch" style="background:#888;"></span>
-            <div class="optimizer__info"><strong>Neutral</strong><span>No value reaches AAA on this BASE hue</span></div>
-          </div>
-        {/if}
-
-        {#if suggestion.action}
-          <div class="optimizer__row">
-            <span class="optimizer__swatch" style="background:{suggestion.action.color};"></span>
-            <div class="optimizer__info">
-              <strong>Action</strong>
-              <code class="optimizer__value">{suggestion.action.color}</code>
+          {:else if s === null}
+            <div class="optimizer__row optimizer__row--warn">
+              <span class="optimizer__swatch" style="background:{roleValue(role)};"></span>
+              <div class="optimizer__info">
+                <strong>{cap(role)}</strong>
+                <span>No accessible value on this hue — left unchanged</span>
+              </div>
             </div>
-            <span class="badge {levelClass(wcagLevel(suggestion.action.ratio))}">
-              {suggestion.action.ratio.toFixed(2)}:1 &nbsp;{wcagLevel(suggestion.action.ratio)}
-            </span>
-          </div>
-        {:else}
-          <div class="optimizer__row optimizer__row--warn">
-            <span class="optimizer__swatch" style="background:#888;"></span>
-            <div class="optimizer__info"><strong>Action</strong><span>No value reaches AA on this BASE hue</span></div>
-          </div>
-        {/if}
+          {/if}
+        {/each}
 
         <div class="optimizer__actions">
-          <button
-            type="button"
-            class="optimizer__apply-btn"
-            onclick={applySuggestions}
-            disabled={applying}
-          >{applying ? 'Saving…' : 'Apply to tokens'}</button>
-          <button
-            type="button"
-            class="optimizer__dismiss-btn"
-            onclick={dismissSuggestion}
-            disabled={applying}
-          >Dismiss</button>
+          <button type="button" class="optimizer__apply-btn" onclick={applySuggestions} disabled={applying}>
+            {applying ? 'Saving…' : 'Apply generated colors'}
+          </button>
+          <button type="button" class="optimizer__dismiss-btn" onclick={dismissSuggestion} disabled={applying}>Dismiss</button>
           {#if applyStatus}
             <span class="optimizer__status optimizer__status--ok">{applyStatus}</span>
           {/if}
@@ -406,65 +468,64 @@
 </section>
 
 <style>
+  .wcag-probe {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   h2 { margin-top: 0; }
   h3 { margin: 0 0 8px; font-size: 14px; }
-  .grid-heading { margin: 24px 0 4px; }
-  .hint { color: #50575e; margin-bottom: 16px; max-width: 720px; }
+  .grid-heading { margin: 24px 0 8px; }
+  .hint { color: #50575e; margin-bottom: 16px; max-width: 760px; }
+  .hint strong { color: #1d2327; }
 
-  /* ── Picker ──────────────────────────────────────────────────────── */
-  .picker {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 16px;
-    align-items: start;
-    margin-bottom: 8px;
-  }
-
-  .picker__col { display: flex; flex-direction: column; gap: 8px; }
-  .picker__heading { font-size: 13px; font-weight: 600; color: #1d2327; }
-
-  .swatch-strip {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .swatch-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    border: 2px solid transparent;
+  /* ── Header + mode toggle ─────────────────────────────────────────── */
+  .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .mode-toggle { display: flex; border: 1px solid #c3c4c7; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+  .mode-btn {
+    padding: 5px 12px;
+    font-size: 12px;
+    background: #fff;
+    border: none;
     cursor: pointer;
-    padding: 0;
-    flex-shrink: 0;
-    transition: transform 80ms;
-  }
-  .swatch-btn:hover { transform: scale(1.12); }
-  .swatch-btn--active {
-    border-color: #1d2327;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1d2327;
-  }
-
-  .picker__selected {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
     color: #50575e;
   }
+  .mode-btn + .mode-btn { border-left: 1px solid #c3c4c7; }
+  .mode-btn.active { background: #2271b1; color: #fff; }
 
-  .swatch-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1px solid rgba(0,0,0,0.15);
-    display: inline-block;
-    flex-shrink: 0;
+  /* ── Picker ───────────────────────────────────────────────────────── */
+  .checker { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: stretch; margin-bottom: 8px; }
+  .checker__controls { display: flex; align-items: flex-end; gap: 10px; }
+  .checker__field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
+  .checker__field span { font-size: 12px; color: #50575e; }
+  .checker__field select {
+    width: 100%;
+    padding: 6px 9px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    font-size: 13px;
+    background: #fff;
+    color: #1d2327;
   }
+  .swap-btn {
+    align-self: flex-end;
+    font-size: 16px;
+    padding: 5px 10px;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    background: #f6f7f7;
+    cursor: pointer;
+    color: #1d2327;
+  }
+  .swap-btn:hover { background: #f0f0f1; }
 
-  /* ── Result card ─────────────────────────────────────────────────── */
+  /* ── Result card ──────────────────────────────────────────────────── */
   .result {
-    min-width: 160px;
+    min-width: 190px;
     border: 1px solid rgba(0,0,0,0.12);
     border-radius: 6px;
     padding: 16px;
@@ -472,146 +533,123 @@
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    align-self: stretch;
     justify-content: center;
   }
-
-  .result__sample {
-    font-size: 48px;
-    font-weight: 700;
-    line-height: 1;
-  }
-
+  .result__sample { font-size: 48px; font-weight: 700; line-height: 1; }
   .result__ratio {
     font-size: 22px;
     font-weight: 700;
     color: #1d2327;
-    background: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.82);
     padding: 2px 8px;
     border-radius: 3px;
   }
-
-  .result__badges {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    width: 100%;
-  }
-
+  .result__badges { display: flex; flex-direction: column; gap: 4px; width: 100%; }
   .result__badge-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    background: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.82);
     padding: 3px 8px;
     border-radius: 3px;
   }
-
   .badge-label { font-size: 11px; color: #50575e; }
-
-  .badge {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 3px;
-    white-space: nowrap;
-  }
-  .badge--aaa      { background: #00a32a; color: #fff; }
-  .badge--aa       { background: #2271b1; color: #fff; }
-  .badge--aa-large { background: #dba617; color: #fff; }
-  .badge--fail     { background: #d63638; color: #fff; }
-
   .result__thresholds {
     font-size: 10px;
-    color: #787c82;
-    background: rgba(255,255,255,0.7);
+    color: #50575e;
+    background: rgba(255,255,255,0.78);
     padding: 2px 6px;
     border-radius: 3px;
     text-align: center;
   }
-
   .result__empty { font-size: 13px; color: #787c82; text-align: center; }
 
-  /* ── Grid ────────────────────────────────────────────────────────── */
-  .grid-wrap {
-    overflow-x: auto;
-    margin-bottom: 12px;
-  }
+  .badge { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 3px; white-space: nowrap; }
+  .badge--aaa      { background: #00a32a; color: #fff; }
+  .badge--aa       { background: #2271b1; color: #fff; }
+  .badge--aa-large { background: #dba617; color: #fff; }
+  .badge--fail     { background: #d63638; color: #fff; }
+  .badge--neutral  { background: #f0f0f1; color: #50575e; border: 1px solid #c3c4c7; }
 
-  .contrast-grid {
-    border-collapse: collapse;
-    font-size: 11px;
-  }
-
+  /* ── Matrix ───────────────────────────────────────────────────────── */
+  .grid-wrap { overflow-x: auto; margin-bottom: 12px; }
+  .contrast-grid { border-collapse: collapse; font-size: 11px; }
   .grid-corner { width: 28px; height: 28px; }
-
-  .grid-col-header,
-  .grid-row-header {
-    padding: 2px;
-    text-align: center;
-  }
-
+  .grid-col-header { padding: 4px 6px; text-align: center; font-weight: 500; color: #50575e; }
+  .grid-row-header { padding: 4px 10px 4px 4px; text-align: right; font-weight: 500; color: #50575e; white-space: nowrap; }
+  .grid-lbl { display: block; font-size: 10px; margin-top: 3px; }
   .grid-swatch {
     display: block;
     width: 22px;
     height: 22px;
     border-radius: 3px;
     border: 1px solid rgba(0,0,0,0.12);
+    margin: 0 auto;
   }
-
   .grid-cell {
-    width: 44px;
-    height: 36px;
+    width: 56px;
+    height: 38px;
     text-align: center;
     vertical-align: middle;
+    font-weight: 700;
+    color: #1a1a1a;
     border: 1px solid rgba(0,0,0,0.06);
     cursor: pointer;
-    transition: opacity 80ms;
-    position: relative;
   }
-  .grid-cell:hover:not(.grid-cell--same) { opacity: 0.8; outline: 2px solid #2271b1; }
-  .grid-cell--active { outline: 2px solid #1d2327 !important; }
-  .grid-cell--same { background: #f0f0f1; cursor: default; }
-
+  .grid-cell--na { background: #f0f0f1; color: #a7aaad; cursor: default; }
   .grid-cell--aaa      { background: #d8f5e0; }
   .grid-cell--aa       { background: #d8e9f7; }
   .grid-cell--aa-large { background: #fdf2d0; }
   .grid-cell--fail     { background: #fde8e8; }
+  .grid-cell--active   { outline: 2px solid #1d2327; outline-offset: -2px; }
+  .grid-cell:hover:not(.grid-cell--na) { filter: brightness(0.96); }
 
-  .cell-ratio { font-size: 10px; font-weight: 600; color: #1d2327; }
-  .cell-ratio--dash { color: #a7aaad; }
-
-  /* ── Legend ──────────────────────────────────────────────────────── */
-  .legend {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    font-size: 12px;
-    color: #50575e;
-  }
-
+  /* ── Legend ───────────────────────────────────────────────────────── */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: #50575e; }
   .legend-item { display: flex; align-items: center; gap: 5px; }
-
-  .legend-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-    display: inline-block;
-  }
+  .legend-dot { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
   .legend-dot--aaa      { background: #d8f5e0; border: 1px solid #00a32a; }
   .legend-dot--aa       { background: #d8e9f7; border: 1px solid #2271b1; }
   .legend-dot--aa-large { background: #fdf2d0; border: 1px solid #dba617; }
   .legend-dot--fail     { background: #fde8e8; border: 1px solid #d63638; }
 
-  /* ── Optimizer ───────────────────────────────────────────────────── */
-  .optimizer {
-    margin-top: 28px;
-    padding-top: 20px;
-    border-top: 1px solid #e2e4e7;
+  /* On-color usage chips */
+  .usage { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .usage__chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    min-height: 52px;
   }
+  .usage__aa { font-size: 20px; font-weight: 700; line-height: 1; }
+  .usage__role { font-size: 12px; flex: 1; opacity: 0.92; }
 
+  /* ── Optimizer ────────────────────────────────────────────────────── */
+  .optimizer { margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e4e7; }
   .optimizer__heading { margin: 0 0 6px; font-size: 15px; }
+
+  .locks { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; }
+  .lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    color: #50575e;
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 120ms, color 120ms, background 120ms;
+  }
+  .lock:hover { color: #1d2327; }
+  .lock--on { border-color: #2271b1; color: #1d2327; background: #f0f6fb; font-weight: 600; }
+  .lock__ico { font-size: 13px; line-height: 1; }
+  .lock__sw { width: 16px; height: 16px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.18); }
 
   .optimizer__btn {
     background: #2271b1;
@@ -622,19 +660,11 @@
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
-    margin-top: 4px;
   }
   .optimizer__btn:hover:not(:disabled) { background: #135e96; }
   .optimizer__btn:disabled { opacity: .6; cursor: not-allowed; }
 
-  .optimizer__results {
-    margin-top: 16px;
-    border: 1px solid #c3c4c7;
-    border-radius: 6px;
-    overflow: hidden;
-    max-width: 580px;
-  }
-
+  .optimizer__results { margin-top: 16px; border: 1px solid #c3c4c7; border-radius: 6px; overflow: hidden; max-width: 580px; }
   .optimizer__row {
     display: flex;
     align-items: center;
@@ -645,24 +675,10 @@
   }
   .optimizer__row:last-of-type { border-bottom: none; }
   .optimizer__row--warn { opacity: .7; }
-
-  .optimizer__swatch {
-    width: 36px;
-    height: 36px;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-
-  .optimizer__info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
+  .optimizer__swatch { width: 36px; height: 36px; border-radius: 4px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.12); }
+  .optimizer__info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   .optimizer__info strong { font-size: 13px; }
-  .optimizer__info span   { font-size: 12px; color: #50575e; }
-
+  .optimizer__info span { font-size: 12px; color: #50575e; }
   .optimizer__value {
     font-size: 11px;
     background: #f0f0f1;
@@ -672,12 +688,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 200px;
+    max-width: 220px;
     display: inline-block;
-    vertical-align: middle;
   }
-
-  .badge--neutral { background: #f0f0f1; color: #50575e; border: 1px solid #c3c4c7; }
 
   .optimizer__actions {
     display: flex;
@@ -688,7 +701,6 @@
     border-top: 1px solid #e2e4e7;
     flex-wrap: wrap;
   }
-
   .optimizer__apply-btn {
     background: #00a32a;
     color: #fff;
@@ -701,7 +713,6 @@
   }
   .optimizer__apply-btn:hover:not(:disabled) { background: #007017; }
   .optimizer__apply-btn:disabled { opacity: .6; cursor: not-allowed; }
-
   .optimizer__dismiss-btn {
     background: transparent;
     color: #50575e;
@@ -712,7 +723,6 @@
     font-size: 13px;
   }
   .optimizer__dismiss-btn:hover:not(:disabled) { background: #f0f0f1; }
-
   .optimizer__status { font-size: 13px; font-weight: 500; }
   .optimizer__status--ok { color: #00a32a; }
 </style>
