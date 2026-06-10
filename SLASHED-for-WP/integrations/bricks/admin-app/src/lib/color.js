@@ -187,70 +187,111 @@ export function resolveToRgb(cssValue) {
  * ──────────────────────────────────────────────────────────────────────── */
 
 /**
- * Suggest the most accessible BASE / Neutral / Action values for a palette,
- * preserving each input's hue while searching lightness for the best WCAG
- * score against the proposed BASE surface. Pure: takes and returns RGB so it
- * is fully unit-testable (no canvas).
+ * Search a hue+saturation line for the value that clears a target WCAG
+ * contrast ratio against a fixed surface, returning the *softest* passing
+ * value — the one closest to the surface that still clears the bar — so
+ * generated text/action colors are never needlessly heavy.
+ *
+ * The search direction adapts to the surface luminance: on a light surface it
+ * prefers darker values, on a dark surface lighter ones, so it produces a
+ * legible color for ANY locked base (not just near-white surfaces). Falls back
+ * to the opposite direction if the preferred one can't clear the target.
+ *
+ * @param {number} hue 0–360, preserved from the source color
+ * @param {number} sat 0–100 saturation held constant while scanning lightness
+ * @param {[number,number,number]} surfaceRgb background to contrast against
+ * @param {number} target minimum contrast ratio to clear (e.g. 7 or 4.5)
+ * @returns {{ color: string, rgb: [number,number,number], ratio: number, locked: false } | null}
+ */
+export function bestTextOnSurface(hue, sat, surfaceRgb, target) {
+  const surfaceL = rgbToHsl(...surfaceRgb)[2];
+  const preferDark = relativeLuminance(surfaceRgb) >= 0.5;
+  let best = null; // softest passing value in the preferred direction
+  let bestAny = null; // softest passing value in any direction (fallback)
+  for (let l = 0; l <= 100; l += 0.25) {
+    const rgb = hslToRgb(hue, sat, l);
+    const ratio = contrastRatio(rgb, surfaceRgb);
+    if (ratio < target) continue;
+    if (!bestAny || ratio < bestAny.ratio) bestAny = { rgb, ratio, l };
+    const inDir = preferDark ? l <= surfaceL : l >= surfaceL;
+    if (inDir && (!best || ratio < best.ratio)) best = { rgb, ratio, l };
+  }
+  const pick = best || bestAny;
+  if (!pick) return null;
+  return {
+    color: `hsl(${hue.toFixed(1)} ${sat.toFixed(1)}% ${pick.l.toFixed(2)}%)`,
+    rgb: pick.rgb,
+    ratio: pick.ratio,
+    locked: false,
+  };
+}
+
+/**
+ * Suggest an accessible BASE / Neutral / Action palette.
+ *
+ * Each role can be LOCKED via `locked`: a locked color is treated as a fixed
+ * anchor — never regenerated, only echoed back with its measured ratio so the
+ * UI can keep the user's exact value. Unlocked roles are generated to clear
+ * WCAG against the surface while preserving their input hue. This is what lets
+ * a user lock one or two brand colors and have the rest generated to comply.
+ *
+ * The surface used for contrast is BASE: when BASE is locked the user's actual
+ * color becomes the surface (so a dark brand background still yields a legible
+ * neutral + action); when BASE is unlocked a very light, lightly-tinted surface
+ * is proposed (the previous default behavior).
+ *
+ * Pure: takes and returns RGB so it is fully unit-testable (no canvas).
  *
  * @param {object} input
  * @param {[number,number,number]} input.baseRgb    current BASE/surface color
  * @param {[number,number,number]} input.neutralRgb current body-text color
  * @param {[number,number,number]} input.actionRgb  current action/link color
+ * @param {{ base?: boolean, neutral?: boolean, action?: boolean }} [input.locked]
+ *        roles to keep fixed instead of regenerating
  * @returns {{
- *   base: { color: string, rgb: [number,number,number] },
- *   neutral: { color: string, rgb: [number,number,number], ratio: number } | null,
- *   action:  { color: string, rgb: [number,number,number], ratio: number } | null
+ *   base:    { color: string|null, rgb: [number,number,number], ratio: number|null, locked: boolean },
+ *   neutral: { color: string|null, rgb: [number,number,number], ratio: number, locked: boolean } | null,
+ *   action:  { color: string|null, rgb: [number,number,number], ratio: number, locked: boolean } | null
  * } | null}
  */
-export function suggestAccessiblePalette({ baseRgb, neutralRgb, actionRgb }) {
+export function suggestAccessiblePalette({ baseRgb, neutralRgb, actionRgb, locked = {} }) {
   if (!baseRgb || !neutralRgb || !actionRgb) return null;
+
+  const lockBase = !!locked.base;
+  const lockNeutral = !!locked.neutral;
+  const lockAction = !!locked.action;
 
   const [bH, bS] = rgbToHsl(...baseRgb);
   const [nH, nS] = rgbToHsl(...neutralRgb);
   const [aH, aS] = rgbToHsl(...actionRgb);
 
-  // BASE: very light surface — keep the hue tint, cap saturation.
-  const baseS = Math.min(bS, 8);
-  const baseColor = `hsl(${bH.toFixed(1)} ${baseS.toFixed(1)}% 97%)`;
-  const baseResolved = hslToRgb(bH, baseS, 97);
-
-  // NEUTRAL: lightest dark value reaching AAA (7:1) on the proposed BASE.
-  const neutralS = Math.min(nS, 15);
-  let neutralBest = null;
-  for (let l = 8; l <= 32; l += 0.25) {
-    const rgb = hslToRgb(nH, neutralS, l);
-    const r = contrastRatio(rgb, baseResolved);
-    if (r >= 7) {
-      neutralBest = {
-        color: `hsl(${nH.toFixed(1)} ${neutralS.toFixed(1)}% ${l.toFixed(2)}%)`,
-        rgb,
-        ratio: r,
-      };
-    } else {
-      break;
-    }
+  // BASE / surface: locked → the user's actual color is the surface; unlocked
+  // → a very light surface that keeps the hue tint but caps saturation.
+  let baseColor;
+  let baseResolved;
+  if (lockBase) {
+    baseResolved = baseRgb;
+    baseColor = null;
+  } else {
+    const baseS = Math.min(bS, 8);
+    baseColor = `hsl(${bH.toFixed(1)} ${baseS.toFixed(1)}% 97%)`;
+    baseResolved = hslToRgb(bH, baseS, 97);
   }
 
-  // ACTION: lightest value reaching AA (4.5:1) on BASE, richer saturation.
-  const actionS = Math.max(aS, 80);
-  let actionBest = null;
-  for (let l = 15; l <= 58; l += 0.25) {
-    const rgb = hslToRgb(aH, actionS, l);
-    const r = contrastRatio(rgb, baseResolved);
-    if (r >= 4.5) {
-      actionBest = {
-        color: `hsl(${aH.toFixed(1)} ${actionS.toFixed(1)}% ${l.toFixed(2)}%)`,
-        rgb,
-        ratio: r,
-      };
-    } else {
-      break;
-    }
-  }
+  // NEUTRAL: value reaching AAA (7:1) on the surface; locked → kept as-is.
+  const neutral = lockNeutral
+    ? { color: null, rgb: neutralRgb, ratio: contrastRatio(neutralRgb, baseResolved), locked: true }
+    : bestTextOnSurface(nH, Math.min(nS, 15), baseResolved, 7);
+
+  // ACTION: value reaching AA (4.5:1) on the surface, richer saturation;
+  // locked → kept as-is.
+  const action = lockAction
+    ? { color: null, rgb: actionRgb, ratio: contrastRatio(actionRgb, baseResolved), locked: true }
+    : bestTextOnSurface(aH, Math.max(aS, 80), baseResolved, 4.5);
 
   return {
-    base: { color: baseColor, rgb: baseResolved },
-    neutral: neutralBest,
-    action: actionBest,
+    base: { color: baseColor, rgb: baseResolved, ratio: null, locked: lockBase },
+    neutral,
+    action,
   };
 }

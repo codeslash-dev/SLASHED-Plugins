@@ -16,6 +16,7 @@ import {
   rgbToHsl,
   hslToRgb,
   suggestAccessiblePalette,
+  bestTextOnSurface,
 } from '../SLASHED-for-WP/integrations/bricks/admin-app/src/lib/color.js';
 
 const WHITE = [255, 255, 255];
@@ -101,5 +102,70 @@ describe('palette optimizer', () => {
     assert.ok(out.neutral.ratio >= 7, `neutral AAA: ${out.neutral.ratio}`);
     assert.ok(out.action, 'action found');
     assert.ok(out.action.ratio >= 4.5, `action AA: ${out.action.ratio}`);
+  });
+});
+
+
+describe('palette optimizer — locks', () => {
+  test('an unlocked suggestion carries lock flags and keeps the proposed surface', () => {
+    const out = suggestAccessiblePalette({
+      baseRgb: [240, 240, 245],
+      neutralRgb: [40, 44, 52],
+      actionRgb: [40, 110, 220],
+    });
+    assert.equal(out.base.locked, false);
+    assert.equal(out.neutral.locked, false);
+    assert.equal(out.action.locked, false);
+    assert.match(out.base.color, /^hsl\(/);
+  });
+
+  test('a locked role is echoed back untouched with its measured ratio', () => {
+    const action = [40, 110, 220];
+    const out = suggestAccessiblePalette({
+      baseRgb: [240, 240, 245],
+      neutralRgb: [40, 44, 52],
+      actionRgb: action,
+      locked: { action: true },
+    });
+    assert.equal(out.action.locked, true);
+    assert.equal(out.action.color, null);
+    assert.deepEqual(out.action.rgb, action);
+    assert.ok(out.action.ratio > 1);
+    // the unlocked neutral is still generated to clear AAA
+    assert.equal(out.neutral.locked, false);
+    assert.ok(out.neutral.ratio >= 7);
+  });
+
+  test('a locked DARK base generates a lighter, legible neutral + action', () => {
+    const darkBase = [20, 22, 28];
+    const out = suggestAccessiblePalette({
+      baseRgb: darkBase,
+      neutralRgb: [40, 44, 52],
+      actionRgb: [40, 110, 220],
+      locked: { base: true },
+    });
+    assert.equal(out.base.locked, true);
+    assert.equal(out.base.color, null);
+    assert.deepEqual(out.base.rgb, darkBase);
+    assert.ok(out.neutral, 'neutral generated');
+    assert.ok(out.neutral.ratio >= 7, `neutral AAA on dark base: ${out.neutral.ratio}`);
+    assert.ok(relativeLuminance(out.neutral.rgb) > relativeLuminance(darkBase));
+    assert.ok(out.action, 'action generated');
+    assert.ok(out.action.ratio >= 4.5, `action AA on dark base: ${out.action.ratio}`);
+  });
+});
+
+describe('bestTextOnSurface', () => {
+  test('finds a passing value and reports its true ratio', () => {
+    const hit = bestTextOnSurface(220, 80, [255, 255, 255], 4.5);
+    assert.ok(hit, 'value found');
+    assert.ok(hit.ratio >= 4.5);
+    assert.match(hit.color, /^hsl\(/);
+    assert.equal(hit.locked, false);
+  });
+
+  test('returns null when the target is unreachable on the line', () => {
+    // 21:1 is the absolute ceiling (black on white); 22 can never be met.
+    assert.equal(bestTextOnSurface(0, 0, [128, 128, 128], 22), null);
   });
 });
