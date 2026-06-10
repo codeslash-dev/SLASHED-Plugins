@@ -17,6 +17,9 @@ import {
   hslToRgb,
   suggestAccessiblePalette,
   bestTextOnSurface,
+  suggestBrandPalette,
+  farthestHue,
+  suggestPalette,
 } from '../SLASHED-for-WP/integrations/bricks/admin-app/src/lib/color.js';
 
 const WHITE = [255, 255, 255];
@@ -167,5 +170,131 @@ describe('bestTextOnSurface', () => {
   test('returns null when the target is unreachable on the line', () => {
     // 21:1 is the absolute ceiling (black on white); 22 can never be met.
     assert.equal(bestTextOnSurface(0, 0, [128, 128, 128], 22), null);
+  });
+});
+
+describe('farthestHue', () => {
+  test('opposite hue when one is taken', () => {
+    assert.equal(farthestHue([0]), 180);
+  });
+
+  test('picks a widest gap with two taken', () => {
+    const h = farthestHue([0, 180]);
+    assert.ok(h === 90 || h === 270, `got ${h}`);
+  });
+
+  test('zero when nothing taken', () => {
+    assert.equal(farthestHue([]), 0);
+  });
+});
+
+describe('suggestBrandPalette', () => {
+  const surface = [255, 255, 255];
+
+  test('keeps locked roles untouched and generates the rest', () => {
+    const roles = {
+      primary: [40, 110, 220],
+      secondary: [200, 40, 80],
+      tertiary: [40, 110, 220],
+      action: [40, 110, 220],
+    };
+    const out = suggestBrandPalette({
+      roles,
+      surfaceRgb: surface,
+      locked: { primary: true, secondary: true },
+    });
+    assert.equal(out.primary.locked, true);
+    assert.equal(out.primary.color, null);
+    assert.deepEqual(out.primary.rgb, roles.primary);
+    assert.equal(out.secondary.locked, true);
+    assert.equal(out.tertiary.locked, false);
+    assert.ok(out.tertiary.color);
+    assert.ok(out.tertiary.ratio >= 4.5, `tertiary AA: ${out.tertiary.ratio}`);
+    assert.equal(out.action.locked, false);
+    assert.ok(out.action.ratio >= 4.5, `action AA: ${out.action.ratio}`);
+  });
+
+  test('generated hues stay distinct from the locked anchors', () => {
+    const out = suggestBrandPalette({
+      roles: { primary: [220, 40, 40], secondary: [40, 200, 90] },
+      surfaceRgb: surface,
+      locked: { primary: true, secondary: true },
+    });
+    const hueOf = (rgb) => rgbToHsl(...rgb)[0];
+    const lockedHues = [hueOf([220, 40, 40]), hueOf([40, 200, 90])];
+    for (const role of ['tertiary', 'action']) {
+      const gh = hueOf(out[role].rgb);
+      const minDist = Math.min(
+        ...lockedHues.map((u) => {
+          const raw = Math.abs(gh - u);
+          return Math.min(raw, 360 - raw);
+        })
+      );
+      assert.ok(minDist > 15, `${role} hue ${gh} too close to a lock (${minDist}°)`);
+    }
+  });
+
+  test('can generate an entire palette from scratch (no locks)', () => {
+    const out = suggestBrandPalette({
+      roles: { primary: [40, 110, 220] },
+      surfaceRgb: surface,
+    });
+    for (const role of ['primary', 'secondary', 'tertiary', 'action']) {
+      assert.ok(out[role], `${role} present`);
+      assert.ok(out[role].ratio >= 4.5, `${role} AA: ${out[role].ratio}`);
+    }
+  });
+
+  test('returns null without a surface', () => {
+    assert.equal(suggestBrandPalette({ roles: {}, surfaceRgb: null }), null);
+  });
+});
+
+describe('suggestPalette (unified generator)', () => {
+  const roles = {
+    base: [245, 246, 250],
+    neutral: [40, 44, 52],
+    primary: [40, 110, 220],
+    secondary: [200, 40, 80],
+    tertiary: [20, 160, 110],
+    action: [120, 70, 210],
+  };
+
+  test('generates every supplied role against one shared surface', () => {
+    const out = suggestPalette({ roles });
+    for (const r of ['base', 'neutral', 'primary', 'secondary', 'tertiary', 'action']) {
+      assert.ok(out[r], `${r} present`);
+    }
+    assert.ok(out.neutral.ratio >= 7, `neutral AAA: ${out.neutral.ratio}`);
+    for (const r of ['primary', 'secondary', 'tertiary', 'action']) {
+      assert.ok(out[r].ratio >= 4.5, `${r} AA: ${out[r].ratio}`);
+    }
+  });
+
+  test('locked roles are kept; only the rest are generated (action handled once)', () => {
+    const out = suggestPalette({
+      roles,
+      locked: { base: true, primary: true },
+    });
+    assert.equal(out.base.locked, true);
+    assert.deepEqual(out.base.rgb, roles.base);
+    assert.equal(out.primary.locked, true);
+    assert.deepEqual(out.primary.rgb, roles.primary);
+    assert.equal(out.action.locked, false);
+    assert.ok(out.action.ratio >= 4.5);
+    assert.equal(out.secondary.locked, false);
+    assert.equal(out.tertiary.locked, false);
+  });
+
+  test('omits roles whose RGB is not supplied', () => {
+    const out = suggestPalette({ roles: { base: [245, 246, 250], primary: [40, 110, 220] } });
+    assert.ok(out.base);
+    assert.ok(out.primary);
+    assert.equal(out.neutral, undefined);
+    assert.equal(out.secondary, undefined);
+  });
+
+  test('returns null without a base', () => {
+    assert.equal(suggestPalette({ roles: { primary: [1, 2, 3] } }), null);
   });
 });

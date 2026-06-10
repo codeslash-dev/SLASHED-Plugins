@@ -28,7 +28,7 @@
     wcagLevel,
     wcagLevelLarge,
     levelClass,
-    suggestAccessiblePalette,
+    suggestPalette,
   } from '../lib/color.js';
 
   // ── Light / dark toggle (parity with the framework WcagPanel) ────────
@@ -64,7 +64,11 @@
   const bgVar = (key) => bgByKey.get(key)?.cssVar ?? '--c-bg';
 
   // Unique cssVars to probe for the matrix + picker.
-  const measured = [...new Set([...FG, ...BG].map((e) => e.cssVar))];
+  // "Used combinations" preview also needs each brand/status color + its
+  // auto-contrasting on-color text, resolved in the active (light/dark) mode.
+  const USAGE_ROLES = ['primary', 'secondary', 'tertiary', 'action', 'success', 'warning', 'error', 'info'];
+  const usageVars = USAGE_ROLES.flatMap((r) => [`--c-${r}`, `--on-${r}`]);
+  const measured = [...new Set([...[...FG, ...BG].map((e) => e.cssVar), ...usageVars])];
 
   /** Parse a computed `rgb()` / `rgba()` string to [r,g,b] or null. */
   function parseRgb(str) {
@@ -93,8 +97,18 @@
   });
 
   // Optimizer inputs resolved from the LIGHT source palette.
-  const OPT_VARS = { base: '--c-base', neutral: '--c-neutral', action: '--c-action' };
-  const OPT_ROLES = ['base', 'neutral', 'action'];
+  // Generator inputs resolved from the LIGHT source palette. ONE lock set
+  // across every role so the foundation (base/neutral) and the brand accents
+  // (primary/secondary/tertiary/action) are generated coherently together.
+  const OPT_VARS = {
+    base: '--c-base',
+    neutral: '--c-neutral',
+    primary: '--c-primary',
+    secondary: '--c-secondary',
+    tertiary: '--c-tertiary',
+    action: '--c-action',
+  };
+  const OPT_ROLES = ['base', 'neutral', 'primary', 'secondary', 'tertiary', 'action'];
   let optProbes = {};
   let optResolved = $state({});
 
@@ -138,6 +152,17 @@
     bgKey = bKey;
   }
 
+  // On-color usage chips: contrast of on-color text against its color, in the
+  // active (light/dark) mode.
+  const usage = $derived(
+    USAGE_ROLES.map((role) => {
+      const c = resolved[`--c-${role}`];
+      const t = resolved[`--on-${role}`];
+      const r = c && t ? contrastRatio(t, c) : null;
+      return { role, ratio: r, level: r !== null ? wcagLevel(r) : null };
+    })
+  );
+
   /**
    * Swap the picker's foreground and background. FG and BG are curated, partly
    * different lists, so a key is only carried across when it exists on the
@@ -155,7 +180,14 @@
   let optimizing  = $state(false);
   let applying    = $state(false);
   let applyStatus = $state('');
-  let locked      = $state({ base: false, neutral: false, action: false });
+  let locked      = $state({
+    base: false,
+    neutral: false,
+    primary: false,
+    secondary: false,
+    tertiary: false,
+    action: false,
+  });
 
   function toggleLock(role) {
     locked[role] = !locked[role];
@@ -165,12 +197,11 @@
   function runOptimizer() {
     optimizing  = true;
     applyStatus = '';
-    suggestion  = suggestAccessiblePalette({
-      baseRgb:    optResolved.base,
-      neutralRgb: optResolved.neutral,
-      actionRgb:  optResolved.action,
-      locked:     { ...locked },
-    });
+    const roles = {};
+    for (const role of OPT_ROLES) {
+      if (optResolved[role]) roles[role] = optResolved[role];
+    }
+    suggestion = suggestPalette({ roles, locked: { ...locked } });
     optimizing = false;
   }
 
@@ -338,14 +369,32 @@
     <span class="legend-item"><span class="legend-dot legend-dot--fail"></span> Fail (&lt; 3:1)</span>
   </div>
 
-  <!-- ── Palette Optimizer + color locks ───────────────────────────── -->
+  <!-- ── On-color usage preview ────────────────────────────────────── -->
+  <h3 class="grid-heading">Text on colors — used combinations</h3>
+  <p class="hint">
+    How the auto-contrasting on-color text reads on each brand &amp; status color in
+    <strong>{darkMode ? 'dark' : 'light'}</strong> mode (button labels, badges).
+  </p>
+  <div class="usage">
+    {#each usage as u (u.role)}
+      <div class="usage__chip" style="background: var(--c-{u.role}); color: var(--on-{u.role});">
+        <span class="usage__aa">Aa</span>
+        <span class="usage__role">{cap(u.role)}</span>
+        {#if u.ratio !== null}
+          <span class="badge {levelClass(u.level)}">{u.ratio.toFixed(1)}:1</span>
+        {/if}
+      </div>
+    {/each}
+  </div>
+
+  <!-- ── Accessible palette generator + color locks ────────────────── -->
   <div class="optimizer">
-    <h3 class="optimizer__heading">Palette Optimizer</h3>
+    <h3 class="optimizer__heading">Accessible palette generator</h3>
     <p class="hint">
-      Keep your brand hues and let SLASHED search lightness for the most accessible
-      <strong>BASE</strong>, <strong>Neutral</strong> and <strong>Action</strong> values.
-      <strong>Lock</strong> one or two colors to pin them as fixed anchors — the rest are
-      generated to clear WCAG against your locked base.
+      One coherent palette, generated against a single surface so the foundation
+      and brand accents never drift. <strong>Lock</strong> the one or two brand colors
+      a client gave you — the rest (and the neutral body text) are generated to clear
+      WCAG, with distinct hues spread around the unlocked colors.
     </p>
 
     <div class="locks" role="group" aria-label="Lock colors as fixed anchors">
@@ -366,7 +415,7 @@
     </div>
 
     <button type="button" class="optimizer__btn" onclick={runOptimizer} disabled={optimizing}>
-      {optimizing ? 'Analyzing…' : 'Suggest accessible palette'}
+      {optimizing ? 'Analyzing…' : 'Generate accessible palette'}
     </button>
 
     {#if applyStatus && !suggestion}
@@ -377,24 +426,24 @@
       <div class="optimizer__results">
         {#each OPT_ROLES as role (role)}
           {@const s = suggestion[role]}
-          <div class="optimizer__row" class:optimizer__row--warn={!s}>
-            <span class="optimizer__swatch" style="background:{s && s.color ? s.color : roleValue(role)};"></span>
-            <div class="optimizer__info">
-              <strong>{cap(role)}{#if s && s.locked} 🔒{/if}</strong>
-              {#if s && s.color}
-                <code class="optimizer__value">{s.color}</code>
-              {:else if s && s.locked}
-                <span>Locked — kept unchanged</span>
-              {:else if !s}
-                <span>No accessible value on this hue</span>
+          {#if s}
+            <div class="optimizer__row">
+              <span class="optimizer__swatch" style="background:{s.color ? s.color : roleValue(role)};"></span>
+              <div class="optimizer__info">
+                <strong>{cap(role)}{#if s.locked} 🔒{/if}</strong>
+                {#if s.color}
+                  <code class="optimizer__value">{s.color}</code>
+                {:else if s.locked}
+                  <span>Locked — kept unchanged</span>
+                {/if}
+              </div>
+              {#if s.ratio != null}
+                <span class="badge {levelClass(wcagLevel(s.ratio))}">{s.ratio.toFixed(2)}:1 &nbsp;{wcagLevel(s.ratio)}</span>
+              {:else}
+                <span class="badge badge--neutral">Surface</span>
               {/if}
             </div>
-            {#if s && s.ratio != null}
-              <span class="badge {levelClass(wcagLevel(s.ratio))}">{s.ratio.toFixed(2)}:1 &nbsp;{wcagLevel(s.ratio)}</span>
-            {:else if s}
-              <span class="badge badge--neutral">Surface</span>
-            {/if}
-          </div>
+          {/if}
         {/each}
 
         <div class="optimizer__actions">
@@ -557,6 +606,20 @@
   .legend-dot--aa       { background: #d8e9f7; border: 1px solid #2271b1; }
   .legend-dot--aa-large { background: #fdf2d0; border: 1px solid #dba617; }
   .legend-dot--fail     { background: #fde8e8; border: 1px solid #d63638; }
+
+  /* On-color usage chips */
+  .usage { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .usage__chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    min-height: 52px;
+  }
+  .usage__aa { font-size: 20px; font-weight: 700; line-height: 1; }
+  .usage__role { font-size: 12px; flex: 1; opacity: 0.92; }
 
   /* ── Optimizer ────────────────────────────────────────────────────── */
   .optimizer { margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e4e7; }

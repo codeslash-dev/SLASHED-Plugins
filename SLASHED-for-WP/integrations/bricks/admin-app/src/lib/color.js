@@ -295,3 +295,179 @@ export function suggestAccessiblePalette({ baseRgb, neutralRgb, actionRgb, locke
     action,
   };
 }
+
+/**
+ * Find the integer hue (0–359) on the color wheel that is maximally distant
+ * from every hue already in use — i.e. the middle of the widest gap. Used to
+ * place generated brand colors so they stay visually distinct from the ones
+ * you locked. Distance is measured the short way around the circle.
+ *
+ * @param {number[]} usedHues hues (degrees) already taken
+ * @returns {number} hue in [0, 359]
+ */
+export function farthestHue(usedHues) {
+  if (!usedHues || usedHues.length === 0) return 0;
+  const norm = usedHues.map((u) => ((u % 360) + 360) % 360);
+  let bestHue = 0;
+  let bestDist = -1;
+  for (let h = 0; h < 360; h += 1) {
+    let min = 360;
+    for (const u of norm) {
+      const raw = Math.abs(h - u);
+      const d = Math.min(raw, 360 - raw);
+      if (d < min) min = d;
+    }
+    if (min > bestDist) {
+      bestDist = min;
+      bestHue = h;
+    }
+  }
+  return bestHue;
+}
+
+/**
+ * Generate a full BRAND palette (primary / secondary / tertiary / action) from
+ * a partial one — the "the client gave us one or two brand colors, fill in the
+ * rest, WCAG-compliant" workflow.
+ *
+ * LOCKED roles are kept exactly as the user set them (echoed back with their
+ * measured ratio). UNLOCKED roles are generated so they:
+ *   1. sit in the widest hue gaps left by the locked colors, so the palette
+ *      stays visually distinct and balanced around the wheel; and
+ *   2. clear a WCAG contrast target against the surface (default AA 4.5:1), so
+ *      each generated color is usable as an accessible accent/text/link.
+ *
+ * Generated colors take their saturation from the average of the locked
+ * anchors (so the set feels cohesive), with a floor so they stay lively. Pure
+ * RGB in / RGB out — no DOM — so it is fully unit-testable.
+ *
+ * @param {object} input
+ * @param {Record<string,[number,number,number]>} input.roles resolved RGB per
+ *        role; unresolvable roles may be omitted.
+ * @param {[number,number,number]} input.surfaceRgb background to contrast against
+ * @param {Record<string,boolean>} [input.locked] roles to keep fixed
+ * @param {number} [input.target] minimum contrast vs surface (default 4.5 = AA)
+ * @returns {Record<string, { color: string|null, rgb: [number,number,number], ratio: number, locked: boolean } | null> | null}
+ */
+export function suggestBrandPalette({ roles = {}, surfaceRgb, locked = {}, target = 4.5 }) {
+  if (!surfaceRgb) return null;
+  const order = ['primary', 'secondary', 'tertiary', 'action'];
+
+  // Seed the scheme from the locked anchors' hues + saturations.
+  const usedHues = [];
+  const lockedSats = [];
+  for (const role of order) {
+    if (locked[role] && roles[role]) {
+      const [h, s] = rgbToHsl(...roles[role]);
+      usedHues.push(h);
+      lockedSats.push(s);
+    }
+  }
+  const avgLockedSat = lockedSats.length
+    ? lockedSats.reduce((a, b) => a + b, 0) / lockedSats.length
+    : null;
+
+  const result = {};
+  for (const role of order) {
+    // Locked role: keep as-is, report its measured contrast vs the surface.
+    if (locked[role] && roles[role]) {
+      const rgb = roles[role];
+      result[role] = { color: null, rgb, ratio: contrastRatio(rgb, surfaceRgb), locked: true };
+      continue;
+    }
+    // Pick a hue in the widest gap (or this role's own hue if nothing taken).
+    const hue = usedHues.length
+      ? farthestHue(usedHues)
+      : roles[role]
+        ? rgbToHsl(...roles[role])[0]
+        : 0;
+    usedHues.push(hue);
+    // Cohesive, lively saturation.
+    let sat = avgLockedSat;
+    if (sat == null) sat = roles[role] ? rgbToHsl(...roles[role])[1] : 70;
+    sat = Math.max(sat, 45);
+    // Most surface-friendly value on that hue that still clears the target.
+    const hit = bestTextOnSurface(hue, sat, surfaceRgb, target);
+    result[role] = hit
+      ? { color: hit.color, rgb: hit.rgb, ratio: hit.ratio, locked: false }
+      : null;
+  }
+  return result;
+}
+
+/**
+ * The single, unified accessible-palette generator. ONE surface, ONE lock set,
+ * everything generated coherently against each other so the foundation
+ * (base + neutral) and the brand accents (primary / secondary / tertiary /
+ * action) never drift apart.
+ *
+ * It composes the lower-level helpers rather than duplicating them:
+ *   - the SURFACE is `base` (kept if locked, else a light tinted surface);
+ *   - `neutral` becomes body text clearing AAA on that surface;
+ *   - the brand accents are spread into the widest hue gaps left by the locked
+ *     colors and each clears AA on that same surface.
+ *
+ * Any subset of roles can be locked; locked roles are echoed back untouched
+ * with their measured ratio, the rest are generated. Roles whose RGB isn't
+ * supplied are simply omitted from the result. Pure RGB in / out.
+ *
+ * @param {object} input
+ * @param {{ base?:[number,number,number], neutral?:[number,number,number], primary?:[number,number,number], secondary?:[number,number,number], tertiary?:[number,number,number], action?:[number,number,number] }} input.roles
+ * @param {Record<string,boolean>} [input.locked]
+ * @param {number} [input.neutralTarget] body-text contrast target (default 7 = AAA)
+ * @param {number} [input.accentTarget]  brand-accent contrast target (default 4.5 = AA)
+ * @returns {Record<string, { color: string|null, rgb: [number,number,number], ratio: number|null, locked: boolean } | null> | null}
+ */
+export function suggestPalette({ roles = {}, locked = {}, neutralTarget = 7, accentTarget = 4.5 }) {
+  if (!roles.base) return null;
+
+  // 1. Surface = base. Locked → the user's base IS the surface; unlocked → a
+  //    light, lightly-tinted surface (keeps the hue, caps saturation).
+  const [bH, bS] = rgbToHsl(...roles.base);
+  let surfaceRgb;
+  let baseColor;
+  if (locked.base) {
+    surfaceRgb = roles.base;
+    baseColor = null;
+  } else {
+    const s = Math.min(bS, 8);
+    baseColor = `hsl(${bH.toFixed(1)} ${s.toFixed(1)}% 97%)`;
+    surfaceRgb = hslToRgb(bH, s, 97);
+  }
+
+  const out = {};
+  out.base = { color: baseColor, rgb: surfaceRgb, ratio: null, locked: !!locked.base };
+
+  // 2. Neutral (body text) → AAA on the surface.
+  if (roles.neutral) {
+    if (locked.neutral) {
+      out.neutral = { color: null, rgb: roles.neutral, ratio: contrastRatio(roles.neutral, surfaceRgb), locked: true };
+    } else {
+      const [nH, nS] = rgbToHsl(...roles.neutral);
+      out.neutral = bestTextOnSurface(nH, Math.min(nS, 15), surfaceRgb, neutralTarget);
+    }
+  }
+
+  // 3. Brand accents → distinct hues, AA on the SAME surface (shared logic).
+  const brand = suggestBrandPalette({
+    roles: {
+      primary: roles.primary,
+      secondary: roles.secondary,
+      tertiary: roles.tertiary,
+      action: roles.action,
+    },
+    surfaceRgb,
+    locked: {
+      primary: locked.primary,
+      secondary: locked.secondary,
+      tertiary: locked.tertiary,
+      action: locked.action,
+    },
+    target: accentTarget,
+  });
+  for (const role of ['primary', 'secondary', 'tertiary', 'action']) {
+    if (roles[role]) out[role] = brand[role];
+  }
+
+  return out;
+}
