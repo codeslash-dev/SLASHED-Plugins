@@ -3,13 +3,16 @@
  * REST endpoints powering the SLASHED token editor SPA.
  *
  * Routes (all under /wp-json/slashed/v1):
- *   POST   /tokens            — save a section
- *   POST   /tokens/validate   — dry-run sanitizer
- *   POST   /tokens/reset      — delete a section (or all)
- *   GET    /tokens/export     — portable JSON export
- *   POST   /tokens/import     — import from export envelope
- *   GET    /settings          — read plugin behavioural settings
- *   POST   /settings          — update plugin behavioural settings
+ *   POST   /tokens              — save a section (legacy section-based format)
+ *   POST   /tokens/validate     — dry-run sanitizer
+ *   POST   /tokens/reset        — delete a section (or all)
+ *   GET    /tokens/export       — portable JSON export
+ *   POST   /tokens/import       — import from export envelope
+ *   GET    /tokens/overrides    — get flat override map { "--sf-name": "value" }
+ *   POST   /tokens/overrides    — save flat override map
+ *   DELETE /tokens/overrides    — clear all overrides
+ *   GET    /settings            — read plugin behavioural settings
+ *   POST   /settings            — update plugin behavioural settings
  *
  * @package SLASHED
  */
@@ -113,6 +116,39 @@ class Slashed_REST_Controller {
 			)
 		);
 
+		// Flat override map endpoint — used by the new configurator-based admin SPA.
+		register_rest_route(
+			self::NAMESPACE,
+			'/tokens/overrides',
+			array(
+				array(
+					'methods'             => 'GET',
+					'callback'            => array( $this, 'get_overrides' ),
+					'permission_callback' => array( $this, 'check_permissions' ),
+				),
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'save_overrides' ),
+					'permission_callback' => array( $this, 'check_permissions' ),
+					'args'                => array(
+						'overrides' => array(
+							'type'                 => 'object',
+							'required'             => true,
+							'additionalProperties' => array(
+								'type'      => 'string',
+								'maxLength' => 512,
+							),
+						),
+					),
+				),
+				array(
+					'methods'             => 'DELETE',
+					'callback'            => array( $this, 'clear_overrides' ),
+					'permission_callback' => array( $this, 'check_permissions' ),
+				),
+			)
+		);
+
 		register_rest_route(
 			self::NAMESPACE,
 			'/settings',
@@ -146,6 +182,15 @@ class Slashed_REST_Controller {
 						'show_class_hints' => array(
 							'type'     => 'boolean',
 							'required' => false,
+						),
+						'manual_css_mode'  => array(
+							'type'     => 'boolean',
+							'required' => false,
+						),
+						'configurator_url' => array(
+							'type'              => 'string',
+							'required'          => false,
+							'sanitize_callback' => 'esc_url_raw',
 						),
 					),
 				),
@@ -271,8 +316,16 @@ class Slashed_REST_Controller {
 		$html_font_size   = $request->get_param( 'html_font_size' );
 		$css_bundle       = $request->get_param( 'css_bundle' );
 		$show_class_hints = $request->get_param( 'show_class_hints' );
+		$manual_css_mode  = $request->get_param( 'manual_css_mode' );
+		$configurator_url = $request->get_param( 'configurator_url' );
 
-		if ( null === $html_font_size && null === $css_bundle && null === $show_class_hints ) {
+		if (
+			null === $html_font_size &&
+			null === $css_bundle &&
+			null === $show_class_hints &&
+			null === $manual_css_mode &&
+			null === $configurator_url
+		) {
 			return rest_ensure_response( Slashed_Token_Store::get_plugin_settings() );
 		}
 
@@ -287,9 +340,63 @@ class Slashed_REST_Controller {
 		if ( null !== $show_class_hints ) {
 			$settings['show_class_hints'] = (bool) $show_class_hints;
 		}
+		if ( null !== $manual_css_mode ) {
+			$settings['manual_css_mode'] = (bool) $manual_css_mode;
+		}
+		if ( null !== $configurator_url ) {
+			$settings['configurator_url'] = (string) $configurator_url;
+		}
 
 		Slashed_Token_Store::update_plugin_settings( $settings );
 		return rest_ensure_response( $settings );
+	}
+
+	/**
+	 * GET /tokens/overrides — returns the flat override map.
+	 */
+	public function get_overrides( WP_REST_Request $request ) {
+		return rest_ensure_response( (object) get_option( 'slashed_overrides', array() ) );
+	}
+
+	/**
+	 * POST /tokens/overrides — replaces the flat override map.
+	 *
+	 * Accepts { overrides: { "--sf-color-brand": "oklch(...)" } }.
+	 * Only keys starting with "--" are accepted; values are sanitized.
+	 */
+	public function save_overrides( WP_REST_Request $request ) {
+		$raw = $request->get_param( 'overrides' );
+		if ( ! is_array( $raw ) ) {
+			$raw = array();
+		}
+		$sanitized = $this->sanitize_overrides( $raw );
+		update_option( 'slashed_overrides', $sanitized );
+		return rest_ensure_response( (object) $sanitized );
+	}
+
+	/**
+	 * DELETE /tokens/overrides — removes all stored overrides.
+	 */
+	public function clear_overrides( WP_REST_Request $request ) {
+		delete_option( 'slashed_overrides' );
+		return rest_ensure_response( (object) array() );
+	}
+
+	/**
+	 * Sanitize a flat override map: only allow -- prefixed property names.
+	 *
+	 * @param  array $overrides Raw input.
+	 * @return array            Sanitized { string => string }.
+	 */
+	private function sanitize_overrides( array $overrides ) {
+		$out = array();
+		foreach ( $overrides as $name => $value ) {
+			if ( ! is_string( $name ) || 0 !== strpos( $name, '--' ) ) {
+				continue;
+			}
+			$out[ sanitize_text_field( $name ) ] = sanitize_text_field( (string) $value );
+		}
+		return $out;
 	}
 
 	public function export_tokens() {

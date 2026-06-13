@@ -3,8 +3,8 @@
  * SLASHED token editor admin page.
  *
  * Registers the "Tokens" admin page and mounts the Svelte SPA built from
- * integrations/bricks/admin-app/. The SPA is the global token editor for
- * all SLASHED integrations — not Bricks-specific.
+ * admin-app/ (new unified build) with a fallback to the legacy
+ * integrations/bricks/admin-app/ build.
  *
  * @package SLASHED
  */
@@ -62,12 +62,38 @@ class Slashed_Token_Page {
 	}
 
 	/**
-	 * Enqueue the Svelte token editor bundle on this page only.
+	 * Resolve the base URL and path for the admin-app bundle.
 	 *
-	 * The built assets live in integrations/bricks/assets/admin-app/ — that
-	 * is where admin-app/ is built. The SPA source lives alongside Bricks
-	 * integration code because it was born there; the built output can be
-	 * relocated when a separate build target is warranted.
+	 * Prefers the new top-level admin-app/ build (SLASHED_PATH/assets/admin-app/).
+	 * Falls back to the legacy integrations/bricks/assets/admin-app/ location
+	 * so existing installations keep working until the new build is present.
+	 *
+	 * @return array{url: string, path: string}
+	 */
+	private function resolve_bundle_base() {
+		if ( defined( 'SLASHED_PATH' ) && file_exists( SLASHED_PATH . 'assets/admin-app/app.js' ) ) {
+			return array(
+				'url'  => SLASHED_URL,
+				'path' => SLASHED_PATH,
+			);
+		}
+
+		if ( defined( 'SLASHED_URL' ) ) {
+			return array(
+				'url'  => SLASHED_URL . 'integrations/bricks/',
+				'path' => SLASHED_PATH . 'integrations/bricks/',
+			);
+		}
+
+		// Standalone Bricks plugin: SLASHED_BRICKS_* already point to integrations/bricks/.
+		return array(
+			'url'  => SLASHED_BRICKS_URL,
+			'path' => SLASHED_BRICKS_PATH,
+		);
+	}
+
+	/**
+	 * Enqueue the Svelte token editor bundle on this page only.
 	 *
 	 * @param string $hook_suffix Current admin page hook suffix.
 	 */
@@ -76,14 +102,9 @@ class Slashed_Token_Page {
 			return;
 		}
 
-		if ( defined( 'SLASHED_URL' ) ) {
-			$plugin_url  = SLASHED_URL . 'integrations/bricks/';
-			$plugin_path = SLASHED_PATH . 'integrations/bricks/';
-		} else {
-			// Standalone Bricks plugin: SLASHED_BRICKS_* already point to integrations/bricks/.
-			$plugin_url  = SLASHED_BRICKS_URL;
-			$plugin_path = SLASHED_BRICKS_PATH;
-		}
+		$base = $this->resolve_bundle_base();
+		$plugin_url  = $base['url'];
+		$plugin_path = $base['path'];
 
 		$js_path  = $plugin_path . 'assets/admin-app/app.js';
 		$css_path = $plugin_path . 'assets/admin-app/app.css';
@@ -113,6 +134,8 @@ class Slashed_Token_Page {
 
 		add_filter( 'script_loader_tag', array( $this, 'mark_as_module' ), 10, 3 );
 
+		$plugin_settings = Slashed_Token_Store::get_plugin_settings();
+
 		wp_localize_script(
 			'slashed-admin-app',
 			'slashedApp',
@@ -121,10 +144,17 @@ class Slashed_Token_Page {
 					'url'   => esc_url_raw( rest_url( Slashed_REST_Controller::NAMESPACE ) ),
 					'nonce' => wp_create_nonce( 'wp_rest' ),
 				),
+				'overrides'          => (object) get_option( 'slashed_overrides', array() ),
 				'tabs'               => Slashed_Tab_Registry::get_all(),
 				'defaults'           => Slashed_Token_Defaults::get_all(),
 				'settings'           => Slashed_Token_Store::get_settings(),
-				'pluginSettings'     => Slashed_Token_Store::get_plugin_settings(),
+				'pluginSettings'     => array_merge(
+					array(
+						'manual_css_mode'  => false,
+						'configurator_url' => '',
+					),
+					$plugin_settings
+				),
 				'inventory'          => class_exists( 'Slashed_Bricks_Inventory' ) ? Slashed_Bricks_Inventory::get() : null,
 				'classHints'         => self::get_class_hints(),
 				'versions'           => array(
@@ -385,7 +415,7 @@ class Slashed_Token_Page {
 
 	public function render_missing_bundle_notice() {
 		echo '<div class="notice notice-error"><p>';
-		esc_html_e( 'SLASHED admin SPA bundle is missing. Run `npm install && npm run build` inside integrations/bricks/admin-app/ to generate it.', 'slashed' );
+		esc_html_e( 'SLASHED admin SPA bundle is missing. Run `npm install && npm run build` inside admin-app/ to generate it.', 'slashed' );
 		echo '</p></div>';
 	}
 }
