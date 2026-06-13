@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "module": "ESNext",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strict": false,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["svelte"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/*"]
+}

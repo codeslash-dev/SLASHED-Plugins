@@ -1,0 +1,21 @@
+{
+  "name": "slashed-admin-app",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Svelte 5 admin SPA for SLASHED for WP — built on the framework configurator core.",
+  "type": "module",
+  "scripts": {
+    "sync": "node scripts/sync-core.mjs",
+    "predev": "node scripts/sync-core.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/sync-core.mjs",
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./jsconfig.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "svelte": "^5.56.3",
+    "svelte-check": "^4.6.0",
+    "vite": "^8.0.16"
+  }
+}
