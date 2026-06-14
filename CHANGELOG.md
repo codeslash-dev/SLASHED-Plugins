@@ -9,6 +9,22 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-06-14
+
+### Fixed
+
+- Use targeted injection check instead of wp_strip_all_tags
+- Show actual loaded framework version + fix WCAG navigation
+- Fix configurator UX bugs and add Manual CSS subpage
+
+## [0.1.5] - 2026-06-14
+
+### Fixed
+
+- Use targeted injection check instead of wp_strip_all_tags
+- Show actual loaded framework version + fix WCAG navigation
+- Fix configurator UX bugs and add Manual CSS subpage
+
 ## [0.1.4] - 2026-06-14
 
 ### Fixed
