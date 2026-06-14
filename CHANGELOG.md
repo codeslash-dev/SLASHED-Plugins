@@ -9,6 +9,26 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-06-14
+
+### Changed
+
+- Remove redundant ternary in title attribute
+
+### Fixed
+
+- Fix CSS loading and modernise sidebar for mobile readability
+
+## [0.1.6] - 2026-06-14
+
+### Changed
+
+- Remove redundant ternary in title attribute
+
+### Fixed
+
+- Fix CSS loading and modernise sidebar for mobile readability
+
 ## [0.1.5] - 2026-06-14
 
 ### Fixed
