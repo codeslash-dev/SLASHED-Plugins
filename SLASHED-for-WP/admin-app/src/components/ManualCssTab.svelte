@@ -1,5 +1,5 @@
 <script>
-  import { parseCssOverrides } from '../lib/css.js';
+  import { parseCSS as parseCssOverrides } from '../lib/css.js';
   import { overrides, ui, wpSettings, replaceOverrides } from '../lib/store.svelte.js';
 
   let cssText = $state(ui.manualCssText ?? '');

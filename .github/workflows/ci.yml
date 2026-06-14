@@ -66,16 +66,27 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: SLASHED-for-WP/integrations/bricks/admin-app/package-lock.json
+          cache-dependency-path: |
+            SLASHED-for-WP/integrations/bricks/admin-app/package-lock.json
+            SLASHED-for-WP/admin-app/package-lock.json
 
-      - name: Install dependencies
+      - name: Install dependencies (bricks admin-app)
         run: npm ci --prefix SLASHED-for-WP/integrations/bricks/admin-app
 
-      - name: Type-check (svelte-check)
+      - name: Type-check (svelte-check, bricks admin-app)
         run: npm --prefix SLASHED-for-WP/integrations/bricks/admin-app run check
 
-      - name: Build
+      - name: Build (bricks admin-app)
         run: npm --prefix SLASHED-for-WP/integrations/bricks/admin-app run build
+
+      - name: Install dependencies (new admin-app)
+        run: npm ci --prefix SLASHED-for-WP/admin-app
+
+      - name: Build (new admin-app)
+        working-directory: SLASHED-for-WP/admin-app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build
 
   quality:
     name: Lint, test, version & drift checks
@@ -156,3 +167,7 @@ jobs:
         run: |
           npm ci --prefix SLASHED-for-WP/integrations/bricks/admin-app
           npm audit --audit-level=high --prefix SLASHED-for-WP/integrations/bricks/admin-app
+      - name: Audit new admin-app dependencies
+        run: |
+          npm ci --prefix SLASHED-for-WP/admin-app
+          npm audit --audit-level=high --prefix SLASHED-for-WP/admin-app
