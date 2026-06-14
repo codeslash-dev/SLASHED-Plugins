@@ -9,6 +9,38 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-06-14
+
+### Added
+
+- Add GitHub Actions for auto-sync and rebuild of admin-app
+- Update PHP — new admin-app path, overrides endpoint, settings fields
+- Add WP-specific tab components (ManualCssTab, VersionTab, SettingsTab)
+- Add WP store adapter, App shell and WpSidebar
+- Add admin-app scaffold — configurator-based WP panel infrastructure
+
+### Fixed
+
+- Wp coding standards — multiline array and aligned assignment in class-token-page.php
+- Payload wrapper, parseCssOverrides import, a11y toggle, duplicate sync, constants guard
+- Guard against path traversal in sync-core.mjs (CodeQL)
+
+## [0.2.1] - 2026-06-14
+
+### Added
+
+- Add GitHub Actions for auto-sync and rebuild of admin-app
+- Update PHP — new admin-app path, overrides endpoint, settings fields
+- Add WP-specific tab components (ManualCssTab, VersionTab, SettingsTab)
+- Add WP store adapter, App shell and WpSidebar
+- Add admin-app scaffold — configurator-based WP panel infrastructure
+
+### Fixed
+
+- Wp coding standards — multiline array and aligned assignment in class-token-page.php
+- Payload wrapper, parseCssOverrides import, a11y toggle, duplicate sync, constants guard
+- Guard against path traversal in sync-core.mjs (CodeQL)
+
 ## [0.1.3] - 2026-06-10
 
 ### Added
