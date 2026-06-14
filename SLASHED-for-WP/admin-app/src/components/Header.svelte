@@ -14,7 +14,7 @@
    * reachable. Keyboard shortcut: `/` focuses the search box.
    */
   import { sync, allTokens, frameworkVersion } from '../lib/model.js';
-  import { ui, overrides, overrideCount, history, undo, redo, openOutputDrawer } from '../lib/store.svelte.js';
+  import { ui, overrides, overrideCount, history, undo, redo, openOutputDrawer, pluginVersion, cssSource } from '../lib/store.svelte.js';
 
   const totalTokens = allTokens.length;
   const modCount = $derived(Object.keys(overrides).length);
@@ -30,9 +30,14 @@
       <p class="hdr__sub">Edit every framework token. Generate override CSS.</p>
     </div>
     <div class="hdr__pills">
+      {#if pluginVersion}
+        <span class="hdr__pill hdr__pill--plugin" title="SLASHED plugin version">
+          plugin {pluginVersion}
+        </span>
+      {/if}
       {#if frameworkVersion}
-        <span class="hdr__pill" title="Synced from {sync.source} (catalogue {sync.tokensHash})">
-          {frameworkVersion}
+        <span class="hdr__pill" title="Framework CSS {cssSource === 'cdn' ? 'loaded from CDN' : 'bundled locally'} · catalogue {sync.tokensHash ?? '—'}">
+          framework {frameworkVersion}
         </span>
       {/if}
       <span class="hdr__pill hdr__pill--muted" title="{totalTokens} tokens in the live catalogue">
@@ -163,6 +168,12 @@
     color: var(--cfg-text-muted);
     border-color: var(--cfg-border-strong);
     background: var(--cfg-surface-2);
+  }
+  .hdr__pill--plugin {
+    color: var(--cfg-text-muted);
+    border-color: var(--cfg-border-strong);
+    background: var(--cfg-surface-2);
+    opacity: 0.7;
   }
   .hdr__pill--mod {
     color: var(--cfg-warn);

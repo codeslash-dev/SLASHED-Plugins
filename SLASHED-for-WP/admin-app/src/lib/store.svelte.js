@@ -65,6 +65,12 @@ export const savedThemes = $state(loadSavedThemes());
 /** Plugin-level WP settings (bundle, html_font_size, integrations, …). */
 export const wpSettings = $state({ ...(boot.pluginSettings ?? {}) });
 
+/** Installed plugin version (from PHP hydration). */
+export const pluginVersion = boot.versions?.plugin ?? '';
+
+/** Whether the framework CSS is loaded from CDN vs the local bundle. */
+export const cssSource = boot.versions?.css_source ?? 'local';
+
 // ── Persistence ──────────────────────────────────────────────────────────────
 
 function loadUiState() {

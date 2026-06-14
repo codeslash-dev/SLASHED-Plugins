@@ -76,11 +76,17 @@
   const domain = $derived(DOMAIN_BY_ID.get(ui.domain) ?? DOMAIN_BY_ID.get('colors'));
   const tool   = $derived(domain?.tool ?? '');
 
-  // Keep active domain valid
+  // Keep active domain valid for the current mode.
+  // Tool domains (wcag, themes, cheatsheet) are always reachable regardless of mode.
   $effect(() => {
     if (ui.mode === 'advanced' && ui.domain === 'home') {
       ui.domain = 'colors';
-    } else if (ui.mode === 'basic' && ui.domain !== 'home' && !BASIC_DOMAIN_IDS.includes(ui.domain)) {
+    } else if (
+      ui.mode === 'basic' &&
+      ui.domain !== 'home' &&
+      !BASIC_DOMAIN_IDS.includes(ui.domain) &&
+      !DOMAIN_BY_ID.get(ui.domain)?.tool
+    ) {
       ui.domain = 'home';
     }
   });
