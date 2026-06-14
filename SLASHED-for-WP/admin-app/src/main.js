@@ -6,8 +6,10 @@
  */
 import { mount } from 'svelte';
 import App from './App.svelte';
+import './styles/app.css';
 
 const target = document.getElementById('slashed-admin-app');
 if (target) {
+  target.innerHTML = '';
   mount(App, { target });
 }
