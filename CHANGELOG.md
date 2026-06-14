@@ -9,6 +9,64 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-06-14
+
+### Added
+
+- Add GitHub Actions for auto-sync and rebuild of admin-app
+- Update PHP — new admin-app path, overrides endpoint, settings fields
+- Add WP-specific tab components (ManualCssTab, VersionTab, SettingsTab)
+- Add WP store adapter, App shell and WpSidebar
+- Add admin-app scaffold — configurator-based WP panel infrastructure
+- Unify palette generator + on-color usage preview
+- In-context WCAG resolution + color locks
+- Bring configurator-parity CSS export to the WP panel
+
+### Changed
+
+- Generate palettes in OKLCH, not HSL
+- Share WCAG/scale/font logic with the configurator + DX polish
+
+### Fixed
+
+- Exclude synced and compiled css from stylelint
+- Three correctness bugs in admin-app and REST controller
+- Wp coding standards — multiline array and aligned assignment in class-token-page.php
+- Payload wrapper, parseCssOverrides import, a11y toggle, duplicate sync, constants guard
+- Guard against path traversal in sync-core.mjs (CodeQL)
+- Address self-review of the WCAG checker + generator
+- A11y + robustness from review feedback
+- Derive FontFamilyField source to clear state_referenced_locally
+
+## [0.1.3] - 2026-06-14
+
+### Added
+
+- Add GitHub Actions for auto-sync and rebuild of admin-app
+- Update PHP — new admin-app path, overrides endpoint, settings fields
+- Add WP-specific tab components (ManualCssTab, VersionTab, SettingsTab)
+- Add WP store adapter, App shell and WpSidebar
+- Add admin-app scaffold — configurator-based WP panel infrastructure
+- Unify palette generator + on-color usage preview
+- In-context WCAG resolution + color locks
+- Bring configurator-parity CSS export to the WP panel
+
+### Changed
+
+- Generate palettes in OKLCH, not HSL
+- Share WCAG/scale/font logic with the configurator + DX polish
+
+### Fixed
+
+- Exclude synced and compiled css from stylelint
+- Three correctness bugs in admin-app and REST controller
+- Wp coding standards — multiline array and aligned assignment in class-token-page.php
+- Payload wrapper, parseCssOverrides import, a11y toggle, duplicate sync, constants guard
+- Guard against path traversal in sync-core.mjs (CodeQL)
+- Address self-review of the WCAG checker + generator
+- A11y + robustness from review feedback
+- Derive FontFamilyField source to clear state_referenced_locally
+
 ## [0.2.2] - 2026-06-14
 
 ### Fixed
