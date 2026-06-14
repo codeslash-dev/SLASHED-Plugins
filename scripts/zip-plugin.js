@@ -8,6 +8,7 @@
  * The zip contains a single top-level `slashed/` directory with:
  *   slashed.php                          — unified entry point
  *   includes/                            — shared PHP classes
+ *   assets/admin-app/                    — new unified admin SPA (app.js + app.css)
  *   dist/                                — bundled CSS for local-first delivery
  *   integrations/bricks/
  *     slashed-bricks.php
@@ -39,6 +40,7 @@ const PLUGIN_ROOT = 'SLASHED-for-WP';
 const INCLUDE = [
   { src: `${PLUGIN_ROOT}/slashed.php`,                                  dest: 'slashed.php' },
   { src: `${PLUGIN_ROOT}/includes`,                                     dest: 'includes' },
+  { src: `${PLUGIN_ROOT}/assets/admin-app`,                             dest: 'assets/admin-app', required: true },
   { src: `${PLUGIN_ROOT}/dist`,                                         dest: 'dist', required: true },
   { src: `${PLUGIN_ROOT}/data`,                                         dest: 'data' },
   { src: `${PLUGIN_ROOT}/integrations/bricks/slashed-bricks.php`,      dest: 'integrations/bricks/slashed-bricks.php' },
@@ -55,6 +57,7 @@ function copyRecursive(src, dest) {
     console.warn(`[zip-plugin] warning: skipping symlink ${src}`);
     return;
   }
+  if (src.endsWith('.map')) return;
   if (stat.isDirectory()) {
     fs.mkdirSync(dest, { recursive: true });
     for (const entry of fs.readdirSync(src)) {

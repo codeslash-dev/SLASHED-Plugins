@@ -45,6 +45,9 @@ jobs:
       - name: Stamp version from tag into plugin files
         run: npm run version-sync -- --from-tag
 
+      - name: Build new admin-app
+        run: npm run build:new-admin-app
+
       - name: Build plugin zip
         run: npm run build:zip
 
