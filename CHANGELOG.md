@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-06-14
+
+### Fixed
+
+- Include assets/admin-app in release zip
+
+## [0.1.4] - 2026-06-14
+
+### Fixed
+
+- Include assets/admin-app in release zip
+
 ## [0.1.3] - 2026-06-14
 
 ### Added
