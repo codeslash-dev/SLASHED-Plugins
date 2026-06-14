@@ -1,0 +1,11 @@
+# WP-specific files — NOT overwritten by sync-core.mjs.
+# Add any file here that has WP-specific logic or diverges intentionally
+# from the configurator's shared source.
+src/lib/store.svelte.js
+src/lib/wp-api.js
+src/App.svelte
+src/main.js
+src/components/WpSidebar.svelte
+src/components/VersionTab.svelte
+src/components/SettingsTab.svelte
+src/components/ManualCssTab.svelte

@@ -3,8 +3,8 @@
  * SLASHED token editor admin page.
  *
  * Registers the "Tokens" admin page and mounts the Svelte SPA built from
- * integrations/bricks/admin-app/. The SPA is the global token editor for
- * all SLASHED integrations — not Bricks-specific.
+ * admin-app/ (new unified build) with a fallback to the legacy
+ * integrations/bricks/admin-app/ build.
  *
  * @package SLASHED
  */
@@ -62,12 +62,44 @@ class Slashed_Token_Page {
 	}
 
 	/**
-	 * Enqueue the Svelte token editor bundle on this page only.
+	 * Resolve the base URL and path for the admin-app bundle.
 	 *
-	 * The built assets live in integrations/bricks/assets/admin-app/ — that
-	 * is where admin-app/ is built. The SPA source lives alongside Bricks
-	 * integration code because it was born there; the built output can be
-	 * relocated when a separate build target is warranted.
+	 * Prefers the new top-level admin-app/ build (SLASHED_PATH/assets/admin-app/).
+	 * Falls back to the legacy integrations/bricks/assets/admin-app/ location
+	 * so existing installations keep working until the new build is present.
+	 *
+	 * @return array{url: string, path: string}
+	 */
+	private function resolve_bundle_base() {
+		if ( defined( 'SLASHED_PATH' ) && file_exists( SLASHED_PATH . 'assets/admin-app/app.js' ) ) {
+			return array(
+				'url'  => SLASHED_URL,
+				'path' => SLASHED_PATH,
+			);
+		}
+
+		if ( defined( 'SLASHED_PATH' ) && defined( 'SLASHED_URL' ) ) {
+			return array(
+				'url'  => SLASHED_URL . 'integrations/bricks/',
+				'path' => SLASHED_PATH . 'integrations/bricks/',
+			);
+		}
+
+		// Standalone Bricks plugin: SLASHED_BRICKS_* already point to integrations/bricks/.
+		if ( ! defined( 'SLASHED_BRICKS_URL' ) || ! defined( 'SLASHED_BRICKS_PATH' ) ) {
+			return array(
+				'url'  => '',
+				'path' => '',
+			);
+		}
+		return array(
+			'url'  => SLASHED_BRICKS_URL,
+			'path' => SLASHED_BRICKS_PATH,
+		);
+	}
+
+	/**
+	 * Enqueue the Svelte token editor bundle on this page only.
 	 *
 	 * @param string $hook_suffix Current admin page hook suffix.
 	 */
@@ -76,14 +108,9 @@ class Slashed_Token_Page {
 			return;
 		}
 
-		if ( defined( 'SLASHED_URL' ) ) {
-			$plugin_url  = SLASHED_URL . 'integrations/bricks/';
-			$plugin_path = SLASHED_PATH . 'integrations/bricks/';
-		} else {
-			// Standalone Bricks plugin: SLASHED_BRICKS_* already point to integrations/bricks/.
-			$plugin_url  = SLASHED_BRICKS_URL;
-			$plugin_path = SLASHED_BRICKS_PATH;
-		}
+		$base        = $this->resolve_bundle_base();
+		$plugin_url  = $base['url'];
+		$plugin_path = $base['path'];
 
 		$js_path  = $plugin_path . 'assets/admin-app/app.js';
 		$css_path = $plugin_path . 'assets/admin-app/app.css';
@@ -113,6 +140,8 @@ class Slashed_Token_Page {
 
 		add_filter( 'script_loader_tag', array( $this, 'mark_as_module' ), 10, 3 );
 
+		$plugin_settings = Slashed_Token_Store::get_plugin_settings();
+
 		wp_localize_script(
 			'slashed-admin-app',
 			'slashedApp',
@@ -121,10 +150,17 @@ class Slashed_Token_Page {
 					'url'   => esc_url_raw( rest_url( Slashed_REST_Controller::NAMESPACE ) ),
 					'nonce' => wp_create_nonce( 'wp_rest' ),
 				),
+				'overrides'          => (object) get_option( 'slashed_overrides', array() ),
 				'tabs'               => Slashed_Tab_Registry::get_all(),
 				'defaults'           => Slashed_Token_Defaults::get_all(),
 				'settings'           => Slashed_Token_Store::get_settings(),
-				'pluginSettings'     => Slashed_Token_Store::get_plugin_settings(),
+				'pluginSettings'     => array_merge(
+					array(
+						'manual_css_mode'  => false,
+						'configurator_url' => '',
+					),
+					$plugin_settings
+				),
 				'inventory'          => class_exists( 'Slashed_Bricks_Inventory' ) ? Slashed_Bricks_Inventory::get() : null,
 				'classHints'         => self::get_class_hints(),
 				'versions'           => array(
@@ -149,9 +185,6 @@ class Slashed_Token_Page {
 	 * @return array
 	 */
 	public static function get_class_hints() {
-		// Resolve the shared data/ dir from whichever entry point is loaded.
-		// Unified defines SLASHED_PATH; standalone integrations define their own
-		// base two levels below the plugin root (integrations/<builder>/).
 		if ( defined( 'SLASHED_PATH' ) ) {
 			$path = SLASHED_PATH . 'data/classes-hints.json';
 		} elseif ( defined( 'SLASHED_BRICKS_PATH' ) ) {
@@ -170,78 +203,17 @@ class Slashed_Token_Page {
 		return is_array( $data ) ? $data : array();
 	}
 
-	/**
-	 * Transient key caching the Bricks Font-Manager CPT font list.
-	 *
-	 * Shared with Slashed_Bricks_Fonts_REST, which busts it on
-	 * save_post_{<font CPT slug>} (see get_bricks_fonts_post_type()). Kept
-	 * here too because this class is the canonical owner of the collector and
-	 * is always loaded, whereas the REST class is only required during REST
-	 * dispatch.
-	 */
 	const CPT_FONTS_TRANSIENT = 'slashed_bricks_cpt_fonts';
-
-	/**
-	 * Post type slug for the Bricks Font Manager CPT.
-	 *
-	 * Bricks does not expose this as a constant we can rely on, so we use the
-	 * slug observed in the wild (Bricks › Settings › Custom Fonts admin URLs
-	 * read /wp-admin/edit.php?post_type=bricks_fonts). BRICKS_DB_CUSTOM_FONTS
-	 * is honoured first in case a future Bricks version defines it.
-	 */
 	const CPT_FONTS_POST_TYPE = 'bricks_fonts';
 
-	/**
-	 * Resolve the Bricks Font Manager CPT slug: prefer the constant Bricks may
-	 * define, fall back to the known slug.
-	 *
-	 * @return string
-	 */
 	public static function get_bricks_fonts_post_type() {
 		return defined( 'BRICKS_DB_CUSTOM_FONTS' ) ? BRICKS_DB_CUSTOM_FONTS : self::CPT_FONTS_POST_TYPE;
 	}
 
-	/**
-	 * Flush the cached Bricks Font-Manager CPT font list.
-	 *
-	 * Registered on save_post_{<font CPT slug>} (see get_bricks_fonts_post_type())
-	 * from an always-loaded bootstrap path (see slashed-bricks.php) rather than
-	 * from REST route registration, so the cache is invalidated on every
-	 * custom-font save — including normal admin saves, not only REST requests.
-	 */
 	public static function flush_bricks_fonts_cache() {
 		delete_transient( self::CPT_FONTS_TRANSIENT );
 	}
 
-	/**
-	 * Collect every font Bricks already knows how to serve.
-	 *
-	 * Canonical implementation shared by the admin SPA bootstrap (here) and
-	 * the REST endpoint (Slashed_Bricks_Fonts_REST::get_fonts(), which is a
-	 * thin wrapper around this method). SLASHED never loads fonts itself —
-	 * Bricks owns that pipeline — so this only enumerates names for the
-	 * typography "Bricks fonts" dropdown.
-	 *
-	 * Bricks does not expose a PHP API for its font registry, so we probe the
-	 * WP options it is known to use across versions and skip any unrecognised
-	 * shapes gracefully (the SPA falls back to a manual text input):
-	 *   - bricks_custom_fonts: font_family | family | title | name
-	 *   - bricks_google_fonts: family | font_family | name | title
-	 *   - bricks_adobe_fonts:  fonts[].font_family | family
-	 *   - Font Manager CPT (slug resolved by get_bricks_fonts_post_type(), the
-	 *     'bricks_fonts' post type observed in Bricks › Settings › Custom
-	 *     Fonts admin URLs): the post title is the family name. Fonts created
-	 *     via the builder UI may stay in 'draft' even after the files upload,
-	 *     so both 'publish' and 'draft' are included. We read titles directly
-	 *     rather than calling Bricks\Custom_Fonts::get_custom_fonts() (static
-	 *     cache + @font-face side-effects + publish-only — all unnecessary for
-	 *     a name lookup), and cache the result in a 1-hour transient busted on
-	 *     CPT save.
-	 *
-	 * Returns an empty array when the Bricks integration is disabled.
-	 *
-	 * @return array<int, array{family: string, label: string, source: string}>
-	 */
 	public static function get_bricks_fonts() {
 		if ( class_exists( 'Slashed_Settings' ) && ! Slashed_Settings::is_enabled( 'bricks' ) ) {
 			return array();
@@ -249,7 +221,6 @@ class Slashed_Token_Page {
 
 		$fonts = array();
 
-		// Custom fonts from bricks_custom_fonts option.
 		$custom = get_option( 'bricks_custom_fonts', array() );
 		if ( is_array( $custom ) ) {
 			foreach ( $custom as $font ) {
@@ -269,7 +240,6 @@ class Slashed_Token_Page {
 			}
 		}
 
-		// Google Fonts added via Bricks settings.
 		$google = get_option( 'bricks_google_fonts', array() );
 		if ( is_array( $google ) ) {
 			foreach ( $google as $font ) {
@@ -288,7 +258,6 @@ class Slashed_Token_Page {
 			}
 		}
 
-		// Adobe Fonts (Typekit).
 		$adobe = get_option( 'bricks_adobe_fonts', array() );
 		if ( is_array( $adobe ) && ! empty( $adobe['fonts'] ) && is_array( $adobe['fonts'] ) ) {
 			foreach ( $adobe['fonts'] as $font ) {
@@ -308,7 +277,6 @@ class Slashed_Token_Page {
 			}
 		}
 
-		// Fonts uploaded via Bricks Font Manager CPT (includes 'draft' status).
 		$font_post_type = self::get_bricks_fonts_post_type();
 		if ( post_type_exists( $font_post_type ) ) {
 			$cpt_cached = get_transient( self::CPT_FONTS_TRANSIENT );
@@ -342,7 +310,6 @@ class Slashed_Token_Page {
 			}
 		}
 
-		// Deduplicate by family name (case-insensitive), keeping first entry.
 		$seen   = array();
 		$unique = array();
 		foreach ( $fonts as $font ) {
@@ -385,7 +352,7 @@ class Slashed_Token_Page {
 
 	public function render_missing_bundle_notice() {
 		echo '<div class="notice notice-error"><p>';
-		esc_html_e( 'SLASHED admin SPA bundle is missing. Run `npm install && npm run build` inside integrations/bricks/admin-app/ to generate it.', 'slashed' );
+		esc_html_e( 'SLASHED admin SPA bundle is missing. Run `npm install && npm run build` inside admin-app/ to generate it.', 'slashed' );
 		echo '</p></div>';
 	}
 }

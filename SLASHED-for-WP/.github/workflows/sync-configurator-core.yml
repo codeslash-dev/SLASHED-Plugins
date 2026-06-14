@@ -1,0 +1,52 @@
+name: Sync & rebuild admin-app from configurator
+
+# Triggered by the slashed framework repo via repository_dispatch
+# when configurator/src/** changes land on main.
+# Also runs automatically when package.json changes (e.g. after dependabot PR merge).
+on:
+  repository_dispatch:
+    types: [configurator-updated]
+  push:
+    branches: [main]
+    paths:
+      - 'SLASHED-for-WP/admin-app/package.json'
+      - 'SLASHED-for-WP/admin-app/.syncignore'
+
+jobs:
+  sync-and-build:
+    name: Sync configurator source and rebuild
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: SLASHED-for-WP/admin-app
+        run: npm ci
+
+      # npm run build triggers prebuild (sync-core.mjs) automatically
+      - name: Build admin-app
+        working-directory: SLASHED-for-WP/admin-app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build
+
+      - name: Commit synced source and built assets
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add SLASHED-for-WP/admin-app/src/
+          git add SLASHED-for-WP/assets/admin-app/
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "build: sync configurator source and rebuild admin-app assets"
+          git push
