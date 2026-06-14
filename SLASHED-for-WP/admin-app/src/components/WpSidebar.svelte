@@ -1,11 +1,7 @@
 <script>
   /**
-   * WP-specific sidebar — standard configurator domain navigation plus two
-   * extra entries at the bottom (Framework • Settings).
-   *
+   * WP-specific sidebar — domain navigation.
    * In .syncignore: never overwritten by sync-core.mjs.
-   * Styling uses the same --cfg-* CSS variables as the synced configurator
-   * components so the chrome is visually uniform.
    */
   import { ui, overrides } from '../lib/store.svelte.js';
   import { DOMAINS, BASIC_DOMAIN_IDS } from '../lib/domains.js';
@@ -30,7 +26,9 @@
     title={ui.sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
     onclick={() => (ui.sidebarOpen = !ui.sidebarOpen)}
   >
-    <span aria-hidden="true">{ui.sidebarOpen ? '◀' : '▶'}</span>
+    <span class="sidebar__toggle-icon" aria-hidden="true">
+      {ui.sidebarOpen ? '‹' : '›'}
+    </span>
   </button>
 
   <nav class="sidebar__nav">
@@ -41,7 +39,7 @@
         class:sidebar__item--active={active}
         class:sidebar__item--tool={!!d.tool}
         onclick={() => (ui.domain = d.id)}
-        title={ui.sidebarOpen ? undefined : d.label}
+        title={d.label}
         aria-current={active ? 'page' : undefined}
       >
         <span class="sidebar__icon" aria-hidden="true">{d.icon ?? '◈'}</span>
@@ -50,7 +48,6 @@
         {/if}
       </button>
     {/each}
-
   </nav>
 
   {#if !ui.sidebarOpen && totalModified > 0}
@@ -61,45 +58,145 @@
 <style>
   .sidebar {
     grid-area: side;
-    background: var(--cfg-sidebar, #1a1a1a);
-    border-right: 1px solid var(--cfg-border, #333);
-    display: flex; flex-direction: column;
-    overflow: hidden; width: 100%; min-width: 0;
+    background: var(--cfg-surface-2);
+    border-right: 1px solid var(--cfg-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+    min-width: 0;
+    transition: background 0.2s;
   }
 
   .sidebar__toggle {
-    display: flex; align-items: center; justify-content: center;
-    height: 36px; flex-shrink: 0;
-    border: none; border-bottom: 1px solid var(--cfg-border, #333);
-    background: transparent; color: var(--cfg-text-muted, #888);
-    cursor: pointer; font-size: 10px; width: 100%; padding: 0;
-    transition: color 0.1s, background 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    flex-shrink: 0;
+    border: none;
+    border-bottom: 1px solid var(--cfg-border);
+    background: transparent;
+    color: var(--cfg-text-faint);
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1;
+    width: 100%;
+    padding: 0;
+    transition: color 0.15s, background 0.15s;
   }
-  .sidebar__toggle:hover { color: var(--cfg-text, #eee); background: var(--cfg-hover, rgba(255,255,255,.05)); }
+  .sidebar__toggle:hover {
+    color: var(--cfg-text);
+    background: var(--cfg-surface-3);
+  }
+  .sidebar__toggle-icon {
+    display: block;
+    font-style: normal;
+    transition: transform 0.2s;
+  }
 
-  .sidebar__nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 4px 0; scrollbar-width: thin; }
+  .sidebar__nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 6px 6px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cfg-border-strong) transparent;
+  }
 
   .sidebar__item {
-    display: flex; align-items: center; gap: 8px;
-    box-sizing: border-box; width: calc(100% - 8px); margin: 1px 4px; height: 36px;
-    padding: 0 8px; border: none; border-radius: 4px;
-    background: transparent; color: var(--cfg-text-muted, #888);
-    cursor: pointer; text-align: left; font-size: 12px; font-family: inherit;
-    white-space: nowrap; overflow: hidden;
-    transition: color 0.1s, background 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 10px;
+    margin-bottom: 2px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--cfg-text-muted);
+    cursor: pointer;
+    text-align: left;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: color 0.12s, background 0.12s, box-shadow 0.12s;
+    position: relative;
   }
-  .sidebar__item:hover { color: var(--cfg-text, #eee); background: var(--cfg-hover, rgba(255,255,255,.06)); }
-  .sidebar__item--active { color: var(--cfg-accent, #60a5fa); background: var(--cfg-active, rgba(96,165,250,.1)); }
-  .sidebar__item--tool { font-style: italic; }
+  .sidebar__item:hover {
+    color: var(--cfg-text);
+    background: var(--cfg-surface-3);
+  }
+  .sidebar__item--active {
+    color: var(--cfg-accent-strong);
+    background: var(--cfg-accent-soft);
+    box-shadow: inset 3px 0 0 var(--cfg-accent-strong);
+    font-weight: 600;
+  }
+  .sidebar__item--active:hover {
+    background: var(--cfg-accent-soft);
+  }
+  .sidebar__item--tool {
+    color: var(--cfg-text-faint);
+    font-size: 12.5px;
+  }
+  .sidebar__item--tool:hover {
+    color: var(--cfg-text-muted);
+  }
+  .sidebar__item--tool.sidebar__item--active {
+    color: var(--cfg-accent-strong);
+  }
 
-  .sidebar__icon { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; line-height: 1; }
-  .sidebar__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar__icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    width: 22px;
+    text-align: center;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sidebar__label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   .sidebar__count {
-    margin: 0 auto 8px; background: var(--cfg-accent, #60a5fa); color: #000;
-    border-radius: 10px; padding: 1px 5px; font-size: 10px; font-weight: 600;
-    min-width: 16px; text-align: center;
+    margin: 0 auto 10px;
+    background: var(--cfg-accent-strong);
+    color: #fff;
+    border-radius: 12px;
+    padding: 2px 7px;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+    letter-spacing: 0.02em;
   }
 
-  .sidebar--collapsed .sidebar__item { justify-content: center; padding: 0; }
+  /* Collapsed: center icons, no gap */
+  .sidebar--collapsed .sidebar__item {
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+  }
+  .sidebar--collapsed .sidebar__item--active {
+    box-shadow: inset 0 -2px 0 var(--cfg-accent-strong);
+  }
+
+  /* Mobile: taller touch targets */
+  @media (max-width: 600px) {
+    .sidebar__item { min-height: 44px; }
+    .sidebar__icon { font-size: 18px; width: 24px; }
+    .sidebar__toggle { height: 44px; }
+  }
 </style>
