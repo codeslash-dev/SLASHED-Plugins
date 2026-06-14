@@ -34,14 +34,11 @@ jobs:
         working-directory: SLASHED-for-WP/admin-app
         run: npm ci
 
-      - name: Sync configurator source (skips .syncignore files)
+      # npm run build triggers prebuild (sync-core.mjs) automatically
+      - name: Build admin-app
         working-directory: SLASHED-for-WP/admin-app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/sync-core.mjs
-
-      - name: Build admin-app
-        working-directory: SLASHED-for-WP/admin-app
         run: npm run build
 
       - name: Commit synced source and built assets

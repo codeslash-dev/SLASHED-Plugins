@@ -38,7 +38,7 @@ export function fetchOverrides() {
 
 /** Persist the full flat overrides map. Debounce on the caller side. */
 export function saveOverrides(overrides) {
-  return call('/tokens/overrides', 'POST', overrides);
+  return call('/tokens/overrides', 'POST', { overrides });
 }
 
 /** Delete all persisted overrides (hard reset). */

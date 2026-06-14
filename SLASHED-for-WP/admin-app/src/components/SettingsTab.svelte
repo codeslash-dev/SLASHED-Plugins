@@ -23,7 +23,6 @@
       // update reactive state so the rest of the app reacts immediately
       Object.assign(wpSettings, form);
       ui.useManualCss = form.manual_css_mode;
-      ui.configuratorUrl = form.configurator_url;
       status = 'saved';
       setTimeout(() => { if (status === 'saved') status = 'idle'; }, 2500);
     } catch (e) {
@@ -246,8 +245,18 @@
     cursor: pointer;
   }
 
+  /* Visually hidden but focusable — keeps keyboard/screen-reader access intact. */
   .toggle input[type="checkbox"] {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .toggle__track {

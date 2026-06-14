@@ -1,17 +1,14 @@
 <script>
-  import { overrides, ui, replaceOverrides } from '../lib/store.svelte.js';
-
-  // parseCssOverrides is synced from configurator/src/lib/css.js
-  // It extracts --sf-* custom property declarations from CSS text
-  let { parseCssOverrides } = $props();
+  import { parseCssOverrides } from '../lib/css.js';
+  import { overrides, ui, wpSettings, replaceOverrides } from '../lib/store.svelte.js';
 
   let cssText = $state(ui.manualCssText ?? '');
   let status = $state(/** @type {'idle'|'saving'|'saved'|'error'} */('idle'));
   let errorMsg = $state('');
-  let parsedCount = $derived(() => {
+
+  let parsedCount = $derived.by(() => {
     try {
-      const map = parseCssOverrides?.(cssText) ?? {};
-      return Object.keys(map).length;
+      return Object.keys(parseCssOverrides(cssText)).length;
     } catch {
       return 0;
     }
@@ -23,7 +20,7 @@
     status = 'saving';
     errorMsg = '';
     try {
-      const map = parseCssOverrides?.(cssText) ?? {};
+      const map = parseCssOverrides(cssText);
       await replaceOverrides(map);
       ui.manualCssText = cssText;
       status = 'saved';
@@ -59,8 +56,8 @@
 
   <p class="manual-css__hint">
     Generate override CSS using the standalone configurator, then paste it here.
-    {#if ui.configuratorUrl}
-      <a href={ui.configuratorUrl} target="_blank" rel="noopener noreferrer">Open configurator →</a>
+    {#if wpSettings.configurator_url}
+      <a href={wpSettings.configurator_url} target="_blank" rel="noopener noreferrer">Open configurator →</a>
     {/if}
   </p>
 
