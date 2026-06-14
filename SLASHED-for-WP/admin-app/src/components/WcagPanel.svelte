@@ -205,14 +205,14 @@
 </script>
 
 <!-- Hidden resolution context: all tokens applied, one probe per measured name. -->
-<div class="wcag-probe" bind:this={probeRoot} style={declStr} aria-hidden="true">
+<div class="wcag-probe" bind:this={probeRoot} style="{declStr}; color-scheme: {ui.previewTheme === 'dark' ? 'dark' : 'light'}" aria-hidden="true">
   {#each measured as name (name)}
     <span bind:this={probes[name]} style="color: {cssColor(name)}"></span>
   {/each}
 </div>
 
 <!-- Light-mode probe root for the palette generator inputs. -->
-<div class="wcag-probe" style={declLight} aria-hidden="true">
+<div class="wcag-probe" style="{declLight}; color-scheme: light" aria-hidden="true">
   {#each paletteMeasured as name (name)}
     <span bind:this={paletteProbes[name]} style="color: {cssColor(name)}"></span>
   {/each}
@@ -225,7 +225,7 @@
   actually render their color. The configurator never loads the framework
   stylesheet, so without this the panel showed blank/inherited swatches.
 -->
-<div class="wcag" style={declStr}>
+<div class="wcag" style="{declStr}; color-scheme: {ui.previewTheme === 'dark' ? 'dark' : 'light'}">
   <header class="wcag__head">
     <h2 class="wcag__title">Accessibility</h2>
     <p class="wcag__lead">
@@ -412,11 +412,10 @@
 
 <style>
   .wcag-probe {
-    position: absolute;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
+    all: initial;
+    position: fixed;
+    left: -9999px;
+    top: -9999px;
     pointer-events: none;
   }
   .wcag {

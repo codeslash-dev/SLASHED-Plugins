@@ -10,11 +10,6 @@
   import { ui, overrides } from '../lib/store.svelte.js';
   import { DOMAINS, BASIC_DOMAIN_IDS } from '../lib/domains.js';
 
-  const WP_DOMAINS = [
-    { id: 'wp-version',  label: 'Framework', icon: '↑' },
-    { id: 'wp-settings', label: 'Settings',  icon: '⚙' },
-  ];
-
   const visibleDomains = $derived(
     ui.mode === 'basic'
       ? DOMAINS.filter((d) => BASIC_DOMAIN_IDS.includes(d.id) || d.tool)
@@ -56,23 +51,6 @@
       </button>
     {/each}
 
-    <div class="sidebar__divider" role="separator" aria-hidden="true"></div>
-
-    {#each WP_DOMAINS as d}
-      {@const active = ui.domain === d.id}
-      <button
-        class="sidebar__item sidebar__item--wp"
-        class:sidebar__item--active={active}
-        onclick={() => (ui.domain = d.id)}
-        title={ui.sidebarOpen ? undefined : d.label}
-        aria-current={active ? 'page' : undefined}
-      >
-        <span class="sidebar__icon" aria-hidden="true">{d.icon}</span>
-        {#if ui.sidebarOpen}
-          <span class="sidebar__label">{d.label}</span>
-        {/if}
-      </button>
-    {/each}
   </nav>
 
   {#if !ui.sidebarOpen && totalModified > 0}
@@ -116,8 +94,6 @@
 
   .sidebar__icon { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; line-height: 1; }
   .sidebar__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-
-  .sidebar__divider { height: 1px; background: var(--cfg-border, #333); margin: 6px 8px; }
 
   .sidebar__count {
     margin: 0 auto 8px; background: var(--cfg-accent, #60a5fa); color: #000;

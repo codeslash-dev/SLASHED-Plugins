@@ -14,7 +14,7 @@
    * reachable. Keyboard shortcut: `/` focuses the search box.
    */
   import { sync, allTokens, frameworkVersion } from '../lib/model.js';
-  import { ui, overrides, overrideCount, history, undo, redo, openOutputDrawer } from '../lib/store.svelte.js';
+  import { ui, overrides, overrideCount, history, undo, redo, openOutputDrawer, pluginVersion, cssSource } from '../lib/store.svelte.js';
 
   const totalTokens = allTokens.length;
   const modCount = $derived(Object.keys(overrides).length);
@@ -30,9 +30,14 @@
       <p class="hdr__sub">Edit every framework token. Generate override CSS.</p>
     </div>
     <div class="hdr__pills">
+      {#if pluginVersion}
+        <span class="hdr__pill hdr__pill--plugin" title="SLASHED plugin version">
+          plugin {pluginVersion}
+        </span>
+      {/if}
       {#if frameworkVersion}
-        <span class="hdr__pill" title="Synced from {sync.source} (catalogue {sync.tokensHash})">
-          v{frameworkVersion}
+        <span class="hdr__pill" title="Framework CSS {cssSource === 'cdn' ? 'loaded from CDN' : 'bundled locally'} · catalogue {sync.tokensHash ?? '—'}">
+          framework {frameworkVersion}
         </span>
       {/if}
       <span class="hdr__pill hdr__pill--muted" title="{totalTokens} tokens in the live catalogue">
@@ -101,14 +106,6 @@
     </div>
 
     <button
-      class="cfg-btn cfg-btn--ghost cfg-btn--icon hdr__pane hdr__theme-toggle"
-      onclick={() => (ui.uiTheme = ui.uiTheme === 'dark' ? 'light' : 'dark')}
-      aria-pressed={ui.uiTheme === 'light'}
-      title="{ui.uiTheme === 'dark' ? 'Switch configurator to light mode' : 'Switch configurator to dark mode'}"
-      aria-label="Toggle configurator theme"
-    >{ui.uiTheme === 'dark' ? '☀' : '☾'}</button>
-
-    <button
       class="cfg-btn cfg-btn--ghost cfg-btn--icon hdr__pane hdr__pane--side"
       onclick={() => (ui.sidebarOpen = !ui.sidebarOpen)}
       aria-pressed={ui.sidebarOpen}
@@ -172,6 +169,12 @@
     border-color: var(--cfg-border-strong);
     background: var(--cfg-surface-2);
   }
+  .hdr__pill--plugin {
+    color: var(--cfg-text-muted);
+    border-color: var(--cfg-border-strong);
+    background: var(--cfg-surface-2);
+    opacity: 0.7;
+  }
   .hdr__pill--mod {
     color: var(--cfg-warn);
     border-color: rgba(255, 213, 86, 0.4);
@@ -221,9 +224,6 @@
 
   /* Pane-toggle buttons keep their solid border for affordance. */
   .hdr__pane { border-color: var(--cfg-border-strong); color: var(--cfg-text-muted); }
-
-  /* Extra right margin to visually separate the UI theme toggle from the pane toggles. */
-  .hdr__theme-toggle { margin-right: 4px; }
 
   @media (max-width: 1100px) {
     .hdr {

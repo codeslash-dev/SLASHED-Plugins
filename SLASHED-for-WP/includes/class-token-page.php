@@ -164,8 +164,9 @@ class Slashed_Token_Page {
 				'inventory'          => class_exists( 'Slashed_Bricks_Inventory' ) ? Slashed_Bricks_Inventory::get() : null,
 				'classHints'         => self::get_class_hints(),
 				'versions'           => array(
-					'plugin'    => defined( 'SLASHED_VERSION' ) ? SLASHED_VERSION : SLASHED_BRICKS_VERSION,
-					'framework' => defined( 'SLASHED_CSS_REF' ) ? SLASHED_CSS_REF : SLASHED_BRICKS_CSS_REF,
+					'plugin'    => defined( 'SLASHED_VERSION' ) ? SLASHED_VERSION : ( defined( 'SLASHED_BRICKS_VERSION' ) ? SLASHED_BRICKS_VERSION : '' ),
+					'framework' => self::get_loaded_framework_version(),
+					'css_source' => class_exists( 'Slashed_Settings' ) ? Slashed_Settings::get_css_source() : 'local',
 				),
 				'activeIntegrations' => array(
 					'bricks'    => class_exists( 'Slashed_Settings' ) ? Slashed_Settings::is_enabled( 'bricks' ) : true,
@@ -177,6 +178,29 @@ class Slashed_Token_Page {
 					: '',
 			)
 		);
+	}
+
+	/**
+	 * Resolve the framework CSS version that is actually being loaded.
+	 *
+	 * When the site is configured to load from CDN, returns the CDN version
+	 * (which may be 'latest' or a pinned tag). When loading the local bundle,
+	 * returns the compile-time SLASHED_CSS_REF constant. This is what the admin
+	 * header should display — not the compile-time default.
+	 *
+	 * @return string e.g. 'v0.5.23', 'latest', or ''.
+	 */
+	private static function get_loaded_framework_version() {
+		if ( class_exists( 'Slashed_Settings' ) && 'cdn' === Slashed_Settings::get_css_source() ) {
+			return Slashed_Settings::get_cdn_version();
+		}
+		if ( defined( 'SLASHED_CSS_REF' ) ) {
+			return SLASHED_CSS_REF;
+		}
+		if ( defined( 'SLASHED_BRICKS_CSS_REF' ) ) {
+			return SLASHED_BRICKS_CSS_REF;
+		}
+		return '';
 	}
 
 	/**

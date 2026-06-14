@@ -16,7 +16,7 @@ export default defineConfig({
   define: {
     // Replaced at build time: reads the framework CSS version from PHP hydration.
     // model.js uses `typeof __SLASHED_VERSION__ !== 'undefined'` to pick this up.
-    __SLASHED_VERSION__: '(window.slashedApp?.versions?.framework ?? "")',
+    __SLASHED_VERSION__: '((window.slashedApp?.versions?.framework ?? "").replace(/^v/, ""))',
   },
   build: {
     outDir: resolve(import.meta.dirname, '../assets/admin-app'),

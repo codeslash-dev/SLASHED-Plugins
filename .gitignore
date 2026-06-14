@@ -21,6 +21,10 @@ SLASHED-for-WP/assets/admin-app/*.map
 .agents/
 .claude/
 
+# Playwright test fixtures and screenshot output
+test-admin*.html
+test-screenshots/
+
 
 # PHP Composer dependencies (PHPCS/WPCS + PHPStan tooling).
 # composer.json + composer.lock are tracked; the installed tree is not.
