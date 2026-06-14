@@ -79,6 +79,9 @@
     {cls:'is-invalid',label:'is-invalid'},
     {cls:'is-valid',label:'is-valid'},
   ];
+
+  /** @param {Event} e */
+  const preventDemoNav = (e) => e.preventDefault();
 </script>
 
 <section class="preview">
@@ -99,17 +102,17 @@
       {/each}
     </div>
     <div class="cfg-seg preview__modes" role="group" aria-label="Preview theme and motion">
-      <button class="cfg-seg__btn" class:cfg-seg__btn--on={ui.previewTheme === 'light'} onclick={() => (ui.previewTheme = 'light')} aria-pressed={ui.previewTheme === 'light'} title="Light preview theme">☀</button>
-      <button class="cfg-seg__btn" class:cfg-seg__btn--on={ui.previewTheme === 'dark'}  onclick={() => (ui.previewTheme = 'dark')}  aria-pressed={ui.previewTheme === 'dark'}  title="Dark preview theme">☾</button>
-      <button class="cfg-seg__btn" class:cfg-seg__btn--on={ui.previewMotion === 'reduced'} onclick={() => (ui.previewMotion = ui.previewMotion === 'reduced' ? 'normal' : 'reduced')} aria-pressed={ui.previewMotion === 'reduced'} title="Reduced motion in preview only">🐢</button>
+      <button class="cfg-seg__btn" class:cfg-seg__btn--on={ui.previewTheme === 'light'} onclick={() => (ui.previewTheme = 'light')} aria-pressed={ui.previewTheme === 'light'} aria-label="Set preview theme to light" title="Light preview theme">☀</button>
+      <button class="cfg-seg__btn" class:cfg-seg__btn--on={ui.previewTheme === 'dark'}  onclick={() => (ui.previewTheme = 'dark')}  aria-pressed={ui.previewTheme === 'dark'}  aria-label="Set preview theme to dark"  title="Dark preview theme">☾</button>
+      <button class="cfg-seg__btn" class:cfg-seg__btn--on={ui.previewMotion === 'reduced'} onclick={() => (ui.previewMotion = ui.previewMotion === 'reduced' ? 'normal' : 'reduced')} aria-pressed={ui.previewMotion === 'reduced'} aria-label={ui.previewMotion === 'reduced' ? 'Set preview motion to normal' : 'Set preview motion to reduced'} title="Reduced motion in preview only">🐢</button>
     </div>
     <span class="preview__hint">{ui.previewTheme}{ui.previewMotion === 'reduced' ? ' · reduced motion' : ''}{activeViewport.width ? ` · ${activeViewport.width} px` : ''}</span>
     <button bind:this={closeBtn} class="preview__close" onclick={() => (ui.previewOpen = false)} title="Close the preview overlay" aria-label="Close preview">✕</button>
   </header>
 
-  <div class="preview__sections cfg-seg" role="tablist" aria-label="Preview section">
+  <div class="preview__sections cfg-seg" role="group" aria-label="Preview section">
     {#each SECTIONS as s (s.id)}
-      <button class="cfg-seg__btn preview__sec-btn" class:cfg-seg__btn--on={activeSection === s.id} onclick={() => (activeSection = s.id)} role="tab" aria-selected={activeSection === s.id}>{s.label}</button>
+      <button class="cfg-seg__btn preview__sec-btn" class:cfg-seg__btn--on={activeSection === s.id} onclick={() => (activeSection = s.id)} aria-pressed={activeSection === s.id}>{s.label}</button>
     {/each}
   </div>
 
@@ -127,7 +130,7 @@
       <section class="pv__block">
         <p class="pv__eyebrow">Typography</p>
         <h2 class="pv__h">The quick brown fox</h2>
-        <p class="pv__p">Jumps over the lazy dog. Body font, base size and <a class="pv__a" href="#a">an inline link</a> with <code class="pv__code">--sf-color-code</code> styling.</p>
+        <p class="pv__p">Jumps over the lazy dog. Body font, base size and <a class="pv__a" href="#a" onclick={preventDemoNav}>an inline link</a> with <code class="pv__code">--sf-color-code</code> styling.</p>
         <p class="pv__muted">Muted caption · secondary hierarchy · auto-contrasting.</p>
       </section>
 
@@ -203,9 +206,9 @@
           <button class="pv__tab" role="tab" aria-selected="false">Team</button>
         </div>
         <nav class="pv__breadcrumb" aria-label="Breadcrumb">
-          <a class="pv__a pv__crumb" href="#a">Home</a>
+          <a class="pv__a pv__crumb" href="#a" onclick={preventDemoNav}>Home</a>
           <span class="pv__crumb-sep" aria-hidden="true">›</span>
-          <a class="pv__a pv__crumb" href="#a">Products</a>
+          <a class="pv__a pv__crumb" href="#a" onclick={preventDemoNav}>Products</a>
           <span class="pv__crumb-sep" aria-hidden="true">›</span>
           <span class="pv__crumb" aria-current="page">Design Tokens</span>
         </nav>
@@ -412,10 +415,10 @@
       <section class="pv__block">
         <p class="pv__eyebrow">Links · code · mark · selection</p>
         <div class="pv__chips">
-          <a class="pv__a" href="#a">link</a>
-          <a href="#a" style="color:var(--sf-color-link--hover)">link--hover</a>
-          <a href="#a" style="color:var(--sf-color-link--visited)">link--visited</a>
-          <a href="#a" style="color:var(--sf-color-link--active)">link--active</a>
+          <a class="pv__a" href="#a" onclick={preventDemoNav}>link</a>
+          <a href="#a" onclick={preventDemoNav} style="color:var(--sf-color-link--hover)">link--hover</a>
+          <a href="#a" onclick={preventDemoNav} style="color:var(--sf-color-link--visited)">link--visited</a>
+          <a href="#a" onclick={preventDemoNav} style="color:var(--sf-color-link--active)">link--active</a>
           <code class="pv__code">inline code</code>
           <mark class="pv__mark">marked text</mark>
           <span style="background:var(--sf-color-selection-bg,#b3d4ff);color:var(--sf-color-selection-text,inherit)">selection</span>
@@ -596,7 +599,7 @@
 
       <section class="pv__block">
         <p class="pv__eyebrow">Inline elements &amp; semantic HTML</p>
-        <p class="pv__p"><strong>strong</strong>, <em>em</em>, <mark class="pv__mark">mark</mark>, <code class="pv__code">code</code>, <kbd class="pv__kbd">Ctrl</kbd>+<kbd class="pv__kbd">C</kbd>, H<sub>2</sub>O, E=mc<sup>2</sup>, <small>small</small>, <a class="pv__a" href="#a">link</a>, <del>deleted</del>, <ins>inserted</ins></p>
+        <p class="pv__p"><strong>strong</strong>, <em>em</em>, <mark class="pv__mark">mark</mark>, <code class="pv__code">code</code>, <kbd class="pv__kbd">Ctrl</kbd>+<kbd class="pv__kbd">C</kbd>, H<sub>2</sub>O, E=mc<sup>2</sup>, <small>small</small>, <a class="pv__a" href="#a" onclick={preventDemoNav}>link</a>, <del>deleted</del>, <ins>inserted</ins></p>
         <pre class="pv__pre"><code>:root &#123;
   --sf-color-primary-light: oklch(0.55 0.22 160);
 &#125;</code></pre>
@@ -867,9 +870,9 @@
       <section class="pv__block">
         <p class="pv__eyebrow">Link macros · sf-tabular-nums</p>
         <div class="pv__chips" style="margin-bottom:10px">
-          <a class="pv__link-subtle" href="#a">sf-link--subtle (underline on hover)</a>
-          <a class="pv__link-reverse" href="#a">sf-link--reverse (always underlined)</a>
-          <a class="pv__link-ext" href="#a">sf-link-external ↗</a>
+          <a class="pv__link-subtle" href="#a" onclick={preventDemoNav}>sf-link--subtle (underline on hover)</a>
+          <a class="pv__link-reverse" href="#a" onclick={preventDemoNav}>sf-link--reverse (always underlined)</a>
+          <a class="pv__link-ext" href="#a" onclick={preventDemoNav}>sf-link-external ↗</a>
         </div>
         <table class="pv__tbl">
           <tbody>
