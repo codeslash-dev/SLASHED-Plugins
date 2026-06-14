@@ -48,7 +48,7 @@ export const ui = $state({
   previewMotion: 'normal',
   previewWidth:  'fluid',
   outputMode:    savedUi.outputMode ?? 'layer',
-  uiTheme:       savedUi.uiTheme   ?? 'dark',
+  uiTheme:       'light',
   sidebarOpen:   true,
   previewOpen:   typeof window === 'undefined' || !window.matchMedia('(max-width: 1100px)').matches,
   outputOpen:    typeof window === 'undefined' || !window.matchMedia('(max-width: 600px)').matches,

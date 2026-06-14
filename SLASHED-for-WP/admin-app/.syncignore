@@ -9,3 +9,5 @@ src/components/WpSidebar.svelte
 src/components/VersionTab.svelte
 src/components/SettingsTab.svelte
 src/components/ManualCssTab.svelte
+src/components/Header.svelte
+src/components/WcagPanel.svelte

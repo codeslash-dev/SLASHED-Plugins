@@ -71,8 +71,22 @@ add_action(
 );
 
 // Inject token override CSS after whichever integration enqueued slashed-framework.
+// In manual CSS mode the raw CSS stored by Slashed_Manual_CSS_Page is used directly;
+// otherwise the token-based generator runs as before.
 function slashed_inject_token_overrides() {
-	if ( wp_style_is( 'slashed-framework', 'enqueued' ) && Slashed_CSS_Generator::has_overrides() ) {
+	if ( ! wp_style_is( 'slashed-framework', 'enqueued' ) ) {
+		return;
+	}
+
+	if ( class_exists( 'Slashed_Manual_CSS_Page' ) && Slashed_Manual_CSS_Page::is_active() ) {
+		$css = Slashed_Manual_CSS_Page::get_css();
+		if ( $css ) {
+			wp_add_inline_style( 'slashed-framework', $css );
+		}
+		return;
+	}
+
+	if ( Slashed_CSS_Generator::has_overrides() ) {
 		wp_add_inline_style( 'slashed-framework', Slashed_CSS_Generator::get_override_css() );
 	}
 }
@@ -81,7 +95,8 @@ add_action( 'enqueue_block_editor_assets', 'slashed_inject_token_overrides', 20 
 
 // ─── Unified admin page ───────────────────────────────────────────────────────
 
-require_once SLASHED_PATH . 'includes/class-token-page.php'; // also used on frontend (Bricks editor)
+require_once SLASHED_PATH . 'includes/class-token-page.php';     // also used on frontend (Bricks editor)
+require_once SLASHED_PATH . 'includes/class-manual-css-page.php'; // needed on frontend for CSS injection
 
 if ( is_admin() ) {
 	require_once SLASHED_PATH . 'includes/class-admin.php';
@@ -93,6 +108,7 @@ if ( is_admin() ) {
 			new Slashed_Token_Page();
 			new Slashed_Framework_Updater();
 			new Slashed_Hooks_Page();
+			new Slashed_Manual_CSS_Page();
 		}
 	);
 }
