@@ -156,7 +156,7 @@ class Slashed_Token_Page {
 				'settings'           => Slashed_Token_Store::get_settings(),
 				'pluginSettings'     => array_merge(
 					array(
-						'manual_css_mode'  => false,
+						'manual_css_mode'  => true,
 						'configurator_url' => '',
 					),
 					$plugin_settings

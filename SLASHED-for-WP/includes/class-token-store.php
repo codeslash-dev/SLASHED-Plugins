@@ -123,6 +123,8 @@ class Slashed_Token_Store {
 		'html_font_size'   => '',
 		'css_bundle'       => 'optimal',
 		'show_class_hints' => false,
+		'manual_css_mode'  => true,
+		'configurator_url' => '',
 	);
 
 	/**

@@ -38,7 +38,7 @@ export const storage = $state({ ok: true });
 
 const savedUi = loadUiState();
 export const ui = $state({
-  domain:        savedUi.domain    ?? 'home',
+  domain:        savedUi.domain    ?? 'manual-css',
   mode:          savedUi.mode      ?? 'basic',
   query:         '',
   showInternal:  false,
@@ -50,10 +50,10 @@ export const ui = $state({
   outputMode:    savedUi.outputMode ?? 'layer',
   uiTheme:       'light',
   sidebarOpen:   true,
-  previewOpen:   typeof window === 'undefined' || !window.matchMedia('(max-width: 1100px)').matches,
-  outputOpen:    typeof window === 'undefined' || !window.matchMedia('(max-width: 600px)').matches,
-  // WP-specific
-  useManualCss:  !!(boot.pluginSettings?.manual_css_mode),
+  previewOpen:   false,
+  outputOpen:    false,
+  // WP-specific — manual CSS is the default until the configurator returns in v0.8.0
+  useManualCss:  !!(boot.pluginSettings?.manual_css_mode ?? true),
   manualCssText: '',
 });
 
