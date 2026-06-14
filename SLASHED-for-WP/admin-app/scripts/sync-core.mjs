@@ -17,16 +17,47 @@ import {
   readFileSync, writeFileSync, mkdirSync, existsSync,
   readdirSync, statSync, copyFileSync,
 } from 'node:fs';
-import { resolve, dirname, join, relative } from 'node:path';
+import { resolve, dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ADMIN_APP = resolve(__dir, '..');
 const SRC = resolve(ADMIN_APP, 'src');
+const SRC_ROOT = SRC + sep; // canonical prefix for path-traversal guard
 
 const SLASHED_REPO = 'codeslash-dev/slashed';
 const REF = 'main';
 const CFG_SRC = 'configurator/src';
+
+// ── Path safety ───────────────────────────────────────────────────────────────
+
+/**
+ * Throw if `destPath` resolves outside the SRC directory.
+ * Guards against path-traversal via untrusted file names from the GitHub API.
+ */
+function assertWithinSrc(destPath) {
+  const resolved = resolve(destPath);
+  if (resolved !== SRC && !resolved.startsWith(SRC_ROOT)) {
+    throw new Error(`Path traversal rejected: ${destPath} is outside src/`);
+  }
+}
+
+/**
+ * Validate a single file/dir name returned by the GitHub API.
+ * Rejects anything containing a path separator or a dot-dot segment.
+ */
+function assertSafeName(name) {
+  if (
+    typeof name !== 'string' ||
+    name.includes('/') ||
+    name.includes('\\') ||
+    name === '..' ||
+    name.startsWith('../') ||
+    name.includes('/../')
+  ) {
+    throw new Error(`Unsafe file name from API: ${JSON.stringify(name)}`);
+  }
+}
 
 // ── Syncignore ───────────────────────────────────────────────────────────────
 
@@ -70,6 +101,7 @@ function copyLocalDir(srcDir, srcBase) {
         continue;
       }
       const destPath = join(SRC, rel);
+      assertWithinSrc(destPath);
       mkdirSync(dirname(destPath), { recursive: true });
       copyFileSync(srcPath, destPath);
       process.stdout.write(`  copy  src/${rel}\n`);
@@ -94,22 +126,36 @@ async function ghFetch(path) {
 }
 
 async function syncGhFile(ghPath, destPath) {
+  // Validate destination before touching the filesystem.
+  assertWithinSrc(destPath);
+
   const rel = relative(SRC, destPath);
   if (isIgnored(rel)) {
     process.stdout.write(`  skip  src/${rel} (syncignore)\n`);
     return;
   }
   const info = await ghFetch(ghPath);
+  if (typeof info.content !== 'string') {
+    throw new Error(`Unexpected API response for ${ghPath}: missing content`);
+  }
   const content = Buffer.from(info.content, 'base64').toString('utf8');
   mkdirSync(dirname(destPath), { recursive: true });
-  writeFileSync(destPath, content);
+  writeFileSync(destPath, content, { encoding: 'utf8' });
   process.stdout.write(`  fetch src/${rel}\n`);
 }
 
 async function syncGhDir(ghDir, destDir) {
+  // Validate the parent destination directory first.
+  assertWithinSrc(destDir);
+
   const entries = await ghFetch(ghDir);
+  if (!Array.isArray(entries)) {
+    throw new Error(`Expected directory listing from API for ${ghDir}`);
+  }
   await Promise.all(
     entries.map((entry) => {
+      // Validate each name individually before joining into a path.
+      assertSafeName(entry.name);
       const localPath = join(destDir, entry.name);
       return entry.type === 'dir'
         ? syncGhDir(entry.path, localPath)
@@ -143,9 +189,12 @@ async function main() {
 
   // Top-level CSS (configurator chrome styles, if any live at src/)
   const topLevel = await ghFetch(CFG_SRC);
-  for (const entry of topLevel) {
-    if (entry.type === 'file' && entry.name.endsWith('.css')) {
-      await syncGhFile(entry.path, resolve(SRC, entry.name));
+  if (Array.isArray(topLevel)) {
+    for (const entry of topLevel) {
+      if (entry.type === 'file' && entry.name.endsWith('.css')) {
+        assertSafeName(entry.name);
+        await syncGhFile(entry.path, resolve(SRC, entry.name));
+      }
     }
   }
 
