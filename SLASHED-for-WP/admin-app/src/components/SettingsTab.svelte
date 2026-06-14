@@ -5,7 +5,7 @@
   // local form state — only committed on save
   let form = $state({
     css_bundle: wpSettings.css_bundle ?? 'optimal',
-    html_font_size: wpSettings.html_font_size ?? '16',
+    html_font_size: wpSettings.html_font_size ?? '',
     show_class_hints: wpSettings.show_class_hints ?? true,
     manual_css_mode: wpSettings.manual_css_mode ?? false,
     configurator_url: wpSettings.configurator_url ?? '',
@@ -60,11 +60,9 @@
       <label class="field__label" for="html-font-size">Root font size (html)</label>
       <p class="field__hint">Used to calculate rem-based tokens.</p>
       <select id="html-font-size" class="field__select" bind:value={form.html_font_size}>
-        <option value="14">14px</option>
-        <option value="15">15px</option>
-        <option value="16">16px (browser default)</option>
-        <option value="17">17px</option>
-        <option value="18">18px</option>
+        <option value="">Default — don't override</option>
+        <option value="100">Force 100% — 16px in most browsers</option>
+        <option value="62.5">Force 62.5% — 10px base (rem-friendly)</option>
       </select>
     </div>
 

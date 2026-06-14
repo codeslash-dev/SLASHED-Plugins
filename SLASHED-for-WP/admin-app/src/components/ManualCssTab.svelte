@@ -1,5 +1,5 @@
 <script>
-  import { parseCssOverrides } from '../lib/css.js';
+  import { parseCSS } from '../lib/css.js';
   import { overrides, ui, wpSettings, replaceOverrides } from '../lib/store.svelte.js';
 
   let cssText = $state(ui.manualCssText ?? '');
@@ -8,7 +8,7 @@
 
   let parsedCount = $derived.by(() => {
     try {
-      return Object.keys(parseCssOverrides(cssText)).length;
+      return Object.keys(parseCSS(cssText)).length;
     } catch {
       return 0;
     }
@@ -20,7 +20,7 @@
     status = 'saving';
     errorMsg = '';
     try {
-      const map = parseCssOverrides(cssText);
+      const map = parseCSS(cssText);
       await replaceOverrides(map);
       ui.manualCssText = cssText;
       status = 'saved';

@@ -4,7 +4,9 @@
     "**/node_modules/**",
     "SLASHED-for-WP/dist/**",
     "SLASHED-for-WP/integrations/bricks/assets/admin-app/**",
-    "SLASHED-for-WP/integrations/bricks/assets/editor-app/**"
+    "SLASHED-for-WP/integrations/bricks/assets/editor-app/**",
+    "SLASHED-for-WP/assets/admin-app/**",
+    "SLASHED-for-WP/admin-app/src/styles/**"
   ],
   "rules": {
     "color-function-notation": "modern",
