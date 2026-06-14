@@ -39,7 +39,7 @@
         class:sidebar__item--active={active}
         class:sidebar__item--tool={!!d.tool}
         onclick={() => (ui.domain = d.id)}
-        title={ui.sidebarOpen ? d.label : d.label}
+        title={d.label}
         aria-current={active ? 'page' : undefined}
       >
         <span class="sidebar__icon" aria-hidden="true">{d.icon ?? '◈'}</span>
