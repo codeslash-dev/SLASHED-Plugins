@@ -87,7 +87,10 @@ class Slashed_Token_Page {
 
 		// Standalone Bricks plugin: SLASHED_BRICKS_* already point to integrations/bricks/.
 		if ( ! defined( 'SLASHED_BRICKS_URL' ) || ! defined( 'SLASHED_BRICKS_PATH' ) ) {
-			return array( 'url' => '', 'path' => '' );
+			return array(
+				'url'  => '',
+				'path' => '',
+			);
 		}
 		return array(
 			'url'  => SLASHED_BRICKS_URL,
@@ -105,7 +108,7 @@ class Slashed_Token_Page {
 			return;
 		}
 
-		$base = $this->resolve_bundle_base();
+		$base        = $this->resolve_bundle_base();
 		$plugin_url  = $base['url'];
 		$plugin_path = $base['path'];
 
