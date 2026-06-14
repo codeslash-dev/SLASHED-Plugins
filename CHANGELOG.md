@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-06-14
+
+### Fixed
+
+- Exclude synced and compiled css from stylelint
+- Three correctness bugs in admin-app and REST controller
+
+## [0.2.2] - 2026-06-14
+
+### Fixed
+
+- Exclude synced and compiled css from stylelint
+- Three correctness bugs in admin-app and REST controller
+
 ## [0.2.1] - 2026-06-14
 
 ### Added
