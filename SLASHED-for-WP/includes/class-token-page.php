@@ -194,6 +194,11 @@ class Slashed_Token_Page {
 		if ( class_exists( 'Slashed_Settings' ) && 'cdn' === Slashed_Settings::get_css_source() ) {
 			return Slashed_Settings::get_cdn_version();
 		}
+		// Local: use the actually-installed version stored by the updater.
+		// Falls back to compile-time SLASHED_CSS_REF if never explicitly updated.
+		if ( class_exists( 'Slashed_Framework_Updater' ) ) {
+			return Slashed_Framework_Updater::get_local_version();
+		}
 		if ( defined( 'SLASHED_CSS_REF' ) ) {
 			return SLASHED_CSS_REF;
 		}
