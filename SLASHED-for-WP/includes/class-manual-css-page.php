@@ -54,6 +54,7 @@ class Slashed_Manual_CSS_Page {
 
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_KEY );
 
+		// All $_POST reads below are covered by the nonce check above.
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		$action = isset( $_POST['slashed_action'] ) ? sanitize_key( $_POST['slashed_action'] ) : 'save';
 
@@ -63,18 +64,23 @@ class Slashed_Manual_CSS_Page {
 			$raw_css = isset( $_POST['slashed_manual_css'] )
 				? wp_unslash( $_POST['slashed_manual_css'] )
 				: '';
-			update_option( self::OPTION_KEY, wp_strip_all_tags( $raw_css ) );
+			// CSS must not be able to break out of an inline <style> context.
+			// Only block </style and <script; do NOT use wp_strip_all_tags() because
+			// it removes everything between < and >, corrupting valid CSS like
+			// `.parent > .child` and `[attr~="val"]`.
+			if ( preg_match( '/<\/style|<script/i', $raw_css ) ) {
+				wp_die( esc_html__( 'Invalid CSS: closing style or script tags are not allowed.', 'slashed' ) );
+			}
+			update_option( self::OPTION_KEY, $raw_css );
 		}
 
-		$manual_mode = ! empty( $_POST['slashed_manual_css_mode'] );
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
-
-		$settings                     = Slashed_Token_Store::get_plugin_settings();
-		$settings['manual_css_mode']  = $manual_mode;
+		$manual_mode              = ! empty( $_POST['slashed_manual_css_mode'] );
+		$settings                 = Slashed_Token_Store::get_plugin_settings();
+		$settings['manual_css_mode'] = $manual_mode;
 		if ( isset( $_POST['slashed_configurator_url'] ) ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$settings['configurator_url'] = esc_url_raw( wp_unslash( $_POST['slashed_configurator_url'] ) );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		Slashed_Token_Store::update_plugin_settings( $settings );
 
 		wp_safe_redirect(
