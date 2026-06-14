@@ -196,6 +196,36 @@ class Slashed_REST_Controller {
 				),
 			)
 		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/framework/versions',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'list_framework_versions' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/framework/version',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'switch_framework_version' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+				'args'                => array(
+					'version' => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => function ( $value ) {
+							return (bool) preg_match( '/^v?\d+\.\d+\.\d+[a-zA-Z0-9.-]*$/', $value );
+						},
+					),
+				),
+			)
+		);
 	}
 
 	public function check_permissions() {
@@ -479,5 +509,80 @@ class Slashed_REST_Controller {
 
 	private function is_known_section( $section ) {
 		return Slashed_Tab_Registry::is_token_tab( $section );
+	}
+
+	/**
+	 * GET /framework/versions — list available release tags from jsDelivr.
+	 *
+	 * Returns an array of { tag, date } objects (up to 20 stable releases).
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function list_framework_versions() {
+		$response = wp_remote_get(
+			Slashed_Framework_Updater::METADATA_URL,
+			array(
+				'timeout'    => 10,
+				'user-agent' => 'SLASHED/' . SLASHED_VERSION . '; WordPress/' . get_bloginfo( 'version' ),
+			)
+		);
+
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return new WP_Error(
+				'fetch_failed',
+				__( 'Could not fetch version list. Try again later.', 'slashed' ),
+				array( 'status' => 502 )
+			);
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( ! is_array( $body ) || empty( $body['versions'] ) ) {
+			return new WP_Error(
+				'no_versions',
+				__( 'No versions found.', 'slashed' ),
+				array( 'status' => 502 )
+			);
+		}
+
+		$versions = array();
+		foreach ( $body['versions'] as $entry ) {
+			$ver = isset( $entry['version'] ) ? (string) $entry['version'] : '';
+			if ( $ver && preg_match( '/^v?\d+\.\d+\.\d/', $ver ) ) {
+				$versions[] = array(
+					'tag'  => 'v' . ltrim( $ver, 'v' ),
+					'date' => isset( $entry['date'] ) ? (string) $entry['date'] : '',
+				);
+			}
+		}
+
+		return rest_ensure_response( array_slice( $versions, 0, 20 ) );
+	}
+
+	/**
+	 * POST /framework/version — download CSS bundles for a given version and activate it.
+	 *
+	 * @param WP_REST_Request $request { version: string }.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function switch_framework_version( WP_REST_Request $request ) {
+		$version = 'v' . ltrim( (string) $request->get_param( 'version' ), 'v' );
+		$result  = Slashed_Framework_Updater::download_files( $version );
+
+		if ( is_wp_error( $result ) ) {
+			return new WP_Error(
+				'download_failed',
+				$result->get_error_message(),
+				array( 'status' => 500 )
+			);
+		}
+
+		return rest_ensure_response(
+			array(
+				'version' => $version,
+				/* translators: %s: framework version tag e.g. "v0.5.23" */
+				'message' => sprintf( __( 'Switched to %s.', 'slashed' ), $version ),
+			)
+		);
 	}
 }

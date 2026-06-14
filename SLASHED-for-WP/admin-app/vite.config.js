@@ -13,6 +13,11 @@ import { resolve } from 'node:path';
  */
 export default defineConfig({
   plugins: [svelte()],
+  define: {
+    // Replaced at build time: reads the framework CSS version from PHP hydration.
+    // model.js uses `typeof __SLASHED_VERSION__ !== 'undefined'` to pick this up.
+    __SLASHED_VERSION__: '(window.slashedApp?.versions?.framework ?? "")',
+  },
   build: {
     outDir: resolve(import.meta.dirname, '../assets/admin-app'),
     emptyOutDir: true,
