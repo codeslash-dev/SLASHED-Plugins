@@ -531,10 +531,6 @@
     "description": "Suppresses the WebKit/Android grey tap-highlight overlay on",
     "category": "Macros"
   },
-  "sf-surface": {
-    "description": "Generic surface macro. Set --sf-surface-color on an element with",
-    "category": "Macros"
-  },
   "sf-surface--primary": {
     "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
@@ -556,7 +552,7 @@
     "category": "Macros"
   },
   "sf-surface--inverse": {
-    "description": "Generic surface macro. Set --sf-surface-color on an element with",
+    "description": "Sets background + auto-flipped foreground in one class.",
     "category": "Macros"
   },
   "sf-surface--success": {
