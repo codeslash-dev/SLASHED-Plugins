@@ -74,8 +74,8 @@ class Slashed_Manual_CSS_Page {
 			update_option( self::OPTION_KEY, $raw_css );
 		}
 
-		$manual_mode              = ! empty( $_POST['slashed_manual_css_mode'] );
-		$settings                 = Slashed_Token_Store::get_plugin_settings();
+		$manual_mode                 = ! empty( $_POST['slashed_manual_css_mode'] );
+		$settings                    = Slashed_Token_Store::get_plugin_settings();
 		$settings['manual_css_mode'] = $manual_mode;
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		Slashed_Token_Store::update_plugin_settings( $settings );
@@ -83,8 +83,8 @@ class Slashed_Manual_CSS_Page {
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'page'    => self::PAGE_SLUG,
-					'saved'   => '1',
+					'page'  => self::PAGE_SLUG,
+					'saved' => '1',
 				),
 				admin_url( 'admin.php' )
 			)
@@ -121,8 +121,8 @@ class Slashed_Manual_CSS_Page {
 		$plugin_settings = Slashed_Token_Store::get_plugin_settings();
 		$manual_mode     = ! empty( $plugin_settings['manual_css_mode'] );
 		$saved_css       = self::get_css();
-		$css_line_count   = $saved_css ? substr_count( $saved_css, "\n" ) + 1 : 0;
-		$just_saved       = isset( $_GET['saved'] ) && '1' === $_GET['saved']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$css_line_count  = $saved_css ? substr_count( $saved_css, "\n" ) + 1 : 0;
+		$just_saved      = isset( $_GET['saved'] ) && '1' === $_GET['saved']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Manual CSS', 'slashed' ); ?></h1>

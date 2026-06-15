@@ -216,8 +216,8 @@ class Slashed_Admin {
 		<div class="wrap">
 			<?php
 			$active_fw_version = ( 'cdn' === $css_source )
-				? ( $cdn_version ?: SLASHED_CSS_REF )
-				: ( $local_version ?: SLASHED_CSS_REF );
+				? ( $cdn_version ? $cdn_version : SLASHED_CSS_REF )
+				: ( $local_version ? $local_version : SLASHED_CSS_REF );
 			?>
 			<h1><?php esc_html_e( 'SLASHED', 'slashed' ); ?> <span style="font-weight:400;font-size:13px;color:#999;"><?php echo esc_html( SLASHED_VERSION ); ?></span>
 				<?php if ( $active_fw_version ) : ?>

@@ -165,8 +165,8 @@ class Slashed_Token_Page {
 				'inventory'          => class_exists( 'Slashed_Bricks_Inventory' ) ? Slashed_Bricks_Inventory::get() : null,
 				'classHints'         => self::get_class_hints(),
 				'versions'           => array(
-					'plugin'    => defined( 'SLASHED_VERSION' ) ? SLASHED_VERSION : ( defined( 'SLASHED_BRICKS_VERSION' ) ? SLASHED_BRICKS_VERSION : '' ),
-					'framework' => self::get_loaded_framework_version(),
+					'plugin'     => defined( 'SLASHED_VERSION' ) ? SLASHED_VERSION : ( defined( 'SLASHED_BRICKS_VERSION' ) ? SLASHED_BRICKS_VERSION : '' ),
+					'framework'  => self::get_loaded_framework_version(),
 					'css_source' => class_exists( 'Slashed_Settings' ) ? Slashed_Settings::get_css_source() : 'local',
 				),
 				'activeIntegrations' => array(
