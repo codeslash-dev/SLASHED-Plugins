@@ -4,17 +4,15 @@
    * is deactivated pending framework v0.8.0.
    *
    * Grid layout: Header • Sidebar • Main.
-   * Routing: 'manual-css' → ManualCssTab, 'settings' → SettingsTab.
-   * All configurator domains are redirected to 'manual-css' until v0.8.0.
+   * Design Settings shows SettingsTab only; Manual CSS is a separate WP subpage.
    *
-   * WpSidebar, SettingsTab, ManualCssTab are WP-specific (in .syncignore).
+   * WpSidebar, SettingsTab are WP-specific (in .syncignore).
    */
   import { ui, undo, redo } from './lib/store.svelte.js';
   import { UI_STORAGE_KEY } from './lib/uiState.js';
-  import Header       from './components/Header.svelte';
-  import WpSidebar    from './components/WpSidebar.svelte';
-  import ManualCssTab from './components/ManualCssTab.svelte';
-  import SettingsTab  from './components/SettingsTab.svelte';
+  import Header      from './components/Header.svelte';
+  import WpSidebar   from './components/WpSidebar.svelte';
+  import SettingsTab from './components/SettingsTab.svelte';
 
   // ── Sidebar pane-width resizing ───────────────────────────────────────────
   const WIDTHS_KEY   = 'slashed-wp-admin/pane-widths/v2';
@@ -57,12 +55,9 @@
 
   // ── Routing ───────────────────────────────────────────────────────────────
 
-  // Redirect any configurator domain to 'manual-css'.
-  // The visual token editor returns when the framework reaches v0.8.0.
+  // Design Settings shows only SettingsTab until the configurator returns in v0.8.0.
   $effect(() => {
-    if (ui.domain !== 'manual-css' && ui.domain !== 'settings') {
-      ui.domain = 'manual-css';
-    }
+    if (ui.domain !== 'settings') ui.domain = 'settings';
   });
 
   // ── Persistence ───────────────────────────────────────────────────────────
@@ -106,11 +101,7 @@
   {/if}
 
   <main class="main" aria-label="SLASHED admin">
-    {#if ui.domain === 'settings'}
-      <SettingsTab />
-    {:else}
-      <ManualCssTab />
-    {/if}
+    <SettingsTab />
   </main>
 </div>
 
