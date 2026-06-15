@@ -52,7 +52,7 @@
   function endResize() {
     if (!dragging) return;
     dragging = false;
-    try { localStorage.setItem(WIDTHS_KEY, JSON.stringify({ sidebar: sidebarWidth, main: 400 })); } catch { /* ignore */ }
+    try { localStorage.setItem(WIDTHS_KEY, JSON.stringify({ sidebar: sidebarWidth })); } catch { /* ignore */ }
   }
 
   // ── Routing ───────────────────────────────────────────────────────────────

@@ -117,6 +117,7 @@ function injectSFButton(colorControl) {
   if (!btn) {
     btn = document.createElement('div');
     btn.className = SF_BTN_CLASS;
+    btn.setAttribute('aria-label', 'SLASHED Colors');
     btn.setAttribute('data-balloon', 'SLASHED Colors');
     btn.setAttribute('data-balloon-pos', 'top');
     btn.setAttribute('role', 'button');
