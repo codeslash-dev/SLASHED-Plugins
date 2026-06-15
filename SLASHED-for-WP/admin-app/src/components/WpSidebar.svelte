@@ -1,16 +1,10 @@
 <script>
   /**
-   * WP-specific sidebar — domain navigation.
+   * WP-specific sidebar — transitional navigation while the configurator
+   * is deactivated pending framework v0.8.0.
    * In .syncignore: never overwritten by sync-core.mjs.
    */
   import { ui, overrides } from '../lib/store.svelte.js';
-  import { DOMAINS, BASIC_DOMAIN_IDS } from '../lib/domains.js';
-
-  const visibleDomains = $derived(
-    ui.mode === 'basic'
-      ? DOMAINS.filter((d) => BASIC_DOMAIN_IDS.includes(d.id) || d.tool)
-      : DOMAINS,
-  );
 
   const totalModified = $derived(Object.keys(overrides).length);
 </script>
@@ -18,7 +12,7 @@
 <aside
   class="sidebar"
   class:sidebar--collapsed={!ui.sidebarOpen}
-  aria-label="Domain navigation"
+  aria-label="Navigation"
 >
   <button
     class="sidebar__toggle"
@@ -32,22 +26,44 @@
   </button>
 
   <nav class="sidebar__nav">
-    {#each visibleDomains as d}
-      {@const active = ui.domain === d.id}
-      <button
-        class="sidebar__item"
-        class:sidebar__item--active={active}
-        class:sidebar__item--tool={!!d.tool}
-        onclick={() => (ui.domain = d.id)}
-        title={d.label}
-        aria-current={active ? 'page' : undefined}
-      >
-        <span class="sidebar__icon" aria-hidden="true">{d.icon ?? '◈'}</span>
-        {#if ui.sidebarOpen}
-          <span class="sidebar__label">{d.label}</span>
+    <button
+      class="sidebar__item"
+      class:sidebar__item--active={ui.domain === 'manual-css'}
+      onclick={() => (ui.domain = 'manual-css')}
+      title="Manual CSS"
+      aria-current={ui.domain === 'manual-css' ? 'page' : undefined}
+    >
+      <span class="sidebar__icon" aria-hidden="true">📝</span>
+      {#if ui.sidebarOpen}
+        <span class="sidebar__label">Manual CSS</span>
+        {#if totalModified > 0}
+          <span class="sidebar__badge" title="{totalModified} override(s) stored">{totalModified}</span>
         {/if}
-      </button>
-    {/each}
+      {/if}
+    </button>
+
+    <button
+      class="sidebar__item sidebar__item--tool"
+      class:sidebar__item--active={ui.domain === 'settings'}
+      onclick={() => (ui.domain = 'settings')}
+      title="Settings"
+      aria-current={ui.domain === 'settings' ? 'page' : undefined}
+    >
+      <span class="sidebar__icon" aria-hidden="true">⚙️</span>
+      {#if ui.sidebarOpen}
+        <span class="sidebar__label">Settings</span>
+      {/if}
+    </button>
+
+    <div class="sidebar__separator" role="separator"></div>
+
+    <div class="sidebar__coming" title="The built-in token editor will return in framework v0.8.0">
+      <span class="sidebar__icon" aria-hidden="true">🔒</span>
+      {#if ui.sidebarOpen}
+        <span class="sidebar__coming-label">Configurator</span>
+        <span class="sidebar__coming-tag">v0.8.0</span>
+      {/if}
+    </div>
   </nav>
 
   {#if !ui.sidebarOpen && totalModified > 0}
@@ -100,9 +116,12 @@
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 6px 6px;
+    padding: 6px;
     scrollbar-width: thin;
     scrollbar-color: var(--cfg-border-strong) transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
 
   .sidebar__item {
@@ -113,7 +132,6 @@
     width: 100%;
     min-height: 40px;
     padding: 0 10px;
-    margin-bottom: 2px;
     border: none;
     border-radius: 8px;
     background: transparent;
@@ -169,6 +187,54 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .sidebar__badge {
+    background: var(--cfg-accent, oklch(0.6 0.18 250));
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 999px;
+    line-height: 1.5;
+    flex-shrink: 0;
+  }
+
+  .sidebar__separator {
+    height: 1px;
+    background: var(--cfg-border);
+    margin: 6px 4px;
+    flex-shrink: 0;
+  }
+
+  .sidebar__coming {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    min-height: 36px;
+    color: var(--cfg-text-faint);
+    opacity: 0.6;
+    font-size: 12px;
+    cursor: default;
+    user-select: none;
+  }
+  .sidebar__coming-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-style: italic;
+  }
+  .sidebar__coming-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--cfg-surface-3, #f0f0f0);
+    border: 1px solid var(--cfg-border-strong);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 
   .sidebar__count {
     margin: 0 auto 10px;
@@ -183,7 +249,6 @@
     letter-spacing: 0.02em;
   }
 
-  /* Collapsed: center icons, no gap */
   .sidebar--collapsed .sidebar__item {
     justify-content: center;
     padding: 0;
@@ -192,9 +257,13 @@
   .sidebar--collapsed .sidebar__item--active {
     box-shadow: inset 0 -2px 0 var(--cfg-accent-strong);
   }
+  .sidebar--collapsed .sidebar__coming {
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+  }
 
-  /* Mobile: taller touch targets */
-  @media (max-width: 600px) {
+  @media (max-width: 760px) {
     .sidebar__item { min-height: 44px; }
     .sidebar__icon { font-size: 18px; width: 24px; }
     .sidebar__toggle { height: 44px; }

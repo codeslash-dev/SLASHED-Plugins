@@ -737,29 +737,28 @@ li[data-id]:focus-within > .rebemer-badge-host {
 /* Info-variant toast (Color panel copy-only feedback). */
 .rebemer-toast--info { border-color: #63b3ed; }
 
-/* SF Colors button — injected after the Variables icon inside Bricks'
-   colour control field ([data-control="color"] > … > .color-input).
-   Sits inline next to the variable-picker-button and dynamic-tag buttons. */
+/* SF Colors swatch — injected right after .bricks-control-preview inside
+   [data-control="color"], so it sits in the same visual row as the native
+   Bricks colour preview. Inactive: colourful conic-gradient circle.
+   Active: solid resolved-hex square with a pulsing glow so users can
+   immediately tell the selected colour is an SF framework token. */
 .slashed-sf-color-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  /* flex: 0 0 + min-width keep the button square in Bricks' flex row;
-     flex-shrink:0 alone isn't enough when the row is already compressed. */
-  flex: 0 0 28px;
-  min-width: 28px;
+  flex-shrink: 0;
   width: 28px;
   height: 28px;
+  margin-left: 3px;
   border-radius: 5px;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 0.65;
   transition: opacity 120ms, background 120ms;
 }
 .slashed-sf-color-btn:hover { opacity: 1; background: rgb(91 140 255 / .15); }
-/* Active state — shown after a colour is picked; dot background is set
-   inline by JS to the resolved hex. */
+/* Active: full opacity, glow animation signals an SF token is set. */
 .slashed-sf-color-btn--active { opacity: 1; }
-.slashed-sf-color-btn--active:hover { background: rgb(255 255 255 / .06); }
+.slashed-sf-color-btn--active:hover { background: transparent; }
 
 .slashed-sf-color-btn__dot {
   display: inline-block;
@@ -769,15 +768,32 @@ li[data-id]:focus-within > .rebemer-badge-host {
   background: conic-gradient(from 210deg, #5b8cff, #b07cff, #ff6b6b, #ffd24a, #4ade80, #5b8cff);
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / .2);
   flex-shrink: 0;
-  transition: width 80ms, height 80ms, border-radius 120ms;
+  transition: width 80ms, height 80ms, border-radius 120ms, box-shadow 120ms;
 }
-/* After a pick the dot expands to fill the button as a solid colour swatch. */
+/* After a pick the dot expands to a solid colour square with a glow. */
 .slashed-sf-color-btn--active .slashed-sf-color-btn__dot {
   width: 28px;
   height: 28px;
   border-radius: 5px;
+  animation: slashed-sf-active-glow 2.4s ease-in-out infinite;
   transition: width 80ms, height 80ms, border-radius 120ms;
-  box-shadow: inset 0 0 0 1px rgb(0 0 0 / .18), 0 0 0 1.5px rgb(255 255 255 / .22);
+}
+
+/* Pulsing glow ring — uses the resolved colour of the selected SF token
+   (set inline by JS as --sf-active-color) so the ring matches the swatch. */
+@keyframes slashed-sf-active-glow {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / .2),
+      0 0 0 2px   color-mix(in srgb, var(--sf-active-color, #fff) 60%, transparent),
+      0 0 7px     color-mix(in srgb, var(--sf-active-color, #fff) 35%, transparent);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / .2),
+      0 0 0 2.5px color-mix(in srgb, var(--sf-active-color, #fff) 88%, transparent),
+      0 0 14px    color-mix(in srgb, var(--sf-active-color, #fff) 50%, transparent);
+  }
 }
 
 /* Variable-picker colour swatch — a small square prepended to each
