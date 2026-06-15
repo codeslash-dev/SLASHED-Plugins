@@ -9,6 +9,22 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-06-15
+
+### Fixed
+
+- Remove always-true if guard on active_fw_version
+- Resolve short ternary errors and alignment warnings
+- Framework version display, CDN ver param, configurator link, SF swatch selector
+
+## [0.2.2] - 2026-06-15
+
+### Fixed
+
+- Remove always-true if guard on active_fw_version
+- Resolve short ternary errors and alignment warnings
+- Framework version display, CDN ver param, configurator link, SF swatch selector
+
 ## [0.2.1] - 2026-06-15
 
 ### Changed
