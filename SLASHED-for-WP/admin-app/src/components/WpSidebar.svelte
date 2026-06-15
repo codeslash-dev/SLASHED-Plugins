@@ -24,16 +24,15 @@
   </button>
 
   <nav class="sidebar__nav">
-    <button
+    <div
       class="sidebar__item sidebar__item--active"
-      title="Design Settings"
       aria-current="page"
     >
       <span class="sidebar__icon" aria-hidden="true">⚙️</span>
       {#if ui.sidebarOpen}
         <span class="sidebar__label">Design Settings</span>
       {/if}
-    </button>
+    </div>
 
     <div class="sidebar__separator" role="separator"></div>
 
@@ -131,6 +130,7 @@
     background: var(--cfg-accent-soft);
     box-shadow: inset 3px 0 0 var(--cfg-accent-strong);
     font-weight: 600;
+    cursor: default;
   }
   .sidebar__item--active:hover {
     background: var(--cfg-accent-soft);
