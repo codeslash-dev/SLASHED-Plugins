@@ -220,9 +220,7 @@ class Slashed_Admin {
 				: ( $local_version ? $local_version : SLASHED_CSS_REF );
 			?>
 			<h1><?php esc_html_e( 'SLASHED', 'slashed' ); ?> <span style="font-weight:400;font-size:13px;color:#999;"><?php echo esc_html( SLASHED_VERSION ); ?></span>
-				<?php if ( $active_fw_version ) : ?>
 				<span style="font-weight:400;font-size:13px;color:#bbb;margin-left:6px;">· <?php esc_html_e( 'Framework:', 'slashed' ); ?> <?php echo esc_html( $active_fw_version ); ?></span>
-				<?php endif; ?>
 			</h1>
 
 			<?php if ( $saved ) : ?>
