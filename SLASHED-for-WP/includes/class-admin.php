@@ -214,7 +214,14 @@ class Slashed_Admin {
 		</style>
 
 		<div class="wrap">
-			<h1><?php esc_html_e( 'SLASHED', 'slashed' ); ?> <span style="font-weight:400;font-size:13px;color:#999;"><?php echo esc_html( SLASHED_VERSION ); ?></span></h1>
+			<?php
+			$active_fw_version = ( 'cdn' === $css_source )
+				? ( $cdn_version ? $cdn_version : SLASHED_CSS_REF )
+				: ( $local_version ? $local_version : SLASHED_CSS_REF );
+			?>
+			<h1><?php esc_html_e( 'SLASHED', 'slashed' ); ?> <span style="font-weight:400;font-size:13px;color:#999;"><?php echo esc_html( SLASHED_VERSION ); ?></span>
+				<span style="font-weight:400;font-size:13px;color:#bbb;margin-left:6px;">· <?php esc_html_e( 'Framework:', 'slashed' ); ?> <?php echo esc_html( $active_fw_version ); ?></span>
+			</h1>
 
 			<?php if ( $saved ) : ?>
 				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Settings saved.', 'slashed' ); ?></p></div>
@@ -443,16 +450,6 @@ class Slashed_Admin {
 				<?php submit_button( __( 'Save settings', 'slashed' ) ); ?>
 			</form>
 
-			<hr>
-			<p style="color:#999;font-size:12px;">
-				<?php
-				printf(
-					/* translators: %s: framework version tag */
-					esc_html__( 'Framework: %s', 'slashed' ),
-					esc_html( SLASHED_CSS_REF )
-				);
-				?>
-			</p>
 		</div>
 
 		<script>

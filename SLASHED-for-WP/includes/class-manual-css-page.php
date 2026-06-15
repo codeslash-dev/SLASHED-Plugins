@@ -74,20 +74,17 @@ class Slashed_Manual_CSS_Page {
 			update_option( self::OPTION_KEY, $raw_css );
 		}
 
-		$manual_mode              = ! empty( $_POST['slashed_manual_css_mode'] );
-		$settings                 = Slashed_Token_Store::get_plugin_settings();
+		$manual_mode                 = ! empty( $_POST['slashed_manual_css_mode'] );
+		$settings                    = Slashed_Token_Store::get_plugin_settings();
 		$settings['manual_css_mode'] = $manual_mode;
-		if ( isset( $_POST['slashed_configurator_url'] ) ) {
-			$settings['configurator_url'] = esc_url_raw( wp_unslash( $_POST['slashed_configurator_url'] ) );
-		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		Slashed_Token_Store::update_plugin_settings( $settings );
 
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'page'    => self::PAGE_SLUG,
-					'saved'   => '1',
+					'page'  => self::PAGE_SLUG,
+					'saved' => '1',
 				),
 				admin_url( 'admin.php' )
 			)
@@ -114,17 +111,18 @@ class Slashed_Manual_CSS_Page {
 		return ! empty( $settings['manual_css_mode'] );
 	}
 
+	const CONFIGURATOR_URL = 'https://slashed.codeslash.dev/configurator/';
+
 	public function render_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
-		$plugin_settings  = Slashed_Token_Store::get_plugin_settings();
-		$manual_mode      = ! empty( $plugin_settings['manual_css_mode'] );
-		$configurator_url = isset( $plugin_settings['configurator_url'] ) ? (string) $plugin_settings['configurator_url'] : '';
-		$saved_css        = self::get_css();
-		$css_line_count   = $saved_css ? substr_count( $saved_css, "\n" ) + 1 : 0;
-		$just_saved       = isset( $_GET['saved'] ) && '1' === $_GET['saved']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$plugin_settings = Slashed_Token_Store::get_plugin_settings();
+		$manual_mode     = ! empty( $plugin_settings['manual_css_mode'] );
+		$saved_css       = self::get_css();
+		$css_line_count  = $saved_css ? substr_count( $saved_css, "\n" ) + 1 : 0;
+		$just_saved      = isset( $_GET['saved'] ) && '1' === $_GET['saved']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Manual CSS', 'slashed' ); ?></h1>
@@ -158,21 +156,6 @@ class Slashed_Manual_CSS_Page {
 									>
 									<?php esc_html_e( 'Enable — use raw CSS below instead of the token configurator', 'slashed' ); ?>
 								</label>
-							</td>
-						</tr>
-
-						<tr>
-							<th scope="row"><label for="slashed-cfg-url"><?php esc_html_e( 'Configurator URL', 'slashed' ); ?></label></th>
-							<td>
-								<input
-									id="slashed-cfg-url"
-									type="url"
-									name="slashed_configurator_url"
-									value="<?php echo esc_attr( $configurator_url ); ?>"
-									class="regular-text"
-									placeholder="https://codeslash.net/configurator"
-								>
-								<p class="description"><?php esc_html_e( 'Link shown on the Design Settings page when manual mode is active. Leave blank to hide the link.', 'slashed' ); ?></p>
 							</td>
 						</tr>
 
@@ -223,15 +206,13 @@ class Slashed_Manual_CSS_Page {
 				</p>
 			</form>
 
-			<?php if ( $configurator_url ) : ?>
-				<hr>
-				<p>
-					<a href="<?php echo esc_url( $configurator_url ); ?>" target="_blank" rel="noopener">
-						<?php esc_html_e( '→ Open SLASHED Configurator', 'slashed' ); ?>
-					</a>
-					<?php esc_html_e( '— generate override CSS and paste it above.', 'slashed' ); ?>
-				</p>
-			<?php endif; ?>
+			<hr>
+			<p>
+				<a href="<?php echo esc_url( self::CONFIGURATOR_URL ); ?>" target="_blank" rel="noopener noreferrer">
+					<?php esc_html_e( '→ Open SLASHED Configurator', 'slashed' ); ?>
+				</a>
+				<?php esc_html_e( '— generate override CSS and paste it above.', 'slashed' ); ?>
+			</p>
 		</div>
 		<?php
 	}
