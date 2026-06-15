@@ -359,7 +359,10 @@ function openColorPickerPanel(colorInputEl) {
             const hex = varName ? (cfg?.colorHexMap?.[varName] ?? null) : null;
 
             // Show the picked colour on the SF icon dot.
-            const btn = colorInputEl?.querySelector('.slashed-sf-color-btn');
+            // The button lives at the [data-control="color"] level, not inside
+            // colorInputEl (.color-input), so we must walk up first.
+            const colorControl = colorInputEl?.closest('[data-control="color"]');
+            const btn = colorControl?.querySelector(':scope > .slashed-sf-color-btn');
             if (btn) {
               const dot = btn.querySelector('.slashed-sf-color-btn__dot');
               if (dot) {

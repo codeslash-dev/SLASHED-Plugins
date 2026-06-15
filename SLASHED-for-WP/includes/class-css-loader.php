@@ -107,6 +107,10 @@ class Slashed_CSS_Loader {
 				return (string) filemtime( $path );
 			}
 		}
-		return SLASHED_VERSION;
+		// For CDN or any other URL: use the configured CDN version tag, or fall
+		// back to the framework reference this plugin ships with. Never use
+		// SLASHED_VERSION here — that is the plugin version, not the framework.
+		$cdn_version = Slashed_Settings::get_cdn_version();
+		return ( $cdn_version && 'latest' !== $cdn_version ) ? $cdn_version : SLASHED_CSS_REF;
 	}
 }
