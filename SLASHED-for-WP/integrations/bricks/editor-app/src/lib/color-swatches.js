@@ -83,12 +83,12 @@ let _debounce = null;
 let _controller = null;
 
 /**
- * Inject the "SF Colors" button into a Bricks colour control.
+ * Inject the "SF Colors" swatch into a Bricks colour control.
  *
  * Bricks colour-field markup (from live DOM):
  *   <div data-control="color">
  *     <div class="dynamic-tag-picker-button" data-balloon="Color picker">…</div>
- *     <div class="bricks-control-preview">…palette icon…</div>
+ *     <div class="bricks-control-preview">…palette icon…</div>   ← we insert here
  *     <div class="input-wrapper">
  *       <div data-control="text" class="… color-input">
  *         <input …/>
@@ -98,8 +98,11 @@ let _controller = null;
  *     </div>
  *   </div>
  *
- * We insert our button after .variable-picker-button, keeping it visually
- * right next to the Variables icon. Idempotent via SF_BTN_CLASS guard.
+ * We insert our swatch right after .bricks-control-preview so it sits in
+ * the same visual row as the native Bricks colour preview — the two swatches
+ * appear side-by-side. When a --sf-color-* token is active the swatch
+ * gains a glow so it is visually distinct from the native preview.
+ * Idempotent via SF_BTN_CLASS guard.
  *
  * @param {Element} colorControl  element matching [data-control="color"]
  */
@@ -108,12 +111,14 @@ function injectSFButton(colorControl) {
   const colorInput = colorControl.querySelector('[data-control="text"].color-input');
   if (!colorInput) return;
 
-  let btn = colorInput.querySelector('.' + SF_BTN_CLASS);
+  // Look for an existing button anywhere in the outer color control
+  // (not just inside .color-input, since we now place it in the preview row).
+  let btn = colorControl.querySelector(':scope > .' + SF_BTN_CLASS);
   if (!btn) {
     btn = document.createElement('div');
     btn.className = SF_BTN_CLASS;
     btn.setAttribute('data-balloon', 'SLASHED Colors');
-    btn.setAttribute('data-balloon-pos', 'top-right');
+    btn.setAttribute('data-balloon-pos', 'top');
     btn.setAttribute('role', 'button');
     btn.setAttribute('tabindex', '0');
     const dot = document.createElement('span');
@@ -123,22 +128,26 @@ function injectSFButton(colorControl) {
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      // Pass the wrapper so the picker re-queries the live input at pick time,
-      // avoiding a stale reference if Bricks re-renders the control.
-      if (_onOpenPanel) _onOpenPanel(colorInput);
+      // Re-query colorInput at click time so Bricks re-renders never leave a
+      // stale reference in the closure.
+      const liveInput = colorControl.querySelector('[data-control="text"].color-input');
+      if (_onOpenPanel) _onOpenPanel(liveInput ?? colorInput);
     });
     btn.addEventListener('keydown', (e) => {
       if (e.key === ' ') { e.preventDefault(); btn.click(); }
       else if (e.key === 'Enter') btn.click();
     });
 
-    // Insert right after the Variables icon, before Dynamic data (if present).
-    // Falls back to appending when there's no Variables icon or it's the last child.
-    const varBtn = colorInput.querySelector('.variable-picker-button');
-    if (varBtn && varBtn.nextSibling) {
-      colorInput.insertBefore(btn, varBtn.nextSibling);
+    // Place right after .bricks-control-preview so the SF swatch sits in the
+    // same row as the native colour preview. Falls back to inserting before
+    // .input-wrapper, then to appending to the control root.
+    const preview = colorControl.querySelector(':scope > .bricks-control-preview');
+    if (preview) {
+      colorControl.insertBefore(btn, preview.nextSibling);
     } else {
-      colorInput.appendChild(btn);
+      const inputWrapper = colorControl.querySelector(':scope > .input-wrapper');
+      if (inputWrapper) colorControl.insertBefore(btn, inputWrapper);
+      else colorControl.appendChild(btn);
     }
   }
 
