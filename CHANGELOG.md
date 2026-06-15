@@ -9,6 +9,32 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-15
+
+### Added
+
+- Move SF color swatch next to native preview, add active glow
+- Comprehensive framework showcase with 7 tabbed sections
+
+### Fixed
+
+- Address CodeRabbit review findings
+- Glow uses actual selected colour, not a fictitious accent
+- Address CodeRabbit a11y findings
+
+## [0.2.0] - 2026-06-15
+
+### Added
+
+- Move SF color swatch next to native preview, add active glow
+- Comprehensive framework showcase with 7 tabbed sections
+
+### Fixed
+
+- Address CodeRabbit review findings
+- Glow uses actual selected colour, not a fictitious accent
+- Address CodeRabbit a11y findings
+
 ## [0.1.7] - 2026-06-14
 
 ### Fixed
