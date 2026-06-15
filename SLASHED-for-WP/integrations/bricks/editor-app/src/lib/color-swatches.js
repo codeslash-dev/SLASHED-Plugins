@@ -187,6 +187,13 @@ function syncSFButtonState(btn, colorInput) {
       dot.style.removeProperty('background');
     }
   }
+  // Expose the resolved colour as a CSS custom property so the glow ring
+  // matches the actual selected token colour.
+  if (hex) {
+    btn.style.setProperty('--sf-active-color', hex);
+  } else {
+    btn.style.removeProperty('--sf-active-color');
+  }
   btn.classList.toggle(SF_BTN_CLASS + '--active', !!hex);
 }
 

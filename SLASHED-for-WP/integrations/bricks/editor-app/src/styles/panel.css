@@ -779,20 +779,20 @@ li[data-id]:focus-within > .rebemer-badge-host {
   transition: width 80ms, height 80ms, border-radius 120ms;
 }
 
-/* Pulsing glow ring — the SF accent blue signals "this is an active SF token"
-   regardless of which colour is actually selected (the swatch itself shows that). */
+/* Pulsing glow ring — uses the resolved colour of the selected SF token
+   (set inline by JS as --sf-active-color) so the ring matches the swatch. */
 @keyframes slashed-sf-active-glow {
   0%, 100% {
     box-shadow:
       inset 0 0 0 1px rgb(0 0 0 / .2),
-      0 0 0 2px   rgb(91 140 255 / .6),
-      0 0 7px     rgb(91 140 255 / .35);
+      0 0 0 2px   color-mix(in srgb, var(--sf-active-color, #fff) 60%, transparent),
+      0 0 7px     color-mix(in srgb, var(--sf-active-color, #fff) 35%, transparent);
   }
   50% {
     box-shadow:
       inset 0 0 0 1px rgb(0 0 0 / .2),
-      0 0 0 2.5px rgb(91 140 255 / .9),
-      0 0 13px    rgb(91 140 255 / .5);
+      0 0 0 2.5px color-mix(in srgb, var(--sf-active-color, #fff) 88%, transparent),
+      0 0 14px    color-mix(in srgb, var(--sf-active-color, #fff) 50%, transparent);
   }
 }
 
