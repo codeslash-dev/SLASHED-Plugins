@@ -38,7 +38,7 @@ export const storage = $state({ ok: true });
 
 const savedUi = loadUiState();
 export const ui = $state({
-  domain:        savedUi.domain    ?? 'manual-css',
+  domain:        savedUi.domain    ?? 'settings',
   mode:          savedUi.mode      ?? 'basic',
   query:         '',
   showInternal:  false,

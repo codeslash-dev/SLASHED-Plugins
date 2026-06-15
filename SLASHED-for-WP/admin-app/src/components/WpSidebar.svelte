@@ -4,9 +4,7 @@
    * is deactivated pending framework v0.8.0.
    * In .syncignore: never overwritten by sync-core.mjs.
    */
-  import { ui, overrides } from '../lib/store.svelte.js';
-
-  const totalModified = $derived(Object.keys(overrides).length);
+  import { ui } from '../lib/store.svelte.js';
 </script>
 
 <aside
@@ -27,31 +25,13 @@
 
   <nav class="sidebar__nav">
     <button
-      class="sidebar__item"
-      class:sidebar__item--active={ui.domain === 'manual-css'}
-      onclick={() => (ui.domain = 'manual-css')}
-      title="Manual CSS"
-      aria-current={ui.domain === 'manual-css' ? 'page' : undefined}
-    >
-      <span class="sidebar__icon" aria-hidden="true">📝</span>
-      {#if ui.sidebarOpen}
-        <span class="sidebar__label">Manual CSS</span>
-        {#if totalModified > 0}
-          <span class="sidebar__badge" title="{totalModified} override(s) stored">{totalModified}</span>
-        {/if}
-      {/if}
-    </button>
-
-    <button
-      class="sidebar__item sidebar__item--tool"
-      class:sidebar__item--active={ui.domain === 'settings'}
-      onclick={() => (ui.domain = 'settings')}
-      title="Settings"
-      aria-current={ui.domain === 'settings' ? 'page' : undefined}
+      class="sidebar__item sidebar__item--active"
+      title="Design Settings"
+      aria-current="page"
     >
       <span class="sidebar__icon" aria-hidden="true">⚙️</span>
       {#if ui.sidebarOpen}
-        <span class="sidebar__label">Settings</span>
+        <span class="sidebar__label">Design Settings</span>
       {/if}
     </button>
 
@@ -65,10 +45,6 @@
       {/if}
     </div>
   </nav>
-
-  {#if !ui.sidebarOpen && totalModified > 0}
-    <div class="sidebar__count" title="{totalModified} token(s) customised">{totalModified}</div>
-  {/if}
 </aside>
 
 <style>
@@ -159,17 +135,6 @@
   .sidebar__item--active:hover {
     background: var(--cfg-accent-soft);
   }
-  .sidebar__item--tool {
-    color: var(--cfg-text-faint);
-    font-size: 12.5px;
-  }
-  .sidebar__item--tool:hover {
-    color: var(--cfg-text-muted);
-  }
-  .sidebar__item--tool.sidebar__item--active {
-    color: var(--cfg-accent-strong);
-  }
-
   .sidebar__icon {
     font-size: 16px;
     flex-shrink: 0;
@@ -187,17 +152,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .sidebar__badge {
-    background: var(--cfg-accent, oklch(0.6 0.18 250));
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 999px;
-    line-height: 1.5;
-    flex-shrink: 0;
-  }
-
   .sidebar__separator {
     height: 1px;
     background: var(--cfg-border);
@@ -234,19 +188,6 @@
     border: 1px solid var(--cfg-border-strong);
     white-space: nowrap;
     flex-shrink: 0;
-  }
-
-  .sidebar__count {
-    margin: 0 auto 10px;
-    background: var(--cfg-accent-strong);
-    color: #fff;
-    border-radius: 12px;
-    padding: 2px 7px;
-    font-size: 10px;
-    font-weight: 700;
-    min-width: 20px;
-    text-align: center;
-    letter-spacing: 0.02em;
   }
 
   .sidebar--collapsed .sidebar__item {
