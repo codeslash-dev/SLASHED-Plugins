@@ -9,6 +9,26 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-06-15
+
+### Changed
+
+- Remove ManualCssTab from Design Settings SPA
+
+### Fixed
+
+- Use div instead of button for non-interactive sidebar item
+
+## [0.2.1] - 2026-06-15
+
+### Changed
+
+- Remove ManualCssTab from Design Settings SPA
+
+### Fixed
+
+- Use div instead of button for non-interactive sidebar item
+
 ## [0.2.0] - 2026-06-15
 
 ### Added
