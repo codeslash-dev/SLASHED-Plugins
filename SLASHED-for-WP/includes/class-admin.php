@@ -415,6 +415,17 @@ class Slashed_Admin {
 							<p class="description"><?php esc_html_e( 'Syncs SLASHED colors with the block editor palette and bridges the editor dark-mode toggle.', 'slashed' ); ?></p>
 						</td>
 					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Class hints', 'slashed' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="show_class_hints" <?php checked( $show_class_hints ); ?>>
+								<?php esc_html_e( 'Show class hints in Bricks editor', 'slashed' ); ?>
+								<span style="display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;background:#f0f4ff;color:#2563eb;border:1px solid #bfdbfe;margin-left:4px;">Bricks</span>
+							</label>
+							<p class="description"><?php esc_html_e( 'When enabled, hovering a SLASHED class in the Bricks class manager shows a short description of what it does.', 'slashed' ); ?></p>
+						</td>
+					</tr>
 				</table>
 
 				<h2><?php esc_html_e( 'Site behaviour', 'slashed' ); ?></h2>
@@ -432,17 +443,6 @@ class Slashed_Admin {
 								<option value="62.5" <?php selected( $html_font_size, '62.5' ); ?>><?php esc_html_e( 'Force 62.5%', 'slashed' ); ?></option>
 							</select>
 							<p class="description"><?php esc_html_e( 'Override the HTML root font-size when your theme or builder conflicts with rem-based framework values.', 'slashed' ); ?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><?php esc_html_e( 'Class hints', 'slashed' ); ?></th>
-						<td>
-							<label>
-								<input type="checkbox" name="show_class_hints" <?php checked( $show_class_hints ); ?>>
-								<?php esc_html_e( 'Show class hints in Bricks editor', 'slashed' ); ?>
-								<span style="display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;background:#f0f4ff;color:#2563eb;border:1px solid #bfdbfe;margin-left:4px;">Bricks</span>
-							</label>
-							<p class="description"><?php esc_html_e( 'When enabled, hovering a SLASHED class in the Bricks class manager shows a short description of what it does.', 'slashed' ); ?></p>
 						</td>
 					</tr>
 				</table>

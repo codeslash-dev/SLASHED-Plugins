@@ -196,6 +196,46 @@ function syncSFButtonState(btn, colorInput) {
     btn.style.removeProperty('--sf-active-color');
   }
   btn.classList.toggle(SF_BTN_CLASS + '--active', !!hex);
+
+  // Show "SF" label on Bricks' native colour preview instead of the resolved
+  // hex when an sf-* token is active. The hex is a snapshot of one mode and
+  // doesn't represent the adaptive light-dark() value, so we signal the token
+  // origin with text rather than a potentially misleading colour square.
+  const colorControl = btn.closest('[data-control="color"]');
+  if (colorControl) {
+    const preview = colorControl.querySelector(':scope > .bricks-control-preview');
+    if (preview) updatePreviewForSFToken(preview, !!hex);
+  }
+}
+
+/**
+ * Show or hide the "SF" label on a Bricks colour-control preview element.
+ *
+ * When `showLabel` is true the native `.bricks-control-transparency-pattern`
+ * swatch is hidden (it would show a static hex that doesn't reflect the
+ * adaptive `light-dark()` token value) and a `.slashed-sf-preview-label`
+ * span with text "SF" is injected. When false both are restored/removed.
+ * Idempotent — safe to call on every reconciler pass.
+ *
+ * @param {Element} preview   `.bricks-control-preview` element
+ * @param {boolean} showLabel Whether to show the SF label
+ */
+export function updatePreviewForSFToken(preview, showLabel) {
+  const swatchSpan = preview.querySelector('.bricks-control-transparency-pattern');
+  let sfLabel = preview.querySelector('.slashed-sf-preview-label');
+  if (showLabel) {
+    if (swatchSpan) swatchSpan.style.setProperty('visibility', 'hidden');
+    if (!sfLabel) {
+      sfLabel = document.createElement('span');
+      sfLabel.className = 'slashed-sf-preview-label';
+      sfLabel.setAttribute('aria-hidden', 'true');
+      sfLabel.textContent = 'SF';
+      preview.appendChild(sfLabel);
+    }
+  } else {
+    if (swatchSpan) swatchSpan.style.removeProperty('visibility');
+    if (sfLabel) sfLabel.remove();
+  }
 }
 
 /**
