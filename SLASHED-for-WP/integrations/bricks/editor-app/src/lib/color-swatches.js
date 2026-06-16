@@ -196,6 +196,31 @@ function syncSFButtonState(btn, colorInput) {
     btn.style.removeProperty('--sf-active-color');
   }
   btn.classList.toggle(SF_BTN_CLASS + '--active', !!hex);
+
+  // Show "SF" label on Bricks' native colour preview instead of the resolved
+  // hex when an sf-* token is active. The hex is a snapshot of one mode and
+  // doesn't represent the adaptive light-dark() value, so we signal the token
+  // origin with text rather than a potentially misleading colour square.
+  const colorControl = btn.closest('[data-control="color"]');
+  if (colorControl) {
+    const preview = colorControl.querySelector(':scope > .bricks-control-preview');
+    if (preview) {
+      const swatchSpan = preview.querySelector('.bricks-control-transparency-pattern');
+      let sfLabel = preview.querySelector('.slashed-sf-preview-label');
+      if (hex) {
+        if (swatchSpan) swatchSpan.style.setProperty('visibility', 'hidden');
+        if (!sfLabel) {
+          sfLabel = document.createElement('span');
+          sfLabel.className = 'slashed-sf-preview-label';
+          sfLabel.setAttribute('aria-hidden', 'true');
+          preview.appendChild(sfLabel);
+        }
+      } else {
+        if (swatchSpan) swatchSpan.style.removeProperty('visibility');
+        if (sfLabel) sfLabel.remove();
+      }
+    }
+  }
 }
 
 /**

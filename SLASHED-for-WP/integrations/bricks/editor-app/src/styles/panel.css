@@ -796,6 +796,27 @@ li[data-id]:focus-within > .rebemer-badge-host {
   }
 }
 
+/* "SF" label injected inside .bricks-control-preview when an --sf-color-*
+   token is the active value. We hide the native transparency-pattern span
+   (which would show a static hex snapshot of an adaptive light-dark() token)
+   and replace it with an "SF" text marker so users know the active colour
+   comes from the framework and may look different in light vs. dark mode. */
+.bricks-control-preview:has(.slashed-sf-preview-label) {
+  position: relative;
+}
+.slashed-sf-preview-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: rgb(255 255 255 / .9);
+  letter-spacing: .5px;
+  pointer-events: none;
+  text-shadow: 0 1px 4px rgb(0 0 0 / .5);
+}
+
 /* Variable-picker colour swatch — a small square prepended to each
    `--sf-color-*` row in the Bricks variable dropdown by
    color-swatches.js. The colour is set inline via the

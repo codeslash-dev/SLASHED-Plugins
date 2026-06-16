@@ -372,29 +372,25 @@ function openColorPickerPanel(colorInputEl) {
               btn.classList.toggle('slashed-sf-color-btn--active', !!hex);
             }
 
-            // Patch Bricks' colour preview swatch after Vue's nextTick settles.
-            // The swatch is the 2nd <span> child of .bricks-control-preview;
-            // when no resolvable colour is set Bricks hides it (display:none)
-            // and marks the parent with class "empty". Override both using the
-            // server-resolved hex from the colour map.
+            // Show the "SF" label on Bricks' native preview after Vue settles.
+            // We do NOT show the resolved hex here — sf-* values are adaptive
+            // (light-dark()) and a static hex would misrepresent the token.
+            // syncSFButtonState (via MutationObserver) also handles this;
+            // the RAF ensures the label appears before the debounce fires.
             if (hex) {
               const colorControl = colorInputEl?.closest('[data-control="color"]');
               requestAnimationFrame(() => {
                 if (!colorControl) return;
                 const preview = colorControl.querySelector('.bricks-control-preview');
                 if (!preview) return;
-                // Target the swatch span by excluding Bricks' two named spans
-                // (.color-value-tooltip and .bricks-svg-wrapper). Falls back to
-                // position [1] for unknown future Bricks DOM variants.
-                const swatchSpan =
-                  preview.querySelector(':scope > span:not(.color-value-tooltip):not(.bricks-svg-wrapper)') ??
-                  preview.querySelectorAll(':scope > span')[1];
-                if (swatchSpan) {
-                  swatchSpan.style.display = 'block';
-                  swatchSpan.style.background = hex;
-                  // bricks-control-transparency-pattern uses color:currentColor
-                  // for its background — set color too so both paths are covered.
-                  swatchSpan.style.setProperty('color', hex, 'important');
+                const swatchSpan = preview.querySelector('.bricks-control-transparency-pattern');
+                if (swatchSpan) swatchSpan.style.setProperty('visibility', 'hidden');
+                let sfLabel = preview.querySelector('.slashed-sf-preview-label');
+                if (!sfLabel) {
+                  sfLabel = document.createElement('span');
+                  sfLabel.className = 'slashed-sf-preview-label';
+                  sfLabel.setAttribute('aria-hidden', 'true');
+                  preview.appendChild(sfLabel);
                 }
                 preview.classList.remove('empty');
               });
