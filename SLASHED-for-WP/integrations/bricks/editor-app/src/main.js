@@ -20,6 +20,7 @@ import { mount, unmount } from 'svelte';
 import * as api from './lib/bricks-api.js';
 import * as classHints from './lib/class-hints.js';
 import * as colorSwatches from './lib/color-swatches.js';
+import { updatePreviewForSFToken } from './lib/color-swatches.js';
 import BemBadge from './components/BemBadge.svelte';
 import BemPanel from './components/BemPanel.svelte';
 import ColorApp from './components/ColorApp.svelte';
@@ -383,15 +384,7 @@ function openColorPickerPanel(colorInputEl) {
                 if (!colorControl) return;
                 const preview = colorControl.querySelector('.bricks-control-preview');
                 if (!preview) return;
-                const swatchSpan = preview.querySelector('.bricks-control-transparency-pattern');
-                if (swatchSpan) swatchSpan.style.setProperty('visibility', 'hidden');
-                let sfLabel = preview.querySelector('.slashed-sf-preview-label');
-                if (!sfLabel) {
-                  sfLabel = document.createElement('span');
-                  sfLabel.className = 'slashed-sf-preview-label';
-                  sfLabel.setAttribute('aria-hidden', 'true');
-                  preview.appendChild(sfLabel);
-                }
+                updatePreviewForSFToken(preview, true);
                 preview.classList.remove('empty');
               });
             }
