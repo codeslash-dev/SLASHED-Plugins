@@ -9,6 +9,26 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-06-17
+
+### Changed
+
+- Relocate class hints to builder integrations, add SF preview label
+
+### Fixed
+
+- Add missing textContent to SF preview label, extract shared preview helper
+
+## [0.2.3] - 2026-06-17
+
+### Changed
+
+- Relocate class hints to builder integrations, add SF preview label
+
+### Fixed
+
+- Add missing textContent to SF preview label, extract shared preview helper
+
 ## [0.2.2] - 2026-06-15
 
 ### Fixed
