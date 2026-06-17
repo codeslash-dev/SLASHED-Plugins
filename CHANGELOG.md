@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-06-17
+
+### Fixed
+
+- Push both color swatches to right, add red X overlay, fix input sync
+
+## [0.2.4] - 2026-06-17
+
+### Fixed
+
+- Push both color swatches to right, add red X overlay, fix input sync
+
 ## [0.2.3] - 2026-06-17
 
 ### Changed
