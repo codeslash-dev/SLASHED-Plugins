@@ -81,6 +81,7 @@ let _onOpenPanel = null;
 let _observer = null;
 let _debounce = null;
 let _controller = null;
+let _listenedInputs = new WeakSet();
 
 /**
  * Inject the "SF Colors" swatch into a Bricks colour control.
@@ -158,6 +159,21 @@ function injectSFButton(colorControl) {
   // does, the swatch must follow. If the value is no longer one of our
   // `--sf-color-*` variables the dot resets to the default colourful state.
   syncSFButtonState(btn, colorInput);
+
+  // Also listen for direct user edits (typing / pasting / clearing the
+  // input) so the swatch resets immediately when a var() is removed — the
+  // MutationObserver only watches childList changes and misses input events.
+  if (_controller) {
+    const inputEl =
+      colorInput.querySelector('input[type="text"]') ??
+      colorInput.querySelector('input:not([type="hidden"],[type="submit"],[type="button"],[type="checkbox"],[type="radio"],[type="file"])');
+    if (inputEl && !_listenedInputs.has(inputEl)) {
+      _listenedInputs.add(inputEl);
+      inputEl.addEventListener('input', () => syncSFButtonState(btn, colorInput), {
+        signal: _controller.signal,
+      });
+    }
+  }
 }
 
 /**
@@ -229,7 +245,7 @@ export function updatePreviewForSFToken(preview, showLabel) {
       sfLabel = document.createElement('span');
       sfLabel.className = 'slashed-sf-preview-label';
       sfLabel.setAttribute('aria-hidden', 'true');
-      sfLabel.textContent = 'SF';
+      sfLabel.textContent = '✕';
       preview.appendChild(sfLabel);
     }
   } else {
@@ -426,4 +442,5 @@ export function destroy() {
   _enabled = false;
   _hexMap = {};
   _onOpenPanel = null;
+  _listenedInputs = new WeakSet();
 }

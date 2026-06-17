@@ -737,16 +737,26 @@ li[data-id]:focus-within > .rebemer-badge-host {
 /* Info-variant toast (Color panel copy-only feedback). */
 .rebemer-toast--info { border-color: #63b3ed; }
 
+/* Push the native Bricks colour preview and our SF swatch to the RIGHT of
+   the text input. The [data-control="color"] flex row puts the preview and
+   SF button to the left of the input by default (DOM order); order:10/11
+   reverses that without touching Bricks' own markup. :has() scopes the
+   reorder so it only kicks in when our SF button is actually injected. */
+[data-control="color"]:has(.slashed-sf-color-btn) .bricks-control-preview {
+  order: 10;
+}
+
 /* SF Colors swatch — injected right after .bricks-control-preview inside
-   [data-control="color"], so it sits in the same visual row as the native
-   Bricks colour preview. Inactive: colourful conic-gradient circle.
-   Active: solid resolved-hex square with a pulsing glow so users can
-   immediately tell the selected colour is an SF framework token. */
+   [data-control="color"]. Sits to the right of the input field (order:11)
+   next to the native Bricks colour preview (order:10). Inactive: colourful
+   conic-gradient circle. Active: solid resolved-hex square with a pulsing
+   glow so users can immediately tell the selected colour is an SF token. */
 .slashed-sf-color-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  order: 11;
   width: 28px;
   height: 28px;
   margin-left: 3px;
@@ -796,11 +806,11 @@ li[data-id]:focus-within > .rebemer-badge-host {
   }
 }
 
-/* "SF" label injected inside .bricks-control-preview when an --sf-color-*
+/* ✕ overlay injected inside .bricks-control-preview when an --sf-color-*
    token is the active value. We hide the native transparency-pattern span
-   (which would show a static hex snapshot of an adaptive light-dark() token)
-   and replace it with an "SF" text marker so users know the active colour
-   comes from the framework and may look different in light vs. dark mode. */
+   (it would show a static hex snapshot of an adaptive light-dark() token)
+   and overlay a red ✕ so users instantly know the swatch cannot represent
+   the adaptive value accurately. */
 .bricks-control-preview:has(.slashed-sf-preview-label) {
   position: relative;
 }
@@ -810,11 +820,10 @@ li[data-id]:focus-within > .rebemer-badge-host {
   display: flex;
   align-items: center;
   justify-content: center;
-  font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  color: rgb(255 255 255 / .9);
-  letter-spacing: .5px;
+  font: 700 11px/1 system-ui, sans-serif;
+  color: #ff4040;
   pointer-events: none;
-  text-shadow: 0 1px 4px rgb(0 0 0 / .5);
+  text-shadow: 0 0 3px rgb(0 0 0 / .6);
 }
 
 /* Variable-picker colour swatch — a small square prepended to each
