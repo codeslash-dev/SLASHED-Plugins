@@ -293,15 +293,17 @@ function slashed_bricks_init() {
 add_action( 'after_setup_theme', 'slashed_bricks_init' );
 
 /**
- * reBEMer: enqueue the editor bundle inside the Bricks builder main panel.
+ * reBEMer: enqueue the editor bundle and localize editor data.
  *
- * The Enqueue class hooks itself onto wp_enqueue_scripts and gates on
- * bricks_is_builder_main(), so registering it here at after_setup_theme
- * (priority 20 to follow slashed_bricks_init) is sufficient — the actual
- * decision to enqueue happens later, per-request.
+ * Both classes hook themselves onto wp_enqueue_scripts and gate on
+ * bricks_is_builder_main(), so registering them here at after_setup_theme
+ * (priority 20 to follow slashed_bricks_init) is sufficient.
  *
- * Bails out cleanly when Bricks isn't the active theme; the missing-Bricks
- * notice from slashed_bricks_init() already covers that case.
+ * Slashed_Bricks_ReBEMer_Enqueue registers the script at priority 9999.
+ * Slashed_Bricks_Editor_Data localizes it at priority 10000, after the
+ * handle exists.
+ *
+ * Bails out cleanly when Bricks isn't the active theme.
  */
 function slashed_bricks_rebemer_init() {
 	if ( ! slashed_bricks_is_bricks_active() ) {
@@ -309,7 +311,9 @@ function slashed_bricks_rebemer_init() {
 	}
 
 	require_once SLASHED_BRICKS_PATH . 'includes/class-rebemer-enqueue.php';
+	require_once SLASHED_BRICKS_PATH . 'includes/class-editor-data.php';
 	new Slashed_Bricks_ReBEMer_Enqueue();
+	new Slashed_Bricks_Editor_Data();
 }
 add_action( 'after_setup_theme', 'slashed_bricks_rebemer_init', 20 );
 
