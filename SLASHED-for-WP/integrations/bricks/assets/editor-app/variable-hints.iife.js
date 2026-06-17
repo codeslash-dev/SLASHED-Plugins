@@ -92,10 +92,9 @@
   }
 
   function makeBtn() {
-    var btn = document.createElement('span');
+    var btn = document.createElement('button');
+    btn.type = 'button';
     btn.className = BTN_CLASS;
-    btn.setAttribute('role', 'button');
-    btn.setAttribute('tabindex', '0');
     btn.setAttribute('aria-label', 'What is this variable?');
     btn.addEventListener('mouseenter', function (e) { showForButton(e.currentTarget); });
     btn.addEventListener('mouseleave', hide);
