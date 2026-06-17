@@ -70,6 +70,10 @@
     var cat = el.querySelector('.slashed-var-hint__cat');
     cat.textContent = hint.category;
     cat.hidden = !hint.category;
+    if (_activeBtn && _activeBtn !== btn) {
+      _activeBtn.removeAttribute('aria-describedby');
+    }
+    btn.setAttribute('aria-describedby', TOOLTIP_ID);
     el.hidden = false;
     position(el, btn);
     _activeBtn = btn;
@@ -77,6 +81,7 @@
 
   function hide() {
     if (_tooltip) _tooltip.hidden = true;
+    if (_activeBtn) _activeBtn.removeAttribute('aria-describedby');
     _activeBtn = null;
   }
 
