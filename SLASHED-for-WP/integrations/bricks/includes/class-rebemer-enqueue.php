@@ -15,9 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Slashed_Bricks_ReBEMer_Enqueue {
 
-	const SCRIPT_HANDLE = 'slashed-bricks-rebemer';
-	const STYLE_HANDLE  = 'slashed-bricks-rebemer';
-	const ASSET_DIR     = 'assets/editor-app/';
+	const SCRIPT_HANDLE      = 'slashed-bricks-rebemer';
+	const STYLE_HANDLE       = 'slashed-bricks-rebemer';
+	const VAR_HINTS_HANDLE   = 'slashed-bricks-var-hints';
+	const ASSET_DIR          = 'assets/editor-app/';
 
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ), 9999 );
@@ -45,6 +46,20 @@ class Slashed_Bricks_ReBEMer_Enqueue {
 
 		wp_enqueue_style( self::STYLE_HANDLE, $base_url . 'app.css', array(), $css_ver );
 		wp_enqueue_script( self::SCRIPT_HANDLE, $base_url . 'app.js', array(), $js_ver, true );
+
+		// Variable-picker tooltip hints — delivered as a standalone IIFE so the
+		// Vite bundle does not need to be rebuilt to ship this feature. Depends
+		// on the main bundle so it always loads after app.js.
+		$hints_path = $base_path . 'variable-hints.iife.js';
+		if ( file_exists( $hints_path ) ) {
+			wp_enqueue_script(
+				self::VAR_HINTS_HANDLE,
+				$base_url . 'variable-hints.iife.js',
+				array( self::SCRIPT_HANDLE ),
+				(string) filemtime( $hints_path ),
+				true
+			);
+		}
 	}
 
 	public function mark_as_module( $tag, $handle, $src ) {
