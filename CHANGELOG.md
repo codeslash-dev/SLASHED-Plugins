@@ -9,6 +9,36 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-06-17
+
+### Added
+
+- Add variable-hints.js; wire into main.js
+
+### Changed
+
+- Add variable hint tooltip and button styles to panel.css
+- Split editor data out of rebemer-enqueue; add variable hints
+
+### Fixed
+
+- Restore native color preview to label row, keep SF btn right of input
+
+## [0.2.5] - 2026-06-17
+
+### Added
+
+- Add variable-hints.js; wire into main.js
+
+### Changed
+
+- Add variable hint tooltip and button styles to panel.css
+- Split editor data out of rebemer-enqueue; add variable hints
+
+### Fixed
+
+- Restore native color preview to label row, keep SF btn right of input
+
 ## [0.2.4] - 2026-06-17
 
 ### Fixed
