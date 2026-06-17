@@ -20,6 +20,7 @@ import { mount, unmount } from 'svelte';
 import * as api from './lib/bricks-api.js';
 import * as classHints from './lib/class-hints.js';
 import * as colorSwatches from './lib/color-swatches.js';
+import * as variableHints from './lib/variable-hints.js';
 import { updatePreviewForSFToken } from './lib/color-swatches.js';
 import BemBadge from './components/BemBadge.svelte';
 import BemPanel from './components/BemPanel.svelte';
@@ -61,7 +62,7 @@ function ensureHost() {
   return host;
 }
 
-/** Config injected by class-rebemer-enqueue.php via wp_localize_script. */
+/** Config injected by class-editor-data.php via wp_localize_script. */
 let cfg = null;
 
 function start() {
@@ -77,6 +78,7 @@ function start() {
         ? (target) => openColorPickerPanel(target)
         : undefined,
     });
+    variableHints.init(cfg.variableHints || {}, { signal });
   }
 
   let attempts = 0;
@@ -434,6 +436,7 @@ window.addEventListener('beforeunload', () => {
   closeColorPickerPanel();
   classHints.destroy();
   colorSwatches.destroy();
+  variableHints.destroy();
   for (const { instance } of badgeInstances.values()) {
     try { unmount(instance); } catch { /* ignore */ }
   }

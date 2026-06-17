@@ -3,6 +3,8 @@
  * Enqueue the reBEMer editor bundle inside the Bricks builder panel.
  *
  * Builder-only, capability-gated, stable filenames + filemtime cache-bust.
+ * Editor data (class hints, color maps, variable hints) is localized
+ * separately by Slashed_Bricks_Editor_Data.
  *
  * @package SLASHED_Bricks
  */
@@ -43,66 +45,6 @@ class Slashed_Bricks_ReBEMer_Enqueue {
 
 		wp_enqueue_style( self::STYLE_HANDLE, $base_url . 'app.css', array(), $css_ver );
 		wp_enqueue_script( self::SCRIPT_HANDLE, $base_url . 'app.js', array(), $js_ver, true );
-
-		$plugin_settings = Slashed_Token_Store::get_plugin_settings();
-
-		/**
-		 * Toggle the variable-picker colour swatches.
-		 *
-		 * Swatches are painted builder-side onto each `--sf-color-*` entry
-		 * in the Bricks variable dropdown (see editor-app color-swatches.js)
-		 * and never touch `:root`, so dark/light stays framework-driven.
-		 * Filter to false to disable them.
-		 *
-		 * @param bool $enabled Default true.
-		 */
-		$show_color_swatches = (bool) apply_filters( 'slashed_bricks/show_color_swatches', true );
-
-		$color_hex_map = ( $show_color_swatches && class_exists( 'Slashed_Bricks_Inventory' ) )
-			? Slashed_Bricks_Inventory::get_color_hex_map()
-			: array();
-
-		/**
-		 * Toggle the in-builder Color System panel.
-		 *
-		 * The panel (see editor-app ColorPanel.svelte) is a floating browser
-		 * for the framework's `--sf-color-*` tokens that previews every
-		 * token's light AND dark variant at once, applies a chosen colour to
-		 * the selected element (text / background / border), and copies the
-		 * `var(--sf-color-*)` reference. Filter to false to hide its launcher.
-		 *
-		 * @param bool $enabled Default true.
-		 */
-		$show_color_panel = (bool) apply_filters( 'slashed_bricks/show_color_panel', true );
-
-		// The panel needs the ordered token list plus both hex maps to build
-		// its grouped model and dual-mode swatches. Light reuses the swatch
-		// map already resolved above when available.
-		$color_panel_data = array(
-			'variables' => array(),
-			'light'     => array(),
-			'dark'      => array(),
-		);
-		if ( $show_color_panel && class_exists( 'Slashed_Bricks_Inventory' ) ) {
-			$color_panel_data['variables'] = Slashed_Bricks_Inventory::get_color_variables();
-			$color_panel_data['light']     = ! empty( $color_hex_map )
-				? $color_hex_map
-				: Slashed_Bricks_Inventory::get_color_hex_map();
-			$color_panel_data['dark']      = Slashed_Bricks_Inventory::get_color_hex_map_dark();
-		}
-
-		wp_localize_script(
-			self::SCRIPT_HANDLE,
-			'slashedBricksEditor',
-			array(
-				'showClassHints'    => ! empty( $plugin_settings['show_class_hints'] ),
-				'classHints'        => Slashed_Token_Page::get_class_hints(),
-				'showColorSwatches' => $show_color_swatches,
-				'colorHexMap'       => $color_hex_map,
-				'showColorPanel'    => $show_color_panel,
-				'colorPanel'        => $color_panel_data,
-			)
-		);
 	}
 
 	public function mark_as_module( $tag, $handle, $src ) {
