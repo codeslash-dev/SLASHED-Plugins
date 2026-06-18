@@ -9,6 +9,26 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-06-18
+
+### Added
+
+- Add variable hints tooltip to Bricks variable picker
+
+### Fixed
+
+- Associate tooltip with button via aria-describedby; add reduced-motion fallback
+
+## [0.2.6] - 2026-06-18
+
+### Added
+
+- Add variable hints tooltip to Bricks variable picker
+
+### Fixed
+
+- Associate tooltip with button via aria-describedby; add reduced-motion fallback
+
 ## [0.2.5] - 2026-06-17
 
 ### Added
