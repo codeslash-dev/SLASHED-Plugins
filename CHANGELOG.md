@@ -9,6 +9,38 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-06-18
+
+### Fixed
+
+- Replace --sf-equal-cols with --sf-equal-min-col for v0.5.46
+- Update cheatsheet-data.js to cover all v0.5.46 inventory entries
+- Update bundled CSS to framework v0.5.46
+- Update bundled CSS to framework v0.5.46
+- Bump SLASHED_BRICKS_CSS_REF and SLASHED_GUTENBERG_CSS_REF to v0.5.46
+- Restore bundled CSS v0.5.46 (fix corrupted agent push)
+- Update bundled CSS to framework v0.5.46
+- Update bundled CSS to framework v0.5.46
+- Sync classes-hints.json to framework v0.5.46
+- Sync inventory.json and classes-hints.json to framework v0.5.46
+- Sync data files and SLASHED_CSS_REF to framework v0.5.46
+
+## [0.2.7] - 2026-06-18
+
+### Fixed
+
+- Replace --sf-equal-cols with --sf-equal-min-col for v0.5.46
+- Update cheatsheet-data.js to cover all v0.5.46 inventory entries
+- Update bundled CSS to framework v0.5.46
+- Update bundled CSS to framework v0.5.46
+- Bump SLASHED_BRICKS_CSS_REF and SLASHED_GUTENBERG_CSS_REF to v0.5.46
+- Restore bundled CSS v0.5.46 (fix corrupted agent push)
+- Update bundled CSS to framework v0.5.46
+- Update bundled CSS to framework v0.5.46
+- Sync classes-hints.json to framework v0.5.46
+- Sync inventory.json and classes-hints.json to framework v0.5.46
+- Sync data files and SLASHED_CSS_REF to framework v0.5.46
+
 ## [0.2.6] - 2026-06-18
 
 ### Added
