@@ -166,7 +166,7 @@
 
     <h2 class="group-heading">Equal Columns</h2>
     <div class="rows">
-      <TextField section={SECTION} fieldKey="equal_cols" label="Column count" default={defaults.equal_cols ?? '2'} cssVar="--sf-equal-cols" mono />
+      <TextField section={SECTION} fieldKey="equal_min_col" label="Min column width" default={defaults.equal_min_col ?? '16rem'} cssVar="--sf-equal-min-col" mono />
     </div>
   </AdvancedSection>
 </section>

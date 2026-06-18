@@ -365,7 +365,7 @@ class Slashed_CSS_Generator {
 			'reel_item_width'    => '--sf-reel-item-width',
 			'reel_height'        => '--sf-reel-height',
 			'imposter_margin'    => '--sf-imposter-margin',
-			'equal_cols'         => '--sf-equal-cols',
+			'equal_min_col'      => '--sf-equal-min-col',
 		);
 		// bento_cols / equal_cols are plain integers; everything else is a
 		// length, ratio, or math expression — all covered by valid_dimension.
