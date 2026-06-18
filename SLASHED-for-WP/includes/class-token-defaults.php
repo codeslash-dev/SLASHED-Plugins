@@ -301,7 +301,7 @@ class Slashed_Token_Defaults {
 			// Imposter
 			'imposter_margin'       => 'var(--sf-space-m)',
 			// Equal columns
-			'equal_cols'            => '2',
+			'equal_min_col'         => '16rem',
 			// Header & sticky (numeric rem values, empty = use framework default)
 			'header_height_mobile'  => '',
 			'header_height_desktop' => '',

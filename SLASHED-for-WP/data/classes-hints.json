@@ -327,6 +327,10 @@
     "description": "Full-height flex column. A .sf-cover__center child is",
     "category": "Layout"
   },
+  "sf-cq": {
+    "description": "Lightweight CQ scope. Establishes container-type: inline-size for @container queries without the max-width of .sf-container.",
+    "category": "Layout"
+  },
   "sf-frame": {
     "description": "Aspect-ratio container. Media children: fill + cover.",
     "category": "Layout"
@@ -383,40 +387,40 @@
     "description": "Grid with three rows: header / main(1fr) / footer.",
     "category": "Layout"
   },
-  "sf-grid-1": {
-    "description": "Responsive fixed-column grids with no media queries.",
+  "sf-grid-cols-1": {
+    "description": "Responsive fixed-column grid (1 col). Never collapses — no container context needed.",
     "category": "Layout"
   },
-  "sf-grid-2": {
-    "description": "Responsive fixed-column grids with no media queries.",
+  "sf-grid-cols-2": {
+    "description": "Responsive fixed-column grid (2 cols). Never collapses — no container context needed.",
     "category": "Layout"
   },
-  "sf-grid-3": {
-    "description": "Responsive fixed-column grids with no media queries.",
+  "sf-grid-cols-3": {
+    "description": "Responsive fixed-column grid (3 cols). Never collapses — no container context needed.",
     "category": "Layout"
   },
-  "sf-grid-4": {
-    "description": "Responsive fixed-column grids with no media queries.",
+  "sf-grid-cols-4": {
+    "description": "Responsive fixed-column grid (4 cols). Never collapses — no container context needed.",
     "category": "Layout"
   },
-  "sf-grid-6": {
-    "description": "Responsive fixed-column grids with no media queries.",
+  "sf-grid-cols-6": {
+    "description": "Responsive fixed-column grid (6 cols). Never collapses — no container context needed.",
     "category": "Layout"
   },
-  "sf-grid-1-2": {
-    "description": "Two-column ratio grids, container-query responsive.",
+  "sf-grid-cols-1-2": {
+    "description": "Two-column ratio grid (1:2), container-query responsive.",
     "category": "Layout"
   },
-  "sf-grid-2-1": {
-    "description": "Two-column ratio grids, container-query responsive.",
+  "sf-grid-cols-2-1": {
+    "description": "Two-column ratio grid (2:1), container-query responsive.",
     "category": "Layout"
   },
-  "sf-grid-1-3": {
-    "description": "Two-column ratio grids, container-query responsive.",
+  "sf-grid-cols-1-3": {
+    "description": "Two-column ratio grid (1:3), container-query responsive.",
     "category": "Layout"
   },
-  "sf-grid-3-1": {
-    "description": "Two-column ratio grids, container-query responsive.",
+  "sf-grid-cols-3-1": {
+    "description": "Two-column ratio grid (3:1), container-query responsive.",
     "category": "Layout"
   },
   "sf-equal": {
@@ -456,11 +460,15 @@
     "category": "Layout"
   },
   "sf-bento--2": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Bento grid — container column modifier (2 columns).",
     "category": "Layout"
   },
-  "sf-bento--4": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+  "sf-bento--3": {
+    "description": "Bento grid — container column modifier (3 columns).",
+    "category": "Layout"
+  },
+  "sf-bento--6": {
+    "description": "Bento grid — container column modifier (6 columns).",
     "category": "Layout"
   },
   "sf-bento--compact": {
@@ -469,6 +477,22 @@
   },
   "sf-bento--tall": {
     "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "category": "Layout"
+  },
+  "sf-bento-featured": {
+    "description": "Bento child span modifier — spans 2 cols. Use with grid-auto-flow: dense on parent.",
+    "category": "Layout"
+  },
+  "sf-bento-full": {
+    "description": "Bento child span modifier — spans full width. Use with grid-auto-flow: dense on parent.",
+    "category": "Layout"
+  },
+  "sf-bento-tall": {
+    "description": "Bento child span modifier — spans 2 rows. Use with grid-auto-flow: dense on parent.",
+    "category": "Layout"
+  },
+  "sf-bento-wide": {
+    "description": "Bento child span modifier — spans 3 cols. Use with grid-auto-flow: dense on parent.",
     "category": "Layout"
   },
   "sf-subgrid": {
@@ -531,6 +555,10 @@
     "description": "Suppresses the WebKit/Android grey tap-highlight overlay on",
     "category": "Macros"
   },
+  "sf-surface": {
+    "description": "Generic surface macro. Set --sf-surface-color to configure background, auto-contrast foreground, and contextual tokens.",
+    "category": "Macros"
+  },
   "sf-surface--primary": {
     "description": "Sets background + auto-flipped foreground in one class. Shadows",
     "category": "Macros"
@@ -591,6 +619,10 @@
     "description": "Darkening overlay for text placed over a background image, so",
     "category": "Macros"
   },
+  "sf-scrim__content": {
+    "description": "Lift content above the scrim while leaving media below it (BEM alternative for complex nesting).",
+    "category": "Macros"
+  },
   "sf-text-protect": {
     "description": "Lighter-weight alternative to .sf-scrim: protects legibility",
     "category": "Macros"
@@ -617,6 +649,14 @@
   },
   "sf-link--reverse": {
     "description": "Opt-in link treatments composed from the link tokens. They",
+    "category": "Macros"
+  },
+  "sf-clickable-parent": {
+    "description": "Makes a card fully clickable via a ::after overlay on the primary link.",
+    "category": "Macros"
+  },
+  "sf-clickable-parent__overlay": {
+    "description": "Overlay: the link's ::after fills the containing card. For single-link cards — secondary links are lifted to position:relative.",
     "category": "Macros"
   },
   "is-hidden": {
