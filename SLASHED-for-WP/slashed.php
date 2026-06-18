@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// ─── Canonical constants ──────────────────────────────────────────────────────
+// ─── Canonical constants ────────────────────────────────────────────
 
 define( 'SLASHED_VERSION', '0.0.1' );
 define( 'SLASHED_PATH', plugin_dir_path( __FILE__ ) );
@@ -29,7 +29,7 @@ define( 'SLASHED_URL', plugin_dir_url( __FILE__ ) );
  * artifacts (GitHub Release assets per version; the `dist` branch for
  * "latest") — see Slashed_CSS_Loader and Slashed_Framework_Updater.
  */
-define( 'SLASHED_CSS_REF', 'v0.5.23' );
+define( 'SLASHED_CSS_REF', 'v0.5.46' );
 
 add_action(
 	'init',
@@ -38,7 +38,7 @@ add_action(
 	}
 );
 
-// ─── Shared infrastructure ────────────────────────────────────────────────────
+// ─── Shared infrastructure ────────────────────────────────────────────
 
 require_once SLASHED_PATH . 'includes/class-settings.php';
 require_once SLASHED_PATH . 'includes/class-css-loader.php';
@@ -54,7 +54,7 @@ require_once SLASHED_PATH . 'includes/class-token-store.php';  // needed by Slas
 require_once SLASHED_PATH . 'includes/class-core-enqueue.php';
 new Slashed_Core_Enqueue();
 
-// ─── Token infrastructure (global — shared by all integrations) ───────────────
+// ─── Token infrastructure (global — shared by all integrations) ───────────────────
 
 require_once SLASHED_PATH . 'includes/class-token-sanitizer.php';
 require_once SLASHED_PATH . 'includes/class-token-defaults.php';
@@ -93,7 +93,7 @@ function slashed_inject_token_overrides() {
 add_action( 'wp_enqueue_scripts', 'slashed_inject_token_overrides', 20 );
 add_action( 'enqueue_block_editor_assets', 'slashed_inject_token_overrides', 20 );
 
-// ─── Unified admin page ───────────────────────────────────────────────────────
+// ─── Unified admin page ───────────────────────────────────────────────
 
 require_once SLASHED_PATH . 'includes/class-token-page.php';     // also used on frontend (Bricks editor)
 require_once SLASHED_PATH . 'includes/class-manual-css-page.php'; // needed on frontend for CSS injection
@@ -113,7 +113,7 @@ if ( is_admin() ) {
 	);
 }
 
-// ─── Integration bootstraps ───────────────────────────────────────────────────
+// ─── Integration bootstraps ───────────────────────────────────────────────
 //
 // Each integration's entry point defines its own SLASHED_{BUILDER}_* constants
 // via plugin_dir_path(__FILE__) — correct whether loaded standalone or from here.
