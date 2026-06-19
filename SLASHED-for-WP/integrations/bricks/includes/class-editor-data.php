@@ -87,28 +87,59 @@ class Slashed_Bricks_Editor_Data {
 	 *
 	 * Keys are native variable names without the leading '--', matching
 	 * how Bricks stores variables (e.g. 'sf-color-primary'). Each entry
-	 * carries the category so the editor can render a contextual tooltip.
+	 * carries the category and description so the editor can render a
+	 * contextual tooltip with full documentation.
 	 *
-	 * @return array<string, array{category: string}>
+	 * @return array<string, array{category: string, description: string}>
 	 */
 	public static function get_variable_hints() {
 		if ( ! class_exists( 'Slashed_Bricks_Inventory' ) ) {
 			return array();
 		}
 
+		$descriptions = self::load_variable_descriptions();
+
 		$hints = array();
 		foreach ( Slashed_Bricks_Inventory::get_variables_by_category() as $category => $vars ) {
 			foreach ( $vars as $var ) {
-				$native          = ltrim( $var, '-' );
-				$hints[ $native ] = array( 'category' => $category );
+				$native           = ltrim( $var, '-' );
+				$desc             = isset( $descriptions[ $native ] ) ? $descriptions[ $native ]['description'] : '';
+				$hints[ $native ] = array(
+					'category'    => $category,
+					'description' => $desc,
+				);
 			}
 		}
 
 		/**
 		 * Filter the variable hint map passed to the Bricks editor.
 		 *
-		 * @param array $hints Map of native-name => { category }.
+		 * @param array $hints Map of native-name => { category, description }.
 		 */
 		return apply_filters( 'slashed_bricks/variable_hints', $hints );
+	}
+
+	/**
+	 * Load the variables-hints description map from the bundled JSON file.
+	 *
+	 * @return array<string, array{description: string, category: string}>
+	 */
+	private static function load_variable_descriptions() {
+		if ( defined( 'SLASHED_PATH' ) ) {
+			$path = SLASHED_PATH . 'data/variables-hints.json';
+		} elseif ( defined( 'SLASHED_BRICKS_PATH' ) ) {
+			$path = dirname( SLASHED_BRICKS_PATH, 2 ) . '/data/variables-hints.json';
+		} elseif ( defined( 'SLASHED_GUTENBERG_PATH' ) ) {
+			$path = dirname( SLASHED_GUTENBERG_PATH, 2 ) . '/data/variables-hints.json';
+		} else {
+			return array();
+		}
+
+		if ( ! file_exists( $path ) ) {
+			return array();
+		}
+
+		$data = wp_json_file_decode( $path, array( 'associative' => true ) );
+		return is_array( $data ) ? $data : array();
 	}
 }

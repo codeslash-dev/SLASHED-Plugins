@@ -4,6 +4,9 @@ node_modules/
 # Framework checkout created by `npm run update-framework`
 .framework/
 
+# Sibling framework repo symlink (created by remote dev environments)
+/slashed
+
 # Plugin package output (root dist/) — produced by `npm run build:zip`.
 # NOTE: SLASHED-for-WP/dist/*.css is the shipped local-first CSS and IS tracked.
 /dist/

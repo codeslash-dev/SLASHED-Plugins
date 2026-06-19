@@ -109,7 +109,6 @@ export const PRESETS = [
       '--sf-shadow-strength': '0',
       '--sf-border-width-1': '2px',
       '--sf-border-width-2': '3px',
-      '--sf-stroke-bold': '3px',
       '--sf-text-scale': '0.95',
       '--sf-tracking-normal': '0',
       '--sf-motion-scale': '0.6',

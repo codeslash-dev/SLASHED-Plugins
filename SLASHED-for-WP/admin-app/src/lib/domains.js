@@ -358,7 +358,7 @@ export const DOMAINS = [
       /^--sf-state-/,
     ],
     essentials: [
-      '--sf-blur-m',
+      '--sf-blur',
       '--sf-opacity-disabled',
     ],
   },

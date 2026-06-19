@@ -14,7 +14,7 @@ export default defineConfig({
   plugins: [svelte()],
   build: {
     outDir: fileURLToPath(new URL('../assets/editor-app/', import.meta.url)),
-    emptyOutDir: true,
+    emptyOutDir: false,
     sourcemap: true,
     target: 'es2020',
     cssCodeSplit: false,
