@@ -1145,7 +1145,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
   max-width: 320px;
   width: max-content;
   white-space: normal;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   background: var(--rebemer-bg, #161a1d);
   color: var(--rebemer-fg, #e1e1e1);
   border: 1px solid var(--rebemer-border, #3d4752);
