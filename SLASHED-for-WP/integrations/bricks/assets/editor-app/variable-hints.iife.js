@@ -24,7 +24,7 @@
     if (!name || /\s/.test(name)) return null;
     if (!Object.prototype.hasOwnProperty.call(_hints, name)) return null;
     var hint = _hints[name];
-    return hint ? { name: name, category: hint.category || '' } : null;
+    return hint ? { name: name, category: hint.category || '', description: hint.description || '' } : null;
   }
 
   function ensureTooltip() {
@@ -42,7 +42,8 @@
     el.hidden = true;
     el.innerHTML =
       '<code class="slashed-var-hint__name"></code>' +
-      '<span class="slashed-var-hint__cat"></span>';
+      '<span class="slashed-var-hint__cat"></span>' +
+      '<p class="slashed-var-hint__desc"></p>';
     host.appendChild(el);
     _tooltip = el;
     return el;
@@ -70,6 +71,11 @@
     var cat = el.querySelector('.slashed-var-hint__cat');
     cat.textContent = hint.category;
     cat.hidden = !hint.category;
+    var desc = el.querySelector('.slashed-var-hint__desc');
+    if (desc) {
+      desc.textContent = hint.description;
+      desc.hidden = !hint.description;
+    }
     if (_activeBtn && _activeBtn !== btn) {
       _activeBtn.removeAttribute('aria-describedby');
     }
@@ -97,9 +103,10 @@
   }
 
   function makeBtn() {
-    var btn = document.createElement('button');
-    btn.type = 'button';
+    var btn = document.createElement('span');
     btn.className = BTN_CLASS;
+    btn.setAttribute('role', 'button');
+    btn.setAttribute('tabindex', '0');
     btn.setAttribute('aria-label', 'What is this variable?');
     btn.addEventListener('mouseenter', function (e) { showForButton(e.currentTarget); });
     btn.addEventListener('mouseleave', hide);

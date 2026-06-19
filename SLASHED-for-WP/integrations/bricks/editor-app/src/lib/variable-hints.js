@@ -51,7 +51,7 @@ export function resolveVariableHint(rawName, hints) {
   const hint = hints[normalized];
   if (!hint) return null;
 
-  return { name: normalized, category: hint.category || '' };
+  return { name: normalized, category: hint.category || '', description: hint.description || '' };
 }
 
 // ----- DOM glue (only runs in the browser) ---------------------------
@@ -80,7 +80,8 @@ function ensureTooltip() {
   el.hidden = true;
   el.innerHTML =
     '<code class="slashed-var-hint__name"></code>' +
-    '<span class="slashed-var-hint__cat"></span>';
+    '<span class="slashed-var-hint__cat"></span>' +
+    '<p class="slashed-var-hint__desc"></p>';
   host.appendChild(el);
 
   _tooltip = el;
@@ -116,6 +117,11 @@ function showForButton(btn) {
   const cat = el.querySelector('.slashed-var-hint__cat');
   cat.textContent = hint.category || '';
   cat.hidden = !hint.category;
+  const desc = el.querySelector('.slashed-var-hint__desc');
+  if (desc) {
+    desc.textContent = hint.description || '';
+    desc.hidden = !hint.description;
+  }
 
   el.hidden = false;
   position(el, btn);

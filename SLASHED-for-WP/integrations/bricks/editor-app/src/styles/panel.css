@@ -1136,15 +1136,16 @@ li[data-id]:focus-within > .rebemer-badge-host {
    Variable hint tooltip
    ---------------------------------------------------------------------
    Shown on hover/focus of the "?" icon injected into each SLASHED
-   variable row in the Bricks variable-picker dropdown. Mirrors the
-   class-hint tooltip; simplified to name + category (variables have no
-   per-variable description yet).
+   variable row in the Bricks variable-picker dropdown.
    ===================================================================== */
 
 .slashed-var-hint {
   position: fixed;
   z-index: 100003;
-  max-width: 260px;
+  max-width: 320px;
+  width: max-content;
+  white-space: normal;
+  word-wrap: break-word;
   background: var(--rebemer-bg, #161a1d);
   color: var(--rebemer-fg, #e1e1e1);
   border: 1px solid var(--rebemer-border, #3d4752);
@@ -1167,20 +1168,31 @@ li[data-id]:focus-within > .rebemer-badge-host {
   color: var(--rebemer-fg-muted, #8a8d95);
 }
 .slashed-var-hint__cat[hidden] { display: none; }
+.slashed-var-hint__desc {
+  margin: 5px 0 0;
+  padding: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--rebemer-fg, #e1e1e1);
+}
+.slashed-var-hint__desc[hidden] { display: none; }
 
 /* "?" icon injected at the trailing edge of each SLASHED variable row
-   in the Bricks variable picker. Always visible (picker rows are
-   transient and short-lived, so opacity-on-hover is not useful here).
-   Slightly smaller than .rebemer-class-hint-btn to respect the compact
-   picker row height. Injected outside #slashed-rebemer-host, so
+   in the Bricks variable picker. Rendered as a <span role="button"> to
+   avoid Bricks CSS rules that hide or reset <button> elements inside
+   picker rows. Injected outside #slashed-rebemer-host, so
    --rebemer-* vars carry fallbacks. */
 .slashed-var-hint-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  align-self: center;
+  flex: 0 0 auto;
   width: 14px;
   height: 14px;
-  flex: 0 0 auto;
+  min-width: 14px;
+  min-height: 14px;
+  max-height: 14px;
   margin-left: 6px;
   border-radius: 50%;
   border: 1px solid var(--rebemer-border, #3d4752);
@@ -1190,6 +1202,8 @@ li[data-id]:focus-within > .rebemer-badge-host {
   cursor: help;
   opacity: 0.6;
   vertical-align: middle;
+  line-height: 1;
+  box-sizing: content-box;
   transition: opacity 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 .slashed-var-hint-btn::before { content: '?'; }
