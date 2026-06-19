@@ -170,8 +170,12 @@ function renderReadmeEntry(version, { added, fixed, changed }) {
  * Skips if the version heading already exists (idempotent).
  */
 function syncReadmeChangelog(version, categorised) {
-  if (!fs.existsSync(README)) return;
-  const content = fs.readFileSync(README, 'utf8');
+  let content;
+  try {
+    content = fs.readFileSync(README, 'utf8');
+  } catch {
+    return; // readme.txt not present in this context (e.g. standalone script run)
+  }
   const marker  = '== Changelog ==';
   const idx = content.indexOf(marker);
   if (idx === -1) return;
