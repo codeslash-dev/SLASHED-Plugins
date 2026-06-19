@@ -27,6 +27,7 @@ const CLASS_FILES = [
   'core/accessibility.css',
   'core/motion.css',
   'core/print.css',
+  'core/themes.css',
   'optional/forms.css',
   'optional/components.css',
   'optional/theme-example.css',
