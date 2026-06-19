@@ -34,17 +34,20 @@ const README    = path.join(ROOT, 'SLASHED-for-WP', 'readme.txt');
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Return the value of a --flag=value CLI argument, or null if absent. */
 function arg(flag) {
   const a = process.argv.find(x => x.startsWith(`--${flag}=`));
   return a ? a.slice(flag.length + 3) : null;
 }
 
+/** Run a git command and return trimmed stdout, or null on non-zero exit. */
 function git(...args) {
   const r = spawnSync('git', args, { cwd: ROOT, encoding: 'utf8' });
   if (r.status !== 0) return null;
   return r.stdout.trim();
 }
 
+/** Determine the target version from CLI flags; returns null in populate mode. */
 function resolveVersion() {
   if (process.argv.includes('--from-tag')) {
     const tag = git('describe', '--tags', '--abbrev=0');
@@ -63,16 +66,19 @@ const SKIP_RE = /^(chore|ci|build|test|docs|deps|bump|release|dependabot|merge|r
 const FEAT_RE = /^(feat|feature|add|new)\b/i;
 const FIX_RE  = /^(fix|bugfix|hotfix)\b/i;
 
+/** Strip conventional-commit scope and colon prefix, returning title-cased message. */
 function stripScope(subject) {
   // "fix(release): message" → "message" with title-case
   const m = subject.match(/^[^(:]+(?:\([^)]*\))?:\s*(.*)/);
   return m ? capitalise(m[1]) : capitalise(subject);
 }
 
+/** Uppercase the first character of a string. */
 function capitalise(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 }
 
+/** Collect non-merge commits reachable from HEAD since the given ref (or all commits). */
 function collectCommits(since) {
   const range = since ? `${since}..HEAD` : 'HEAD';
   const log = git(
@@ -90,6 +96,7 @@ function collectCommits(since) {
   });
 }
 
+/** Bucket commits into Added / Fixed / Changed, skipping housekeeping prefixes. */
 function categorise(commits) {
   const added   = [];
   const fixed   = [];
@@ -107,6 +114,7 @@ function categorise(commits) {
   return { added, fixed, changed };
 }
 
+/** Render categorised commit buckets as a markdown changelog section string. */
 function renderSection({ added, fixed, changed }) {
   const parts = [];
   if (added.length)   parts.push('### Added\n\n' + added.join('\n'));
@@ -119,6 +127,7 @@ function renderSection({ added, fixed, changed }) {
 // CHANGELOG manipulation
 // ---------------------------------------------------------------------------
 
+/** Split CHANGELOG.md content around the [Unreleased] section. */
 function parseUnreleased(content) {
   const start = content.indexOf('## [Unreleased]');
   if (start === -1) return { before: content, body: '', after: '' };
