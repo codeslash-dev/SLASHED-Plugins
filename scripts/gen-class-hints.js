@@ -49,7 +49,7 @@ const OVERRIDE_HINTS = {
   'sf-bento--2':       { description: 'Bento grid variant with a 2-column base layout.', category: 'Layout' },
   'sf-bento--3':       { description: 'Bento grid variant with a 3-column base layout.', category: 'Layout' },
   'sf-bento--6':       { description: 'Bento grid variant with a 6-column base layout.', category: 'Layout' },
-  'sf-bento--compact': { description: 'Bento grid variant with reduced gap between cells.', category: 'Layout' },
+  'sf-bento--compact': { description: 'Bento grid variant with shorter default row height.', category: 'Layout' },
   'sf-bento--tall':    { description: 'Bento grid variant with taller default row height.', category: 'Layout' },
   'sf-bento-wide':     { description: 'Span modifier for a bento item: spans 2 columns (wide card).', category: 'Layout' },
   'sf-bento-full':     { description: 'Span modifier for a bento item: stretches across all columns (full-width banner).', category: 'Layout' },

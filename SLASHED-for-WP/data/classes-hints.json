@@ -472,7 +472,7 @@
     "category": "Layout"
   },
   "sf-bento--compact": {
-    "description": "Bento grid variant with reduced gap between cells.",
+    "description": "Bento grid variant with shorter default row height.",
     "category": "Layout"
   },
   "sf-bento--tall": {
