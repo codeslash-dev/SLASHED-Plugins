@@ -37,15 +37,6 @@ if ( ! defined( 'SLASHED_BRICKS_VERSION' ) ) {
  * is included. In standalone mode (this plugin activated directly), load
  * everything from the shared includes directory two levels up.
  */
-if ( ! defined( 'SLASHED_VERSION' ) ) {
-	add_action(
-		'init',
-		function () {
-			load_plugin_textdomain( 'slashed-bricks', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-		}
-	);
-}
-
 if ( ! class_exists( 'Slashed_Token_Store' ) ) {
 	$slashed_shared = SLASHED_BRICKS_PATH . '../../includes/';
 	require_once $slashed_shared . 'class-settings.php';

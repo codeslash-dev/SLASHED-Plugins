@@ -225,11 +225,11 @@ class Slashed_Bricks_Classes {
 		return array(
 			array(
 				'id'   => self::CATEGORY_LAYOUT,
-				'name' => __( 'SLASHED Layout', 'slashed-bricks' ),
+				'name' => __( 'SLASHED Layout', 'slashed' ),
 			),
 			array(
 				'id'   => self::CATEGORY_STATE,
-				'name' => __( 'SLASHED State', 'slashed-bricks' ),
+				'name' => __( 'SLASHED State', 'slashed' ),
 			),
 		);
 	}

@@ -122,15 +122,6 @@ function slashed_gutenberg_get_css_url() {
 	return apply_filters( 'slashed_gutenberg/css_bundle_url', $default_url );
 }
 
-if ( ! defined( 'SLASHED_VERSION' ) ) {
-	add_action(
-		'init',
-		function () {
-			load_plugin_textdomain( 'slashed-gutenberg', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-		}
-	);
-}
-
 /**
  * Standalone token pipeline bootstrap.
  *

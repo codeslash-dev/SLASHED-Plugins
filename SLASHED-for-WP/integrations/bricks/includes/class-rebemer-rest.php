@@ -217,6 +217,7 @@ class Slashed_Bricks_ReBEMer_REST {
 		// are always the same, so the `truncated: true` flag is paired
 		// with reproducible content rather than whatever order MySQL
 		// happened to return rows in.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off scan for reBEMer; result set varies per call so caching would be incorrect.
 		$rows = $wpdb->get_col(
 			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a list of literal %s built from a constant key list; the values are bound through prepare().
 			$wpdb->prepare(
