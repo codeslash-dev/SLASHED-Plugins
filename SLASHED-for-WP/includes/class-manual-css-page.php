@@ -61,10 +61,11 @@ class Slashed_Manual_CSS_Page {
 		if ( 'clear' === $action ) {
 			update_option( self::OPTION_KEY, '' );
 		} else {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- CSS cannot be sanitized via wp_kses without corrupting valid rules (e.g. `>`, `[attr~="val"]`). The value is validated below and stored raw; output is escaped at render time.
+			// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- CSS cannot be sanitized via wp_kses without corrupting valid rules (e.g. `>`, `[attr~="val"]`). The value is validated below against injection patterns and stored raw; output is escaped at render time.
 			$raw_css = isset( $_POST['slashed_manual_css'] )
 				? wp_unslash( $_POST['slashed_manual_css'] )
 				: '';
+			// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			// CSS must not be able to break out of an inline <style> context.
 			// Only block </style and <script; do NOT use wp_strip_all_tags() because
 			// it removes everything between < and >, corrupting valid CSS like
