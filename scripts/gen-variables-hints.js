@@ -54,11 +54,11 @@ function generate() {
   for (const entry of entries) {
     if (entry.type !== 'token') continue;
 
-    // Extract token name without --sf- prefix
+    // Extract token name without -- prefix (keep sf- for Bricks lookup)
     const name = entry.name;
     if (!name.startsWith('--sf-')) continue;
 
-    const tokenName = name.slice(5); // Remove '--sf-' prefix
+    const tokenName = name.slice(2); // Remove '--' prefix, keep 'sf-'
     const description = entry.description || '';
     const category = entry.category || 'Core tokens';
 
