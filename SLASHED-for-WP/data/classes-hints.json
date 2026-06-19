@@ -388,23 +388,23 @@
     "category": "Layout"
   },
   "sf-grid-cols-1": {
-    "description": "Responsive fixed-column grid (1 col). Never collapses — no container context needed.",
+    "description": "Responsive fixed-column grid (1 col). Never collapses \u2014 no container context needed.",
     "category": "Layout"
   },
   "sf-grid-cols-2": {
-    "description": "Responsive fixed-column grid (2 cols). Never collapses — no container context needed.",
+    "description": "Responsive fixed-column grid (2 cols). Never collapses \u2014 no container context needed.",
     "category": "Layout"
   },
   "sf-grid-cols-3": {
-    "description": "Responsive fixed-column grid (3 cols). Never collapses — no container context needed.",
+    "description": "Responsive fixed-column grid (3 cols). Never collapses \u2014 no container context needed.",
     "category": "Layout"
   },
   "sf-grid-cols-4": {
-    "description": "Responsive fixed-column grid (4 cols). Never collapses — no container context needed.",
+    "description": "Responsive fixed-column grid (4 cols). Never collapses \u2014 no container context needed.",
     "category": "Layout"
   },
   "sf-grid-cols-6": {
-    "description": "Responsive fixed-column grid (6 cols). Never collapses — no container context needed.",
+    "description": "Responsive fixed-column grid (6 cols). Never collapses \u2014 no container context needed.",
     "category": "Layout"
   },
   "sf-grid-cols-1-2": {
@@ -424,23 +424,23 @@
     "category": "Layout"
   },
   "sf-equal": {
-    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "description": "Fixed N-column grid. Column count NEVER collapses \u2014 unlike",
     "category": "Layout"
   },
   "sf-equal--2": {
-    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "description": "Fixed N-column grid. Column count NEVER collapses \u2014 unlike",
     "category": "Layout"
   },
   "sf-equal--3": {
-    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "description": "Fixed N-column grid. Column count NEVER collapses \u2014 unlike",
     "category": "Layout"
   },
   "sf-equal--4": {
-    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "description": "Fixed N-column grid. Column count NEVER collapses \u2014 unlike",
     "category": "Layout"
   },
   "sf-equal--6": {
-    "description": "Fixed N-column grid. Column count NEVER collapses — unlike",
+    "description": "Fixed N-column grid. Column count NEVER collapses \u2014 unlike",
     "category": "Layout"
   },
   "sf-content-grid": {
@@ -460,15 +460,15 @@
     "category": "Layout"
   },
   "sf-bento--2": {
-    "description": "Bento grid — container column modifier (2 columns).",
+    "description": "Bento grid \u2014 container column modifier (2 columns).",
     "category": "Layout"
   },
   "sf-bento--3": {
-    "description": "Bento grid — container column modifier (3 columns).",
+    "description": "Bento grid \u2014 container column modifier (3 columns).",
     "category": "Layout"
   },
   "sf-bento--6": {
-    "description": "Bento grid — container column modifier (6 columns).",
+    "description": "Bento grid \u2014 container column modifier (6 columns).",
     "category": "Layout"
   },
   "sf-bento--compact": {
@@ -480,19 +480,19 @@
     "category": "Layout"
   },
   "sf-bento-featured": {
-    "description": "Bento child span modifier — spans 2 cols. Use with grid-auto-flow: dense on parent.",
+    "description": "Bento child span modifier \u2014 spans 2 cols. Use with grid-auto-flow: dense on parent.",
     "category": "Layout"
   },
   "sf-bento-full": {
-    "description": "Bento child span modifier — spans full width. Use with grid-auto-flow: dense on parent.",
+    "description": "Bento child span modifier \u2014 spans full width. Use with grid-auto-flow: dense on parent.",
     "category": "Layout"
   },
   "sf-bento-tall": {
-    "description": "Bento child span modifier — spans 2 rows. Use with grid-auto-flow: dense on parent.",
+    "description": "Bento child span modifier \u2014 spans 2 rows. Use with grid-auto-flow: dense on parent.",
     "category": "Layout"
   },
   "sf-bento-wide": {
-    "description": "Bento child span modifier — spans 3 cols. Use with grid-auto-flow: dense on parent.",
+    "description": "Bento child span modifier \u2014 spans 3 cols. Use with grid-auto-flow: dense on parent.",
     "category": "Layout"
   },
   "sf-subgrid": {
@@ -512,7 +512,7 @@
     "category": "Macros"
   },
   "sf-flow": {
-    "description": "Heydon Pickering's \"lobotomized owl\" — every flow child gets",
+    "description": "Heydon Pickering's \"lobotomized owl\" \u2014 every flow child gets",
     "category": "Macros"
   },
   "sf-truncate": {
@@ -656,7 +656,7 @@
     "category": "Macros"
   },
   "sf-clickable-parent__overlay": {
-    "description": "Overlay: the link's ::after fills the containing card. For single-link cards — secondary links are lifted to position:relative.",
+    "description": "Overlay: the link's ::after fills the containing card. For single-link cards \u2014 secondary links are lifted to position:relative.",
     "category": "Macros"
   },
   "is-hidden": {
@@ -770,5 +770,9 @@
   "is-sr-only": {
     "description": "Visually hidden but accessible to screen readers.",
     "category": "States"
+  },
+  "sf-theme-transition": {
+    "description": "Opt-in animated theme cross-fade. Apply to <html> (or a subtree) so colors transition smoothly when [data-theme] flips. Duration controlled by --sf-theme-transition-duration.",
+    "category": "Macros"
   }
 }

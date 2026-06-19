@@ -30,7 +30,7 @@ export const variableGroups = [
       { name: "--sf-color-{primary,secondary,tertiary,action,neutral,base}-light", description: "Source color (oklch registered value). Set this to rebrand." },
       { name: "--sf-color-{primary,secondary,tertiary,action,neutral,base}-dark", description: "Optional dark-mode override. If set, replaces the auto-derived dark variant for full per-mode control." },
       { name: "--sf-color-{primary,secondary,tertiary,action,neutral,base}-{50,100,200,300,400,500,600,700,800,900,950}", description: "Palette scale: 50 (lightest) → 950 (darkest), mixed with base/text. Requires tokens.palette.css." },
-      { name: "--sf-color-{primary,secondary,tertiary,action,neutral,base}-{a5,a10,a20,a30,a40,a50,a60,a70,a80,a90,a95}", description: "Alpha scale: 5%–95% opacity of the brand color. Requires tokens.palette.css." },
+      { name: "--sf-color-{primary,secondary,tertiary,action,neutral,base}-{a5,a10,a30,a50,a80}", description: "Alpha scale (5 steps): 5%, 10%, 30%, 50%, 80% opacity of the brand color. Requires tokens.palette.css." },
       { name: "--sf-color-{primary,secondary,tertiary,action,neutral,base}-{hover,active,muted,subtle,ghost,lighter,darker,xlight,xdark,superlight,superdark}", description: "Semantic aliases for common UI states, mapped to palette steps." },
       { name: "--sf-color-{primary,secondary,tertiary,action,neutral,base}--{hover,active}", description: "Double-dash state overrides used inside interactive components (e.g. hover/active button fills)." },
       { name: "--sf-color-{surface,inverse}", description: "Surface (card/panel) and inverse (high-contrast) context colors." },
@@ -65,8 +65,8 @@ export const variableGroups = [
     tokens: [
       { name: "--sf-font-{body,heading,mono,display,humanist,geometric,slab}", description: "Font stacks: body, heading, mono, display, plus curated humanist/geometric/slab fallback personalities." },
       { name: "--sf-font-{features,variation}", description: "font-feature-settings and font-variation-settings hooks." },
-      { name: "--sf-font-weight-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}", description: "Named weight tokens: 100→900." },
-      { name: "--sf-font-weight-{body,heading,display}", description: "Contextual weight tokens for body, heading, and display text." },
+      { name: "--sf-font-weight-{light,normal,medium,semibold,bold}", description: "Named weight tokens: 300, 400, 500, 600, 700." },
+      { name: "--sf-font-weight-{body,heading,display,interactive,strong}", description: "Semantic weight roles: body/heading/display type roles plus interactive (buttons/nav) and strong (bold inline)." },
       { name: "--sf-current-font-weight", description: "Current context font weight (used by strong elements)." },
       { name: "--sf-leading-{tight,snug,normal,relaxed}", description: "Line-height presets: 1.1, 1.3, 1.5, 1.625." },
       { name: "--sf-tracking-{tight,normal,wide,wider,widest}", description: "Letter-spacing presets from -0.025em to 0.1em." },
@@ -92,11 +92,10 @@ export const variableGroups = [
   },
   {
     category: "Spacing",
-    description: "Fluid spacing scale (clamp-based), bridge tokens, gutters, section padding, component padding, flow, safe-area insets, and sticky-header offsets.",
+    description: "Fluid spacing scale (clamp-based), gutters, section padding, component padding, flow, safe-area insets, and sticky-header offsets.",
     tokens: [
       { name: "--sf-space-{none,px,2xs,xs,s,m,l,xl,2xl,3xl,4xl}", description: "Fluid spacing scale. Honours --sf-space-scale (none/px are fixed)." },
       { name: "--sf-space-scale", description: "Global multiplier for all space tokens (default 1)." },
-      { name: "--sf-space-{2xs,xs,s,m,l,xl,2xl,3xl,4xl}-to-{2xs,xs,s,m,l,xl,2xl,3xl}", description: "Spacing bridge tokens: clamp() spanning a wider range than any single step. Requires tokens.sizes-extended.css." },
       { name: "--sf-space-base-{max,min} / --sf-space-ratio-{max,min}", description: "Fluid spacing scale config: base-size and ratio clamp endpoints." },
       { name: "--sf-space-{gutter,gap,content}", description: "Internal aliases: page gutter, default gap, content gap (consumed by --sf-gap / --sf-content-gap)." },
       { name: "--sf-gap / --sf-gap-size", description: "Default layout gap and its raw size component." },
@@ -147,13 +146,10 @@ export const variableGroups = [
       { name: "--sf-alternate-{gap,inner-gap}", description: "Zigzag .sf-alternate layout gaps." },
       { name: "--sf-equal-{cols,gap}", description: "Equal-columns count and gap." },
       { name: "--sf-equal-min-col / --sf-equal-min-col-{2,3,4,6}", description: "Minimum column width for equal-columns grid (base and per-column-count overrides)." },
-      { name: "--sf-col-width-{s,m,l}", description: "CSS multi-column track widths (ch-based)." },
-      { name: "--sf-col-rule-width-{s,m,l}", description: "CSS multi-column rule (divider) widths." },
       { name: "--sf-field-{block,required-marker,padding-block,padding-inline,radius}", description: "Form field vertical rhythm, required indicator, and geometry (padding + radius)." },
       { name: "--sf-button-{padding-block,padding-inline,radius}", description: "Button geometry tokens: block/inline padding and border-radius." },
       { name: "--sf-gutter-width", description: "Page-level horizontal gutter width." },
       { name: "--sf-section-scale", description: "Global multiplier for section padding tokens (default 1)." },
-      { name: "--sf-fluid-custom-{1,2,3} / --sf-fluid-custom-{1,2,3}-{max,min}", description: "User-defined fluid value slots — wire up any custom clamp() via these hooks." },
       { name: "--sf-fluid-{max,min}-vw", description: "Viewport-width breakpoints (%) used by all fluid clamp() calculations." },
     ]
   },
@@ -166,7 +162,6 @@ export const variableGroups = [
       { name: "--sf-border-width-{hairline,1,2,3,4}", description: "Border width scale: 0.5px, 1px, 2px, 3px, 4px." },
       { name: "--sf-border-style", description: "Default border style (solid)." },
       { name: "--sf-border-style-{dotted,soft,strong}", description: "Border style presets (dotted, dashed, solid)." },
-      { name: "--sf-stroke-{thin,regular,bold,heavy}", description: "Stroke widths for SVG/icon use: 1px, 1.5px, 2px, 3px." },
     ]
   },
   {
@@ -198,8 +193,9 @@ export const variableGroups = [
     category: "Effects",
     description: "Blurs, opacities, gradients, masks, perspective, and contrast tuning.",
     tokens: [
-      { name: "--sf-blur-{xs,s,m,l,xl}", description: "Blur radius scale: 4px to 48px." },
-      { name: "--sf-opacity-{0,10,25,50,75,100,disabled}", description: "Named opacity presets." },
+      { name: "--sf-blur", description: "Single blur radius token (12px) for frosted-nav / overlay use. For other amounts use inline blur(Npx)." },
+      { name: "--sf-opacity-{disabled,muted}", description: "Named opacity tokens: disabled (0.4) for non-interactive elements, muted (0.6) for de-emphasized text/icons." },
+      { name: "--sf-theme-transition-duration", description: "Duration knob for .sf-theme-transition cross-fade (default 300ms). Respects prefers-reduced-motion." },
       { name: "--sf-gradient-{brand,primary,secondary,tertiary,surface}", description: "Predefined gradients using brand colors." },
       { name: "--sf-gradient-fade--{t,b,l,r}", description: "Directional fade-to-background gradients." },
       { name: "--sf-mask-scrim-{start,end}", description: "Scroll mask fade depth." },
@@ -233,8 +229,7 @@ export const variableGroups = [
     category: "Z-Index",
     description: "Z-index scale for predictable layering.",
     tokens: [
-      { name: "--sf-z-{below,base,raised,low,mid,high,top,max}", description: "Z-index scale: -1, 0, 1, 10, 100, 500, 900, 9999." },
-      { name: "--sf-z-{sticky,fixed,dropdown,toast,overlay}", description: "Semantic z-index aliases onto the scale: sticky/fixed/dropdown/toast/overlay. Modal/popover use the native top layer." },
+      { name: "--sf-z-{below,base,raised,sticky,fixed,dropdown,overlay,modal,toast,tooltip}", description: "Semantic z-index ladder: -1, 0, 1, 100, 200, 300, 400, 500, 600, 700. Use component names, not numbers." },
     ]
   },
   {
@@ -275,7 +270,6 @@ export const variableGroups = [
     description: "Internal helpers and string-valued tokens that don't belong to a single visual family.",
     tokens: [
       { name: "--sf-lumlocker", description: "Internal luminance lock value for color derivation." },
-      { name: "--sf-truncate-suffix", description: "Ellipsis string used by truncation utilities." },
       { name: "--sf-link-external-marker", description: "External link arrow character." },
     ]
   }
@@ -363,6 +357,7 @@ export const classGroups = [
       { name: ".sf-surface", description: "Surface container — sets background from --sf-surface-color and derives auto-contrast text." },
       { name: ".sf-surface--{primary,secondary,tertiary,action,neutral,inverse}", description: "Brand-colored surface with auto-contrast text." },
       { name: ".sf-surface--{success,warning,error,info,danger}", description: "Status-colored surfaces." },
+      { name: ".sf-theme-transition", description: "Apply to <html> (or a subtree) to cross-fade colors when [data-theme] flips. Duration via --sf-theme-transition-duration. Respects prefers-reduced-motion." },
     ]
   },
   {
