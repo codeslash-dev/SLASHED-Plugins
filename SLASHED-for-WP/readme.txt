@@ -96,26 +96,9 @@ Below this floor, derived colors collapse to `initial`, generative scales stop c
 
 The `slashed.legacy` layer gates `@supports not (…)` fallbacks for environments above the minimum but below the full feature baseline.
 
-**Token customization**
-
-The plugin includes a Design Settings admin page for overriding individual framework tokens per category. Overrides are stored in the database and injected as an inline `@layer slashed.overrides` block after the framework stylesheet. A Manual CSS page is also available for entering raw CSS directly into the overrides layer.
-
 **CSS delivery**
 
 Framework CSS can be served from the bundled local copy inside the plugin directory or from CDN. CDN mode lets you pin any published release tag. The settings page shows the currently bundled framework version and provides a one-click updater with a rollback list.
-
-**REST API**
-
-A REST API under `slashed/v1` exposes token management:
-
-- `POST /tokens` — save token section
-- `POST /tokens/validate` — dry-run validation without saving
-- `POST /tokens/reset` — reset a section or all overrides
-- `GET /tokens/export` — export overrides as JSON
-- `POST /tokens/import` — import from export
-- `GET /settings` / `POST /settings` — read and write plugin settings
-
-All write endpoints require `manage_options`.
 
 **Filter hooks**
 
@@ -215,13 +198,11 @@ The SLASHED CSS framework is maintained at https://github.com/codeslash-dev/SLAS
 
 == Changelog ==
 
-= 0.0.1 =
-* Initial release.
+= 0.3.0 =
+* Initial public release.
 * Core CSS delivery with Essential, Optimal, and Full bundle options.
 * Local and CDN delivery modes with framework version management and rollback.
-* Design Settings page for per-token overrides injected into `@layer slashed.overrides`.
-* Manual CSS override mode.
-* REST API under `slashed/v1` for token and settings management.
+* Manual CSS override mode via `@layer slashed.overrides`.
 * Bricks Builder integration: Global Variables, class autocomplete, Color System panel, dark mode bridge, reBEMer.
 * Gutenberg integration: color palette, gradient presets, font size presets, spacing presets, block theme support, dark mode bridge.
 * Filter hooks for all integration points with a documentation page in the admin.
