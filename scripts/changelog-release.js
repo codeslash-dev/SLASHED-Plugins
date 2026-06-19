@@ -201,8 +201,9 @@ function syncReadmeChangelog(version, mergedBody) {
   let content;
   try {
     content = fs.readFileSync(README, 'utf8');
-  } catch {
-    return; // readme.txt not present in this context (e.g. standalone script run)
+  } catch (err) {
+    if (err.code === 'ENOENT') return; // readme.txt not present (e.g. standalone script run)
+    throw err; // re-throw unexpected errors so the release fails visibly
   }
   const marker  = '== Changelog ==';
   const idx = content.indexOf(marker);
