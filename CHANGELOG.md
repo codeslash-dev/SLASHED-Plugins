@@ -9,6 +9,32 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-06-19
+
+### Added
+
+- Auto-sync readme.txt changelog on release
+
+### Fixed
+
+- Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
+- Preserve free-form changelog lines in readme sync, add missing JSDoc
+- Derive readme.txt changelog from mergedBody not raw commits
+- Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
+
+## [0.3.4] - 2026-06-19
+
+### Added
+
+- Auto-sync readme.txt changelog on release
+
+### Fixed
+
+- Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
+- Preserve free-form changelog lines in readme sync, add missing JSDoc
+- Derive readme.txt changelog from mergedBody not raw commits
+- Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
+
 ## [0.3.3] - 2026-06-19
 
 ### Fixed

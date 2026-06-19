@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, gutenberg, dark-mode, design-tokens, bricks
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.3.0
+Stable tag: 0.3.4
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -197,6 +197,13 @@ The SLASHED CSS framework is maintained at https://github.com/codeslash-dev/SLAS
 6. Gutenberg color palette populated with SLASHED color tokens.
 
 == Changelog ==
+
+= 0.3.4 =
+* Added: Auto-sync readme.txt changelog on release
+* Fixed: Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
+* Fixed: Preserve free-form changelog lines in readme sync, add missing JSDoc
+* Fixed: Derive readme.txt changelog from mergedBody not raw commits
+* Fixed: Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
 
 = 0.3.0 =
 * Initial public release.
