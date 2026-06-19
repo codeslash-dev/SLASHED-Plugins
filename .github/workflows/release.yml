@@ -45,16 +45,16 @@ jobs:
       - name: Stamp version from tag into plugin files
         run: npm run version-sync -- --from-tag
 
+      - name: Update CHANGELOG and readme.txt for this release
+        run: node scripts/changelog-release.js --from-tag
+
       - name: Build new admin-app
         run: npm run build:new-admin-app
 
       - name: Build plugin zip
         run: npm run build:zip
 
-      - name: Update CHANGELOG for this release
-        run: node scripts/changelog-release.js --from-tag
-
-      - name: Commit and push CHANGELOG to default branch
+      - name: Commit and push CHANGELOG and readme.txt to default branch
         run: |
           TAG="${{ github.event.inputs.tag || github.ref_name }}"
           DEFAULT_BRANCH="$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')"
@@ -65,9 +65,9 @@ jobs:
           # Re-run changelog-release on the default branch so it picks up the
           # committed tag (the release workflow checks out the tag ref above).
           node scripts/changelog-release.js --from-tag
-          git add CHANGELOG.md
+          git add CHANGELOG.md SLASHED-for-WP/readme.txt
           git diff --staged --quiet && echo "CHANGELOG already up to date" && exit 0
-          git commit -m "docs: update CHANGELOG for $TAG"
+          git commit -m "docs: update CHANGELOG and readme.txt for $TAG"
           git push origin "$DEFAULT_BRANCH"
 
       - name: Create or update GitHub Release and upload zip

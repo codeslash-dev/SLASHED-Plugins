@@ -28,6 +28,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const CHANGELOG = path.join(ROOT, 'CHANGELOG.md');
+const README    = path.join(ROOT, 'SLASHED-for-WP', 'readme.txt');
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -144,6 +145,50 @@ function mergeBody(existing, generated) {
 }
 
 // ---------------------------------------------------------------------------
+// readme.txt == Changelog == sync
+// ---------------------------------------------------------------------------
+
+/**
+ * Render a WP-format changelog entry from categorised commits.
+ * Returns a string like:
+ *   = X.Y.Z =
+ *   * Added: Foo bar.
+ *   * Fixed: Baz qux.
+ */
+function renderReadmeEntry(version, { added, fixed, changed }) {
+  const lines = [
+    ...added.map(l => `* Added: ${l.replace(/^- /, '')}`),
+    ...changed.map(l => `* Changed: ${l.replace(/^- /, '')}`),
+    ...fixed.map(l => `* Fixed: ${l.replace(/^- /, '')}`),
+  ];
+  if (!lines.length) lines.push('* Maintenance release.');
+  return `= ${version} =\n${lines.join('\n')}`;
+}
+
+/**
+ * Prepend a new = X.Y.Z = entry to the readme.txt == Changelog == section.
+ * Skips if the version heading already exists (idempotent).
+ */
+function syncReadmeChangelog(version, categorised) {
+  if (!fs.existsSync(README)) return;
+  const content = fs.readFileSync(README, 'utf8');
+  const marker  = '== Changelog ==';
+  const idx = content.indexOf(marker);
+  if (idx === -1) return;
+
+  const afterMarker = content.slice(idx + marker.length);
+  if (afterMarker.includes(`= ${version} =`)) {
+    console.log(`changelog-release: readme.txt already has = ${version} =, skipping`);
+    return;
+  }
+
+  const entry = renderReadmeEntry(version, categorised);
+  const updated = content.slice(0, idx + marker.length) + '\n\n' + entry + afterMarker;
+  fs.writeFileSync(README, updated, 'utf8');
+  console.log(`changelog-release: readme.txt == Changelog == updated with = ${version} =`);
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -187,6 +232,9 @@ function main() {
 
   fs.writeFileSync(CHANGELOG, newContent, 'utf8');
   console.log(`changelog-release: [Unreleased] → [${version}] - ${today}`);
+
+  // Mirror the same entry into readme.txt == Changelog == for WP.org.
+  syncReadmeChangelog(version, { added, fixed, changed });
 }
 
 main();
