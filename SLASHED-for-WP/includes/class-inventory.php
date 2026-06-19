@@ -165,7 +165,7 @@ class Slashed_Inventory {
 		 * @param array $inventory ['variables', 'sf_classes', 'is_classes'].
 		 */
 		self::$cache[ static::class ] = self::sanitize_inventory(
-			apply_filters( static::filter_slug() . '/inventory', self::$cache[ static::class ] )
+			apply_filters( static::filter_slug() . '/inventory', self::$cache[ static::class ] ) // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- hook name is prefixed via filter_slug() which returns the integration-specific prefix (e.g. slashed_bricks).
 		);
 
 		return self::$cache[ static::class ];
@@ -666,7 +666,7 @@ class Slashed_Inventory {
 	 * @return string Absolute path, or '' when no local copy is available.
 	 */
 	private static function find_local_bundle_path() {
-		$override = apply_filters( static::filter_slug() . '/inventory_local_path', null );
+		$override = apply_filters( static::filter_slug() . '/inventory_local_path', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- hook name is prefixed via filter_slug().
 
 		if ( false === $override ) {
 			return '';

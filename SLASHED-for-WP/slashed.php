@@ -32,13 +32,6 @@ define( 'SLASHED_URL', plugin_dir_url( __FILE__ ) );
  */
 define( 'SLASHED_CSS_REF', 'v0.5.46' );
 
-add_action(
-	'init',
-	function () {
-		load_plugin_textdomain( 'slashed', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-	}
-);
-
 // ─── Shared infrastructure ────────────────────────────────────────────
 
 require_once SLASHED_PATH . 'includes/class-settings.php';

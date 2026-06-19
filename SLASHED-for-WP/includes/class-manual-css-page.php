@@ -61,6 +61,7 @@ class Slashed_Manual_CSS_Page {
 		if ( 'clear' === $action ) {
 			update_option( self::OPTION_KEY, '' );
 		} else {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- CSS cannot be sanitized via wp_kses without corrupting valid rules (e.g. `>`, `[attr~="val"]`). The value is validated below and stored raw; output is escaped at render time.
 			$raw_css = isset( $_POST['slashed_manual_css'] )
 				? wp_unslash( $_POST['slashed_manual_css'] )
 				: '';
