@@ -9,6 +9,22 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-06-19
+
+### Fixed
+
+- Mark readme.txt and license.txt as required in zip packaging
+- Include readme.txt and license.txt in plugin zip, fix phpcs:disable scope
+- Extend phpcs:disable to cover both lines of the manual CSS POST read
+
+## [0.3.3] - 2026-06-19
+
+### Fixed
+
+- Mark readme.txt and license.txt as required in zip packaging
+- Include readme.txt and license.txt in plugin zip, fix phpcs:disable scope
+- Extend phpcs:disable to cover both lines of the manual CSS POST read
+
 ## [0.3.2] - 2026-06-19
 
 ### Fixed
