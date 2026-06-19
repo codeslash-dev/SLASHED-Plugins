@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-06-19
+
+### Fixed
+
+- Resolve WordPress Plugin Check errors and warnings
+
+## [0.3.2] - 2026-06-19
+
+### Fixed
+
+- Resolve WordPress Plugin Check errors and warnings
+
 ## [0.3.1] - 2026-06-19
 ## [0.3.1] - 2026-06-19
 ## [0.3.0] - 2026-06-19
