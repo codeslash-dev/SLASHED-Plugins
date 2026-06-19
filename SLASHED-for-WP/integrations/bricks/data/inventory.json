@@ -3,7 +3,7 @@
     "source": "source (core/ + optional/ token and class files)",
     "counts": {
       "variables": 693,
-      "sf_classes": 182,
+      "sf_classes": 183,
       "is_classes": 40
     }
   },
@@ -884,6 +884,7 @@
     "sf-tabular-nums",
     "sf-text-gradient",
     "sf-text-protect",
+    "sf-theme-transition",
     "sf-truncate"
   ],
   "is_classes": [

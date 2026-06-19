@@ -38,6 +38,7 @@ const SOURCE_FILES = [
   { file: 'core/accessibility.css', category: 'Accessibility' },
   { file: 'core/motion.css',        category: 'Motion' },
   { file: 'core/print.css',         category: 'Print' },
+  { file: 'core/themes.css',        category: 'Themes' },
   { file: 'optional/forms.css',     category: 'Forms' },
 ];
 
