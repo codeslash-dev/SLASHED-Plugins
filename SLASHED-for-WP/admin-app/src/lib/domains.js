@@ -226,6 +226,7 @@ export const DOMAINS = [
     patterns: [
       /^--sf-space-/,
       /^--sf-gap(\b|[-_])/,
+      /^--sf-gutter(\b|[-_])/,
       /^--sf-section-/,
       /^--sf-fluid-/,
       /^--sf-flow-/,
@@ -358,7 +359,7 @@ export const DOMAINS = [
       /^--sf-state-/,
     ],
     essentials: [
-      '--sf-blur-m',
+      '--sf-blur',
       '--sf-opacity-disabled',
     ],
   },

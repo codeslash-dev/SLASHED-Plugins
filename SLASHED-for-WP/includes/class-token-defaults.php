@@ -358,14 +358,16 @@ class Slashed_Token_Defaults {
 	 */
 	public static function get_zindex() {
 		return array(
-			'below'  => -1,
-			'base'   => 0,
-			'raised' => 1,
-			'low'    => 10,
-			'mid'    => 100,
-			'high'   => 500,
-			'top'    => 900,
-			'max'    => 9999,
+			'below'    => -1,
+			'base'     => 0,
+			'raised'   => 1,
+			'sticky'   => 1000,
+			'fixed'    => 1010,
+			'dropdown' => 1020,
+			'overlay'  => 1030,
+			'modal'    => 1040,
+			'toast'    => 1050,
+			'tooltip'  => 1060,
 		);
 	}
 

@@ -44,7 +44,7 @@ export const BASIC_BY_DOMAIN = {
         controls: [
           { token: '--sf-section-pad',   label: 'Section padding',   help: 'Vertical padding of page sections.' },
           { token: '--sf-content-gap',   label: 'Content rhythm',    help: 'Vertical gap between blocks of flowing content (paragraphs, lists, media).' },
-          { token: '--sf-space-gutter',  label: 'Gutter',            help: 'Horizontal breathing room at the viewport edges.' },
+          { token: '--sf-gutter',        label: 'Gutter',            help: 'Horizontal breathing room at the viewport edges.' },
           { token: '--sf-component-pad', label: 'Component padding', help: 'Default inner padding of components such as cards and fields.' },
         ],
       },

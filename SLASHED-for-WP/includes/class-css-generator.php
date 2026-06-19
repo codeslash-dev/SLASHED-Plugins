@@ -242,7 +242,7 @@ class Slashed_CSS_Generator {
 		}
 
 		$aliases = array(
-			'gutter'        => '--sf-space-gutter',
+			'gutter'        => '--sf-gutter',
 			'gap'           => '--sf-gap',
 			'content_gap'   => '--sf-content-gap',
 			'component_pad' => '--sf-component-pad',
@@ -294,7 +294,7 @@ class Slashed_CSS_Generator {
 
 	private static function generate_zindex_declarations( $settings ) {
 		$declarations = array();
-		foreach ( array( 'below', 'base', 'raised', 'low', 'mid', 'high', 'top', 'max' ) as $name ) {
+		foreach ( array( 'below', 'base', 'raised', 'sticky', 'fixed', 'dropdown', 'overlay', 'modal', 'toast', 'tooltip' ) as $name ) {
 			if ( isset( $settings[ $name ] ) && '' !== $settings[ $name ] ) {
 				$declarations[] = '--sf-z-' . $name . ': ' . (int) $settings[ $name ] . ';';
 			}
