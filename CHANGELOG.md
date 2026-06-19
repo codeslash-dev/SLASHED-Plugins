@@ -9,6 +9,36 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-19
+
+### Added
+
+- Sync plugin data with latest framework tokens and classes
+- Update plugin data and UI for SLASHED v0.6.0 token changes
+
+### Fixed
+
+- Preserve sf- prefix in variable hints for Bricks lookup
+- Correct sf-bento--compact description to row height not gap
+- Correct PHPCS alignment and class hint accuracy
+- Replace deprecated word-wrap with overflow-wrap in panel.css
+- Fix variable picker ? button, add descriptions to tooltip
+
+## [0.3.0] - 2026-06-19
+
+### Added
+
+- Sync plugin data with latest framework tokens and classes
+- Update plugin data and UI for SLASHED v0.6.0 token changes
+
+### Fixed
+
+- Preserve sf- prefix in variable hints for Bricks lookup
+- Correct sf-bento--compact description to row height not gap
+- Correct PHPCS alignment and class hint accuracy
+- Replace deprecated word-wrap with overflow-wrap in panel.css
+- Fix variable picker ? button, add descriptions to tooltip
+
 ## [0.2.7] - 2026-06-18
 
 ### Fixed
