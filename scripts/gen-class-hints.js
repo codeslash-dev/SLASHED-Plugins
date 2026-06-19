@@ -41,6 +41,39 @@ const SOURCE_FILES = [
   { file: 'optional/forms.css',     category: 'Forms' },
 ];
 
+// Curated overrides — always win over auto-parsed CSS-comment descriptions.
+// Use this for classes whose section comment produces a wrong/shared/truncated hint.
+const OVERRIDE_HINTS = {
+  // Bento container variants inherit the section description instead of getting their own.
+  'sf-bento':          { description: 'Auto-fill bento grid for card dashboards. Children span 1 column by default; use span modifiers (sf-bento-wide, sf-bento-tall, sf-bento-full, sf-bento-featured) to break the grid.', category: 'Layout' },
+  'sf-bento--2':       { description: 'Bento grid variant with a 2-column base layout.', category: 'Layout' },
+  'sf-bento--3':       { description: 'Bento grid variant with a 3-column base layout.', category: 'Layout' },
+  'sf-bento--6':       { description: 'Bento grid variant with a 6-column base layout.', category: 'Layout' },
+  'sf-bento--compact': { description: 'Bento grid variant with reduced gap between cells.', category: 'Layout' },
+  'sf-bento--tall':    { description: 'Bento grid variant with taller default row height.', category: 'Layout' },
+  'sf-bento-wide':     { description: 'Span modifier for a bento item: spans 2 columns (wide card).', category: 'Layout' },
+  'sf-bento-full':     { description: 'Span modifier for a bento item: stretches across all columns (full-width banner).', category: 'Layout' },
+  'sf-bento-tall':     { description: 'Span modifier for a bento item: doubles the row height (tall card).', category: 'Layout' },
+  'sf-bento-featured': { description: 'Span modifier for a bento item: takes up 2×2 cells (featured hero placement).', category: 'Layout' },
+  // Surface section comment is multi-line; auto-parser only captures the first line.
+  'sf-surface':           { description: 'Generic semantic surface: applies --sf-surface-color as the background and automatically sets a contrasting text color. Tone variants (--primary, --action, etc.) activate preset palettes.', category: 'Macros' },
+  'sf-surface--primary':  { description: 'Surface variant using the primary brand color palette.', category: 'Macros' },
+  'sf-surface--secondary':{ description: 'Surface variant using the secondary brand color palette.', category: 'Macros' },
+  'sf-surface--tertiary': { description: 'Surface variant using the tertiary brand color palette.', category: 'Macros' },
+  'sf-surface--action':   { description: 'Surface variant using the action color palette (button/CTA primary color).', category: 'Macros' },
+  'sf-surface--neutral':  { description: 'Surface variant using the neutral palette (muted/gray).', category: 'Macros' },
+  'sf-surface--inverse':  { description: 'Surface variant that inverts light/dark, creating an always-dark surface in light mode and always-light in dark mode.', category: 'Macros' },
+  'sf-surface--success':  { description: 'Surface variant using the success status palette.', category: 'Macros' },
+  'sf-surface--warning':  { description: 'Surface variant using the warning status palette.', category: 'Macros' },
+  'sf-surface--error':    { description: 'Surface variant using the error status palette.', category: 'Macros' },
+  'sf-surface--info':     { description: 'Surface variant using the info status palette.', category: 'Macros' },
+  'sf-surface--danger':   { description: 'Surface variant using the danger status palette.', category: 'Macros' },
+  // Overflow fade and no-tap-highlight section comments are parsed correctly
+  // but the first line alone is incomplete.
+  'sf-overflow-fade':     { description: 'Adds a gradient fade at the inline-end of an overflowing element to hint at hidden content. Use inside sf-reel or any scroll container.', category: 'Macros' },
+  'sf-no-tap-highlight':  { description: 'Removes the mobile tap highlight color (-webkit-tap-highlight-color: transparent). Use on interactive elements with a custom active state.', category: 'Macros' },
+};
+
 // Manual descriptions for classes whose source format can't be auto-parsed.
 // States use /* === SECTION === */ comments with no inline descriptions.
 const MANUAL_HINTS = {
@@ -148,6 +181,8 @@ function generate() {
   for (const [name, hint] of Object.entries(MANUAL_HINTS)) {
     if (!all[name]) all[name] = hint;
   }
+  // Curated overrides always win — correct wrong/shared/truncated descriptions.
+  Object.assign(all, OVERRIDE_HINTS);
   return all;
 }
 

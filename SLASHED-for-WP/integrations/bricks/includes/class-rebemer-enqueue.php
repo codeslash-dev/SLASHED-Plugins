@@ -15,10 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Slashed_Bricks_ReBEMer_Enqueue {
 
-	const SCRIPT_HANDLE      = 'slashed-bricks-rebemer';
-	const STYLE_HANDLE       = 'slashed-bricks-rebemer';
-	const VAR_HINTS_HANDLE   = 'slashed-bricks-var-hints';
-	const ASSET_DIR          = 'assets/editor-app/';
+	const SCRIPT_HANDLE    = 'slashed-bricks-rebemer';
+	const STYLE_HANDLE     = 'slashed-bricks-rebemer';
+	const VAR_HINTS_HANDLE = 'slashed-bricks-var-hints';
+	const ASSET_DIR        = 'assets/editor-app/';
 
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ), 9999 );

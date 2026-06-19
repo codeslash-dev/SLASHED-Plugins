@@ -456,43 +456,43 @@
     "category": "Layout"
   },
   "sf-bento": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Auto-fill bento grid for card dashboards. Children span 1 column by default; use span modifiers (sf-bento-wide, sf-bento-tall, sf-bento-full, sf-bento-featured) to break the grid.",
     "category": "Layout"
   },
   "sf-bento--2": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Bento grid variant with a 2-column base layout.",
     "category": "Layout"
   },
   "sf-bento--3": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Bento grid variant with a 3-column base layout.",
     "category": "Layout"
   },
   "sf-bento--6": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Bento grid variant with a 6-column base layout.",
     "category": "Layout"
   },
   "sf-bento--compact": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Bento grid variant with reduced gap between cells.",
     "category": "Layout"
   },
   "sf-bento--tall": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Bento grid variant with taller default row height.",
     "category": "Layout"
   },
   "sf-bento-wide": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Span modifier for a bento item: spans 2 columns (wide card).",
     "category": "Layout"
   },
   "sf-bento-full": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Span modifier for a bento item: stretches across all columns (full-width banner).",
     "category": "Layout"
   },
   "sf-bento-tall": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Span modifier for a bento item: doubles the row height (tall card).",
     "category": "Layout"
   },
   "sf-bento-featured": {
-    "description": "Free-form grid with auto-flow dense, responsive via CQ.",
+    "description": "Span modifier for a bento item: takes up 2×2 cells (featured hero placement).",
     "category": "Layout"
   },
   "sf-subgrid": {
@@ -548,59 +548,59 @@
     "category": "Macros"
   },
   "sf-overflow-fade": {
-    "description": "End-edge horizontal fade for clipped inline content",
+    "description": "Adds a gradient fade at the inline-end of an overflowing element to hint at hidden content. Use inside sf-reel or any scroll container.",
     "category": "Macros"
   },
   "sf-no-tap-highlight": {
-    "description": "Suppresses the WebKit/Android grey tap-highlight overlay on",
+    "description": "Removes the mobile tap highlight color (-webkit-tap-highlight-color: transparent). Use on interactive elements with a custom active state.",
     "category": "Macros"
   },
   "sf-surface": {
-    "description": "Generic surface macro. Set --sf-surface-color on an element with",
+    "description": "Generic semantic surface: applies --sf-surface-color as the background and automatically sets a contrasting text color. Tone variants (--primary, --action, etc.) activate preset palettes.",
     "category": "Macros"
   },
   "sf-surface--primary": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the primary brand color palette.",
     "category": "Macros"
   },
   "sf-surface--secondary": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the secondary brand color palette.",
     "category": "Macros"
   },
   "sf-surface--tertiary": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the tertiary brand color palette.",
     "category": "Macros"
   },
   "sf-surface--action": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the action color palette (button/CTA primary color).",
     "category": "Macros"
   },
   "sf-surface--neutral": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the neutral palette (muted/gray).",
     "category": "Macros"
   },
   "sf-surface--inverse": {
-    "description": "Generic surface macro. Set --sf-surface-color on an element with",
+    "description": "Surface variant that inverts light/dark, creating an always-dark surface in light mode and always-light in dark mode.",
     "category": "Macros"
   },
   "sf-surface--success": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the success status palette.",
     "category": "Macros"
   },
   "sf-surface--warning": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the warning status palette.",
     "category": "Macros"
   },
   "sf-surface--error": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the error status palette.",
     "category": "Macros"
   },
   "sf-surface--info": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the info status palette.",
     "category": "Macros"
   },
   "sf-surface--danger": {
-    "description": "Sets background + auto-flipped foreground in one class. Shadows",
+    "description": "Surface variant using the danger status palette.",
     "category": "Macros"
   },
   "sf-scrim": {

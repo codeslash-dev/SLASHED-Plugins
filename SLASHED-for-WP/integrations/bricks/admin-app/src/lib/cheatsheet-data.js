@@ -148,6 +148,7 @@ export const variableGroups = [
       { name: "--sf-equal-min-col / --sf-equal-min-col-{2,3,4,6}", description: "Minimum column width for equal-columns grid (base and per-column-count overrides)." },
       { name: "--sf-field-{block,required-marker,padding-block,padding-inline,radius}", description: "Form field vertical rhythm, required indicator, and geometry (padding + radius)." },
       { name: "--sf-button-{padding-block,padding-inline,radius}", description: "Button geometry tokens: block/inline padding and border-radius." },
+      { name: "--sf-gutter", description: "Wide page/section-edge gutter (used by center/container). Override to set the page-edge breathing room across breakpoints." },
       { name: "--sf-gutter-width", description: "Page-level horizontal gutter width." },
       { name: "--sf-section-scale", description: "Global multiplier for section padding tokens (default 1)." },
       { name: "--sf-fluid-{max,min}-vw", description: "Viewport-width breakpoints (%) used by all fluid clamp() calculations." },

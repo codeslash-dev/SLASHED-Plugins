@@ -102,8 +102,8 @@ class Slashed_Bricks_Editor_Data {
 		$hints = array();
 		foreach ( Slashed_Bricks_Inventory::get_variables_by_category() as $category => $vars ) {
 			foreach ( $vars as $var ) {
-				$native = ltrim( $var, '-' );
-				$desc   = isset( $descriptions[ $native ] ) ? $descriptions[ $native ]['description'] : '';
+				$native           = ltrim( $var, '-' );
+				$desc             = isset( $descriptions[ $native ] ) ? $descriptions[ $native ]['description'] : '';
 				$hints[ $native ] = array(
 					'category'    => $category,
 					'description' => $desc,
