@@ -13,6 +13,35 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ### Added
 
+- Auto-sync readme.txt changelog on release
+
+### Fixed
+
+- Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
+- Preserve free-form changelog lines in readme sync, add missing JSDoc
+- Derive readme.txt changelog from mergedBody not raw commits
+- Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
+
+## [0.3.3] - 2026-06-19
+
+### Fixed
+
+- Mark readme.txt and license.txt as required in zip packaging
+- Include readme.txt and license.txt in plugin zip, fix phpcs:disable scope
+- Extend phpcs:disable to cover both lines of the manual CSS POST read
+
+## [0.3.2] - 2026-06-19
+
+### Fixed
+
+- Resolve WordPress Plugin Check errors and warnings
+
+## [0.3.1] - 2026-06-19
+
+## [0.3.0] - 2026-06-19
+
+### Added
+
 - Sync plugin data with latest framework tokens and classes
 - Update plugin data and UI for SLASHED v0.6.0 token changes
 
