@@ -5,8 +5,9 @@
  * Description: Integrates the SLASHED cascade-layer CSS framework with Bricks Builder - providing CSS variables, utility classes, and color palette synchronization.
  * Version: 0.0.1
  * Author: jackgranatowski
- * Author URI: https://github.com/codeslash-dev/SLASHED
- * License: MIT
+ * Author URI: https://jackgranatowski.com
+ * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Requires PHP: 7.4
  * Requires at least: 6.4
  * Text Domain: slashed-bricks
