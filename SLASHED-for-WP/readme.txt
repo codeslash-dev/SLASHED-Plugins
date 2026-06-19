@@ -1,5 +1,5 @@
 === SLASHED ===
-Contributors: jackgranatowski
+Contributors: codeslash
 Tags: css, gutenberg, dark-mode, design-tokens, bricks
 Requires at least: 6.4
 Tested up to: 7.0

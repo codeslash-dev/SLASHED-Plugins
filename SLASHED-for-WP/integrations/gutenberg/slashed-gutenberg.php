@@ -4,8 +4,8 @@
  * Plugin URI: https://github.com/codeslash-dev/SLASHED
  * Description: Integrates the SLASHED cascade-layer CSS framework with the WordPress block editor — CSS loading, color palette sync, and dark-mode bridging.
  * Version: 0.3.0
- * Author: jackgranatowski
- * Author URI: https://jackgranatowski.com
+ * Author: Jack Granatowski
+ * Author URI: https://codeslash.net
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Requires PHP: 7.4
