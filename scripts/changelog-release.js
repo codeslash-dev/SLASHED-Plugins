@@ -149,27 +149,43 @@ function mergeBody(existing, generated) {
 // ---------------------------------------------------------------------------
 
 /**
- * Render a WP-format changelog entry from categorised commits.
- * Returns a string like:
- *   = X.Y.Z =
- *   * Added: Foo bar.
- *   * Fixed: Baz qux.
+ * Convert a CHANGELOG.md version body (markdown) to WP readme.txt bullet lines.
+ *
+ * Handles both auto-generated (### Added / ### Fixed / ### Changed sections)
+ * and manually written free-form entries so readme.txt always mirrors exactly
+ * what was promoted into CHANGELOG.md — not a re-derivation from commits.
  */
-function renderReadmeEntry(version, { added, fixed, changed }) {
-  const lines = [
-    ...added.map(l => `* Added: ${l.replace(/^- /, '')}`),
-    ...changed.map(l => `* Changed: ${l.replace(/^- /, '')}`),
-    ...fixed.map(l => `* Fixed: ${l.replace(/^- /, '')}`),
-  ];
-  if (!lines.length) lines.push('* Maintenance release.');
-  return `= ${version} =\n${lines.join('\n')}`;
+function changelogBodyToReadmeLines(body) {
+  const lines = [];
+  let currentSection = '';
+
+  for (const raw of body.split('\n')) {
+    const line = raw.trim();
+    if (!line) continue;
+
+    const sectionMatch = line.match(/^###\s+(.+)/);
+    if (sectionMatch) {
+      currentSection = sectionMatch[1].trim();
+      continue;
+    }
+
+    const bulletMatch = line.match(/^[-*]\s+(.*)/);
+    if (bulletMatch) {
+      const text = bulletMatch[1].trim();
+      lines.push(currentSection ? `* ${currentSection}: ${text}` : `* ${text}`);
+    }
+  }
+
+  return lines.length ? lines : ['* Maintenance release.'];
 }
 
 /**
  * Prepend a new = X.Y.Z = entry to the readme.txt == Changelog == section.
+ * Uses the authoritative mergedBody from CHANGELOG.md so manual [Unreleased]
+ * entries are included — not just auto-generated commit entries.
  * Skips if the version heading already exists (idempotent).
  */
-function syncReadmeChangelog(version, categorised) {
+function syncReadmeChangelog(version, mergedBody) {
   let content;
   try {
     content = fs.readFileSync(README, 'utf8');
@@ -186,7 +202,8 @@ function syncReadmeChangelog(version, categorised) {
     return;
   }
 
-  const entry = renderReadmeEntry(version, categorised);
+  const bulletLines = changelogBodyToReadmeLines(mergedBody);
+  const entry = `= ${version} =\n${bulletLines.join('\n')}`;
   const updated = content.slice(0, idx + marker.length) + '\n\n' + entry + afterMarker;
   fs.writeFileSync(README, updated, 'utf8');
   console.log(`changelog-release: readme.txt == Changelog == updated with = ${version} =`);
@@ -238,7 +255,9 @@ function main() {
   console.log(`changelog-release: [Unreleased] → [${version}] - ${today}`);
 
   // Mirror the same entry into readme.txt == Changelog == for WP.org.
-  syncReadmeChangelog(version, { added, fixed, changed });
+  // Pass mergedBody (the authoritative content written to CHANGELOG.md) so
+  // any manual [Unreleased] entries are included, not just auto-generated ones.
+  syncReadmeChangelog(version, mergedBody);
 }
 
 main();
