@@ -135,6 +135,14 @@ function parseUnreleased(content) {
   };
 }
 
+/**
+ * Merge manual [Unreleased] body with auto-generated commit entries.
+ * Manual entries take precedence — auto-fill only when the existing body is empty.
+ *
+ * @param {string} existing - Current [Unreleased] body from CHANGELOG.md.
+ * @param {string} generated - Auto-generated section rendered from commits.
+ * @returns {string} The body to write, with leading/trailing newlines.
+ */
 function mergeBody(existing, generated) {
   const existingTrimmed = existing.trim();
   const generatedTrimmed = generated.trim();
@@ -169,11 +177,15 @@ function changelogBodyToReadmeLines(body) {
       continue;
     }
 
-    const bulletMatch = line.match(/^[-*]\s+(.*)/);
+    const bulletMatch = line.match(/^([-*]|\d+\.)\s+(.*)/);
     if (bulletMatch) {
-      const text = bulletMatch[1].trim();
+      const text = bulletMatch[2].trim();
       lines.push(currentSection ? `* ${currentSection}: ${text}` : `* ${text}`);
+      continue;
     }
+
+    // Preserve manually written free-form lines not matching any bullet pattern.
+    lines.push(currentSection ? `* ${currentSection}: ${line}` : `* ${line}`);
   }
 
   return lines.length ? lines : ['* Maintenance release.'];
@@ -213,6 +225,10 @@ function syncReadmeChangelog(version, mergedBody) {
 // Main
 // ---------------------------------------------------------------------------
 
+/**
+ * Entry point. Runs in populate mode (refresh [Unreleased]) or promote mode
+ * (move [Unreleased] → [X.Y.Z] and sync readme.txt) depending on CLI flags.
+ */
 function main() {
   const version = resolveVersion();
   const today = arg('date') || new Date().toISOString().split('T')[0];
