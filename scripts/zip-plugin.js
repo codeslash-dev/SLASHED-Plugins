@@ -39,8 +39,8 @@ const PLUGIN_ROOT = 'SLASHED-for-WP';
 // src is the repo path; dest is the path inside the slashed/ zip folder.
 const INCLUDE = [
   { src: `${PLUGIN_ROOT}/slashed.php`,                                  dest: 'slashed.php' },
-  { src: `${PLUGIN_ROOT}/readme.txt`,                                   dest: 'readme.txt' },
-  { src: `${PLUGIN_ROOT}/license.txt`,                                  dest: 'license.txt' },
+  { src: `${PLUGIN_ROOT}/readme.txt`,                                   dest: 'readme.txt',  required: true },
+  { src: `${PLUGIN_ROOT}/license.txt`,                                  dest: 'license.txt', required: true },
   { src: `${PLUGIN_ROOT}/includes`,                                     dest: 'includes' },
   { src: `${PLUGIN_ROOT}/assets/admin-app`,                             dest: 'assets/admin-app', required: true },
   { src: `${PLUGIN_ROOT}/dist`,                                         dest: 'dist', required: true },
