@@ -352,7 +352,7 @@ dist/slashed.optimal.css
 dist/slashed.full.css
 
   SLASHED CSS Framework
-  Copyright (c) 2024-2026 CODE/
+  Copyright (c) 2026 CODE/ (JackGranatowski.com - Jacek Granatowski)
   Source: https://github.com/codeslash-dev/SLASHED
   License: MIT
 
