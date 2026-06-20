@@ -9,6 +9,28 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-06-20
+
+### Added
+
+- Default layout containers to their Bricks type name
+- Surface mapping settings in the active admin app
+
+### Fixed
+
+- Reset to 'type' default and reconcile docs
+
+## [0.3.3] - 2026-06-20
+
+### Added
+
+- Default layout containers to their Bricks type name
+- Surface mapping settings in the active admin app
+
+### Fixed
+
+- Reset to 'type' default and reconcile docs
+
 ## [0.3.2] - 2026-06-20
 
 ### Added
