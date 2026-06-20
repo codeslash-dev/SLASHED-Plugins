@@ -101,7 +101,7 @@
 
   function resetAll() {
     overrides = {};
-    containerMode = 'role';
+    containerMode = 'type';
     status = 'Cleared — save to apply.';
     error = '';
   }

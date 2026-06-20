@@ -100,7 +100,7 @@
 
   function resetAll() {
     overrides = {};
-    containerMode = 'role';
+    containerMode = 'type';
   }
 </script>
 
