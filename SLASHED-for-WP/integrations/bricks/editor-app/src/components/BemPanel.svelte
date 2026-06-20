@@ -226,7 +226,7 @@
             const gcTypes = (childrenOf.get(id) ?? [])
               .map(gcId => elById.get(gcId)?.name ?? '').filter(Boolean);
             const pos = containerIds.indexOf(id);
-            row.name = suggestContainerName(gcTypes, pos, containerIds.length, containerMode);
+            row.name = suggestContainerName(gcTypes, pos, containerIds.length, containerMode, el.name);
             row.suggestedFrom = 'element-type';
           } else if ((typeCount.get(el.name) ?? 0) === 1) {
             // Sole element of its type → apply semantic override if available.

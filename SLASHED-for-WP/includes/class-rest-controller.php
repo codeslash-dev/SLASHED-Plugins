@@ -201,7 +201,7 @@ class Slashed_REST_Controller {
 							'required'          => false,
 							'sanitize_callback' => 'sanitize_key',
 							'validate_callback' => function ( $value ) {
-								return in_array( (string) $value, array( 'role', 'generic' ), true );
+								return in_array( (string) $value, array( 'type', 'role', 'generic' ), true );
 							},
 						),
 					),
@@ -396,9 +396,9 @@ class Slashed_REST_Controller {
 			$settings['rebemer_element_map'] = self::sanitize_rebemer_element_map( $rebemer_element_map );
 		}
 		if ( null !== $rebemer_container_mode ) {
-			$settings['rebemer_container_mode'] = in_array( (string) $rebemer_container_mode, array( 'role', 'generic' ), true )
+			$settings['rebemer_container_mode'] = in_array( (string) $rebemer_container_mode, array( 'type', 'role', 'generic' ), true )
 				? (string) $rebemer_container_mode
-				: 'role';
+				: 'type';
 		}
 
 		Slashed_Token_Store::update_plugin_settings( $settings );
@@ -586,7 +586,7 @@ class Slashed_REST_Controller {
 				$settings_imported               = true;
 			}
 			if ( isset( $raw['rebemer_container_mode'] )
-				&& in_array( (string) $raw['rebemer_container_mode'], array( 'role', 'generic' ), true )
+				&& in_array( (string) $raw['rebemer_container_mode'], array( 'type', 'role', 'generic' ), true )
 			) {
 				$existing['rebemer_container_mode'] = (string) $raw['rebemer_container_mode'];
 				$settings_imported                  = true;

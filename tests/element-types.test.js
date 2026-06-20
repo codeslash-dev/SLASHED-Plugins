@@ -57,6 +57,16 @@ describe('suggestContainerName', () => {
     () => assert.equal(suggestContainerName(['heading', 'text'], 0, 1, 'generic'), 'item'));
   test('role mode (explicit) still infers',
     () => assert.equal(suggestContainerName(['heading', 'text'], 0, 1, 'role'), 'content'));
+
+  // Type mode (default): name the container after its own Bricks type.
+  test('type mode → container type "container"',
+    () => assert.equal(suggestContainerName(['text', 'icon', 'button'], 0, 1, 'type', 'container'), 'container'));
+  test('type mode → "section"',
+    () => assert.equal(suggestContainerName([], 0, 1, 'type', 'section'), 'section'));
+  test('type mode ignores children entirely',
+    () => assert.equal(suggestContainerName(['heading', 'text', 'button'], 0, 3, 'type', 'div'), 'div'));
+  test('type mode with missing type → "item"',
+    () => assert.equal(suggestContainerName(['text'], 0, 1, 'type', ''), 'item'));
 });
 
 describe('suggestElementName', () => {
@@ -101,11 +111,27 @@ describe('mergedElementTypeMap (user overrides)', () => {
 });
 
 describe('getContainerMode', () => {
-  test('defaults to "role" with no window', () => assert.equal(getContainerMode(), 'role'));
+  test('defaults to "type" with no window', () => assert.equal(getContainerMode(), 'type'));
   test('reads "generic" from localized config', () => {
     globalThis.window = { slashedBricksEditor: { rebemerContainerMode: 'generic' } };
     try {
       assert.equal(getContainerMode(), 'generic');
+    } finally {
+      delete globalThis.window;
+    }
+  });
+  test('reads "role" from localized config', () => {
+    globalThis.window = { slashedBricksEditor: { rebemerContainerMode: 'role' } };
+    try {
+      assert.equal(getContainerMode(), 'role');
+    } finally {
+      delete globalThis.window;
+    }
+  });
+  test('unknown value falls back to "type"', () => {
+    globalThis.window = { slashedBricksEditor: { rebemerContainerMode: 'nonsense' } };
+    try {
+      assert.equal(getContainerMode(), 'type');
     } finally {
       delete globalThis.window;
     }
