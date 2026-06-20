@@ -57,6 +57,7 @@ class Slashed_Tab_Registry {
 	 */
 	public static function get_view_tabs() {
 		return array(
+			'rebemer'    => 'reBEMer',
 			'export'     => 'Export / Import',
 			'cheatsheet' => 'Cheatsheet',
 			'wcag'       => 'WCAG',

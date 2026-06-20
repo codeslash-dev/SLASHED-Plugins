@@ -163,7 +163,7 @@ class Slashed_REST_Controller {
 					'callback'            => array( $this, 'save_settings' ),
 					'permission_callback' => array( $this, 'check_permissions' ),
 					'args'                => array(
-						'html_font_size'   => array(
+						'html_font_size'         => array(
 							'type'              => 'string',
 							'required'          => false,
 							'sanitize_callback' => 'sanitize_text_field',
@@ -171,7 +171,7 @@ class Slashed_REST_Controller {
 								return in_array( (string) $value, array( '', '100', '62.5' ), true );
 							},
 						),
-						'css_bundle'       => array(
+						'css_bundle'             => array(
 							'type'              => 'string',
 							'required'          => false,
 							'sanitize_callback' => 'sanitize_key',
@@ -179,18 +179,30 @@ class Slashed_REST_Controller {
 								return in_array( (string) $value, Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true );
 							},
 						),
-						'show_class_hints' => array(
+						'show_class_hints'       => array(
 							'type'     => 'boolean',
 							'required' => false,
 						),
-						'manual_css_mode'  => array(
+						'manual_css_mode'        => array(
 							'type'     => 'boolean',
 							'required' => false,
 						),
-						'configurator_url' => array(
+						'configurator_url'       => array(
 							'type'              => 'string',
 							'required'          => false,
 							'sanitize_callback' => 'esc_url_raw',
+						),
+						'rebemer_element_map'    => array(
+							'type'     => 'object',
+							'required' => false,
+						),
+						'rebemer_container_mode' => array(
+							'type'              => 'string',
+							'required'          => false,
+							'sanitize_callback' => 'sanitize_key',
+							'validate_callback' => function ( $value ) {
+								return in_array( (string) $value, array( 'role', 'generic' ), true );
+							},
 						),
 					),
 				),
@@ -343,18 +355,22 @@ class Slashed_REST_Controller {
 	}
 
 	public function save_settings( WP_REST_Request $request ) {
-		$html_font_size   = $request->get_param( 'html_font_size' );
-		$css_bundle       = $request->get_param( 'css_bundle' );
-		$show_class_hints = $request->get_param( 'show_class_hints' );
-		$manual_css_mode  = $request->get_param( 'manual_css_mode' );
-		$configurator_url = $request->get_param( 'configurator_url' );
+		$html_font_size         = $request->get_param( 'html_font_size' );
+		$css_bundle             = $request->get_param( 'css_bundle' );
+		$show_class_hints       = $request->get_param( 'show_class_hints' );
+		$manual_css_mode        = $request->get_param( 'manual_css_mode' );
+		$configurator_url       = $request->get_param( 'configurator_url' );
+		$rebemer_element_map    = $request->get_param( 'rebemer_element_map' );
+		$rebemer_container_mode = $request->get_param( 'rebemer_container_mode' );
 
 		if (
 			null === $html_font_size &&
 			null === $css_bundle &&
 			null === $show_class_hints &&
 			null === $manual_css_mode &&
-			null === $configurator_url
+			null === $configurator_url &&
+			null === $rebemer_element_map &&
+			null === $rebemer_container_mode
 		) {
 			return rest_ensure_response( Slashed_Token_Store::get_plugin_settings() );
 		}
@@ -376,9 +392,83 @@ class Slashed_REST_Controller {
 		if ( null !== $configurator_url ) {
 			$settings['configurator_url'] = (string) $configurator_url;
 		}
+		if ( null !== $rebemer_element_map ) {
+			$settings['rebemer_element_map'] = self::sanitize_rebemer_element_map( $rebemer_element_map );
+		}
+		if ( null !== $rebemer_container_mode ) {
+			$settings['rebemer_container_mode'] = in_array( (string) $rebemer_container_mode, array( 'role', 'generic' ), true )
+				? (string) $rebemer_container_mode
+				: 'role';
+		}
 
 		Slashed_Token_Store::update_plugin_settings( $settings );
 		return rest_ensure_response( $settings );
+	}
+
+	/**
+	 * Maximum number of element-type → BEM-name overrides accepted in one
+	 * save. Bricks ships ~80 element types; the cap is comfortably above
+	 * that while bounding payload abuse.
+	 */
+	const REBEMER_MAP_CAP = 200;
+
+	/**
+	 * Matches the BEM grammar enforced editor-side in
+	 * `editor-app/src/lib/validate.js`: lowercase, starts with a letter,
+	 * kebab-case segments of letters/digits.
+	 */
+	const REBEMER_NAME_RE = '/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/';
+
+	/**
+	 * CSS keywords reBEMer refuses as class names (mirrors validate.js).
+	 *
+	 * @var string[]
+	 */
+	const REBEMER_RESERVED_NAMES = array( 'auto', 'inherit', 'initial', 'unset', 'revert', 'revert-layer', 'none' );
+
+	/**
+	 * Sanitize the reBEMer element-type → BEM-name override map.
+	 *
+	 * Drops anything that isn't a string→string pair, normalizes keys to
+	 * Bricks-type slugs, validates each value against the same BEM grammar
+	 * the editor enforces (so a bad value can never round-trip into the
+	 * builder), and caps the entry count. Returns a clean associative
+	 * array (possibly empty).
+	 *
+	 * @param mixed $raw Untrusted input.
+	 * @return array<string,string>
+	 */
+	private static function sanitize_rebemer_element_map( $raw ) {
+		if ( ! is_array( $raw ) ) {
+			return array();
+		}
+
+		$clean = array();
+		foreach ( $raw as $type => $name ) {
+			if ( count( $clean ) >= self::REBEMER_MAP_CAP ) {
+				break;
+			}
+			if ( ! is_string( $type ) || ! is_string( $name ) ) {
+				continue;
+			}
+			// Bricks element names are lowercase kebab slugs; reuse sanitize_key
+			// then allow internal hyphens (sanitize_key already lowercases and
+			// strips to [a-z0-9_-]).
+			$type_slug = sanitize_key( $type );
+			$value     = strtolower( trim( $name ) );
+			if ( '' === $type_slug || '' === $value ) {
+				continue;
+			}
+			if ( in_array( $value, self::REBEMER_RESERVED_NAMES, true ) ) {
+				continue;
+			}
+			if ( ! preg_match( self::REBEMER_NAME_RE, $value ) ) {
+				continue;
+			}
+			$clean[ $type_slug ] = $value;
+		}
+
+		return $clean;
 	}
 
 	/**
@@ -490,6 +580,16 @@ class Slashed_REST_Controller {
 			if ( array_key_exists( 'show_class_hints', $raw ) ) {
 				$existing['show_class_hints'] = (bool) $raw['show_class_hints'];
 				$settings_imported            = true;
+			}
+			if ( isset( $raw['rebemer_element_map'] ) && is_array( $raw['rebemer_element_map'] ) ) {
+				$existing['rebemer_element_map'] = self::sanitize_rebemer_element_map( $raw['rebemer_element_map'] );
+				$settings_imported               = true;
+			}
+			if ( isset( $raw['rebemer_container_mode'] )
+				&& in_array( (string) $raw['rebemer_container_mode'], array( 'role', 'generic' ), true )
+			) {
+				$existing['rebemer_container_mode'] = (string) $raw['rebemer_container_mode'];
+				$settings_imported                  = true;
 			}
 
 			if ( $settings_imported ) {

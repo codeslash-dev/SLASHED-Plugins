@@ -120,11 +120,15 @@ class Slashed_Token_Store {
 	 * Merged with stored settings so new keys are always present.
 	 */
 	const PLUGIN_SETTING_DEFAULTS = array(
-		'html_font_size'   => '',
-		'css_bundle'       => 'optimal',
-		'show_class_hints' => false,
-		'manual_css_mode'  => true,
-		'configurator_url' => '',
+		'html_font_size'         => '',
+		'css_bundle'             => 'optimal',
+		'show_class_hints'       => false,
+		'manual_css_mode'        => true,
+		'configurator_url'       => '',
+		// reBEMer: sparse Bricks-type → BEM-name overrides ({} = built-in
+		// defaults only) and how layout containers are named by default.
+		'rebemer_element_map'    => array(),
+		'rebemer_container_mode' => 'role',
 	);
 
 	/**

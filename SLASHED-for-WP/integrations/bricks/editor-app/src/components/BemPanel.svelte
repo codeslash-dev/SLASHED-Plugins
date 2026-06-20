@@ -26,7 +26,7 @@
   import { slugify } from '../lib/slugify.js';
   import { validateName } from '../lib/validate.js';
   import { applyToSubtree, buildPlan, computeBlockAssignment } from '../lib/apply.js';
-  import { suggestElementName, isLayoutContainer, suggestContainerName, SOLE_CHILD_LABEL_OVERRIDES } from '../lib/element-types.js';
+  import { suggestElementName, isLayoutContainer, suggestContainerName, SOLE_CHILD_LABEL_OVERRIDES, getContainerMode } from '../lib/element-types.js';
   import { pickMigratableKeys, pickSkippedKeys } from '../lib/migrate-keys.js';
   import Row from './Row.svelte';
   import Toast from './Toast.svelte';
@@ -140,8 +140,25 @@
         name = 'block';
         suggestedFrom = 'fallback';
       } else if (elementType && !isLayoutContainer(elementType)) {
-        name = suggestElementName(elementType, 'item');
-        suggestedFrom = 'element-type';
+        // Prefer the type map; when it has no entry, fall back to the
+        // human label Bricks shows in the structure panel (slugified)
+        // before resorting to the generic 'item'. Containers are left
+        // for Pass 2's role inference (never the type label → no
+        // `card__container`).
+        const mapped = suggestElementName(elementType, '');
+        if (mapped) {
+          name = mapped;
+          suggestedFrom = 'element-type';
+        } else {
+          const registrySlug = slugify(api.getElementTypeLabel(elementType));
+          if (registrySlug && validateName(registrySlug).ok) {
+            name = registrySlug;
+            suggestedFrom = 'element-type';
+          } else {
+            name = 'item';
+            suggestedFrom = 'fallback';
+          }
+        }
       } else {
         name = 'item';
         suggestedFrom = 'fallback';
@@ -172,6 +189,8 @@
     // Pass 2: context-aware refinement using parent→children relationships.
     // Skips user-labelled elements (suggestedFrom === 'label').
     if (seeded.length > 1) {
+      const containerMode = getContainerMode();
+
       // Build parent → direct child ids map using a depth-tracking stack.
       const childrenOf = new Map(subtree.map(e => [e.id, []]));
       const stack = [];
@@ -207,7 +226,7 @@
             const gcTypes = (childrenOf.get(id) ?? [])
               .map(gcId => elById.get(gcId)?.name ?? '').filter(Boolean);
             const pos = containerIds.indexOf(id);
-            row.name = suggestContainerName(gcTypes, pos, containerIds.length);
+            row.name = suggestContainerName(gcTypes, pos, containerIds.length, containerMode);
             row.suggestedFrom = 'element-type';
           } else if ((typeCount.get(el.name) ?? 0) === 1) {
             // Sole element of its type → apply semantic override if available.

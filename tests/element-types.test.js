@@ -6,7 +6,14 @@
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { suggestContainerName } from '../SLASHED-for-WP/integrations/bricks/editor-app/src/lib/element-types.js';
+import {
+  suggestContainerName,
+  suggestElementName,
+  mergedElementTypeMap,
+  getContainerMode,
+  ELEMENT_TYPE_LABEL_MAP,
+  SOLE_CHILD_LABEL_OVERRIDES,
+} from '../SLASHED-for-WP/integrations/bricks/editor-app/src/lib/element-types.js';
 
 const s = (types, pos = 0, total = 1) => suggestContainerName(types, pos, total);
 
@@ -44,4 +51,63 @@ describe('suggestContainerName', () => {
     () => assert.equal(s([], 2, 3), 'footer'));
   test('positional: middle of multiple siblings → "body"',
     () => assert.equal(s([], 1, 3), 'body'));
+
+  // Container mode gate (workstream 3).
+  test('generic mode → "item" regardless of children',
+    () => assert.equal(suggestContainerName(['heading', 'text'], 0, 1, 'generic'), 'item'));
+  test('role mode (explicit) still infers',
+    () => assert.equal(suggestContainerName(['heading', 'text'], 0, 1, 'role'), 'content'));
+});
+
+describe('suggestElementName', () => {
+  test('known type → mapped label', () => assert.equal(suggestElementName('heading'), 'heading'));
+  test('unknown type → fallback', () => assert.equal(suggestElementName('totally-unknown'), 'item'));
+  test('unknown type → custom fallback', () => assert.equal(suggestElementName('totally-unknown', ''), ''));
+  test('layout container → fallback (never type label)',
+    () => assert.equal(suggestElementName('container', 'item'), 'item'));
+
+  // Newly added type-map entries (workstream 1).
+  test('divider → "divider"', () => assert.equal(suggestElementName('divider'), 'divider'));
+  test('social-icons → "social"', () => assert.equal(suggestElementName('social-icons'), 'social'));
+  test('post-title → "title"', () => assert.equal(suggestElementName('post-title'), 'title'));
+  test('progress-bar → "progress"', () => assert.equal(suggestElementName('progress-bar'), 'progress'));
+});
+
+describe('SOLE_CHILD_LABEL_OVERRIDES additions', () => {
+  test('icon → "icon"', () => assert.equal(SOLE_CHILD_LABEL_OVERRIDES.icon, 'icon'));
+  test('svg → "icon"', () => assert.equal(SOLE_CHILD_LABEL_OVERRIDES.svg, 'icon'));
+  test('button-group → "actions"', () => assert.equal(SOLE_CHILD_LABEL_OVERRIDES['button-group'], 'actions'));
+});
+
+describe('mergedElementTypeMap (user overrides)', () => {
+  test('no window → returns built-ins unchanged', () => {
+    assert.equal(mergedElementTypeMap().heading, ELEMENT_TYPE_LABEL_MAP.heading);
+  });
+
+  test('user override wins over built-in; new keys merge in', () => {
+    globalThis.window = { slashedBricksEditor: { rebemerElementMap: { heading: 'hed', widget: 'thing' } } };
+    try {
+      const merged = mergedElementTypeMap();
+      assert.equal(merged.heading, 'hed');       // override wins
+      assert.equal(merged.widget, 'thing');      // new key merged
+      assert.equal(merged.image, 'image');       // untouched built-in preserved
+      assert.equal(suggestElementName('heading'), 'hed');
+      // The frozen base is never mutated.
+      assert.equal(ELEMENT_TYPE_LABEL_MAP.heading, 'heading');
+    } finally {
+      delete globalThis.window;
+    }
+  });
+});
+
+describe('getContainerMode', () => {
+  test('defaults to "role" with no window', () => assert.equal(getContainerMode(), 'role'));
+  test('reads "generic" from localized config', () => {
+    globalThis.window = { slashedBricksEditor: { rebemerContainerMode: 'generic' } };
+    try {
+      assert.equal(getContainerMode(), 'generic');
+    } finally {
+      delete globalThis.window;
+    }
+  });
 });
