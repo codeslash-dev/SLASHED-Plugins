@@ -63,8 +63,10 @@ that.
   via `suggestContainerName`, so you never get `card__container`.
 - **Configurable defaults** — the admin SPA's **reBEMer** tab persists a
   sparse element-type → BEM-name override map (`rebemer_element_map`) and a
-  container-naming mode (`rebemer_container_mode`: `role` = child-aware
-  inference, `generic` = `item` + auto-numbering). Both are stored in the
+  container-naming mode (`rebemer_container_mode`: `type` *(default)* = name
+  each container after its own Bricks type (`container`/`section`/`div`/`block`),
+  `role` = child-aware inference (`header`/`content`/…), `generic` = `item` +
+  auto-numbering). Both are stored in the
   `slashed_bricks_settings` option, sanitized against the same BEM grammar as
   `validate.js`, and localized onto `window.slashedBricksEditor` by
   `class-editor-data.php`; `element-types.js` merges the overrides over the

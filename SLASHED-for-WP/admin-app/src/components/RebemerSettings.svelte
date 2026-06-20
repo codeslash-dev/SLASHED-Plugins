@@ -32,10 +32,14 @@
   // empty associative array as [] — spreading either yields a plain object.
   const savedMap = wpSettings.rebemer_element_map || {};
 
+  const CONTAINER_MODES = ['type', 'role', 'generic'];
+
   /** Sparse override map: bricksType → bemName (only entries that differ). */
   let overrides = $state({ ...savedMap });
   let containerMode = $state(
-    wpSettings.rebemer_container_mode === 'generic' ? 'generic' : 'role',
+    CONTAINER_MODES.includes(wpSettings.rebemer_container_mode)
+      ? wpSettings.rebemer_container_mode
+      : 'type',
   );
 
   let status = $state(/** @type {'idle'|'saving'|'saved'|'error'} */('idle'));
@@ -113,11 +117,13 @@
     <label class="field__label" for="rebemer-container-mode">Layout container naming</label>
     <p class="field__hint">
       How <code>section</code> / <code>container</code> / <code>div</code> /
-      <code>block</code> elements are named. Role mode infers a name from a
-      container's children; generic names every container <code>item</code> and
-      lets auto-numbering disambiguate.
+      <code>block</code> elements are named. Element type uses the container's
+      own type (most predictable); role mode infers a name from a container's
+      children; generic names every container <code>item</code> and lets
+      auto-numbering disambiguate.
     </p>
     <select id="rebemer-container-mode" class="field__input" bind:value={containerMode}>
+      <option value="type">Element type (container, section, div…)</option>
       <option value="role">Smart role names (header, body, content, actions…)</option>
       <option value="generic">Generic (item, item-2…)</option>
     </select>

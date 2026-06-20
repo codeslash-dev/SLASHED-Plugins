@@ -30,10 +30,14 @@
 
   const savedMap = (meta.pluginSettings && meta.pluginSettings.rebemer_element_map) || {};
 
+  const CONTAINER_MODES = ['type', 'role', 'generic'];
+
   /** Sparse override map: bricksType → bemName (only entries that differ). */
   let overrides = $state({ ...savedMap });
   let containerMode = $state(
-    meta.pluginSettings?.rebemer_container_mode === 'generic' ? 'generic' : 'role',
+    CONTAINER_MODES.includes(meta.pluginSettings?.rebemer_container_mode)
+      ? meta.pluginSettings.rebemer_container_mode
+      : 'type',
   );
 
   let saving = $state(false);
@@ -118,13 +122,15 @@
     <label class="rebemer-tab__mode">
       <span class="rebemer-tab__mode-label">Layout containers (section / container / div / block)</span>
       <select bind:value={containerMode}>
+        <option value="type">Element type (container, section, div…)</option>
         <option value="role">Smart role names (header, body, content, actions…)</option>
         <option value="generic">Generic (item, item-2…)</option>
       </select>
     </label>
     <p class="muted small">
-      Role mode infers a name from a container's children; generic mode names
-      every container <code>item</code> and lets auto-numbering disambiguate.
+      Element-type mode names each container after its own Bricks type; role
+      mode infers a name from a container's children; generic mode names every
+      container <code>item</code> and lets auto-numbering disambiguate.
     </p>
   </section>
 

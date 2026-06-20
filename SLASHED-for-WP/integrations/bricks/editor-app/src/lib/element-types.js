@@ -120,19 +120,26 @@ export function mergedElementTypeMap() {
   return { ...ELEMENT_TYPE_LABEL_MAP, ...getUserElementMap() };
 }
 
+/** Valid container-naming modes (keep in sync with the PHP allow-list). */
+export const CONTAINER_MODES = Object.freeze(['type', 'role', 'generic']);
+
 /**
  * Container-naming mode, sourced from the `rebemer_container_mode`
- * plugin setting. `'role'` (default) keeps the child-aware role
- * inference in `suggestContainerName`; `'generic'` names every
- * container `'item'` and lets sibling auto-numbering disambiguate.
+ * plugin setting:
+ *   - `'type'`    (default) names each layout container after its Bricks
+ *                 type — `container`, `section`, `div`, `block` — which is
+ *                 predictable and matches how most people label wrappers.
+ *   - `'role'`    uses the child-aware role inference in
+ *                 `suggestContainerName` (header / content / actions / …).
+ *   - `'generic'` names every container `'item'` and lets sibling
+ *                 auto-numbering disambiguate.
  *
- * @returns {'role'|'generic'}
+ * @returns {'type'|'role'|'generic'}
  */
 export function getContainerMode() {
-  if (typeof window === 'undefined') return 'role';
-  return window.slashedBricksEditor?.rebemerContainerMode === 'generic'
-    ? 'generic'
-    : 'role';
+  if (typeof window === 'undefined') return 'type';
+  const m = window.slashedBricksEditor?.rebemerContainerMode;
+  return CONTAINER_MODES.includes(m) ? m : 'type';
 }
 
 /**
@@ -215,12 +222,16 @@ export const SOLE_CHILD_LABEL_OVERRIDES = Object.freeze({
  * @param {string[]} childTypes - Bricks `element.name` values of direct children.
  * @param {number} positionAmongContainerSiblings - 0-based index among layout-container siblings.
  * @param {number} totalContainerSiblings - Total layout-container siblings at this level.
- * @param {'role'|'generic'} [mode='role'] - `'generic'` skips child-aware role
- *   inference and returns the plain `'item'` fallback (sibling auto-numbering
- *   then disambiguates). `'role'` keeps the inference below.
+ * @param {'type'|'role'|'generic'} [mode='role'] - `'type'` names the container
+ *   after its own Bricks type (`containerType`); `'generic'` returns the plain
+ *   `'item'` fallback (sibling auto-numbering then disambiguates); `'role'`
+ *   keeps the child-aware inference below.
+ * @param {string} [containerType=''] - The container's own Bricks `element.name`
+ *   (`container` / `section` / `div` / `block`). Only consulted in `'type'` mode.
  * @returns {string}
  */
-export function suggestContainerName(childTypes, positionAmongContainerSiblings, totalContainerSiblings, mode = 'role') {
+export function suggestContainerName(childTypes, positionAmongContainerSiblings, totalContainerSiblings, mode = 'role', containerType = '') {
+  if (mode === 'type') return containerType || 'item';
   if (mode === 'generic') return 'item';
 
   const types = new Set(childTypes.filter(Boolean));
