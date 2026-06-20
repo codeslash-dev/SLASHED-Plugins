@@ -51,14 +51,13 @@ For now it runs as a standalone web app at **https://slashed.codeslash.dev/confi
 
 = Gutenberg integration =
 
-The Gutenberg integration is still an early implementation — functional on the essentials, but lighter on tooling than the Bricks side. When enabled:
+The Gutenberg integration is an early implementation — the core preset wiring works today, but the deeper editor tooling is still in development. When enabled, what works now:
 
 * Loads the framework CSS in the block editor canvas and on the frontend.
 * Registers `--sf-color-*` tokens as the editor color palette, `--sf-gradient-*` as gradient presets, `--sf-text-*` as font-size presets, and `--sf-space-*` as spacing presets. On block themes, presets flow through `wp_theme_json_data_theme` so no custom theme.json is needed.
-* **In-editor token panel.** A floating panel (launched via the `/` button in the editor toolbar) with four tabs: Colors — browse all color tokens with light/dark preview and apply to the selected block's background, text, or border; Gradients — browse and apply gradient tokens; Classes — toggle `.sf-*` and `.is-*` classes on the selected block (with hints); Variables — browse all `--sf-*` tokens by category and copy any `var()` reference.
 * **Dark mode bridge.** Maps WordPress's `data-wp-dark-mode-active` attribute to the SLASHED theme system, so the editor's dark-mode toggle activates the framework's dark palette.
 
-What's missing vs Bricks: no reBEMer, no class autocomplete in the editor's native block className field. Those are planned for a post-1.0 release.
+An in-editor token panel (browse/apply colors and gradients, toggle classes, copy variables) is in progress but not yet functional. reBEMer and native class autocomplete are not on the Gutenberg side. If you want the full tooling today, use Bricks.
 
 = Cascade layers, in one breath =
 
@@ -129,7 +128,7 @@ It currently runs as a standalone web app at https://slashed.codeslash.dev/confi
 
 = How complete is the Gutenberg integration? =
 
-It's an early implementation, still being developed. It loads the CSS, registers color/gradient/font-size/spacing presets, ships an in-editor floating panel for browsing and applying tokens and toggling classes, and bridges WordPress dark mode. What's missing compared to Bricks: no reBEMer, no class autocomplete in the native block className field. Those are planned for post-1.0.
+It's an early implementation. What works today: loading the CSS, registering color/gradient/font-size/spacing presets, and bridging WordPress dark mode. The in-editor token panel is still in development and not yet functional, and there's no reBEMer or class autocomplete on the Gutenberg side. For the full tooling, use Bricks.
 
 = What is reBEMer? =
 
