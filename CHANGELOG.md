@@ -22,27 +22,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Derive readme.txt changelog from mergedBody not raw commits
 - Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
 
-## [0.3.4] - 2026-06-19
-
-### Added
-
-- Auto-sync readme.txt changelog on release
-
-### Fixed
-
-- Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
-- Preserve free-form changelog lines in readme sync, add missing JSDoc
-- Derive readme.txt changelog from mergedBody not raw commits
-- Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
-
-## [0.3.3] - 2026-06-19
-
-### Fixed
-
-- Mark readme.txt and license.txt as required in zip packaging
-- Include readme.txt and license.txt in plugin zip, fix phpcs:disable scope
-- Extend phpcs:disable to cover both lines of the manual CSS POST read
-
 ## [0.3.3] - 2026-06-19
 
 ### Fixed
@@ -57,28 +36,7 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 - Resolve WordPress Plugin Check errors and warnings
 
-## [0.3.2] - 2026-06-19
-
-### Fixed
-
-- Resolve WordPress Plugin Check errors and warnings
-
 ## [0.3.1] - 2026-06-19
-## [0.3.1] - 2026-06-19
-## [0.3.0] - 2026-06-19
-
-### Added
-
-- Sync plugin data with latest framework tokens and classes
-- Update plugin data and UI for SLASHED v0.6.0 token changes
-
-### Fixed
-
-- Preserve sf- prefix in variable hints for Bricks lookup
-- Correct sf-bento--compact description to row height not gap
-- Correct PHPCS alignment and class hint accuracy
-- Replace deprecated word-wrap with overflow-wrap in panel.css
-- Fix variable picker ? button, add descriptions to tooltip
 
 ## [0.3.0] - 2026-06-19
 
@@ -102,40 +60,11 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Replace --sf-equal-cols with --sf-equal-min-col for v0.5.46
 - Update cheatsheet-data.js to cover all v0.5.46 inventory entries
 - Update bundled CSS to framework v0.5.46
-- Update bundled CSS to framework v0.5.46
 - Bump SLASHED_BRICKS_CSS_REF and SLASHED_GUTENBERG_CSS_REF to v0.5.46
 - Restore bundled CSS v0.5.46 (fix corrupted agent push)
-- Update bundled CSS to framework v0.5.46
-- Update bundled CSS to framework v0.5.46
 - Sync classes-hints.json to framework v0.5.46
 - Sync inventory.json and classes-hints.json to framework v0.5.46
 - Sync data files and SLASHED_CSS_REF to framework v0.5.46
-
-## [0.2.7] - 2026-06-18
-
-### Fixed
-
-- Replace --sf-equal-cols with --sf-equal-min-col for v0.5.46
-- Update cheatsheet-data.js to cover all v0.5.46 inventory entries
-- Update bundled CSS to framework v0.5.46
-- Update bundled CSS to framework v0.5.46
-- Bump SLASHED_BRICKS_CSS_REF and SLASHED_GUTENBERG_CSS_REF to v0.5.46
-- Restore bundled CSS v0.5.46 (fix corrupted agent push)
-- Update bundled CSS to framework v0.5.46
-- Update bundled CSS to framework v0.5.46
-- Sync classes-hints.json to framework v0.5.46
-- Sync inventory.json and classes-hints.json to framework v0.5.46
-- Sync data files and SLASHED_CSS_REF to framework v0.5.46
-
-## [0.2.6] - 2026-06-18
-
-### Added
-
-- Add variable hints tooltip to Bricks variable picker
-
-### Fixed
-
-- Associate tooltip with button via aria-describedby; add reduced-motion fallback
 
 ## [0.2.6] - 2026-06-18
 
@@ -162,42 +91,11 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 - Restore native color preview to label row, keep SF btn right of input
 
-## [0.2.5] - 2026-06-17
-
-### Added
-
-- Add variable-hints.js; wire into main.js
-
-### Changed
-
-- Add variable hint tooltip and button styles to panel.css
-- Split editor data out of rebemer-enqueue; add variable hints
-
-### Fixed
-
-- Restore native color preview to label row, keep SF btn right of input
-
 ## [0.2.4] - 2026-06-17
 
 ### Fixed
 
 - Push both color swatches to right, add red X overlay, fix input sync
-
-## [0.2.4] - 2026-06-17
-
-### Fixed
-
-- Push both color swatches to right, add red X overlay, fix input sync
-
-## [0.2.3] - 2026-06-17
-
-### Changed
-
-- Relocate class hints to builder integrations, add SF preview label
-
-### Fixed
-
-- Add missing textContent to SF preview label, extract shared preview helper
 
 ## [0.2.3] - 2026-06-17
 
@@ -216,24 +114,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Remove always-true if guard on active_fw_version
 - Resolve short ternary errors and alignment warnings
 - Framework version display, CDN ver param, configurator link, SF swatch selector
-
-## [0.2.2] - 2026-06-15
-
-### Fixed
-
-- Remove always-true if guard on active_fw_version
-- Resolve short ternary errors and alignment warnings
-- Framework version display, CDN ver param, configurator link, SF swatch selector
-
-## [0.2.1] - 2026-06-15
-
-### Changed
-
-- Remove ManualCssTab from Design Settings SPA
-
-### Fixed
-
-- Use div instead of button for non-interactive sidebar item
 
 ## [0.2.1] - 2026-06-15
 
@@ -258,40 +138,11 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Glow uses actual selected colour, not a fictitious accent
 - Address CodeRabbit a11y findings
 
-## [0.2.0] - 2026-06-15
-
-### Added
-
-- Move SF color swatch next to native preview, add active glow
-- Comprehensive framework showcase with 7 tabbed sections
-
-### Fixed
-
-- Address CodeRabbit review findings
-- Glow uses actual selected colour, not a fictitious accent
-- Address CodeRabbit a11y findings
-
 ## [0.1.7] - 2026-06-14
 
 ### Fixed
 
 - Show actually-installed framework version, not compile-time constant
-
-## [0.1.7] - 2026-06-14
-
-### Fixed
-
-- Show actually-installed framework version, not compile-time constant
-
-## [0.1.6] - 2026-06-14
-
-### Changed
-
-- Remove redundant ternary in title attribute
-
-### Fixed
-
-- Fix CSS loading and modernise sidebar for mobile readability
 
 ## [0.1.6] - 2026-06-14
 
@@ -310,20 +161,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Use targeted injection check instead of wp_strip_all_tags
 - Show actual loaded framework version + fix WCAG navigation
 - Fix configurator UX bugs and add Manual CSS subpage
-
-## [0.1.5] - 2026-06-14
-
-### Fixed
-
-- Use targeted injection check instead of wp_strip_all_tags
-- Show actual loaded framework version + fix WCAG navigation
-- Fix configurator UX bugs and add Manual CSS subpage
-
-## [0.1.4] - 2026-06-14
-
-### Fixed
-
-- Include assets/admin-app in release zip
 
 ## [0.1.4] - 2026-06-14
 
@@ -360,141 +197,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - A11y + robustness from review feedback
 - Derive FontFamilyField source to clear state_referenced_locally
 
-## [0.1.3] - 2026-06-14
-
-### Added
-
-- Add GitHub Actions for auto-sync and rebuild of admin-app
-- Update PHP — new admin-app path, overrides endpoint, settings fields
-- Add WP-specific tab components (ManualCssTab, VersionTab, SettingsTab)
-- Add WP store adapter, App shell and WpSidebar
-- Add admin-app scaffold — configurator-based WP panel infrastructure
-- Unify palette generator + on-color usage preview
-- In-context WCAG resolution + color locks
-- Bring configurator-parity CSS export to the WP panel
-
-### Changed
-
-- Generate palettes in OKLCH, not HSL
-- Share WCAG/scale/font logic with the configurator + DX polish
-
-### Fixed
-
-- Exclude synced and compiled css from stylelint
-- Three correctness bugs in admin-app and REST controller
-- Wp coding standards — multiline array and aligned assignment in class-token-page.php
-- Payload wrapper, parseCssOverrides import, a11y toggle, duplicate sync, constants guard
-- Guard against path traversal in sync-core.mjs (CodeQL)
-- Address self-review of the WCAG checker + generator
-- A11y + robustness from review feedback
-- Derive FontFamilyField source to clear state_referenced_locally
-
-## [0.2.2] - 2026-06-14
-
-### Fixed
-
-- Exclude synced and compiled css from stylelint
-- Three correctness bugs in admin-app and REST controller
-
-## [0.2.2] - 2026-06-14
-
-### Fixed
-
-- Exclude synced and compiled css from stylelint
-- Three correctness bugs in admin-app and REST controller
-
-## [0.2.1] - 2026-06-14
-
-### Added
-
-- Add GitHub Actions for auto-sync and rebuild of admin-app
-- Update PHP — new admin-app path, overrides endpoint, settings fields
-- Add WP-specific tab components (ManualCssTab, VersionTab, SettingsTab)
-- Add WP store adapter, App shell and WpSidebar
-- Add admin-app scaffold — configurator-based WP panel infrastructure
-
-### Fixed
-
-- Wp coding standards — multiline array and aligned assignment in class-token-page.php
-- Payload wrapper, parseCssOverrides import, a11y toggle, duplicate sync, constants guard
-- Guard against path traversal in sync-core.mjs (CodeQL)
-
-## [0.2.1] - 2026-06-14
-
-### Added
-
-- Add GitHub Actions for auto-sync and rebuild of admin-app
-- Update PHP — new admin-app path, overrides endpoint, settings fields
-- Add WP-specific tab components (ManualCssTab, VersionTab, SettingsTab)
-- Add WP store adapter, App shell and WpSidebar
-- Add admin-app scaffold — configurator-based WP panel infrastructure
-
-### Fixed
-
-- Wp coding standards — multiline array and aligned assignment in class-token-page.php
-- Payload wrapper, parseCssOverrides import, a11y toggle, duplicate sync, constants guard
-- Guard against path traversal in sync-core.mjs (CodeQL)
-
-## [0.1.3] - 2026-06-10
-
-### Added
-
-- Unify palette generator + on-color usage preview
-- In-context WCAG resolution + color locks
-
-### Changed
-
-- Generate palettes in OKLCH, not HSL
-
-### Fixed
-
-- Address self-review of the WCAG checker + generator
-
-## [0.1.3] - 2026-06-10
-
-### Added
-
-- Unify palette generator + on-color usage preview
-- In-context WCAG resolution + color locks
-
-### Changed
-
-- Generate palettes in OKLCH, not HSL
-
-### Fixed
-
-- Address self-review of the WCAG checker + generator
-
-## [0.2.0] - 2026-06-09
-
-### Added
-
-- Bring configurator-parity CSS export to the WP panel
-
-### Changed
-
-- Share WCAG/scale/font logic with the configurator + DX polish
-
-### Fixed
-
-- A11y + robustness from review feedback
-- Derive FontFamilyField source to clear state_referenced_locally
-
-## [0.2.0] - 2026-06-09
-
-### Added
-
-- Bring configurator-parity CSS export to the WP panel
-
-### Changed
-
-- Share WCAG/scale/font logic with the configurator + DX polish
-
-### Fixed
-
-- A11y + robustness from review feedback
-- Derive FontFamilyField source to clear state_referenced_locally
-
 ## [0.1.2] - 2026-06-08
 
 ### Changed
@@ -505,28 +207,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 ### Fixed
 
 - Remove duplicate import in WcagTab, add actions:read to CodeQL
-
-## [0.1.2] - 2026-06-08
-
-### Changed
-
-- Clear residual PHPCS warnings and the PHPStan baseline
-- Adopt full WordPress coding standard and tighten PHPStan
-
-### Fixed
-
-- Remove duplicate import in WcagTab, add actions:read to CodeQL
-
-## [0.1.1] - 2026-06-08
-
-### Changed
-
-- Tab consolidation, Bundle/Hooks to PHP, WCAG palette optimizer
-- Bundle cards, version rollback, renamed menus, merged tabs
-
-### Fixed
-
-- Handle pre-existing releases; add workflow_dispatch retry
 
 ## [0.1.1] - 2026-06-08
 
