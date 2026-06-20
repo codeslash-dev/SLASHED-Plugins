@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, design-tokens, dark-mode, bem
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.3.3
+Stable tag: 0.3.4
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -157,15 +157,13 @@ Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The pl
 == Changelog ==
 
 = 0.3.3 =
-* Added: Default layout containers to their Bricks type name
-* Added: Surface mapping settings in the active admin app
-* Fixed: Reset to 'type' default and reconcile docs
+* Adds default layout container type names, surface mapping settings, and fixes the type-default reset.
 
 = 0.3.2 =
-* Added: Smarter default BEM names + configurable type mapping
+* Adds smarter default BEM names with configurable type mapping.
 
 = 0.3.1 =
-* Changed: Rewrote the plugin description to cover the SLASHED philosophy, Bricks tooling (token pickers, Color System panel, class hints, reBEMer), the Configurator, and Gutenberg status.
+* Rewrites the plugin description to cover the SLASHED philosophy and all Bricks tooling.
 
 = 0.3.0 =
 * Initial public release.
