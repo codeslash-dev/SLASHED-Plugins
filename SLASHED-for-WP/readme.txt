@@ -199,23 +199,4 @@ The SLASHED CSS framework is maintained at https://github.com/codeslash-dev/SLAS
 == Changelog ==
 
 = 0.3.0 =
-* Added: Auto-sync readme.txt changelog on release
-* Added: Sync plugin data with latest framework tokens and classes
-* Added: Update plugin data and UI for SLASHED v0.6.0 token changes
-* Changed: Cleanup changelog by removing outdated entries
-* Fixed: Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
-* Fixed: Preserve free-form changelog lines in readme sync, add missing JSDoc
-* Fixed: Derive readme.txt changelog from mergedBody not raw commits
-* Fixed: Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
-* Fixed: Mark readme.txt and license.txt as required in zip packaging
-* Fixed: Include readme.txt and license.txt in plugin zip, fix phpcs:disable scope
-* Fixed: Extend phpcs:disable to cover both lines of the manual CSS POST read
-* Fixed: Resolve WordPress Plugin Check errors and warnings
-* Fixed: Preserve sf- prefix in variable hints for Bricks lookup
-* Fixed: Correct sf-bento--compact description to row height not gap
-* Fixed: Correct PHPCS alignment and class hint accuracy
-* Fixed: Replace deprecated word-wrap with overflow-wrap in panel.css
-* Fixed: Fix variable picker ? button, add descriptions to tooltip
-
-= 0.3.5 =
 * Initial public release.
