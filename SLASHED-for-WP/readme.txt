@@ -34,12 +34,12 @@ In practice that means the **design tokens are the product**. You set a handful 
 
 This is where the plugin does the most work. Enable the Bricks integration and the framework shows up natively inside the editor:
 
-* **Token pickers.** Every `--sf-*` custom property is registered with the Bricks variable pickers and code-editor autocomplete, grouped by category. Color tokens get a hex swatch resolved for both light and dark, so you pick `var(--sf-color-primary-base)` from a list instead of remembering it.
+* **Token pickers.** Every `--sf-*` custom property is registered with the Bricks variable pickers and code-editor autocomplete, grouped by category. Color tokens get a hex swatch resolved for both light and dark, so you pick `var(--sf-color-primary)` from a list instead of remembering it.
 * **Class autocomplete.** Every `.sf-*` layout/macro class and every `.is-*` state class is registered in the Bricks class input under "SLASHED Layout" and "SLASHED State".
 * **Color System panel.** A floating, in-builder browser for the whole `--sf-color-*` palette, organized by family and tonal step. Each swatch previews its light and dark value; a Light/Dark toggle drives the canvas theme. Click a swatch and it copies the token's `var(--sf-color-*)` reference and applies it to the selected element's background, text, or border.
 * **Class tooltip hints.** With "Show class hints" enabled, a small **?** icon appears beside each SLASHED class row — in the element's class list, in autocomplete, and in the global class manager. Hover it for a styled tooltip explaining what the class does and which category it belongs to. The icon is the only trigger, so it never covers Bricks' own row controls.
 * **reBEMer — BEM automation.** A subtree-scoped BEM class manager built into the Bricks structure panel. Select an element, name the block, and reBEMer generates clean `block__element` / `block--modifier` class names for the whole subtree in one pass. It supports add, rename, replace, add-modifier, and migrate-ID-styles modes, auto-numbers colliding siblings, and guards against shadowing reserved SLASHED utilities. reBEMer never deletes a global class — that stays your call in Bricks' own manager.
-* **Dark mode bridge.** Maps Bricks' dark-mode toggle to the framework's `data-theme` system, so flipping the builder's theme activates the SLASHED dark palette.
+* **Dark mode bridge.** Maps Bricks' `data-brx-theme` attribute to the SLASHED theme system (`--sf-is-dark` / `color-scheme`), so the builder's dark-mode toggle activates the SLASHED dark palette.
 
 The token and class lists are parsed from the actual loaded CSS bundle at runtime — no hand-maintained list — so they stay in sync with whichever framework release you're running.
 
@@ -51,13 +51,14 @@ For now it runs as a standalone web app at **https://slashed.codeslash.dev/confi
 
 = Gutenberg integration =
 
-The Gutenberg integration is **still under development and intentionally barebones** for now. When enabled it covers the essentials:
+The Gutenberg integration is still an early implementation — functional on the essentials, but lighter on tooling than the Bricks side. When enabled:
 
-* Loads the framework CSS in the block editor and on the frontend.
-* Registers `--sf-color-*` tokens as the editor color palette, `--sf-gradient-*` as gradient presets, `--sf-text-*` as font-size presets, and `--sf-space-*` as spacing presets (flowing through `theme.json` on block themes).
-* Bridges WordPress dark mode to the framework's `data-theme` system.
+* Loads the framework CSS in the block editor canvas and on the frontend.
+* Registers `--sf-color-*` tokens as the editor color palette, `--sf-gradient-*` as gradient presets, `--sf-text-*` as font-size presets, and `--sf-space-*` as spacing presets. On block themes, presets flow through `wp_theme_json_data_theme` so no custom theme.json is needed.
+* **In-editor token panel.** A floating panel (launched via the `/` button in the editor toolbar) with four tabs: Colors — browse all color tokens with light/dark preview and apply to the selected block's background, text, or border; Gradients — browse and apply gradient tokens; Classes — toggle `.sf-*` and `.is-*` classes on the selected block (with hints); Variables — browse all `--sf-*` tokens by category and copy any `var()` reference.
+* **Dark mode bridge.** Maps WordPress's `data-wp-dark-mode-active` attribute to the SLASHED theme system, so the editor's dark-mode toggle activates the framework's dark palette.
 
-There is no token-editing UI or reBEMer parity on the Gutenberg side yet. If you live in Bricks, that's where the depth is today.
+What's missing vs Bricks: no reBEMer, no class autocomplete in the editor's native block className field. Those are planned for a post-1.0 release.
 
 = Cascade layers, in one breath =
 
@@ -73,7 +74,7 @@ Six `-light` brand tokens fully recolor the framework:
 
 `--sf-color-primary-light`, `--sf-color-secondary-light`, `--sf-color-tertiary-light`, `--sf-color-action-light`, `--sf-color-neutral-light`, `--sf-color-base-light`
 
-Add optional `-dark` counterparts for per-mode control. Five status families (success, warning, danger, error, info) auto-derive from the brand palette or accept manual overrides — up to 22 explicit color inputs. Everything else (hover, tint, shade, tonal steps) is computed at runtime with `oklch(from …)`.
+Add optional `-dark` counterparts for per-mode control. Five status families (success, warning, danger, error, info) have their own built-in defaults and can each be overridden independently — for a maximum of 22 explicit source tokens (11 light + 11 dark). Everything else (hover, tint, shade, tonal steps) is computed at runtime with `oklch(from …)`.
 
 = Dark mode with no JavaScript =
 
@@ -128,7 +129,7 @@ It currently runs as a standalone web app at https://slashed.codeslash.dev/confi
 
 = How complete is the Gutenberg integration? =
 
-It's deliberately barebones right now and still under active development. It loads the CSS and registers color, gradient, font-size, and spacing presets, plus a dark-mode bridge. There's no token editor or reBEMer on the Gutenberg side yet — Bricks is where the deep tooling lives today.
+It's an early implementation, still being developed. It loads the CSS, registers color/gradient/font-size/spacing presets, ships an in-editor floating panel for browsing and applying tokens and toggling classes, and bridges WordPress dark mode. What's missing compared to Bricks: no reBEMer, no class autocomplete in the native block className field. Those are planned for post-1.0.
 
 = What is reBEMer? =
 
@@ -148,7 +149,7 @@ Chrome 125+, Safari 18.0+, Firefox 129+. The framework relies on `light-dark()`,
 
 = Does it add any frontend JavaScript? =
 
-No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loads only inside the WordPress admin and the Bricks editor.
+No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loads only inside the WordPress admin (settings pages, Bricks editor, and block editor).
 
 = Can I pin a specific framework version? =
 
