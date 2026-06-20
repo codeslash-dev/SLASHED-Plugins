@@ -199,20 +199,4 @@ The SLASHED CSS framework is maintained at https://github.com/codeslash-dev/SLAS
 == Changelog ==
 
 = 0.3.5 =
-* Maintenance release.
-
-= 0.3.4 =
-* Added: Auto-sync readme.txt changelog on release
-* Fixed: Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
-* Fixed: Preserve free-form changelog lines in readme sync, add missing JSDoc
-* Fixed: Derive readme.txt changelog from mergedBody not raw commits
-* Fixed: Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
-
-= 0.3.0 =
 * Initial public release.
-* Core CSS delivery with Essential, Optimal, and Full bundle options.
-* Local and CDN delivery modes with framework version management and rollback.
-* Manual CSS override mode via `@layer slashed.overrides`.
-* Bricks Builder integration: Global Variables, class autocomplete, Color System panel, dark mode bridge, reBEMer.
-* Gutenberg integration: color palette, gradient presets, font size presets, spacing presets, block theme support, dark mode bridge.
-* Filter hooks for all integration points with a documentation page in the admin.
