@@ -156,6 +156,9 @@ Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The pl
 
 == Changelog ==
 
+= 0.3.4 =
+* Maintenance release.
+
 = 0.3.3 =
 * Adds default layout container type names, surface mapping settings, and fixes the type-default reset.
 
