@@ -15,18 +15,40 @@
    */
   import { wpSettings } from '../lib/store.svelte.js';
   import { savePluginSettings } from '../lib/wp-api.js';
-  import { ELEMENT_TYPE_LABEL_MAP } from '../../../integrations/bricks/editor-app/src/lib/element-types.js';
-
-  // Built-in [bricksType, defaultName] pairs, alphabetised for scanning.
-  const defaults = Object.entries(ELEMENT_TYPE_LABEL_MAP).sort((a, b) =>
-    a[0].localeCompare(b[0]),
-  );
+  import { ELEMENT_TYPE_LABEL_MAP, LAYOUT_CONTAINER_TYPES } from '../../../integrations/bricks/editor-app/src/lib/element-types.js';
+  import { slugify } from '../../../integrations/bricks/editor-app/src/lib/slugify.js';
 
   // Mirror the BEM grammar the editor + PHP enforce (validate.js).
   const NAME_RE = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
   const RESERVED = new Set([
     'auto', 'inherit', 'initial', 'unset', 'revert', 'revert-layer', 'none',
   ]);
+
+  /**
+   * Every editable element row: { type, label, def }.
+   *
+   * Sourced from Bricks' full server-side registry (window.slashedApp
+   * .bricksElements, name → human label) so plugin / custom elements are
+   * covered, unioned with reBEMer's built-in map so nothing the editor
+   * knows about disappears when Bricks data is unavailable. Layout
+   * containers are excluded — their naming is governed by the container
+   * mode above, not the type map. Per-row default: the built-in BEM label
+   * if any, else the slugified Bricks label, else 'item'.
+   */
+  const bricksElements = (typeof window !== 'undefined' && window.slashedApp?.bricksElements) || {};
+  const defaults = (() => {
+    const names = new Set([...Object.keys(bricksElements), ...Object.keys(ELEMENT_TYPE_LABEL_MAP)]);
+    const rows = [];
+    for (const type of names) {
+      if (LAYOUT_CONTAINER_TYPES.has(type)) continue;
+      const label = bricksElements[type] || '';
+      const builtin = ELEMENT_TYPE_LABEL_MAP[type] || '';
+      const fromLabel = slugify(label);
+      const def = builtin || (NAME_RE.test(fromLabel) ? fromLabel : '') || 'item';
+      rows.push({ type, label, def });
+    }
+    return rows.sort((a, b) => a.type.localeCompare(b.type));
+  })();
 
   // wpSettings.rebemer_element_map is {} normally, but PHP serialises an
   // empty associative array as [] — spreading either yields a plain object.
@@ -129,14 +151,19 @@
     </select>
   </div>
 
+  <p class="field__hint">Showing {defaults.length} elements registered in Bricks (including those added by plugins or custom code).</p>
+
   <div class="rebemer__table" role="table" aria-label="Element type to BEM name map">
     <div class="rebemer__row rebemer__row--head" role="row">
       <span role="columnheader">Bricks element type</span>
       <span role="columnheader">BEM name</span>
     </div>
-    {#each defaults as [type, def] (type)}
+    {#each defaults as { type, label, def } (type)}
       <div class="rebemer__row" role="row">
-        <span role="cell"><code class="rebemer__type">{type}</code></span>
+        <span role="cell">
+          <code class="rebemer__type">{type}</code>
+          {#if label}<span class="rebemer__label">{label}</span>{/if}
+        </span>
         <span class="rebemer__inputcell" role="cell">
           <input
             class="field__input rebemer__input"
@@ -252,6 +279,11 @@
     font-family: ui-monospace, monospace;
     font-size: 0.8125rem;
     color: var(--cfg-text, #111);
+  }
+  .rebemer__label {
+    display: block;
+    font-size: 0.6875rem;
+    color: var(--cfg-text-muted, #666);
   }
   .rebemer__inputcell {
     display: flex;

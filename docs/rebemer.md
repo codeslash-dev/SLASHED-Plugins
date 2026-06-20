@@ -72,7 +72,13 @@ that.
   `slashed_bricks_settings` option, sanitized against the same BEM grammar as
   `validate.js`, and localized onto `window.slashedBricksEditor` by
   `class-editor-data.php`; `element-types.js` merges the overrides over the
-  frozen built-in map at panel-open time.
+  frozen built-in map at panel-open time. The settings table lists **every**
+  element registered in Bricks — core, plugin, and custom — not just the
+  built-in map: `Slashed_Bricks_Elements::get_all()` reads Bricks'
+  `\Bricks\Elements::$elements` registry (cached per element-set) and ships it
+  to the admin app as `window.slashedApp.bricksElements` (name → label). Layout
+  containers are omitted from that table since their naming comes from the
+  container mode, not the type map.
 
 ## Architecture
 

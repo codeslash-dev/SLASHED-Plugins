@@ -15,18 +15,35 @@
    */
   import { meta } from '../lib/stores.svelte.js';
   import { saveSettings } from '../lib/api.js';
-  import { ELEMENT_TYPE_LABEL_MAP } from '../../../editor-app/src/lib/element-types.js';
-
-  // Built-in [bricksType, defaultName] pairs, alphabetised for scanning.
-  const defaults = Object.entries(ELEMENT_TYPE_LABEL_MAP).sort((a, b) =>
-    a[0].localeCompare(b[0]),
-  );
+  import { ELEMENT_TYPE_LABEL_MAP, LAYOUT_CONTAINER_TYPES } from '../../../editor-app/src/lib/element-types.js';
+  import { slugify } from '../../../editor-app/src/lib/slugify.js';
 
   // Mirror the BEM grammar the editor + PHP enforce (validate.js).
   const NAME_RE = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
   const RESERVED = new Set([
     'auto', 'inherit', 'initial', 'unset', 'revert', 'revert-layer', 'none',
   ]);
+
+  /**
+   * Every editable element row: { type, label, def }. Sourced from Bricks'
+   * full server-side registry (window.slashedApp.bricksElements) so plugin
+   * and custom elements are covered, unioned with reBEMer's built-in map.
+   * Layout containers are excluded — their naming is governed by the
+   * container mode, not the type map.
+   */
+  const bricksElements = (typeof window !== 'undefined' && window.slashedApp?.bricksElements) || {};
+  const defaults = (() => {
+    const names = new Set([...Object.keys(bricksElements), ...Object.keys(ELEMENT_TYPE_LABEL_MAP)]);
+    const rows = [];
+    for (const type of names) {
+      if (LAYOUT_CONTAINER_TYPES.has(type)) continue;
+      const label = bricksElements[type] || '';
+      const fromLabel = slugify(label);
+      const def = ELEMENT_TYPE_LABEL_MAP[type] || (NAME_RE.test(fromLabel) ? fromLabel : '') || 'item';
+      rows.push({ type, label, def });
+    }
+    return rows.sort((a, b) => a.type.localeCompare(b.type));
+  })();
 
   const savedMap = (meta.pluginSettings && meta.pluginSettings.rebemer_element_map) || {};
 
@@ -135,14 +152,18 @@
   </section>
 
   <section class="rebemer-tab__group">
+    <p class="muted small">Showing {defaults.length} elements registered in Bricks (including those added by plugins or custom code).</p>
     <div class="rebemer-tab__table" role="table" aria-label="Element type to BEM name map">
       <div class="rebemer-tab__row rebemer-tab__row--head" role="row">
         <span role="columnheader">Bricks element type</span>
         <span role="columnheader">BEM name</span>
       </div>
-      {#each defaults as [type, def] (type)}
+      {#each defaults as { type, label, def } (type)}
         <div class="rebemer-tab__row" role="row">
-          <span role="cell"><code class="rebemer-tab__type">{type}</code></span>
+          <span role="cell">
+            <code class="rebemer-tab__type">{type}</code>
+            {#if label}<span class="rebemer-tab__label">{label}</span>{/if}
+          </span>
           <span class="rebemer-tab__input" role="cell">
             <input
               type="text"
@@ -230,6 +251,11 @@
     font-family: ui-monospace, monospace;
     font-size: 12px;
     color: #1d2327;
+  }
+  .rebemer-tab__label {
+    display: block;
+    font-size: 11px;
+    color: #646970;
   }
   .rebemer-tab__input {
     display: flex;
