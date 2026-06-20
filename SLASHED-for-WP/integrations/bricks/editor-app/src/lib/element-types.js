@@ -23,9 +23,9 @@
  * those live in `element.label`). Add to this map as new Bricks element
  * types ship; unknown types fall through to the caller-supplied fallback.
  *
- * Kept as a plain object (not a Set/Map) so the mapping is easy to
- * filter from PHP via `wp_localize_script` payloads in a future
- * iteration.
+ * Kept as a plain object (not a Set/Map) so admin overrides localized
+ * from PHP (`window.slashedBricksEditor.rebemerElementMap`) can be
+ * spread over it — see `mergedElementTypeMap()`.
  *
  * @type {Record<string, string>}
  */
@@ -36,6 +36,10 @@ export const ELEMENT_TYPE_LABEL_MAP = Object.freeze({
   text: 'text',
   'text-link': 'link',
   code: 'code',
+  'post-title': 'title',
+  'post-content': 'content',
+  'post-excerpt': 'excerpt',
+  'post-meta': 'meta',
   // Media
   image: 'image',
   icon: 'icon',
@@ -45,31 +49,91 @@ export const ELEMENT_TYPE_LABEL_MAP = Object.freeze({
   svg: 'svg',
   logo: 'logo',
   shape: 'shape',
+  divider: 'divider',
+  separator: 'separator',
   // Interactive
   button: 'button',
   'button-group': 'buttons',
   'nav-nested': 'nav',
   'nav-menu': 'nav',
   list: 'list',
+  search: 'search',
+  'social-icons': 'social',
   // Compound
   accordion: 'accordion',
+  'accordion-nested': 'accordion',
   tabs: 'tabs',
+  'tabs-nested': 'tabs',
   slider: 'slider',
+  'slider-nested': 'slider',
   carousel: 'carousel',
   countdown: 'countdown',
   counter: 'counter',
+  'progress-bar': 'progress',
+  alert: 'alert',
   testimonials: 'testimonials',
   pricing: 'pricing',
   team: 'team',
+  map: 'map',
+  'google-maps': 'map',
+  breadcrumbs: 'breadcrumbs',
+  pagination: 'pagination',
   // Forms
   form: 'form',
   // Loops / dynamic
   posts: 'posts',
+  'related-posts': 'posts',
   template: 'item',
   // Layout containers — deliberately NOT mapped so they fall back
   // to the caller-supplied `fallback` (typically 'item').
   // section / container / block / div remain unmapped.
 });
+
+/**
+ * Read the user-defined element-type → BEM-name override map.
+ *
+ * Localized by `class-editor-data.php` onto `window.slashedBricksEditor`
+ * from the `rebemer_element_map` plugin setting (sparse — only the
+ * mappings the user changed). Returns a plain object (never frozen) so
+ * `mergedElementTypeMap()` can spread it; returns `{}` when nothing is
+ * configured or we're running outside the builder (tests / dev harness).
+ *
+ * @returns {Record<string, string>}
+ */
+export function getUserElementMap() {
+  if (typeof window === 'undefined') return {};
+  const map = window.slashedBricksEditor?.rebemerElementMap;
+  return map && typeof map === 'object' && !Array.isArray(map) ? map : {};
+}
+
+/**
+ * Built-in defaults with the user's overrides layered on top.
+ *
+ * The frozen `ELEMENT_TYPE_LABEL_MAP` is the base and is never mutated;
+ * user entries win on key collision. Computed fresh per call so a save
+ * in the admin SPA takes effect on the next panel open without a reload
+ * of the editor bundle.
+ *
+ * @returns {Record<string, string>}
+ */
+export function mergedElementTypeMap() {
+  return { ...ELEMENT_TYPE_LABEL_MAP, ...getUserElementMap() };
+}
+
+/**
+ * Container-naming mode, sourced from the `rebemer_container_mode`
+ * plugin setting. `'role'` (default) keeps the child-aware role
+ * inference in `suggestContainerName`; `'generic'` names every
+ * container `'item'` and lets sibling auto-numbering disambiguate.
+ *
+ * @returns {'role'|'generic'}
+ */
+export function getContainerMode() {
+  if (typeof window === 'undefined') return 'role';
+  return window.slashedBricksEditor?.rebemerContainerMode === 'generic'
+    ? 'generic'
+    : 'role';
+}
 
 /**
  * Element types that are layout containers and should never seed a
@@ -97,7 +161,7 @@ export const LAYOUT_CONTAINER_TYPES = new Set([
 export function suggestElementName(elementType, fallback = 'item') {
   if (!elementType || typeof elementType !== 'string') return fallback;
   if (LAYOUT_CONTAINER_TYPES.has(elementType)) return fallback;
-  const mapped = ELEMENT_TYPE_LABEL_MAP[elementType];
+  const mapped = mergedElementTypeMap()[elementType];
   return mapped || fallback;
 }
 
@@ -130,9 +194,14 @@ export const SOLE_CHILD_LABEL_OVERRIDES = Object.freeze({
   'text-basic': 'description',
   text: 'description',
   button: 'action',
+  'button-group': 'actions',
   'text-link': 'link',
   logo: 'logo',
   image: 'image',
+  icon: 'icon',
+  'icon-box': 'icon',
+  svg: 'icon',
+  divider: 'divider',
 });
 
 /**
@@ -146,9 +215,14 @@ export const SOLE_CHILD_LABEL_OVERRIDES = Object.freeze({
  * @param {string[]} childTypes - Bricks `element.name` values of direct children.
  * @param {number} positionAmongContainerSiblings - 0-based index among layout-container siblings.
  * @param {number} totalContainerSiblings - Total layout-container siblings at this level.
+ * @param {'role'|'generic'} [mode='role'] - `'generic'` skips child-aware role
+ *   inference and returns the plain `'item'` fallback (sibling auto-numbering
+ *   then disambiguates). `'role'` keeps the inference below.
  * @returns {string}
  */
-export function suggestContainerName(childTypes, positionAmongContainerSiblings, totalContainerSiblings) {
+export function suggestContainerName(childTypes, positionAmongContainerSiblings, totalContainerSiblings, mode = 'role') {
+  if (mode === 'generic') return 'item';
+
   const types = new Set(childTypes.filter(Boolean));
 
   const has = (...ts) => ts.some(t => types.has(t));

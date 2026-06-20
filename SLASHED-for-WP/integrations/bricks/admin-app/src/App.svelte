@@ -17,6 +17,7 @@
   import CheatsheetTab from './components/CheatsheetTab.svelte';
   import WcagTab from './components/WcagTab.svelte';
   import LayoutsTab from './components/LayoutsTab.svelte';
+  import RebemerTab from './components/RebemerTab.svelte';
   import LivePreview from './components/LivePreview.svelte';
   import SaveBar from './components/SaveBar.svelte';
 
@@ -25,7 +26,7 @@
    * save semantics. The SaveBar (and the section reset button) only
    * make sense for tabs that mutate `tokens[section]`.
    */
-  const readOnlyTabs = ['cheatsheet', 'export', 'wcag'];
+  const readOnlyTabs = ['cheatsheet', 'export', 'wcag', 'rebemer'];
   let isReadOnly = $derived(readOnlyTabs.includes(ui.activeTab));
 
   // Warn before unload when the form has unsaved changes.
@@ -83,6 +84,8 @@
       <LayoutsTab />
     {:else if ui.activeTab === 'misc'}
       <MiscTab />
+    {:else if ui.activeTab === 'rebemer'}
+      <RebemerTab />
     {:else if ui.activeTab === 'export'}
       <ExportImportTab />
     {:else if ui.activeTab === 'cheatsheet'}

@@ -311,3 +311,51 @@ export function getElementLabel(id) {
   const el = findElement(id);
   return el && typeof el.label === 'string' ? el.label : '';
 }
+
+/**
+ * Resolve the human label Bricks shows for an element *type* (e.g.
+ * 'text-basic' → 'Basic Text', 'div' → 'Div').
+ *
+ * This is the label the structure panel renders for an element the user
+ * hasn't renamed — it lives in Bricks' element registry, not on the
+ * element instance, so reBEMer's `lib/element-types.js` map can't cover
+ * every third-party/custom element. We use this as a smarter fallback
+ * than the generic `'item'` when the type map has no entry.
+ *
+ * Bricks publishes no stable JS API for the registry and the shape has
+ * shifted across versions, so we probe a few known shapes (newest-first)
+ * and return `''` when none match — callers then fall back to `'item'`.
+ * The registry stores rich definitions keyed by element name; we read the
+ * `.label` field (a human string Bricks already i18n's).
+ *
+ * @param {string} typeName - Bricks `element.name` (the type slug).
+ * @returns {string} Human label, or '' when unresolved.
+ */
+export function getElementTypeLabel(typeName) {
+  if (!typeName || typeof typeName !== 'string') return '';
+  if (typeof window === 'undefined') return '';
+
+  const app = typeof document !== 'undefined'
+    ? document.querySelector(APP_SELECTOR)?.__vue_app__
+    : null;
+  const gp = app?.config?.globalProperties ?? {};
+
+  // Candidate registries, newest-first. Each is a map keyed by element
+  // name whose values are element definitions carrying a `.label`.
+  const registries = [
+    window.bricks?.elements,
+    gp.$_bricksData?.elements,
+    gp.bricksData?.elements,
+    _state?.elements,
+  ];
+
+  for (const reg of registries) {
+    if (!reg) continue;
+    // Registry may be a plain object (name → def) or a Map.
+    const def = reg instanceof Map ? reg.get(typeName) : reg[typeName];
+    const label = def?.label ?? def?.nicename ?? def?.title;
+    if (typeof label === 'string' && label.trim()) return label;
+  }
+
+  return '';
+}
