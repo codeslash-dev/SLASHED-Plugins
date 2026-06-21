@@ -120,28 +120,6 @@ export function mergedElementTypeMap() {
   return { ...ELEMENT_TYPE_LABEL_MAP, ...getUserElementMap() };
 }
 
-/** Valid container-naming modes (keep in sync with the PHP allow-list). */
-export const CONTAINER_MODES = Object.freeze(['type', 'role', 'generic']);
-
-/**
- * Container-naming mode, sourced from the `rebemer_container_mode`
- * plugin setting:
- *   - `'type'`    (default) names each layout container after its Bricks
- *                 type — `container`, `section`, `div`, `block` — which is
- *                 predictable and matches how most people label wrappers.
- *   - `'role'`    uses the child-aware role inference in
- *                 `suggestContainerName` (header / content / actions / …).
- *   - `'generic'` names every container `'item'` and lets sibling
- *                 auto-numbering disambiguate.
- *
- * @returns {'type'|'role'|'generic'}
- */
-export function getContainerMode() {
-  if (typeof window === 'undefined') return 'type';
-  const m = window.slashedBricksEditor?.rebemerContainerMode;
-  return CONTAINER_MODES.includes(m) ? m : 'type';
-}
-
 /**
  * Element types that are layout containers and should never seed a
  * named element label automatically. Listed explicitly so callers can
@@ -212,58 +190,21 @@ export const SOLE_CHILD_LABEL_OVERRIDES = Object.freeze({
 });
 
 /**
- * Suggest a BEM name for a layout container based on the Bricks type
- * strings of its direct children.
+ * Suggest a BEM name for a layout container.
  *
- * Inspects what kind of content the container holds and returns a
- * semantically appropriate name. Falls back to position-among-siblings
- * when children give no clear signal.
+ * Layout containers are named after their own Bricks type — a `container`
+ * becomes `container`, a `section` becomes `section`, and so on — which is
+ * predictable and matches how most people label wrappers. Unknown or empty
+ * types fall back to the generic `'item'`.
  *
- * @param {string[]} childTypes - Bricks `element.name` values of direct children.
- * @param {number} positionAmongContainerSiblings - 0-based index among layout-container siblings.
- * @param {number} totalContainerSiblings - Total layout-container siblings at this level.
- * @param {'type'|'role'|'generic'} [mode='role'] - `'type'` names the container
- *   after its own Bricks type (`containerType`); `'generic'` returns the plain
- *   `'item'` fallback (sibling auto-numbering then disambiguates); `'role'`
- *   keeps the child-aware inference below.
- * @param {string} [containerType=''] - The container's own Bricks `element.name`
- *   (`container` / `section` / `div` / `block`). Only consulted in `'type'` mode.
+ * Pure function — no dependencies on policy, DOM, or Bricks state.
+ *
+ * @param {string|undefined|null} containerType - The container's own Bricks
+ *   `element.name` (`container` / `section` / `div` / `block`).
  * @returns {string}
  */
-export function suggestContainerName(childTypes, positionAmongContainerSiblings, totalContainerSiblings, mode = 'role', containerType = '') {
-  if (mode === 'type') return containerType || 'item';
-  if (mode === 'generic') return 'item';
-
-  const types = new Set(childTypes.filter(Boolean));
-
-  const has = (...ts) => ts.some(t => types.has(t));
-
-  const hasButton  = has('button', 'button-group');
-  const hasHeading = has('heading');
-  const hasText    = has('text-basic', 'text');
-  const hasImage   = has('image');
-  const hasNav     = has('nav-nested', 'nav-menu');
-  const hasForm    = has('form');
-  const hasIcon    = has('icon', 'icon-box');
-  const hasList    = has('list');
-
-  if (hasForm)                                          return 'form';
-  if (hasNav)                                           return 'nav';
-  if (hasButton && !hasHeading && !hasText)             return 'actions';
-  if (hasImage && !hasText && !hasHeading && !hasButton) return 'media';
-  if (hasHeading && !hasText && !hasButton)             return 'header';
-  if (hasText && !hasHeading && !hasButton)             return 'body';
-  if (hasHeading && hasText)                            return 'content';
-  if (hasHeading && hasButton)                          return 'header';
-  if (hasIcon && !hasText && !hasHeading)               return 'icon-group';
-  if (hasList)                                          return 'list-wrap';
-
-  // Position-based fallback when children give no clear signal
-  if (totalContainerSiblings > 1) {
-    if (positionAmongContainerSiblings === 0)                              return 'header';
-    if (positionAmongContainerSiblings === totalContainerSiblings - 1)    return 'footer';
-    return 'body';
-  }
-
-  return 'content';
+export function suggestContainerName(containerType) {
+  if (typeof containerType !== 'string') return 'item';
+  const normalized = containerType.trim();
+  return LAYOUT_CONTAINER_TYPES.has(normalized) ? normalized : 'item';
 }

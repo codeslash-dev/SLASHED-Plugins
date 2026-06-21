@@ -196,14 +196,6 @@ class Slashed_REST_Controller {
 							'type'     => 'object',
 							'required' => false,
 						),
-						'rebemer_container_mode' => array(
-							'type'              => 'string',
-							'required'          => false,
-							'sanitize_callback' => 'sanitize_key',
-							'validate_callback' => function ( $value ) {
-								return in_array( (string) $value, array( 'type', 'role', 'generic' ), true );
-							},
-						),
 					),
 				),
 			)
@@ -361,7 +353,6 @@ class Slashed_REST_Controller {
 		$manual_css_mode        = $request->get_param( 'manual_css_mode' );
 		$configurator_url       = $request->get_param( 'configurator_url' );
 		$rebemer_element_map    = $request->get_param( 'rebemer_element_map' );
-		$rebemer_container_mode = $request->get_param( 'rebemer_container_mode' );
 
 		if (
 			null === $html_font_size &&
@@ -369,8 +360,7 @@ class Slashed_REST_Controller {
 			null === $show_class_hints &&
 			null === $manual_css_mode &&
 			null === $configurator_url &&
-			null === $rebemer_element_map &&
-			null === $rebemer_container_mode
+			null === $rebemer_element_map
 		) {
 			return rest_ensure_response( Slashed_Token_Store::get_plugin_settings() );
 		}
@@ -394,11 +384,6 @@ class Slashed_REST_Controller {
 		}
 		if ( null !== $rebemer_element_map ) {
 			$settings['rebemer_element_map'] = self::sanitize_rebemer_element_map( $rebemer_element_map );
-		}
-		if ( null !== $rebemer_container_mode ) {
-			$settings['rebemer_container_mode'] = in_array( (string) $rebemer_container_mode, array( 'type', 'role', 'generic' ), true )
-				? (string) $rebemer_container_mode
-				: 'type';
 		}
 
 		Slashed_Token_Store::update_plugin_settings( $settings );
@@ -584,12 +569,6 @@ class Slashed_REST_Controller {
 			if ( isset( $raw['rebemer_element_map'] ) && is_array( $raw['rebemer_element_map'] ) ) {
 				$existing['rebemer_element_map'] = self::sanitize_rebemer_element_map( $raw['rebemer_element_map'] );
 				$settings_imported               = true;
-			}
-			if ( isset( $raw['rebemer_container_mode'] )
-				&& in_array( (string) $raw['rebemer_container_mode'], array( 'type', 'role', 'generic' ), true )
-			) {
-				$existing['rebemer_container_mode'] = (string) $raw['rebemer_container_mode'];
-				$settings_imported                  = true;
 			}
 
 			if ( $settings_imported ) {

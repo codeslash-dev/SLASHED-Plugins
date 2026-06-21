@@ -26,7 +26,7 @@
   import { slugify } from '../lib/slugify.js';
   import { validateName } from '../lib/validate.js';
   import { applyToSubtree, buildPlan, computeBlockAssignment } from '../lib/apply.js';
-  import { suggestElementName, isLayoutContainer, suggestContainerName, SOLE_CHILD_LABEL_OVERRIDES, getContainerMode } from '../lib/element-types.js';
+  import { suggestElementName, isLayoutContainer, suggestContainerName, SOLE_CHILD_LABEL_OVERRIDES } from '../lib/element-types.js';
   import { pickMigratableKeys, pickSkippedKeys } from '../lib/migrate-keys.js';
   import Row from './Row.svelte';
   import Toast from './Toast.svelte';
@@ -143,8 +143,7 @@
         // Prefer the type map; when it has no entry, fall back to the
         // human label Bricks shows in the structure panel (slugified)
         // before resorting to the generic 'item'. Containers are left
-        // for Pass 2's role inference (never the type label → no
-        // `card__container`).
+        // for Pass 2, which names them after their own Bricks type.
         const mapped = suggestElementName(elementType, '');
         if (mapped) {
           name = mapped;
@@ -189,8 +188,6 @@
     // Pass 2: context-aware refinement using parent→children relationships.
     // Skips user-labelled elements (suggestedFrom === 'label').
     if (seeded.length > 1) {
-      const containerMode = getContainerMode();
-
       // Build parent → direct child ids map using a depth-tracking stack.
       const childrenOf = new Map(subtree.map(e => [e.id, []]));
       const stack = [];
@@ -213,20 +210,14 @@
           if (t) typeCount.set(t, (typeCount.get(t) ?? 0) + 1);
         }
 
-        // Layout-container children in document order (for positional hints).
-        const containerIds = childIds.filter(id => isLayoutContainer(elById.get(id)?.name ?? ''));
-
         for (const id of childIds) {
           const row = rowById.get(id);
           const el  = elById.get(id);
           if (!row || !el || row.suggestedFrom === 'label') continue;
 
           if (isLayoutContainer(el.name)) {
-            // Infer container role from its children's types.
-            const gcTypes = (childrenOf.get(id) ?? [])
-              .map(gcId => elById.get(gcId)?.name ?? '').filter(Boolean);
-            const pos = containerIds.indexOf(id);
-            row.name = suggestContainerName(gcTypes, pos, containerIds.length, containerMode, el.name);
+            // Name the container after its own Bricks type (container/section/…).
+            row.name = suggestContainerName(el.name);
             row.suggestedFrom = 'element-type';
           } else if ((typeCount.get(el.name) ?? 0) === 1) {
             // Sole element of its type → apply semantic override if available.

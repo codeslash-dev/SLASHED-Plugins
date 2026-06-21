@@ -51,7 +51,7 @@ class Slashed_Tab_Registry {
 	 *
 	 * - Variables/Classes are consolidated into Cheatsheet (search + filter toggle).
 	 * - Bundle settings moved to the PHP Plugin Settings page.
-	 * - Hooks moved to a standalone PHP subpage (class-hooks-page.php).
+	 * - Hooks moved to the Bricks settings PHP subpage (class-bricks-settings-page.php).
 	 *
 	 * @return array<string,string> Slug → display label.
 	 */

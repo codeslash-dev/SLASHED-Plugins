@@ -48,15 +48,8 @@
 
   const savedMap = (meta.pluginSettings && meta.pluginSettings.rebemer_element_map) || {};
 
-  const CONTAINER_MODES = ['type', 'role', 'generic'];
-
   /** Sparse override map: bricksType → bemName (only entries that differ). */
   let overrides = $state({ ...savedMap });
-  let containerMode = $state(
-    CONTAINER_MODES.includes(meta.pluginSettings?.rebemer_container_mode)
-      ? meta.pluginSettings.rebemer_container_mode
-      : 'type',
-  );
 
   let saving = $state(false);
   let status = $state('');
@@ -98,16 +91,13 @@
     try {
       const res = await saveSettings({
         rebemer_element_map: overrides,
-        rebemer_container_mode: containerMode,
       });
       // Reflect the server-sanitised result so dropped/normalised entries show.
       if (res && typeof res === 'object' && !res.dev) {
         if (res.rebemer_element_map && typeof res.rebemer_element_map === 'object') {
           overrides = { ...res.rebemer_element_map };
         }
-        if (res.rebemer_container_mode) containerMode = res.rebemer_container_mode;
         meta.pluginSettings.rebemer_element_map = { ...overrides };
-        meta.pluginSettings.rebemer_container_mode = containerMode;
       }
       status = 'Saved. New defaults apply next time you open the reBEMer panel.';
     } catch (e) {
@@ -119,7 +109,6 @@
 
   function resetAll() {
     overrides = {};
-    containerMode = 'type';
     status = 'Cleared — save to apply.';
     error = '';
   }
@@ -137,22 +126,11 @@
   </header>
 
   <section class="rebemer-tab__group">
-    <label class="rebemer-tab__mode">
-      <span class="rebemer-tab__mode-label">Layout containers (section / container / div / block)</span>
-      <select bind:value={containerMode}>
-        <option value="type">Element type (container, section, div…)</option>
-        <option value="role">Smart role names (header, body, content, actions…)</option>
-        <option value="generic">Generic (item, item-2…)</option>
-      </select>
-    </label>
     <p class="muted small">
-      Element-type mode names each container after its own Bricks type; role
-      mode infers a name from a container's children; generic mode names every
-      container <code>item</code> and lets auto-numbering disambiguate.
+      Layout containers (<code>section</code> / <code>container</code> /
+      <code>div</code> / <code>block</code>) are named after their own Bricks
+      type and aren't listed below.
     </p>
-  </section>
-
-  <section class="rebemer-tab__group">
     <p class="muted small">Showing {defaults.length} elements registered in Bricks (including those added by plugins or custom code).</p>
     <div class="rebemer-tab__table" role="table" aria-label="Element type to BEM name map">
       <div class="rebemer-tab__row rebemer-tab__row--head" role="row">
@@ -213,15 +191,6 @@
   .muted { color: #50575e; }
   .small { font-size: 12px; }
   .rebemer-tab__group { margin-top: 18px; }
-
-  .rebemer-tab__mode {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    max-width: 520px;
-  }
-  .rebemer-tab__mode-label { font-weight: 600; }
-  .rebemer-tab__mode select { max-width: 100%; }
 
   .rebemer-tab__table {
     display: flex;

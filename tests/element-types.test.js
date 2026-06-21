@@ -10,63 +10,23 @@ import {
   suggestContainerName,
   suggestElementName,
   mergedElementTypeMap,
-  getContainerMode,
   ELEMENT_TYPE_LABEL_MAP,
   SOLE_CHILD_LABEL_OVERRIDES,
 } from '../SLASHED-for-WP/integrations/bricks/editor-app/src/lib/element-types.js';
 
-const s = (types, pos = 0, total = 1) => suggestContainerName(types, pos, total);
-
 describe('suggestContainerName', () => {
-  test('form → "form"',      () => assert.equal(s(['form']), 'form'));
-  test('nav-nested → "nav"', () => assert.equal(s(['nav-nested']), 'nav'));
-  test('nav-menu → "nav"',   () => assert.equal(s(['nav-menu']), 'nav'));
+  // Layout containers are named after their own Bricks type.
+  test('container → "container"', () => assert.equal(suggestContainerName('container'), 'container'));
+  test('section → "section"',     () => assert.equal(suggestContainerName('section'), 'section'));
+  test('div → "div"',             () => assert.equal(suggestContainerName('div'), 'div'));
+  test('block → "block"',         () => assert.equal(suggestContainerName('block'), 'block'));
 
-  test('button only → "actions"',       () => assert.equal(s(['button']), 'actions'));
-  test('button-group only → "actions"', () => assert.equal(s(['button-group']), 'actions'));
-
-  test('image only → "media"', () => assert.equal(s(['image']), 'media'));
-
-  test('heading only → "header"',        () => assert.equal(s(['heading']), 'header'));
-  test('heading + button → "header"',    () => assert.equal(s(['heading', 'button']), 'header'));
-
-  test('text only → "body"',             () => assert.equal(s(['text']), 'body'));
-  test('text-basic only → "body"',       () => assert.equal(s(['text-basic']), 'body'));
-
-  test('heading + text → "content"',                () => assert.equal(s(['heading', 'text']), 'content'));
-  test('heading + text-basic → "content"',          () => assert.equal(s(['heading', 'text-basic']), 'content'));
-  test('heading + text + button → "content"',       () => assert.equal(s(['heading', 'text', 'button']), 'content'));
-  test('heading + text-basic + button → "content"', () => assert.equal(s(['heading', 'text-basic', 'button']), 'content'));
-
-  test('icon only → "icon-group"',      () => assert.equal(s(['icon']), 'icon-group'));
-  test('icon-box only → "icon-group"',  () => assert.equal(s(['icon-box']), 'icon-group'));
-
-  test('list → "list-wrap"', () => assert.equal(s(['list']), 'list-wrap'));
-
-  test('empty → "content" (single sibling)', () => assert.equal(s([], 0, 1), 'content'));
-
-  test('positional: first of multiple siblings → "header"',
-    () => assert.equal(s([], 0, 3), 'header'));
-  test('positional: last of multiple siblings → "footer"',
-    () => assert.equal(s([], 2, 3), 'footer'));
-  test('positional: middle of multiple siblings → "body"',
-    () => assert.equal(s([], 1, 3), 'body'));
-
-  // Container mode gate (workstream 3).
-  test('generic mode → "item" regardless of children',
-    () => assert.equal(suggestContainerName(['heading', 'text'], 0, 1, 'generic'), 'item'));
-  test('role mode (explicit) still infers',
-    () => assert.equal(suggestContainerName(['heading', 'text'], 0, 1, 'role'), 'content'));
-
-  // Type mode (default): name the container after its own Bricks type.
-  test('type mode → container type "container"',
-    () => assert.equal(suggestContainerName(['text', 'icon', 'button'], 0, 1, 'type', 'container'), 'container'));
-  test('type mode → "section"',
-    () => assert.equal(suggestContainerName([], 0, 1, 'type', 'section'), 'section'));
-  test('type mode ignores children entirely',
-    () => assert.equal(suggestContainerName(['heading', 'text', 'button'], 0, 3, 'type', 'div'), 'div'));
-  test('type mode with missing type → "item"',
-    () => assert.equal(suggestContainerName(['text'], 0, 1, 'type', ''), 'item'));
+  // Unknown / empty types fall back to the generic 'item'.
+  test('empty string → "item"',      () => assert.equal(suggestContainerName(''), 'item'));
+  test('undefined → "item"',         () => assert.equal(suggestContainerName(undefined), 'item'));
+  test('null → "item"',              () => assert.equal(suggestContainerName(null), 'item'));
+  test('non-container type → "item"', () => assert.equal(suggestContainerName('heading'), 'item'));
+  test('input is trimmed',           () => assert.equal(suggestContainerName(' section '), 'section'));
 });
 
 describe('suggestElementName', () => {
@@ -104,34 +64,6 @@ describe('mergedElementTypeMap (user overrides)', () => {
       assert.equal(suggestElementName('heading'), 'hed');
       // The frozen base is never mutated.
       assert.equal(ELEMENT_TYPE_LABEL_MAP.heading, 'heading');
-    } finally {
-      delete globalThis.window;
-    }
-  });
-});
-
-describe('getContainerMode', () => {
-  test('defaults to "type" with no window', () => assert.equal(getContainerMode(), 'type'));
-  test('reads "generic" from localized config', () => {
-    globalThis.window = { slashedBricksEditor: { rebemerContainerMode: 'generic' } };
-    try {
-      assert.equal(getContainerMode(), 'generic');
-    } finally {
-      delete globalThis.window;
-    }
-  });
-  test('reads "role" from localized config', () => {
-    globalThis.window = { slashedBricksEditor: { rebemerContainerMode: 'role' } };
-    try {
-      assert.equal(getContainerMode(), 'role');
-    } finally {
-      delete globalThis.window;
-    }
-  });
-  test('unknown value falls back to "type"', () => {
-    globalThis.window = { slashedBricksEditor: { rebemerContainerMode: 'nonsense' } };
-    try {
-      assert.equal(getContainerMode(), 'type');
     } finally {
       delete globalThis.window;
     }

@@ -126,11 +126,9 @@ class Slashed_Token_Store {
 		'manual_css_mode'        => true,
 		'configurator_url'       => '',
 		// reBEMer: sparse Bricks-type → BEM-name overrides ({} = built-in
-		// defaults only) and how layout containers are named by default.
-		// 'type' = after the Bricks type (container/section/div/block),
-		// 'role' = child-aware inference, 'generic' = item + numbering.
+		// defaults only). Layout containers are always named after their own
+		// Bricks type (container/section/div/block).
 		'rebemer_element_map'    => array(),
-		'rebemer_container_mode' => 'type',
 	);
 
 	/**
@@ -146,6 +144,10 @@ class Slashed_Token_Store {
 	public static function get_plugin_settings() {
 		$stored = get_option( self::SETTINGS_OPTION_NAME, array() );
 		$stored = is_array( $stored ) ? $stored : array();
+		// Drop any retired keys (e.g. the removed rebemer_container_mode) that
+		// upgraded sites may still carry, so they never leak back into REST
+		// responses or get re-written below.
+		$stored = array_intersect_key( $stored, self::PLUGIN_SETTING_DEFAULTS );
 		$merged = array_merge( self::PLUGIN_SETTING_DEFAULTS, $stored );
 
 		// css_bundle is owned by Slashed_Settings whenever the shared layer is
@@ -169,6 +171,8 @@ class Slashed_Token_Store {
 	 * @param array $settings Plugin settings map.
 	 */
 	public static function update_plugin_settings( array $settings ) {
+		// Persist only known keys so retired settings are stripped on write.
+		$settings = array_intersect_key( $settings, self::PLUGIN_SETTING_DEFAULTS );
 		if ( isset( $settings['css_bundle'] ) && class_exists( 'Slashed_Settings' ) ) {
 			Slashed_Settings::set_css_bundle( $settings['css_bundle'] );
 			unset( $settings['css_bundle'] );

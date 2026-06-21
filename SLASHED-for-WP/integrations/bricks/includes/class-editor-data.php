@@ -79,14 +79,11 @@ class Slashed_Bricks_Editor_Data {
 				'colorPanel'           => $color_panel_data,
 				'variableHints'        => self::get_variable_hints(),
 				// reBEMer default-naming config: sparse type → BEM-name
-				// overrides merged over the built-in map editor-side, plus
-				// how layout containers are named ('type' | 'role' | 'generic').
+				// overrides merged over the built-in map editor-side.
+				// Layout containers are always named after their Bricks type.
 				'rebemerElementMap'    => isset( $plugin_settings['rebemer_element_map'] ) && is_array( $plugin_settings['rebemer_element_map'] )
 					? (object) $plugin_settings['rebemer_element_map']
 					: (object) array(),
-				'rebemerContainerMode' => isset( $plugin_settings['rebemer_container_mode'] )
-					? (string) $plugin_settings['rebemer_container_mode']
-					: 'type',
 			)
 		);
 	}
