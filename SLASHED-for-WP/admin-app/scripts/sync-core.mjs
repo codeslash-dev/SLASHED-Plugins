@@ -187,6 +187,14 @@ async function main() {
     resolve(SRC, 'data/api-index.generated.json'),
   );
 
+  // The bundle manifest — required by the synced lib/bundles.js (which is part
+  // of the build graph via lib/uiState.js). Fetched like api-index so the
+  // remote sync path produces a buildable tree.
+  await syncGhFile(
+    `${CFG_SRC}/data/bundles.generated.json`,
+    resolve(SRC, 'data/bundles.generated.json'),
+  );
+
   // The token id registry — paired with lib/codec.js for the "Open in
   // Configurator" config code (kept identical to the configurator's copy).
   // Tolerant: until the configurator's codec feature lands on the framework's
