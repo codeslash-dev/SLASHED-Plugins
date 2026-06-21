@@ -9,6 +9,25 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-06-21
+
+### Added
+
+- Consolidate Bricks options into a tabbed settings page
+- Move BEM defaults to a dedicated admin subpage
+- List all registered Bricks elements in settings
+
+### Changed
+
+- Satisfy WordPress PHPCS in the reBEMer admin page
+
+### Fixed
+
+- Address CodeRabbit review findings
+- Address review findings on the elements helper + tab
+
+## [0.3.5] - 2026-06-21
+
 ### Changed
 
 - Consolidated every Bricks-specific option into one tabbed **Bricks settings**

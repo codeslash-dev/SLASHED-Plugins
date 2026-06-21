@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, design-tokens, dark-mode, bem
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.3.4
+Stable tag: 0.3.5
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -155,6 +155,15 @@ No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loa
 Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The plugin loads that exact version. Local mode serves the bundled `dist/` CSS, with a one-click updater and rollback list.
 
 == Changelog ==
+
+= 0.3.5 =
+* Changed: Consolidated every Bricks-specific option into one tabbed **Bricks settings**
+* Changed: admin subpage (Element names / Options / Filter hooks), placed after Manual
+* Changed: CSS. Class hints moved off Plugin Settings; the standalone Filter Hooks page
+* Changed: was folded into a tab.
+* Changed: reBEMer now always names layout containers (section / container / div / block)
+* Changed: after their own Bricks type. The `role` and `generic` container-naming modes,
+* Changed: and the `rebemer_container_mode` setting, were removed.
 
 = 0.3.4 =
 * Maintenance release.
