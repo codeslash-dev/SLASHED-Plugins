@@ -438,7 +438,7 @@ class Slashed_REST_Controller {
 	 * @param mixed $raw Untrusted input.
 	 * @return array<string,string>
 	 */
-	private static function sanitize_rebemer_element_map( $raw ) {
+	public static function sanitize_rebemer_element_map( $raw ) {
 		if ( ! is_array( $raw ) ) {
 			return array();
 		}

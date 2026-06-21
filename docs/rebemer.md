@@ -63,22 +63,24 @@ that.
   by default they take their own Bricks type (`container`, `section`, …), or —
   in `role` mode — a role inferred from their children
   (`header`/`body`/`content`/`actions`/…) via `suggestContainerName`.
-- **Configurable defaults** — the admin SPA's **reBEMer** tab persists a
-  sparse element-type → BEM-name override map (`rebemer_element_map`) and a
-  container-naming mode (`rebemer_container_mode`: `type` *(default)* = name
-  each container after its own Bricks type (`container`/`section`/`div`/`block`),
-  `role` = child-aware inference (`header`/`content`/…), `generic` = `item` +
-  auto-numbering). Both are stored in the
-  `slashed_bricks_settings` option, sanitized against the same BEM grammar as
-  `validate.js`, and localized onto `window.slashedBricksEditor` by
-  `class-editor-data.php`; `element-types.js` merges the overrides over the
-  frozen built-in map at panel-open time. The settings table lists **every**
-  element registered in Bricks — core, plugin, and custom — not just the
-  built-in map: `Slashed_Bricks_Elements::get_all()` reads Bricks'
-  `\Bricks\Elements::$elements` registry (cached per element-set) and ships it
-  to the admin app as `window.slashedApp.bricksElements` (name → label). Layout
+- **Configurable defaults** — a dedicated **reBEMer** admin subpage
+  (`Slashed_ReBEMer_Page`, a sibling of Manual CSS under the SLASHED menu —
+  *not* part of the Design Settings SPA) persists a sparse element-type →
+  BEM-name override map (`rebemer_element_map`) and a container-naming mode
+  (`rebemer_container_mode`: `type` *(default)* = name each container after its
+  own Bricks type (`container`/`section`/`div`/`block`), `role` = child-aware
+  inference (`header`/`content`/…), `generic` = `item` + auto-numbering). Both
+  are stored in the `slashed_bricks_settings` option, sanitized against the same
+  BEM grammar as `validate.js` (the page reuses
+  `Slashed_REST_Controller::sanitize_rebemer_element_map`), and localized onto
+  `window.slashedBricksEditor` by `class-editor-data.php`; `element-types.js`
+  merges the overrides over the frozen built-in map at panel-open time. The page
+  lists **every** element registered in Bricks — core, plugin, and custom — not
+  just the built-in map: `Slashed_Bricks_Elements::get_all()` reads Bricks'
+  `\Bricks\Elements::$elements` registry (cached per element-set). Layout
   containers are omitted from that table since their naming comes from the
-  container mode, not the type map.
+  container mode. (The standalone Bricks plugin, which has no top-level SLASHED
+  menu, still exposes the same controls as a tab in its admin SPA.)
 
 ## Architecture
 

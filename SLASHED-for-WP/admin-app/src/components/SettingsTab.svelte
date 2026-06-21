@@ -1,7 +1,6 @@
 <script>
   import { ui, wpSettings } from '../lib/store.svelte.js';
   import { savePluginSettings } from '../lib/wp-api.js';
-  import RebemerSettings from './RebemerSettings.svelte';
 
   let form = $state({
     manual_css_mode: wpSettings.manual_css_mode ?? true,
@@ -88,8 +87,6 @@
       {/if}
     </div>
   </form>
-
-  <RebemerSettings />
 </section>
 
 <style>

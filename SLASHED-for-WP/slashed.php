@@ -95,6 +95,7 @@ require_once SLASHED_PATH . 'includes/class-manual-css-page.php'; // needed on f
 if ( is_admin() ) {
 	require_once SLASHED_PATH . 'includes/class-admin.php';
 	require_once SLASHED_PATH . 'includes/class-hooks-page.php';
+	require_once SLASHED_PATH . 'includes/class-rebemer-page.php';
 	add_action(
 		'plugins_loaded',
 		function () {
@@ -103,6 +104,7 @@ if ( is_admin() ) {
 			new Slashed_Framework_Updater();
 			new Slashed_Hooks_Page();
 			new Slashed_Manual_CSS_Page();
+			new Slashed_ReBEMer_Page();
 		}
 	);
 }
