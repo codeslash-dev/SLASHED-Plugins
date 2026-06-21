@@ -103,6 +103,10 @@ function onProbed() {
   // launcher is reachable from anywhere in the builder.
   mountColorApp();
 
+  // reBEMer master switch: when disabled we still ran the probe (the colour
+  // tools need the live Bricks app), but skip the BEM badge pipeline entirely.
+  if (cfg && cfg.rebemerEnabled === false) return;
+
   // The structure panel may not be in the DOM yet on first paint;
   // observe body once for its arrival, then narrow to the panel.
   const existing = document.querySelector(STRUCTURE_PANEL_SELECTOR);

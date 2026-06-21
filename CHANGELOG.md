@@ -9,6 +9,17 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+### Added
+
+- New **reBEMer** tab in Bricks settings holding the reBEMer enable/disable
+  toggle (the in-builder BEM badges + panel) alongside the element default-name
+  list.
+- Bricks settings → Options now has a toggle for the bottom-right "Colors"
+  launcher pill.
+- Layout containers (section / container / div / block) can now be given
+  default BEM names in the reBEMer element list; they still default to their
+  own Bricks type when left blank.
+
 ## [0.3.5] - 2026-06-21
 
 ### Added

@@ -192,12 +192,14 @@ export const SOLE_CHILD_LABEL_OVERRIDES = Object.freeze({
 /**
  * Suggest a BEM name for a layout container.
  *
- * Layout containers are named after their own Bricks type — a `container`
- * becomes `container`, a `section` becomes `section`, and so on — which is
- * predictable and matches how most people label wrappers. Unknown or empty
- * types fall back to the generic `'item'`.
+ * Layout containers default to their own Bricks type — a `container` becomes
+ * `container`, a `section` becomes `section`, and so on — which is predictable
+ * and matches how most people label wrappers. An admin override for the type
+ * (from the Bricks settings "Element names" table) wins when present. Unknown
+ * or empty types fall back to the generic `'item'`.
  *
- * Pure function — no dependencies on policy, DOM, or Bricks state.
+ * Reads the merged override map, so it is not purely referentially transparent
+ * across an admin save — but it has no DOM/Bricks dependencies.
  *
  * @param {string|undefined|null} containerType - The container's own Bricks
  *   `element.name` (`container` / `section` / `div` / `block`).
@@ -206,5 +208,6 @@ export const SOLE_CHILD_LABEL_OVERRIDES = Object.freeze({
 export function suggestContainerName(containerType) {
   if (typeof containerType !== 'string') return 'item';
   const normalized = containerType.trim();
-  return LAYOUT_CONTAINER_TYPES.has(normalized) ? normalized : 'item';
+  if (!LAYOUT_CONTAINER_TYPES.has(normalized)) return 'item';
+  return mergedElementTypeMap()[normalized] || normalized;
 }
