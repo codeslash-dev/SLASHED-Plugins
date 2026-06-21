@@ -9,6 +9,30 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.7] - 2026-06-21
+
+### Added
+
+- "Open in configurator" with current tokens preloaded
+
+### Fixed
+
+- Vendor bundles manifest so the synced build resolves
+- Re-vendor hardened config codec
+- Tolerate missing token registry during core sync
+
+## [0.3.7] - 2026-06-21
+
+### Added
+
+- "Open in configurator" with current tokens preloaded
+
+### Fixed
+
+- Vendor bundles manifest so the synced build resolves
+- Re-vendor hardened config codec
+- Tolerate missing token registry during core sync
+
 ## [0.3.6] - 2026-06-21
 
 ### Added

@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, design-tokens, dark-mode, bem
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.3.6
+Stable tag: 0.3.7
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -155,6 +155,12 @@ No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loa
 Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The plugin loads that exact version. Local mode serves the bundled `dist/` CSS, with a one-click updater and rollback list.
 
 == Changelog ==
+
+= 0.3.7 =
+* Added: "Open in configurator" with current tokens preloaded
+* Fixed: Vendor bundles manifest so the synced build resolves
+* Fixed: Re-vendor hardened config codec
+* Fixed: Tolerate missing token registry during core sync
 
 = 0.3.6 =
 * Added: New **reBEMer** tab in Bricks settings holding the reBEMer enable/disable
