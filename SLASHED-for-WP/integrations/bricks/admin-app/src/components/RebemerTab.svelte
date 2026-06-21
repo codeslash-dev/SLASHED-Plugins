@@ -135,8 +135,8 @@
   <section class="rebemer-tab__group">
     <p class="muted small">
       Layout containers (<code>section</code> / <code>container</code> /
-      <code>div</code> / <code>block</code>) are named after their own Bricks
-      type and aren't listed below.
+      <code>div</code> / <code>block</code>) default to their own Bricks type —
+      set a name below to override that.
     </p>
     <p class="muted small">Showing {defaults.length} elements registered in Bricks (including those added by plugins or custom code).</p>
     <div class="rebemer-tab__table" role="table" aria-label="Element type to BEM name map">

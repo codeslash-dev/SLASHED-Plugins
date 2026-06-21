@@ -85,7 +85,7 @@ class Slashed_Bricks_Editor_Data {
 				'rebemerEnabled'       => ! empty( $plugin_settings['rebemer_enabled'] ),
 				// reBEMer default-naming config: sparse type → BEM-name
 				// overrides merged over the built-in map editor-side.
-				// Layout containers are always named after their Bricks type.
+				// Layout containers default to their Bricks type name (overridable).
 				'rebemerElementMap'    => isset( $plugin_settings['rebemer_element_map'] ) && is_array( $plugin_settings['rebemer_element_map'] )
 					? (object) $plugin_settings['rebemer_element_map']
 					: (object) array(),
