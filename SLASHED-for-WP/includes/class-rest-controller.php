@@ -407,10 +407,10 @@ class Slashed_REST_Controller {
 
 	/**
 	 * Maximum number of element-type → BEM-name overrides accepted in one
-	 * save. Bricks ships ~80 element types; the cap is comfortably above
-	 * that while bounding payload abuse.
+	 * save. Bricks ships ~80 element types and plugins/custom code add more;
+	 * the cap is comfortably above that while bounding payload abuse.
 	 */
-	const REBEMER_MAP_CAP = 200;
+	const REBEMER_MAP_CAP = 500;
 
 	/**
 	 * Matches the BEM grammar enforced editor-side in
@@ -438,7 +438,7 @@ class Slashed_REST_Controller {
 	 * @param mixed $raw Untrusted input.
 	 * @return array<string,string>
 	 */
-	private static function sanitize_rebemer_element_map( $raw ) {
+	public static function sanitize_rebemer_element_map( $raw ) {
 		if ( ! is_array( $raw ) ) {
 			return array();
 		}

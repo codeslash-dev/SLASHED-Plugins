@@ -163,6 +163,7 @@ class Slashed_Token_Page {
 					array( 'configurator_url' => Slashed_Manual_CSS_Page::CONFIGURATOR_URL )
 				),
 				'inventory'          => class_exists( 'Slashed_Bricks_Inventory' ) ? Slashed_Bricks_Inventory::get() : null,
+				'bricksElements'     => class_exists( 'Slashed_Bricks_Elements' ) ? (object) Slashed_Bricks_Elements::get_all() : (object) array(),
 				'classHints'         => self::get_class_hints(),
 				'versions'           => array(
 					'plugin'     => defined( 'SLASHED_VERSION' ) ? SLASHED_VERSION : ( defined( 'SLASHED_BRICKS_VERSION' ) ? SLASHED_BRICKS_VERSION : '' ),

@@ -224,6 +224,7 @@ function slashed_bricks_require_data_classes() {
 	require_once SLASHED_BRICKS_PATH . 'includes/class-css-parser.php';
 	require_once SLASHED_BRICKS_PATH . 'includes/class-color-resolver.php';
 	require_once SLASHED_BRICKS_PATH . 'includes/class-inventory.php';
+	require_once SLASHED_BRICKS_PATH . 'includes/class-elements.php';
 }
 
 /**
