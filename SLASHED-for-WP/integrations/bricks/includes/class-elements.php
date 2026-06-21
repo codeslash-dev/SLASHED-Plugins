@@ -71,6 +71,12 @@ class Slashed_Bricks_Elements {
 		 */
 		$out = apply_filters( 'slashed_bricks/all_elements', $out, $registry );
 
+		// A misbehaving filter must not break the admin page's array_keys()
+		// consumers; coerce anything non-array back to an empty map.
+		if ( ! is_array( $out ) ) {
+			$out = array();
+		}
+
 		set_transient( $cache_key, $out, DAY_IN_SECONDS );
 		return $out;
 	}
@@ -100,7 +106,7 @@ class Slashed_Bricks_Elements {
 					return $instance->label;
 				}
 			} catch ( \Throwable $e ) {
-				// Fall through to the humanised name below.
+				unset( $e ); // Best-effort: fall through to the humanised name below.
 			}
 		}
 

@@ -39,7 +39,8 @@
       if (LAYOUT_CONTAINER_TYPES.has(type)) continue;
       const label = bricksElements[type] || '';
       const fromLabel = slugify(label);
-      const def = ELEMENT_TYPE_LABEL_MAP[type] || (NAME_RE.test(fromLabel) ? fromLabel : '') || 'item';
+      const fromLabelValid = NAME_RE.test(fromLabel) && !RESERVED.has(fromLabel);
+      const def = ELEMENT_TYPE_LABEL_MAP[type] || (fromLabelValid ? fromLabel : '') || 'item';
       rows.push({ type, label, def });
     }
     return rows.sort((a, b) => a.type.localeCompare(b.type));
