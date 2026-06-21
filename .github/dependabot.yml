@@ -16,6 +16,6 @@ updates:
       interval: weekly
 
   - package-ecosystem: npm
-    directory: /SLASHED-for-WP/integrations/bricks/admin-app
+    directory: /SLASHED-for-WP/admin-app
     schedule:
       interval: weekly

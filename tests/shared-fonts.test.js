@@ -8,7 +8,7 @@ import {
   SYSTEM_STACKS,
   detectSystemStack,
   isFontFamilyToken,
-} from '../SLASHED-for-WP/integrations/bricks/admin-app/src/lib/fonts.js';
+} from '../SLASHED-for-WP/admin-app/src/lib/fonts.js';
 
 describe('system stacks', () => {
   test('every stack has a label and a non-empty value', () => {
@@ -31,10 +31,24 @@ describe('system stacks', () => {
 });
 
 describe('isFontFamilyToken', () => {
-  test('matches by namespace, name prefix or syntax', () => {
-    assert.equal(isFontFamilyToken({ namespace: 'font' }), true);
+  test('matches by name prefix or syntax — excludes weight/features/numeric/variation', () => {
+    // Genuine font-family tokens
     assert.equal(isFontFamilyToken({ name: '--sf-font-body' }), true);
+    assert.equal(isFontFamilyToken({ name: '--sf-font-heading' }), true);
+    assert.equal(isFontFamilyToken({ name: '--sf-font-mono' }), true);
+    assert.equal(isFontFamilyToken({ name: '--sf-font-display' }), true);
+    assert.equal(isFontFamilyToken({ name: '--sf-font-geometric' }), true);
     assert.equal(isFontFamilyToken({ syntax: '<font-family>' }), true);
+    // namespace alone is NOT sufficient — font-weight tokens share namespace 'font'
+    assert.equal(isFontFamilyToken({ namespace: 'font' }), false);
+    // Excluded: weight / feature / numeric / variation sibling tokens
+    assert.equal(isFontFamilyToken({ name: '--sf-font-weight-heading', namespace: 'font' }), false);
+    assert.equal(isFontFamilyToken({ name: '--sf-font-weight-bold',    namespace: 'font' }), false);
+    assert.equal(isFontFamilyToken({ name: '--sf-font-features',       namespace: 'font' }), false);
+    assert.equal(isFontFamilyToken({ name: '--sf-font-numeric',        namespace: 'font' }), false);
+    assert.equal(isFontFamilyToken({ name: '--sf-font-variation',      namespace: 'font' }), false);
+    assert.equal(isFontFamilyToken({ name: '--sf-font-weight_bold',    namespace: 'font' }), false);
+    // Unrelated tokens
     assert.equal(isFontFamilyToken({ name: '--sf-color-primary' }), false);
     assert.equal(isFontFamilyToken(null), false);
   });

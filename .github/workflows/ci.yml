@@ -66,23 +66,12 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: |
-            SLASHED-for-WP/integrations/bricks/admin-app/package-lock.json
-            SLASHED-for-WP/admin-app/package-lock.json
+          cache-dependency-path: SLASHED-for-WP/admin-app/package-lock.json
 
-      - name: Install dependencies (bricks admin-app)
-        run: npm ci --prefix SLASHED-for-WP/integrations/bricks/admin-app
-
-      - name: Type-check (svelte-check, bricks admin-app)
-        run: npm --prefix SLASHED-for-WP/integrations/bricks/admin-app run check
-
-      - name: Build (bricks admin-app)
-        run: npm --prefix SLASHED-for-WP/integrations/bricks/admin-app run build
-
-      - name: Install dependencies (new admin-app)
+      - name: Install dependencies
         run: npm ci --prefix SLASHED-for-WP/admin-app
 
-      - name: Build (new admin-app)
+      - name: Build
         working-directory: SLASHED-for-WP/admin-app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -134,16 +123,6 @@ jobs:
       - name: Static analysis (PHPStan)
         run: composer phpstan
 
-      - name: Cheatsheet coverage
-        run: npm run check:cheatsheet
-
-      - name: Admin-app ↔ framework drift
-        run: |
-          REF=$(grep -oE "define\( *'SLASHED_CSS_REF', *'[^']*'" SLASHED-for-WP/slashed.php | grep -oE "v[0-9][^']*")
-          echo "Cloning framework $REF for admin-app drift check"
-          git clone --depth 1 --branch "$REF" https://github.com/codeslash-dev/SLASHED.git .framework
-          SLASHED_FRAMEWORK_DIR=.framework npm run check:admin-app
-
   dependency-audit:
     name: Dependency vulnerability audit
     runs-on: ubuntu-latest
@@ -164,10 +143,6 @@ jobs:
           npm ci --prefix SLASHED-for-WP/integrations/bricks/editor-app
           npm audit --audit-level=high --prefix SLASHED-for-WP/integrations/bricks/editor-app
       - name: Audit admin-app dependencies
-        run: |
-          npm ci --prefix SLASHED-for-WP/integrations/bricks/admin-app
-          npm audit --audit-level=high --prefix SLASHED-for-WP/integrations/bricks/admin-app
-      - name: Audit new admin-app dependencies
         run: |
           npm ci --prefix SLASHED-for-WP/admin-app
           npm audit --audit-level=high --prefix SLASHED-for-WP/admin-app

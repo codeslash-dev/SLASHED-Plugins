@@ -1,6 +1,6 @@
 {
   "name": "slashed-for-wp",
-  "version": "0.3.6",
+  "version": "0.3.8",
   "type": "module",
   "private": true,
   "description": "SLASHED for WordPress — Bricks Builder and Gutenberg integrations for the SLASHED cascade-layer CSS framework.",
@@ -19,9 +19,8 @@
     "build:data": "node scripts/gen-bricks-inventory.js && node scripts/gen-class-hints.js && node scripts/gen-variables-hints.js",
     "sync-dist": "node scripts/sync-plugin-dist.js",
     "build:editor-app": "npm --prefix SLASHED-for-WP/integrations/bricks/editor-app run build",
-    "build:admin-app": "npm --prefix SLASHED-for-WP/integrations/bricks/admin-app run build",
-    "build:new-admin-app": "(cd SLASHED-for-WP/admin-app && npm ci && npm run build)",
-    "build:apps": "npm run build:editor-app && npm run build:admin-app && npm run build:new-admin-app",
+    "build:admin-app": "(cd SLASHED-for-WP/admin-app && npm ci && npm run build)",
+    "build:apps": "npm run build:editor-app && npm run build:admin-app",
     "build:zip": "node scripts/zip-plugin.js",
     "build": "npm run build:data && npm run sync-dist && npm run build:apps && npm run build:zip",
     "build:plugin": "node scripts/zip-plugin.js",
@@ -32,9 +31,6 @@
     "lint:css:fix": "stylelint \"SLASHED-for-WP/**/*.css\" --fix",
     "lint:php": "node scripts/lint-php.js",
     "lint": "npm run lint:css && npm run lint:php",
-    "check:cheatsheet": "node scripts/check-cheatsheet.js",
-    "check:admin-app": "node scripts/check-admin-app.js",
-    "check": "node scripts/check-admin-app.js && node scripts/check-cheatsheet.js",
     "test": "node --test tests/*.test.js"
   },
   "devDependencies": {

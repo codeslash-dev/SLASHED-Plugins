@@ -52,7 +52,7 @@ asset.
 
 ```sh
 npm --prefix SLASHED-for-WP/integrations/bricks/editor-app ci   # one-time
-npm --prefix SLASHED-for-WP/integrations/bricks/admin-app  ci   # one-time
+npm --prefix SLASHED-for-WP/admin-app                      ci   # one-time
 
 npm run build:data    # regenerate data/inventory.json + data/classes-hints.json
 npm run sync-dist     # copy framework CSS bundles into SLASHED-for-WP/dist/

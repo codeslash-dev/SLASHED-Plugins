@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const pluginLib = resolve(here, '../SLASHED-for-WP/integrations/bricks/admin-app/src/lib');
+const pluginLib = resolve(here, '../SLASHED-for-WP/admin-app/src/lib');
 // The framework is normally checked out as a sibling of the plugin repo.
 const frameworkLib = resolve(here, '../../SLASHED/configurator/src/lib');
 

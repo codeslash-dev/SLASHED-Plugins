@@ -11,7 +11,7 @@ import {
   buildClamp,
   TEXT_STEPS,
   RATIOS,
-} from '../SLASHED-for-WP/integrations/bricks/admin-app/src/lib/scale.js';
+} from '../SLASHED-for-WP/admin-app/src/lib/scale.js';
 
 describe('modular value', () => {
   test('index 0 is the base', () => {

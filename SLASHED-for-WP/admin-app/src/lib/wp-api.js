@@ -46,7 +46,7 @@ export function clearOverrides() {
   return call('/tokens/overrides', 'DELETE');
 }
 
-/** Fetch plugin-level settings (bundle, html_font_size, manual_css_mode, ...). */
+/** Fetch plugin-level settings (bundle, html_font_size, configurator_url, ...). */
 export function fetchPluginSettings() {
   return call('/settings');
 }

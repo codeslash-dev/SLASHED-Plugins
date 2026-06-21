@@ -123,7 +123,6 @@ class Slashed_Token_Store {
 		'html_font_size'         => '',
 		'css_bundle'             => 'optimal',
 		'show_class_hints'       => false,
-		'manual_css_mode'        => true,
 		'configurator_url'       => '',
 		// reBEMer master switch: when false the in-builder BEM badges/panel are
 		// not injected (the rest of the Bricks integration is unaffected).

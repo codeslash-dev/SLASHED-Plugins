@@ -13,8 +13,6 @@ node_modules/
 .tmp-plugin-stage/
 
 # Built SPA source maps — regenerate locally via `npm run build:apps`.
-SLASHED-for-WP/integrations/bricks/admin-app/*.map
-SLASHED-for-WP/integrations/bricks/assets/admin-app/*.map
 SLASHED-for-WP/integrations/bricks/editor-app/*.map
 SLASHED-for-WP/integrations/bricks/assets/editor-app/*.map
 SLASHED-for-WP/assets/admin-app/*.map
