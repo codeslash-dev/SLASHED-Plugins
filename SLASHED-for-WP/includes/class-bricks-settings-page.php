@@ -168,21 +168,25 @@ class Slashed_Bricks_Settings_Page {
 	}
 
 	/**
-	 * All editable elements as name => human label, excluding layout
-	 * containers, unioned with the built-in map so nothing the editor knows
-	 * about disappears when Bricks data is momentarily unavailable.
+	 * All editable elements as name => human label, including layout
+	 * containers, unioned with the built-in map and the container list so
+	 * nothing the editor knows about disappears when Bricks data is momentarily
+	 * unavailable.
 	 *
 	 * @return array<string,string>
 	 */
 	private static function elements() {
 		$registry = class_exists( 'Slashed_Bricks_Elements' ) ? Slashed_Bricks_Elements::get_all() : array();
-		$names    = array_unique( array_merge( array_keys( $registry ), array_keys( self::BUILTIN_DEFAULTS ) ) );
+		$names    = array_unique(
+			array_merge(
+				array_keys( $registry ),
+				array_keys( self::BUILTIN_DEFAULTS ),
+				self::LAYOUT_CONTAINERS
+			)
+		);
 
 		$out = array();
 		foreach ( $names as $name ) {
-			if ( in_array( $name, self::LAYOUT_CONTAINERS, true ) ) {
-				continue;
-			}
 			$out[ $name ] = isset( $registry[ $name ] ) ? $registry[ $name ] : '';
 		}
 		ksort( $out );
@@ -190,15 +194,19 @@ class Slashed_Bricks_Settings_Page {
 	}
 
 	/**
-	 * Built-in default BEM name for an element: the curated map value, else
-	 * the slugified Bricks label, else 'item' — matching the editor's
-	 * fallback chain.
+	 * Built-in default BEM name for an element: layout containers default to
+	 * their own Bricks type (matching the editor's suggestContainerName), then
+	 * the curated map value, else the slugified Bricks label, else 'item' —
+	 * matching the editor's fallback chain.
 	 *
 	 * @param string $type  Element name.
 	 * @param string $label Human label (may be empty).
 	 * @return string
 	 */
 	private static function default_for( $type, $label ) {
+		if ( in_array( $type, self::LAYOUT_CONTAINERS, true ) ) {
+			return $type;
+		}
 		if ( isset( self::BUILTIN_DEFAULTS[ $type ] ) ) {
 			return self::BUILTIN_DEFAULTS[ $type ];
 		}
@@ -266,10 +274,13 @@ class Slashed_Bricks_Settings_Page {
 
 		check_admin_referer( self::OPTIONS_NONCE_ACTION, self::OPTIONS_NONCE_KEY );
 
-		// Read-merge-write so we only touch show_class_hints.
+		// Read-merge-write so we only touch the option toggles.
 		$settings = Slashed_Token_Store::get_plugin_settings();
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer above.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer above.
+		$settings['rebemer_enabled']  = isset( $_POST['rebemer_enabled'] );
+		$settings['show_color_panel'] = isset( $_POST['show_color_panel'] );
 		$settings['show_class_hints'] = isset( $_POST['show_class_hints'] );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		Slashed_Token_Store::update_plugin_settings( $settings );
 
@@ -336,7 +347,7 @@ class Slashed_Bricks_Settings_Page {
 		</p>
 
 		<p class="description" style="max-width:760px;margin-bottom:16px;">
-			<?php esc_html_e( 'Layout containers (section / container / div / block) are named after their own Bricks type and are not listed below.', 'slashed' ); ?>
+			<?php esc_html_e( 'Layout containers (section / container / div / block) default to their own Bricks type — set a name below to override that.', 'slashed' ); ?>
 		</p>
 
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -404,6 +415,8 @@ class Slashed_Bricks_Settings_Page {
 	 */
 	private function render_options_tab( $just_saved ) {
 		$settings         = Slashed_Token_Store::get_plugin_settings();
+		$rebemer_enabled  = ! empty( $settings['rebemer_enabled'] );
+		$show_color_panel = ! empty( $settings['show_color_panel'] );
 		$show_class_hints = ! empty( $settings['show_class_hints'] );
 		?>
 		<?php if ( $just_saved ) : ?>
@@ -418,6 +431,26 @@ class Slashed_Bricks_Settings_Page {
 
 			<table class="form-table" role="presentation">
 				<tbody>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'reBEMer', 'slashed' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="rebemer_enabled" <?php checked( $rebemer_enabled ); ?>>
+								<?php esc_html_e( 'Enable the reBEMer BEM-naming tool in the Bricks builder', 'slashed' ); ?>
+							</label>
+							<p class="description"><?php esc_html_e( 'Adds the BEM badges and rename panel to the Bricks structure panel. Turn off to hide them; the colour tools below are unaffected.', 'slashed' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Color System shortcut', 'slashed' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="show_color_panel" <?php checked( $show_color_panel ); ?>>
+								<?php esc_html_e( 'Show the “Colors” launcher in the Bricks builder', 'slashed' ); ?>
+							</label>
+							<p class="description"><?php esc_html_e( 'The pill pinned to the bottom-right of the builder that opens the SLASHED Color System panel.', 'slashed' ); ?></p>
+						</td>
+					</tr>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Class hints', 'slashed' ); ?></th>
 						<td>

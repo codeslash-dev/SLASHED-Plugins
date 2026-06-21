@@ -74,9 +74,14 @@ that.
   lists **every** element registered in Bricks — core, plugin, and custom — not
   just the built-in map: `Slashed_Bricks_Elements::get_all()` reads Bricks'
   `\Bricks\Elements::$elements` registry (cached per element-set). Layout
-  containers are omitted from that table since they are always named after their
-  own Bricks type. (The standalone Bricks plugin, which has no top-level SLASHED
-  menu, still exposes the element-name overrides as a tab in its admin SPA.)
+  containers (`section`/`container`/`div`/`block`) are listed too; they default
+  to their own Bricks type but an override here wins (`suggestContainerName`
+  consults the same merged map). (The standalone Bricks plugin, which has no
+  top-level SLASHED menu, still exposes the element-name overrides as a tab in
+  its admin SPA.) The page's **Options** tab also toggles reBEMer itself and the
+  bottom-right "Colors" launcher (`rebemer_enabled` / `show_color_panel`, read
+  in the editor via `window.slashedBricksEditor` and the
+  `slashed_bricks/show_color_panel` filter).
 
 ## Architecture
 

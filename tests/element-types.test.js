@@ -27,6 +27,17 @@ describe('suggestContainerName', () => {
   test('null → "item"',              () => assert.equal(suggestContainerName(null), 'item'));
   test('non-container type → "item"', () => assert.equal(suggestContainerName('heading'), 'item'));
   test('input is trimmed',           () => assert.equal(suggestContainerName(' section '), 'section'));
+
+  // Admin override for a container type wins over the type-name default.
+  test('admin override wins for a container', () => {
+    globalThis.window = { slashedBricksEditor: { rebemerElementMap: { container: 'wrapper' } } };
+    try {
+      assert.equal(suggestContainerName('container'), 'wrapper');
+      assert.equal(suggestContainerName('section'), 'section'); // untouched default
+    } finally {
+      delete globalThis.window;
+    }
+  });
 });
 
 describe('suggestElementName', () => {

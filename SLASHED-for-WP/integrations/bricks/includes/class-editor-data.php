@@ -48,11 +48,13 @@ class Slashed_Bricks_Editor_Data {
 			: array();
 
 		/**
-		 * Toggle the in-builder Color System panel.
+		 * Toggle the in-builder Color System panel (the bottom-right "Colors"
+		 * launcher pill). Defaults to the admin "Bricks settings → Options"
+		 * toggle; the filter still wins for programmatic overrides.
 		 *
-		 * @param bool $enabled Default true.
+		 * @param bool $enabled Default from the show_color_panel setting.
 		 */
-		$show_color_panel = (bool) apply_filters( 'slashed_bricks/show_color_panel', true );
+		$show_color_panel = (bool) apply_filters( 'slashed_bricks/show_color_panel', ! empty( $plugin_settings['show_color_panel'] ) );
 
 		$color_panel_data = array(
 			'variables' => array(),
@@ -78,6 +80,9 @@ class Slashed_Bricks_Editor_Data {
 				'showColorPanel'       => $show_color_panel,
 				'colorPanel'           => $color_panel_data,
 				'variableHints'        => self::get_variable_hints(),
+				// reBEMer master switch — gates the structure-panel BEM badges
+				// + panel in the editor bundle (color tools stay independent).
+				'rebemerEnabled'       => ! empty( $plugin_settings['rebemer_enabled'] ),
 				// reBEMer default-naming config: sparse type → BEM-name
 				// overrides merged over the built-in map editor-side.
 				// Layout containers are always named after their Bricks type.

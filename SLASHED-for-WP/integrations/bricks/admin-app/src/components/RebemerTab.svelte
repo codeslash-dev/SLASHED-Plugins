@@ -27,20 +27,27 @@
   /**
    * Every editable element row: { type, label, def }. Sourced from Bricks'
    * full server-side registry (window.slashedApp.bricksElements) so plugin
-   * and custom elements are covered, unioned with reBEMer's built-in map.
-   * Layout containers are excluded — their naming is governed by the
-   * container mode, not the type map.
+   * and custom elements are covered, unioned with reBEMer's built-in map and
+   * the layout containers. Containers default to their own Bricks type but can
+   * still be overridden here.
    */
   const bricksElements = (typeof window !== 'undefined' && window.slashedApp?.bricksElements) || {};
   const defaults = (() => {
-    const names = new Set([...Object.keys(bricksElements), ...Object.keys(ELEMENT_TYPE_LABEL_MAP)]);
+    const names = new Set([
+      ...Object.keys(bricksElements),
+      ...Object.keys(ELEMENT_TYPE_LABEL_MAP),
+      ...LAYOUT_CONTAINER_TYPES,
+    ]);
     const rows = [];
     for (const type of names) {
-      if (LAYOUT_CONTAINER_TYPES.has(type)) continue;
       const label = bricksElements[type] || '';
       const fromLabel = slugify(label);
       const fromLabelValid = NAME_RE.test(fromLabel) && !RESERVED.has(fromLabel);
-      const def = ELEMENT_TYPE_LABEL_MAP[type] || (fromLabelValid ? fromLabel : '') || 'item';
+      // Layout containers default to their own type name (matches the editor's
+      // suggestContainerName); everything else uses the built-in map / label.
+      const def = LAYOUT_CONTAINER_TYPES.has(type)
+        ? type
+        : ELEMENT_TYPE_LABEL_MAP[type] || (fromLabelValid ? fromLabel : '') || 'item';
       rows.push({ type, label, def });
     }
     return rows.sort((a, b) => a.type.localeCompare(b.type));

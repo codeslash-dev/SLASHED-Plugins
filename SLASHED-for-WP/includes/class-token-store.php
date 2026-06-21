@@ -125,9 +125,15 @@ class Slashed_Token_Store {
 		'show_class_hints'       => false,
 		'manual_css_mode'        => true,
 		'configurator_url'       => '',
+		// reBEMer master switch: when false the in-builder BEM badges/panel are
+		// not injected (the rest of the Bricks integration is unaffected).
+		'rebemer_enabled'        => true,
+		// Whether the bottom-right "Colors" launcher pill (Color System panel
+		// shortcut) is shown in the Bricks builder.
+		'show_color_panel'       => true,
 		// reBEMer: sparse Bricks-type → BEM-name overrides ({} = built-in
-		// defaults only). Layout containers are always named after their own
-		// Bricks type (container/section/div/block).
+		// defaults only). Layout containers default to their own Bricks type
+		// (container/section/div/block) unless overridden here.
 		'rebemer_element_map'    => array(),
 	);
 

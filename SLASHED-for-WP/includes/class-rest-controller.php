@@ -183,6 +183,14 @@ class Slashed_REST_Controller {
 							'type'     => 'boolean',
 							'required' => false,
 						),
+						'rebemer_enabled'        => array(
+							'type'     => 'boolean',
+							'required' => false,
+						),
+						'show_color_panel'       => array(
+							'type'     => 'boolean',
+							'required' => false,
+						),
 						'manual_css_mode'        => array(
 							'type'     => 'boolean',
 							'required' => false,
@@ -350,6 +358,8 @@ class Slashed_REST_Controller {
 		$html_font_size         = $request->get_param( 'html_font_size' );
 		$css_bundle             = $request->get_param( 'css_bundle' );
 		$show_class_hints       = $request->get_param( 'show_class_hints' );
+		$rebemer_enabled        = $request->get_param( 'rebemer_enabled' );
+		$show_color_panel       = $request->get_param( 'show_color_panel' );
 		$manual_css_mode        = $request->get_param( 'manual_css_mode' );
 		$configurator_url       = $request->get_param( 'configurator_url' );
 		$rebemer_element_map    = $request->get_param( 'rebemer_element_map' );
@@ -358,6 +368,8 @@ class Slashed_REST_Controller {
 			null === $html_font_size &&
 			null === $css_bundle &&
 			null === $show_class_hints &&
+			null === $rebemer_enabled &&
+			null === $show_color_panel &&
 			null === $manual_css_mode &&
 			null === $configurator_url &&
 			null === $rebemer_element_map
@@ -375,6 +387,12 @@ class Slashed_REST_Controller {
 		}
 		if ( null !== $show_class_hints ) {
 			$settings['show_class_hints'] = (bool) $show_class_hints;
+		}
+		if ( null !== $rebemer_enabled ) {
+			$settings['rebemer_enabled'] = (bool) $rebemer_enabled;
+		}
+		if ( null !== $show_color_panel ) {
+			$settings['show_color_panel'] = (bool) $show_color_panel;
 		}
 		if ( null !== $manual_css_mode ) {
 			$settings['manual_css_mode'] = (bool) $manual_css_mode;
@@ -564,6 +582,14 @@ class Slashed_REST_Controller {
 			}
 			if ( array_key_exists( 'show_class_hints', $raw ) ) {
 				$existing['show_class_hints'] = (bool) $raw['show_class_hints'];
+				$settings_imported            = true;
+			}
+			if ( array_key_exists( 'rebemer_enabled', $raw ) ) {
+				$existing['rebemer_enabled'] = (bool) $raw['rebemer_enabled'];
+				$settings_imported           = true;
+			}
+			if ( array_key_exists( 'show_color_panel', $raw ) ) {
+				$existing['show_color_panel'] = (bool) $raw['show_color_panel'];
 				$settings_imported            = true;
 			}
 			if ( isset( $raw['rebemer_element_map'] ) && is_array( $raw['rebemer_element_map'] ) ) {
