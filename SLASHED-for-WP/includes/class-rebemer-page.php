@@ -44,54 +44,54 @@ class Slashed_ReBEMer_Page {
 	 * @var array<string,string>
 	 */
 	const BUILTIN_DEFAULTS = array(
-		'heading'           => 'heading',
-		'text-basic'        => 'text',
-		'text'              => 'text',
-		'text-link'         => 'link',
-		'code'              => 'code',
-		'post-title'        => 'title',
-		'post-content'      => 'content',
-		'post-excerpt'      => 'excerpt',
-		'post-meta'         => 'meta',
-		'image'             => 'image',
-		'icon'              => 'icon',
-		'icon-box'          => 'icon',
-		'video'             => 'video',
-		'audio'             => 'audio',
-		'svg'               => 'svg',
-		'logo'              => 'logo',
-		'shape'             => 'shape',
-		'divider'           => 'divider',
-		'separator'         => 'separator',
-		'button'            => 'button',
-		'button-group'      => 'buttons',
-		'nav-nested'        => 'nav',
-		'nav-menu'          => 'nav',
-		'list'              => 'list',
-		'search'            => 'search',
-		'social-icons'      => 'social',
-		'accordion'         => 'accordion',
-		'accordion-nested'  => 'accordion',
-		'tabs'              => 'tabs',
-		'tabs-nested'       => 'tabs',
-		'slider'            => 'slider',
-		'slider-nested'     => 'slider',
-		'carousel'          => 'carousel',
-		'countdown'         => 'countdown',
-		'counter'           => 'counter',
-		'progress-bar'      => 'progress',
-		'alert'             => 'alert',
-		'testimonials'      => 'testimonials',
-		'pricing'           => 'pricing',
-		'team'              => 'team',
-		'map'               => 'map',
-		'google-maps'       => 'map',
-		'breadcrumbs'       => 'breadcrumbs',
-		'pagination'        => 'pagination',
-		'form'              => 'form',
-		'posts'             => 'posts',
-		'related-posts'     => 'posts',
-		'template'          => 'item',
+		'heading'          => 'heading',
+		'text-basic'       => 'text',
+		'text'             => 'text',
+		'text-link'        => 'link',
+		'code'             => 'code',
+		'post-title'       => 'title',
+		'post-content'     => 'content',
+		'post-excerpt'     => 'excerpt',
+		'post-meta'        => 'meta',
+		'image'            => 'image',
+		'icon'             => 'icon',
+		'icon-box'         => 'icon',
+		'video'            => 'video',
+		'audio'            => 'audio',
+		'svg'              => 'svg',
+		'logo'             => 'logo',
+		'shape'            => 'shape',
+		'divider'          => 'divider',
+		'separator'        => 'separator',
+		'button'           => 'button',
+		'button-group'     => 'buttons',
+		'nav-nested'       => 'nav',
+		'nav-menu'         => 'nav',
+		'list'             => 'list',
+		'search'           => 'search',
+		'social-icons'     => 'social',
+		'accordion'        => 'accordion',
+		'accordion-nested' => 'accordion',
+		'tabs'             => 'tabs',
+		'tabs-nested'      => 'tabs',
+		'slider'           => 'slider',
+		'slider-nested'    => 'slider',
+		'carousel'         => 'carousel',
+		'countdown'        => 'countdown',
+		'counter'          => 'counter',
+		'progress-bar'     => 'progress',
+		'alert'            => 'alert',
+		'testimonials'     => 'testimonials',
+		'pricing'          => 'pricing',
+		'team'             => 'team',
+		'map'              => 'map',
+		'google-maps'      => 'map',
+		'breadcrumbs'      => 'breadcrumbs',
+		'pagination'       => 'pagination',
+		'form'             => 'form',
+		'posts'            => 'posts',
+		'related-posts'    => 'posts',
+		'template'         => 'item',
 	);
 
 	public function __construct() {
@@ -168,19 +168,15 @@ class Slashed_ReBEMer_Page {
 		$settings = Slashed_Token_Store::get_plugin_settings();
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer above.
-		$mode = isset( $_POST['rebemer_container_mode'] )
-			? sanitize_key( wp_unslash( $_POST['rebemer_container_mode'] ) )
-			: 'type';
-		$settings['rebemer_container_mode'] = in_array( $mode, self::CONTAINER_MODES, true ) ? $mode : 'type';
-
-		$raw_map = isset( $_POST['rebemer_map'] ) && is_array( $_POST['rebemer_map'] )
-			? wp_unslash( $_POST['rebemer_map'] )
-			: array();
+		$posted_mode = isset( $_POST['rebemer_container_mode'] ) ? sanitize_key( wp_unslash( $_POST['rebemer_container_mode'] ) ) : '';
+		$posted_map  = ( isset( $_POST['rebemer_map'] ) && is_array( $_POST['rebemer_map'] ) ) ? wp_unslash( $_POST['rebemer_map'] ) : array();
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$settings['rebemer_container_mode'] = in_array( $posted_mode, self::CONTAINER_MODES, true ) ? $posted_mode : 'type';
 
 		$elements  = self::elements();
 		$overrides = array();
-		foreach ( $raw_map as $type => $name ) {
+		foreach ( $posted_map as $type => $name ) {
 			if ( ! is_string( $type ) || ! is_string( $name ) ) {
 				continue;
 			}
@@ -191,7 +187,7 @@ class Slashed_ReBEMer_Page {
 			// Store sparse overrides only: a value equal to the built-in
 			// default is the same as leaving it blank.
 			$label = isset( $elements[ $type ] ) ? $elements[ $type ] : '';
-			if ( $name === self::default_for( $type, $label ) ) {
+			if ( self::default_for( $type, $label ) === $name ) {
 				continue;
 			}
 			$overrides[ $type ] = $name;
