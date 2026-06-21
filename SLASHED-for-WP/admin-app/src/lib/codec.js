@@ -37,16 +37,27 @@ const MAX_VALUE_BYTES = 0xffff;
 const _enc = new TextEncoder();
 const _dec = new TextDecoder('utf-8', { fatal: false });
 
+/** Inclusive upper bound of the 2-byte (uint16) id field on the wire. */
+const MAX_ID = 0xffff;
+
+/** True when `id` fits the 2-byte wire field (0..65535) without truncation. */
+function isWireId(id) {
+  return Number.isInteger(id) && id >= 0 && id <= MAX_ID;
+}
+
 /**
  * Build a `name -> id` map from a parsed token-registry.json, skipping entries
- * flagged `removed` (their ids must never be re-emitted).
+ * flagged `removed` (their ids must never be re-emitted). Ids outside the
+ * uint16 wire range are dropped rather than silently truncated on encode — an
+ * out-of-range id would otherwise alias a different token after the high bits
+ * are masked off. (The generator caps the id space, so this is belt-and-braces.)
  * @param {{ tokens: Array<{id:number,name:string,removed?:boolean}> }} registry
  * @returns {Map<string, number>}
  */
 function nameToId(registry) {
   const map = new Map();
   for (const t of registry?.tokens ?? []) {
-    if (t && !t.removed && typeof t.name === 'string' && Number.isInteger(t.id)) {
+    if (t && !t.removed && typeof t.name === 'string' && isWireId(t.id)) {
       map.set(t.name, t.id);
     }
   }
