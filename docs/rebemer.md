@@ -64,8 +64,9 @@ that.
 - **Configurable defaults** — the **Bricks settings** admin subpage
   (`Slashed_Bricks_Settings_Page`, a sibling of Manual CSS under the SLASHED
   menu — *not* part of the Design Settings SPA) gathers every Bricks-specific
-  setting in tabs (Element names, Options, Filter hooks). Its *Element names*
-  tab persists a sparse element-type → BEM-name override map
+  setting in tabs (reBEMer, Options, Filter hooks). Its *reBEMer* tab holds the
+  reBEMer enable toggle (`rebemer_enabled`) and persists a sparse
+  element-type → BEM-name override map
   (`rebemer_element_map`) in the `slashed_bricks_settings` option, sanitized
   against the same BEM grammar as `validate.js` (the page reuses
   `Slashed_REST_Controller::sanitize_rebemer_element_map`) and localized onto
@@ -78,8 +79,8 @@ that.
   to their own Bricks type but an override here wins (`suggestContainerName`
   consults the same merged map). (The standalone Bricks plugin, which has no
   top-level SLASHED menu, still exposes the element-name overrides as a tab in
-  its admin SPA.) The page's **Options** tab also toggles reBEMer itself and the
-  bottom-right "Colors" launcher (`rebemer_enabled` / `show_color_panel`, read
+  its admin SPA.) The page's **Options** tab toggles the bottom-right "Colors"
+  launcher (`show_color_panel`, read
   in the editor via `window.slashedBricksEditor` and the
   `slashed_bricks/show_color_panel` filter).
 
