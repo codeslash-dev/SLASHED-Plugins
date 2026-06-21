@@ -9,6 +9,16 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+### Changed
+
+- Consolidated every Bricks-specific option into one tabbed **Bricks settings**
+  admin subpage (Element names / Options / Filter hooks), placed after Manual
+  CSS. Class hints moved off Plugin Settings; the standalone Filter Hooks page
+  was folded into a tab.
+- reBEMer now always names layout containers (section / container / div / block)
+  after their own Bricks type. The `role` and `generic` container-naming modes,
+  and the `rebemer_container_mode` setting, were removed.
+
 ## [0.3.2] - 2026-06-20
 
 ### Added

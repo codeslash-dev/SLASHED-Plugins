@@ -86,20 +86,16 @@ class Slashed_Admin {
 
 		Slashed_Settings::save( $data );
 
-		// Save plugin behavioural settings (html_font_size, show_class_hints).
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		// Save general plugin behaviour (html_font_size). Read-merge-write so
+		// Bricks-owned settings (class hints, reBEMer names) and the Manual CSS
+		// mode set on their own pages are never clobbered.
 		$allowed_font_sizes = array( '', '100', '62.5' );
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$raw_font_size = isset( $_POST['html_font_size'] ) ? sanitize_text_field( wp_unslash( $_POST['html_font_size'] ) ) : '';
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$raw_class_hints = isset( $_POST['show_class_hints'] );
 
-		Slashed_Token_Store::update_plugin_settings(
-			array(
-				'html_font_size'   => in_array( $raw_font_size, $allowed_font_sizes, true ) ? $raw_font_size : '',
-				'show_class_hints' => $raw_class_hints,
-			)
-		);
+		$plugin_settings                   = Slashed_Token_Store::get_plugin_settings();
+		$plugin_settings['html_font_size'] = in_array( $raw_font_size, $allowed_font_sizes, true ) ? $raw_font_size : '';
+		Slashed_Token_Store::update_plugin_settings( $plugin_settings );
 
 		wp_safe_redirect(
 			add_query_arg( 'slashed_saved', '1', admin_url( 'admin.php?page=' . self::PAGE_SLUG ) )
@@ -122,9 +118,8 @@ class Slashed_Admin {
 		$local_version    = Slashed_Framework_Updater::get_local_version();
 		$local_file_ok    = file_exists( SLASHED_PATH . 'dist/slashed.' . $css_bundle . '.css' );
 		$update_nonce     = wp_create_nonce( 'slashed_framework_update' );
-		$plugin_settings  = Slashed_Token_Store::get_plugin_settings();
-		$html_font_size   = $plugin_settings['html_font_size'] ?? '';
-		$show_class_hints = ! empty( $plugin_settings['show_class_hints'] );
+		$plugin_settings = Slashed_Token_Store::get_plugin_settings();
+		$html_font_size  = $plugin_settings['html_font_size'] ?? '';
 		?>
 		<style>
 		.slashed-bundle-grid {
@@ -413,17 +408,6 @@ class Slashed_Admin {
 								<?php esc_html_e( 'Enable', 'slashed' ); ?>
 							</label>
 							<p class="description"><?php esc_html_e( 'Syncs SLASHED colors with the block editor palette and bridges the editor dark-mode toggle.', 'slashed' ); ?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><?php esc_html_e( 'Class hints', 'slashed' ); ?></th>
-						<td>
-							<label>
-								<input type="checkbox" name="show_class_hints" <?php checked( $show_class_hints ); ?>>
-								<?php esc_html_e( 'Show class hints in Bricks editor', 'slashed' ); ?>
-								<span style="display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;background:#f0f4ff;color:#2563eb;border:1px solid #bfdbfe;margin-left:4px;">Bricks</span>
-							</label>
-							<p class="description"><?php esc_html_e( 'When enabled, hovering a SLASHED class in the Bricks class manager shows a short description of what it does.', 'slashed' ); ?></p>
 						</td>
 					</tr>
 				</table>

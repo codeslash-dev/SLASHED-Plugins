@@ -94,17 +94,16 @@ require_once SLASHED_PATH . 'includes/class-manual-css-page.php'; // needed on f
 
 if ( is_admin() ) {
 	require_once SLASHED_PATH . 'includes/class-admin.php';
-	require_once SLASHED_PATH . 'includes/class-hooks-page.php';
-	require_once SLASHED_PATH . 'includes/class-rebemer-page.php';
+	require_once SLASHED_PATH . 'includes/class-bricks-settings-page.php';
 	add_action(
 		'plugins_loaded',
 		function () {
 			new Slashed_Admin();
 			new Slashed_Token_Page();
 			new Slashed_Framework_Updater();
-			new Slashed_Hooks_Page();
 			new Slashed_Manual_CSS_Page();
-			new Slashed_ReBEMer_Page();
+			// After Manual CSS so "Bricks settings" lands last in the menu.
+			new Slashed_Bricks_Settings_Page();
 		}
 	);
 }

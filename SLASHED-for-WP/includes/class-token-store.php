@@ -126,11 +126,9 @@ class Slashed_Token_Store {
 		'manual_css_mode'        => true,
 		'configurator_url'       => '',
 		// reBEMer: sparse Bricks-type → BEM-name overrides ({} = built-in
-		// defaults only) and how layout containers are named by default.
-		// 'type' = after the Bricks type (container/section/div/block),
-		// 'role' = child-aware inference, 'generic' = item + numbering.
+		// defaults only). Layout containers are always named after their own
+		// Bricks type (container/section/div/block).
 		'rebemer_element_map'    => array(),
-		'rebemer_container_mode' => 'type',
 	);
 
 	/**
