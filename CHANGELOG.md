@@ -9,6 +9,19 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.6] - 2026-06-21
+
+### Added
+
+- Move reBEMer toggle + element list into a reBEMer tab
+- Add reBEMer + Colors toggles and container rename rows
+
+### Fixed
+
+- Sync plugin version to 0.3.5; address review nits
+
+## [0.3.6] - 2026-06-21
+
 ### Added
 
 - New **reBEMer** tab in Bricks settings holding the reBEMer enable/disable
