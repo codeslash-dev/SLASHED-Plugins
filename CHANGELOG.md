@@ -19,6 +19,30 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
   after their own Bricks type. The `role` and `generic` container-naming modes,
   and the `rebemer_container_mode` setting, were removed.
 
+## [0.3.4] - 2026-06-20
+## [0.3.4] - 2026-06-20
+## [0.3.3] - 2026-06-20
+
+### Added
+
+- Default layout containers to their Bricks type name
+- Surface mapping settings in the active admin app
+
+### Fixed
+
+- Reset to 'type' default and reconcile docs
+
+## [0.3.3] - 2026-06-20
+
+### Added
+
+- Default layout containers to their Bricks type name
+- Surface mapping settings in the active admin app
+
+### Fixed
+
+- Reset to 'type' default and reconcile docs
+
 ## [0.3.2] - 2026-06-20
 
 ### Added

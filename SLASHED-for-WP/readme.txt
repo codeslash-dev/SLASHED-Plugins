@@ -156,11 +156,17 @@ Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The pl
 
 == Changelog ==
 
+= 0.3.4 =
+* Maintenance release.
+
+= 0.3.3 =
+* Adds default layout container type names, surface mapping settings, and fixes the type-default reset.
+
 = 0.3.2 =
-* Added: Smarter default BEM names + configurable type mapping
+* Adds smarter default BEM names with configurable type mapping.
 
 = 0.3.1 =
-* Changed: Rewrote the plugin description to cover the SLASHED philosophy, Bricks tooling (token pickers, Color System panel, class hints, reBEMer), the Configurator, and Gutenberg status.
+* Rewrites the plugin description to cover the SLASHED philosophy and all Bricks tooling.
 
 = 0.3.0 =
 * Initial public release.
