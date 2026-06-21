@@ -204,5 +204,7 @@ export const SOLE_CHILD_LABEL_OVERRIDES = Object.freeze({
  * @returns {string}
  */
 export function suggestContainerName(containerType) {
-  return (typeof containerType === 'string' && containerType) ? containerType : 'item';
+  if (typeof containerType !== 'string') return 'item';
+  const normalized = containerType.trim();
+  return LAYOUT_CONTAINER_TYPES.has(normalized) ? normalized : 'item';
 }

@@ -223,19 +223,22 @@ class Slashed_Bricks_Settings_Page {
 		$posted_map = ( isset( $_POST['rebemer_map'] ) && is_array( $_POST['rebemer_map'] ) ) ? wp_unslash( $_POST['rebemer_map'] ) : array();
 
 		$elements  = self::elements();
-		$overrides = array();
-		foreach ( $posted_map as $type => $name ) {
-			if ( ! is_string( $type ) || ! is_string( $name ) ) {
-				continue;
-			}
-			$name = strtolower( trim( $name ) );
-			if ( '' === $name ) {
-				continue;
-			}
-			// Store sparse overrides only: a value equal to the built-in
-			// default is the same as leaving it blank.
-			$label = isset( $elements[ $type ] ) ? $elements[ $type ] : '';
-			if ( self::default_for( $type, $label ) === $name ) {
+		// Seed from the stored map and only reconcile rows actually rendered on
+		// the form. Overrides for elements that aren't currently registered
+		// (e.g. a temporarily deactivated plugin) have no row here and are left
+		// untouched, so saving never silently drops them.
+		$overrides = isset( $settings['rebemer_element_map'] ) && is_array( $settings['rebemer_element_map'] )
+			? $settings['rebemer_element_map']
+			: array();
+		foreach ( $elements as $type => $label ) {
+			$name = ( isset( $posted_map[ $type ] ) && is_string( $posted_map[ $type ] ) )
+				? strtolower( trim( $posted_map[ $type ] ) )
+				: '';
+
+			// Store sparse overrides only: blank, or a value equal to the
+			// built-in default, clears the override for that element.
+			if ( '' === $name || self::default_for( $type, $label ) === $name ) {
+				unset( $overrides[ $type ] );
 				continue;
 			}
 			$overrides[ $type ] = $name;

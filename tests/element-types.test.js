@@ -22,9 +22,11 @@ describe('suggestContainerName', () => {
   test('block → "block"',         () => assert.equal(suggestContainerName('block'), 'block'));
 
   // Unknown / empty types fall back to the generic 'item'.
-  test('empty string → "item"', () => assert.equal(suggestContainerName(''), 'item'));
-  test('undefined → "item"',    () => assert.equal(suggestContainerName(undefined), 'item'));
-  test('null → "item"',         () => assert.equal(suggestContainerName(null), 'item'));
+  test('empty string → "item"',      () => assert.equal(suggestContainerName(''), 'item'));
+  test('undefined → "item"',         () => assert.equal(suggestContainerName(undefined), 'item'));
+  test('null → "item"',              () => assert.equal(suggestContainerName(null), 'item'));
+  test('non-container type → "item"', () => assert.equal(suggestContainerName('heading'), 'item'));
+  test('input is trimmed',           () => assert.equal(suggestContainerName(' section '), 'section'));
 });
 
 describe('suggestElementName', () => {
