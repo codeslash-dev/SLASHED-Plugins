@@ -187,6 +187,31 @@ async function main() {
     resolve(SRC, 'data/api-index.generated.json'),
   );
 
+  // The bundle manifest — required by the synced lib/bundles.js (which is part
+  // of the build graph via lib/uiState.js). Fetched like api-index so the
+  // remote sync path produces a buildable tree.
+  await syncGhFile(
+    `${CFG_SRC}/data/bundles.generated.json`,
+    resolve(SRC, 'data/bundles.generated.json'),
+  );
+
+  // The token id registry — paired with lib/codec.js for the "Open in
+  // Configurator" config code (kept identical to the configurator's copy).
+  // Tolerant: until the configurator's codec feature lands on the framework's
+  // `main`, this file isn't published there yet. A copy is already vendored in
+  // this repo, so a 404 is non-fatal — keep the committed copy and move on.
+  try {
+    await syncGhFile(
+      `${CFG_SRC}/data/token-registry.generated.json`,
+      resolve(SRC, 'data/token-registry.generated.json'),
+    );
+  } catch (err) {
+    if (!String(err.message).includes('404')) throw err;
+    process.stdout.write(
+      '  skip  src/data/token-registry.generated.json (not on framework main yet — keeping vendored copy)\n',
+    );
+  }
+
   // Top-level CSS (configurator chrome styles, if any live at src/)
   const topLevel = await ghFetch(CFG_SRC);
   if (Array.isArray(topLevel)) {

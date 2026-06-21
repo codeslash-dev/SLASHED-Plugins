@@ -1,0 +1,2780 @@
+{
+  "_meta": {
+    "generatedBy": "scripts/gen-token-registry.js",
+    "nextId": 693
+  },
+  "tokens": [
+    {
+      "id": 0,
+      "name": "--sf-alternate-gap"
+    },
+    {
+      "id": 1,
+      "name": "--sf-alternate-inner-gap"
+    },
+    {
+      "id": 2,
+      "name": "--sf-animation-blink"
+    },
+    {
+      "id": 3,
+      "name": "--sf-animation-color-pulse"
+    },
+    {
+      "id": 4,
+      "name": "--sf-animation-delay-1"
+    },
+    {
+      "id": 5,
+      "name": "--sf-animation-delay-2"
+    },
+    {
+      "id": 6,
+      "name": "--sf-animation-delay-3"
+    },
+    {
+      "id": 7,
+      "name": "--sf-animation-delay-4"
+    },
+    {
+      "id": 8,
+      "name": "--sf-animation-delay-5"
+    },
+    {
+      "id": 9,
+      "name": "--sf-animation-fade-in"
+    },
+    {
+      "id": 10,
+      "name": "--sf-animation-fade-out"
+    },
+    {
+      "id": 11,
+      "name": "--sf-animation-float"
+    },
+    {
+      "id": 12,
+      "name": "--sf-animation-ping"
+    },
+    {
+      "id": 13,
+      "name": "--sf-animation-scale-down"
+    },
+    {
+      "id": 14,
+      "name": "--sf-animation-scale-up"
+    },
+    {
+      "id": 15,
+      "name": "--sf-animation-shimmer"
+    },
+    {
+      "id": 16,
+      "name": "--sf-animation-slide-in-down"
+    },
+    {
+      "id": 17,
+      "name": "--sf-animation-slide-in-left"
+    },
+    {
+      "id": 18,
+      "name": "--sf-animation-slide-in-right"
+    },
+    {
+      "id": 19,
+      "name": "--sf-animation-slide-in-up"
+    },
+    {
+      "id": 20,
+      "name": "--sf-animation-spin"
+    },
+    {
+      "id": 21,
+      "name": "--sf-aspect"
+    },
+    {
+      "id": 22,
+      "name": "--sf-bento-cols-default"
+    },
+    {
+      "id": 23,
+      "name": "--sf-bento-gap"
+    },
+    {
+      "id": 24,
+      "name": "--sf-bento-row-compact"
+    },
+    {
+      "id": 25,
+      "name": "--sf-bento-row-default"
+    },
+    {
+      "id": 26,
+      "name": "--sf-bento-row-tall"
+    },
+    {
+      "id": 27,
+      "name": "--sf-blur"
+    },
+    {
+      "id": 28,
+      "name": "--sf-body-color"
+    },
+    {
+      "id": 29,
+      "name": "--sf-body-em-style"
+    },
+    {
+      "id": 30,
+      "name": "--sf-body-font-family"
+    },
+    {
+      "id": 31,
+      "name": "--sf-body-font-size"
+    },
+    {
+      "id": 32,
+      "name": "--sf-body-font-weight"
+    },
+    {
+      "id": 33,
+      "name": "--sf-body-line-height"
+    },
+    {
+      "id": 34,
+      "name": "--sf-body-strong-weight"
+    },
+    {
+      "id": 35,
+      "name": "--sf-body-text-wrap"
+    },
+    {
+      "id": 36,
+      "name": "--sf-border"
+    },
+    {
+      "id": 37,
+      "name": "--sf-border-scale"
+    },
+    {
+      "id": 38,
+      "name": "--sf-border-strong"
+    },
+    {
+      "id": 39,
+      "name": "--sf-border-style"
+    },
+    {
+      "id": 40,
+      "name": "--sf-border-subtle"
+    },
+    {
+      "id": 41,
+      "name": "--sf-border-width-1"
+    },
+    {
+      "id": 42,
+      "name": "--sf-border-width-2"
+    },
+    {
+      "id": 43,
+      "name": "--sf-border-width-3"
+    },
+    {
+      "id": 44,
+      "name": "--sf-border-width-4"
+    },
+    {
+      "id": 45,
+      "name": "--sf-border-width-hairline"
+    },
+    {
+      "id": 46,
+      "name": "--sf-box-border-color"
+    },
+    {
+      "id": 47,
+      "name": "--sf-box-border-width"
+    },
+    {
+      "id": 48,
+      "name": "--sf-box-padding"
+    },
+    {
+      "id": 49,
+      "name": "--sf-breakout-width"
+    },
+    {
+      "id": 50,
+      "name": "--sf-button-padding-block"
+    },
+    {
+      "id": 51,
+      "name": "--sf-button-padding-inline"
+    },
+    {
+      "id": 52,
+      "name": "--sf-button-radius"
+    },
+    {
+      "id": 53,
+      "name": "--sf-caret-color"
+    },
+    {
+      "id": 54,
+      "name": "--sf-center-gutter"
+    },
+    {
+      "id": 55,
+      "name": "--sf-center-max"
+    },
+    {
+      "id": 56,
+      "name": "--sf-cluster-align"
+    },
+    {
+      "id": 57,
+      "name": "--sf-cluster-gap"
+    },
+    {
+      "id": 58,
+      "name": "--sf-cluster-justify"
+    },
+    {
+      "id": 59,
+      "name": "--sf-code-font-size"
+    },
+    {
+      "id": 60,
+      "name": "--sf-color-action"
+    },
+    {
+      "id": 61,
+      "name": "--sf-color-action--active"
+    },
+    {
+      "id": 62,
+      "name": "--sf-color-action--hover"
+    },
+    {
+      "id": 63,
+      "name": "--sf-color-action-100"
+    },
+    {
+      "id": 64,
+      "name": "--sf-color-action-200"
+    },
+    {
+      "id": 65,
+      "name": "--sf-color-action-300"
+    },
+    {
+      "id": 66,
+      "name": "--sf-color-action-400"
+    },
+    {
+      "id": 67,
+      "name": "--sf-color-action-50"
+    },
+    {
+      "id": 68,
+      "name": "--sf-color-action-500"
+    },
+    {
+      "id": 69,
+      "name": "--sf-color-action-600"
+    },
+    {
+      "id": 70,
+      "name": "--sf-color-action-700"
+    },
+    {
+      "id": 71,
+      "name": "--sf-color-action-800"
+    },
+    {
+      "id": 72,
+      "name": "--sf-color-action-900"
+    },
+    {
+      "id": 73,
+      "name": "--sf-color-action-950"
+    },
+    {
+      "id": 74,
+      "name": "--sf-color-action-a10"
+    },
+    {
+      "id": 75,
+      "name": "--sf-color-action-a30"
+    },
+    {
+      "id": 76,
+      "name": "--sf-color-action-a5"
+    },
+    {
+      "id": 77,
+      "name": "--sf-color-action-a50"
+    },
+    {
+      "id": 78,
+      "name": "--sf-color-action-a80"
+    },
+    {
+      "id": 79,
+      "name": "--sf-color-action-dark"
+    },
+    {
+      "id": 80,
+      "name": "--sf-color-action-darker"
+    },
+    {
+      "id": 81,
+      "name": "--sf-color-action-ghost"
+    },
+    {
+      "id": 82,
+      "name": "--sf-color-action-light"
+    },
+    {
+      "id": 83,
+      "name": "--sf-color-action-lighter"
+    },
+    {
+      "id": 84,
+      "name": "--sf-color-action-muted"
+    },
+    {
+      "id": 85,
+      "name": "--sf-color-action-subtle"
+    },
+    {
+      "id": 86,
+      "name": "--sf-color-action-superdark"
+    },
+    {
+      "id": 87,
+      "name": "--sf-color-action-superlight"
+    },
+    {
+      "id": 88,
+      "name": "--sf-color-action-xdark"
+    },
+    {
+      "id": 89,
+      "name": "--sf-color-action-xlight"
+    },
+    {
+      "id": 90,
+      "name": "--sf-color-base"
+    },
+    {
+      "id": 91,
+      "name": "--sf-color-base--active"
+    },
+    {
+      "id": 92,
+      "name": "--sf-color-base--hover"
+    },
+    {
+      "id": 93,
+      "name": "--sf-color-base-100"
+    },
+    {
+      "id": 94,
+      "name": "--sf-color-base-200"
+    },
+    {
+      "id": 95,
+      "name": "--sf-color-base-300"
+    },
+    {
+      "id": 96,
+      "name": "--sf-color-base-400"
+    },
+    {
+      "id": 97,
+      "name": "--sf-color-base-50"
+    },
+    {
+      "id": 98,
+      "name": "--sf-color-base-500"
+    },
+    {
+      "id": 99,
+      "name": "--sf-color-base-600"
+    },
+    {
+      "id": 100,
+      "name": "--sf-color-base-700"
+    },
+    {
+      "id": 101,
+      "name": "--sf-color-base-800"
+    },
+    {
+      "id": 102,
+      "name": "--sf-color-base-900"
+    },
+    {
+      "id": 103,
+      "name": "--sf-color-base-950"
+    },
+    {
+      "id": 104,
+      "name": "--sf-color-base-a10"
+    },
+    {
+      "id": 105,
+      "name": "--sf-color-base-a30"
+    },
+    {
+      "id": 106,
+      "name": "--sf-color-base-a5"
+    },
+    {
+      "id": 107,
+      "name": "--sf-color-base-a50"
+    },
+    {
+      "id": 108,
+      "name": "--sf-color-base-a80"
+    },
+    {
+      "id": 109,
+      "name": "--sf-color-base-dark"
+    },
+    {
+      "id": 110,
+      "name": "--sf-color-base-darker"
+    },
+    {
+      "id": 111,
+      "name": "--sf-color-base-ghost"
+    },
+    {
+      "id": 112,
+      "name": "--sf-color-base-light"
+    },
+    {
+      "id": 113,
+      "name": "--sf-color-base-lighter"
+    },
+    {
+      "id": 114,
+      "name": "--sf-color-base-muted"
+    },
+    {
+      "id": 115,
+      "name": "--sf-color-base-subtle"
+    },
+    {
+      "id": 116,
+      "name": "--sf-color-base-superdark"
+    },
+    {
+      "id": 117,
+      "name": "--sf-color-base-superlight"
+    },
+    {
+      "id": 118,
+      "name": "--sf-color-base-xdark"
+    },
+    {
+      "id": 119,
+      "name": "--sf-color-base-xlight"
+    },
+    {
+      "id": 120,
+      "name": "--sf-color-bg"
+    },
+    {
+      "id": 121,
+      "name": "--sf-color-bg--active"
+    },
+    {
+      "id": 122,
+      "name": "--sf-color-bg--disabled"
+    },
+    {
+      "id": 123,
+      "name": "--sf-color-bg--focus"
+    },
+    {
+      "id": 124,
+      "name": "--sf-color-bg--hover"
+    },
+    {
+      "id": 125,
+      "name": "--sf-color-bg--selected"
+    },
+    {
+      "id": 126,
+      "name": "--sf-color-black"
+    },
+    {
+      "id": 127,
+      "name": "--sf-color-border"
+    },
+    {
+      "id": 128,
+      "name": "--sf-color-border--disabled"
+    },
+    {
+      "id": 129,
+      "name": "--sf-color-border--focus"
+    },
+    {
+      "id": 130,
+      "name": "--sf-color-border--strong"
+    },
+    {
+      "id": 131,
+      "name": "--sf-color-border--subtle"
+    },
+    {
+      "id": 132,
+      "name": "--sf-color-border--translucent"
+    },
+    {
+      "id": 133,
+      "name": "--sf-color-code-bg"
+    },
+    {
+      "id": 134,
+      "name": "--sf-color-code-text"
+    },
+    {
+      "id": 135,
+      "name": "--sf-color-danger"
+    },
+    {
+      "id": 136,
+      "name": "--sf-color-danger-dark"
+    },
+    {
+      "id": 137,
+      "name": "--sf-color-danger-light"
+    },
+    {
+      "id": 138,
+      "name": "--sf-color-danger-muted"
+    },
+    {
+      "id": 139,
+      "name": "--sf-color-danger-strong"
+    },
+    {
+      "id": 140,
+      "name": "--sf-color-danger-subtle"
+    },
+    {
+      "id": 141,
+      "name": "--sf-color-dim"
+    },
+    {
+      "id": 142,
+      "name": "--sf-color-error"
+    },
+    {
+      "id": 143,
+      "name": "--sf-color-error-dark"
+    },
+    {
+      "id": 144,
+      "name": "--sf-color-error-light"
+    },
+    {
+      "id": 145,
+      "name": "--sf-color-error-muted"
+    },
+    {
+      "id": 146,
+      "name": "--sf-color-error-strong"
+    },
+    {
+      "id": 147,
+      "name": "--sf-color-error-subtle"
+    },
+    {
+      "id": 148,
+      "name": "--sf-color-heading"
+    },
+    {
+      "id": 149,
+      "name": "--sf-color-info"
+    },
+    {
+      "id": 150,
+      "name": "--sf-color-info-dark"
+    },
+    {
+      "id": 151,
+      "name": "--sf-color-info-light"
+    },
+    {
+      "id": 152,
+      "name": "--sf-color-info-muted"
+    },
+    {
+      "id": 153,
+      "name": "--sf-color-info-strong"
+    },
+    {
+      "id": 154,
+      "name": "--sf-color-info-subtle"
+    },
+    {
+      "id": 155,
+      "name": "--sf-color-inset"
+    },
+    {
+      "id": 156,
+      "name": "--sf-color-inverse"
+    },
+    {
+      "id": 157,
+      "name": "--sf-color-link"
+    },
+    {
+      "id": 158,
+      "name": "--sf-color-link--active"
+    },
+    {
+      "id": 159,
+      "name": "--sf-color-link--disabled"
+    },
+    {
+      "id": 160,
+      "name": "--sf-color-link--hover"
+    },
+    {
+      "id": 161,
+      "name": "--sf-color-link--underline"
+    },
+    {
+      "id": 162,
+      "name": "--sf-color-link--visited"
+    },
+    {
+      "id": 163,
+      "name": "--sf-color-mark-bg"
+    },
+    {
+      "id": 164,
+      "name": "--sf-color-mark-text"
+    },
+    {
+      "id": 165,
+      "name": "--sf-color-neutral"
+    },
+    {
+      "id": 166,
+      "name": "--sf-color-neutral--active"
+    },
+    {
+      "id": 167,
+      "name": "--sf-color-neutral--hover"
+    },
+    {
+      "id": 168,
+      "name": "--sf-color-neutral-100"
+    },
+    {
+      "id": 169,
+      "name": "--sf-color-neutral-200"
+    },
+    {
+      "id": 170,
+      "name": "--sf-color-neutral-300"
+    },
+    {
+      "id": 171,
+      "name": "--sf-color-neutral-400"
+    },
+    {
+      "id": 172,
+      "name": "--sf-color-neutral-50"
+    },
+    {
+      "id": 173,
+      "name": "--sf-color-neutral-500"
+    },
+    {
+      "id": 174,
+      "name": "--sf-color-neutral-600"
+    },
+    {
+      "id": 175,
+      "name": "--sf-color-neutral-700"
+    },
+    {
+      "id": 176,
+      "name": "--sf-color-neutral-800"
+    },
+    {
+      "id": 177,
+      "name": "--sf-color-neutral-900"
+    },
+    {
+      "id": 178,
+      "name": "--sf-color-neutral-950"
+    },
+    {
+      "id": 179,
+      "name": "--sf-color-neutral-a10"
+    },
+    {
+      "id": 180,
+      "name": "--sf-color-neutral-a30"
+    },
+    {
+      "id": 181,
+      "name": "--sf-color-neutral-a5"
+    },
+    {
+      "id": 182,
+      "name": "--sf-color-neutral-a50"
+    },
+    {
+      "id": 183,
+      "name": "--sf-color-neutral-a80"
+    },
+    {
+      "id": 184,
+      "name": "--sf-color-neutral-dark"
+    },
+    {
+      "id": 185,
+      "name": "--sf-color-neutral-darker"
+    },
+    {
+      "id": 186,
+      "name": "--sf-color-neutral-ghost"
+    },
+    {
+      "id": 187,
+      "name": "--sf-color-neutral-light"
+    },
+    {
+      "id": 188,
+      "name": "--sf-color-neutral-lighter"
+    },
+    {
+      "id": 189,
+      "name": "--sf-color-neutral-muted"
+    },
+    {
+      "id": 190,
+      "name": "--sf-color-neutral-subtle"
+    },
+    {
+      "id": 191,
+      "name": "--sf-color-neutral-superdark"
+    },
+    {
+      "id": 192,
+      "name": "--sf-color-neutral-superlight"
+    },
+    {
+      "id": 193,
+      "name": "--sf-color-neutral-xdark"
+    },
+    {
+      "id": 194,
+      "name": "--sf-color-neutral-xlight"
+    },
+    {
+      "id": 195,
+      "name": "--sf-color-overlay"
+    },
+    {
+      "id": 196,
+      "name": "--sf-color-primary"
+    },
+    {
+      "id": 197,
+      "name": "--sf-color-primary--active"
+    },
+    {
+      "id": 198,
+      "name": "--sf-color-primary--hover"
+    },
+    {
+      "id": 199,
+      "name": "--sf-color-primary-100"
+    },
+    {
+      "id": 200,
+      "name": "--sf-color-primary-200"
+    },
+    {
+      "id": 201,
+      "name": "--sf-color-primary-300"
+    },
+    {
+      "id": 202,
+      "name": "--sf-color-primary-400"
+    },
+    {
+      "id": 203,
+      "name": "--sf-color-primary-50"
+    },
+    {
+      "id": 204,
+      "name": "--sf-color-primary-500"
+    },
+    {
+      "id": 205,
+      "name": "--sf-color-primary-600"
+    },
+    {
+      "id": 206,
+      "name": "--sf-color-primary-700"
+    },
+    {
+      "id": 207,
+      "name": "--sf-color-primary-800"
+    },
+    {
+      "id": 208,
+      "name": "--sf-color-primary-900"
+    },
+    {
+      "id": 209,
+      "name": "--sf-color-primary-950"
+    },
+    {
+      "id": 210,
+      "name": "--sf-color-primary-a10"
+    },
+    {
+      "id": 211,
+      "name": "--sf-color-primary-a30"
+    },
+    {
+      "id": 212,
+      "name": "--sf-color-primary-a5"
+    },
+    {
+      "id": 213,
+      "name": "--sf-color-primary-a50"
+    },
+    {
+      "id": 214,
+      "name": "--sf-color-primary-a80"
+    },
+    {
+      "id": 215,
+      "name": "--sf-color-primary-dark"
+    },
+    {
+      "id": 216,
+      "name": "--sf-color-primary-darker"
+    },
+    {
+      "id": 217,
+      "name": "--sf-color-primary-ghost"
+    },
+    {
+      "id": 218,
+      "name": "--sf-color-primary-light"
+    },
+    {
+      "id": 219,
+      "name": "--sf-color-primary-lighter"
+    },
+    {
+      "id": 220,
+      "name": "--sf-color-primary-muted"
+    },
+    {
+      "id": 221,
+      "name": "--sf-color-primary-subtle"
+    },
+    {
+      "id": 222,
+      "name": "--sf-color-primary-superdark"
+    },
+    {
+      "id": 223,
+      "name": "--sf-color-primary-superlight"
+    },
+    {
+      "id": 224,
+      "name": "--sf-color-primary-xdark"
+    },
+    {
+      "id": 225,
+      "name": "--sf-color-primary-xlight"
+    },
+    {
+      "id": 226,
+      "name": "--sf-color-raised"
+    },
+    {
+      "id": 227,
+      "name": "--sf-color-scheme"
+    },
+    {
+      "id": 228,
+      "name": "--sf-color-secondary"
+    },
+    {
+      "id": 229,
+      "name": "--sf-color-secondary--active"
+    },
+    {
+      "id": 230,
+      "name": "--sf-color-secondary--hover"
+    },
+    {
+      "id": 231,
+      "name": "--sf-color-secondary-100"
+    },
+    {
+      "id": 232,
+      "name": "--sf-color-secondary-200"
+    },
+    {
+      "id": 233,
+      "name": "--sf-color-secondary-300"
+    },
+    {
+      "id": 234,
+      "name": "--sf-color-secondary-400"
+    },
+    {
+      "id": 235,
+      "name": "--sf-color-secondary-50"
+    },
+    {
+      "id": 236,
+      "name": "--sf-color-secondary-500"
+    },
+    {
+      "id": 237,
+      "name": "--sf-color-secondary-600"
+    },
+    {
+      "id": 238,
+      "name": "--sf-color-secondary-700"
+    },
+    {
+      "id": 239,
+      "name": "--sf-color-secondary-800"
+    },
+    {
+      "id": 240,
+      "name": "--sf-color-secondary-900"
+    },
+    {
+      "id": 241,
+      "name": "--sf-color-secondary-950"
+    },
+    {
+      "id": 242,
+      "name": "--sf-color-secondary-a10"
+    },
+    {
+      "id": 243,
+      "name": "--sf-color-secondary-a30"
+    },
+    {
+      "id": 244,
+      "name": "--sf-color-secondary-a5"
+    },
+    {
+      "id": 245,
+      "name": "--sf-color-secondary-a50"
+    },
+    {
+      "id": 246,
+      "name": "--sf-color-secondary-a80"
+    },
+    {
+      "id": 247,
+      "name": "--sf-color-secondary-dark"
+    },
+    {
+      "id": 248,
+      "name": "--sf-color-secondary-darker"
+    },
+    {
+      "id": 249,
+      "name": "--sf-color-secondary-ghost"
+    },
+    {
+      "id": 250,
+      "name": "--sf-color-secondary-light"
+    },
+    {
+      "id": 251,
+      "name": "--sf-color-secondary-lighter"
+    },
+    {
+      "id": 252,
+      "name": "--sf-color-secondary-muted"
+    },
+    {
+      "id": 253,
+      "name": "--sf-color-secondary-subtle"
+    },
+    {
+      "id": 254,
+      "name": "--sf-color-secondary-superdark"
+    },
+    {
+      "id": 255,
+      "name": "--sf-color-secondary-superlight"
+    },
+    {
+      "id": 256,
+      "name": "--sf-color-secondary-xdark"
+    },
+    {
+      "id": 257,
+      "name": "--sf-color-secondary-xlight"
+    },
+    {
+      "id": 258,
+      "name": "--sf-color-selection-bg"
+    },
+    {
+      "id": 259,
+      "name": "--sf-color-selection-text"
+    },
+    {
+      "id": 260,
+      "name": "--sf-color-success"
+    },
+    {
+      "id": 261,
+      "name": "--sf-color-success-dark"
+    },
+    {
+      "id": 262,
+      "name": "--sf-color-success-light"
+    },
+    {
+      "id": 263,
+      "name": "--sf-color-success-muted"
+    },
+    {
+      "id": 264,
+      "name": "--sf-color-success-strong"
+    },
+    {
+      "id": 265,
+      "name": "--sf-color-success-subtle"
+    },
+    {
+      "id": 266,
+      "name": "--sf-color-surface"
+    },
+    {
+      "id": 267,
+      "name": "--sf-color-tertiary"
+    },
+    {
+      "id": 268,
+      "name": "--sf-color-tertiary--active"
+    },
+    {
+      "id": 269,
+      "name": "--sf-color-tertiary--hover"
+    },
+    {
+      "id": 270,
+      "name": "--sf-color-tertiary-100"
+    },
+    {
+      "id": 271,
+      "name": "--sf-color-tertiary-200"
+    },
+    {
+      "id": 272,
+      "name": "--sf-color-tertiary-300"
+    },
+    {
+      "id": 273,
+      "name": "--sf-color-tertiary-400"
+    },
+    {
+      "id": 274,
+      "name": "--sf-color-tertiary-50"
+    },
+    {
+      "id": 275,
+      "name": "--sf-color-tertiary-500"
+    },
+    {
+      "id": 276,
+      "name": "--sf-color-tertiary-600"
+    },
+    {
+      "id": 277,
+      "name": "--sf-color-tertiary-700"
+    },
+    {
+      "id": 278,
+      "name": "--sf-color-tertiary-800"
+    },
+    {
+      "id": 279,
+      "name": "--sf-color-tertiary-900"
+    },
+    {
+      "id": 280,
+      "name": "--sf-color-tertiary-950"
+    },
+    {
+      "id": 281,
+      "name": "--sf-color-tertiary-a10"
+    },
+    {
+      "id": 282,
+      "name": "--sf-color-tertiary-a30"
+    },
+    {
+      "id": 283,
+      "name": "--sf-color-tertiary-a5"
+    },
+    {
+      "id": 284,
+      "name": "--sf-color-tertiary-a50"
+    },
+    {
+      "id": 285,
+      "name": "--sf-color-tertiary-a80"
+    },
+    {
+      "id": 286,
+      "name": "--sf-color-tertiary-dark"
+    },
+    {
+      "id": 287,
+      "name": "--sf-color-tertiary-darker"
+    },
+    {
+      "id": 288,
+      "name": "--sf-color-tertiary-ghost"
+    },
+    {
+      "id": 289,
+      "name": "--sf-color-tertiary-light"
+    },
+    {
+      "id": 290,
+      "name": "--sf-color-tertiary-lighter"
+    },
+    {
+      "id": 291,
+      "name": "--sf-color-tertiary-muted"
+    },
+    {
+      "id": 292,
+      "name": "--sf-color-tertiary-subtle"
+    },
+    {
+      "id": 293,
+      "name": "--sf-color-tertiary-superdark"
+    },
+    {
+      "id": 294,
+      "name": "--sf-color-tertiary-superlight"
+    },
+    {
+      "id": 295,
+      "name": "--sf-color-tertiary-xdark"
+    },
+    {
+      "id": 296,
+      "name": "--sf-color-tertiary-xlight"
+    },
+    {
+      "id": 297,
+      "name": "--sf-color-text"
+    },
+    {
+      "id": 298,
+      "name": "--sf-color-text--disabled"
+    },
+    {
+      "id": 299,
+      "name": "--sf-color-text--inverse"
+    },
+    {
+      "id": 300,
+      "name": "--sf-color-text--muted"
+    },
+    {
+      "id": 301,
+      "name": "--sf-color-text--on-action"
+    },
+    {
+      "id": 302,
+      "name": "--sf-color-text--on-base"
+    },
+    {
+      "id": 303,
+      "name": "--sf-color-text--on-danger"
+    },
+    {
+      "id": 304,
+      "name": "--sf-color-text--on-error"
+    },
+    {
+      "id": 305,
+      "name": "--sf-color-text--on-info"
+    },
+    {
+      "id": 306,
+      "name": "--sf-color-text--on-inverse"
+    },
+    {
+      "id": 307,
+      "name": "--sf-color-text--on-neutral"
+    },
+    {
+      "id": 308,
+      "name": "--sf-color-text--on-primary"
+    },
+    {
+      "id": 309,
+      "name": "--sf-color-text--on-secondary"
+    },
+    {
+      "id": 310,
+      "name": "--sf-color-text--on-success"
+    },
+    {
+      "id": 311,
+      "name": "--sf-color-text--on-tertiary"
+    },
+    {
+      "id": 312,
+      "name": "--sf-color-text--on-warning"
+    },
+    {
+      "id": 313,
+      "name": "--sf-color-text--placeholder"
+    },
+    {
+      "id": 314,
+      "name": "--sf-color-text--secondary"
+    },
+    {
+      "id": 315,
+      "name": "--sf-color-warning"
+    },
+    {
+      "id": 316,
+      "name": "--sf-color-warning-dark"
+    },
+    {
+      "id": 317,
+      "name": "--sf-color-warning-light"
+    },
+    {
+      "id": 318,
+      "name": "--sf-color-warning-muted"
+    },
+    {
+      "id": 319,
+      "name": "--sf-color-warning-strong"
+    },
+    {
+      "id": 320,
+      "name": "--sf-color-warning-subtle"
+    },
+    {
+      "id": 321,
+      "name": "--sf-color-white"
+    },
+    {
+      "id": 322,
+      "name": "--sf-component-pad"
+    },
+    {
+      "id": 323,
+      "name": "--sf-container-default"
+    },
+    {
+      "id": 324,
+      "name": "--sf-container-full"
+    },
+    {
+      "id": 325,
+      "name": "--sf-container-narrow"
+    },
+    {
+      "id": 326,
+      "name": "--sf-container-prose"
+    },
+    {
+      "id": 327,
+      "name": "--sf-container-wide"
+    },
+    {
+      "id": 328,
+      "name": "--sf-content-gap"
+    },
+    {
+      "id": 329,
+      "name": "--sf-content-intrinsic-size"
+    },
+    {
+      "id": 330,
+      "name": "--sf-content-width"
+    },
+    {
+      "id": 331,
+      "name": "--sf-contrast-bias"
+    },
+    {
+      "id": 332,
+      "name": "--sf-contrast-threshold"
+    },
+    {
+      "id": 333,
+      "name": "--sf-cover-min-height"
+    },
+    {
+      "id": 334,
+      "name": "--sf-cover-padding"
+    },
+    {
+      "id": 335,
+      "name": "--sf-current-font-weight"
+    },
+    {
+      "id": 336,
+      "name": "--sf-display-l-line-height"
+    },
+    {
+      "id": 337,
+      "name": "--sf-display-m-line-height"
+    },
+    {
+      "id": 338,
+      "name": "--sf-display-s-line-height"
+    },
+    {
+      "id": 339,
+      "name": "--sf-divider-color"
+    },
+    {
+      "id": 340,
+      "name": "--sf-divider-gap"
+    },
+    {
+      "id": 341,
+      "name": "--sf-divider-style"
+    },
+    {
+      "id": 342,
+      "name": "--sf-divider-width"
+    },
+    {
+      "id": 343,
+      "name": "--sf-drop-shadow-l"
+    },
+    {
+      "id": 344,
+      "name": "--sf-drop-shadow-m"
+    },
+    {
+      "id": 345,
+      "name": "--sf-drop-shadow-s"
+    },
+    {
+      "id": 346,
+      "name": "--sf-duration-fast"
+    },
+    {
+      "id": 347,
+      "name": "--sf-duration-instant"
+    },
+    {
+      "id": 348,
+      "name": "--sf-duration-none"
+    },
+    {
+      "id": 349,
+      "name": "--sf-duration-normal"
+    },
+    {
+      "id": 350,
+      "name": "--sf-duration-slow"
+    },
+    {
+      "id": 351,
+      "name": "--sf-duration-slower"
+    },
+    {
+      "id": 352,
+      "name": "--sf-ease-bounce"
+    },
+    {
+      "id": 353,
+      "name": "--sf-ease-elastic"
+    },
+    {
+      "id": 354,
+      "name": "--sf-ease-in"
+    },
+    {
+      "id": 355,
+      "name": "--sf-ease-in-out"
+    },
+    {
+      "id": 356,
+      "name": "--sf-ease-linear"
+    },
+    {
+      "id": 357,
+      "name": "--sf-ease-out"
+    },
+    {
+      "id": 358,
+      "name": "--sf-ease-overshoot"
+    },
+    {
+      "id": 359,
+      "name": "--sf-ease-spring"
+    },
+    {
+      "id": 360,
+      "name": "--sf-equal-gap"
+    },
+    {
+      "id": 361,
+      "name": "--sf-equal-min-col"
+    },
+    {
+      "id": 362,
+      "name": "--sf-equal-min-col-2"
+    },
+    {
+      "id": 363,
+      "name": "--sf-equal-min-col-3"
+    },
+    {
+      "id": 364,
+      "name": "--sf-equal-min-col-4"
+    },
+    {
+      "id": 365,
+      "name": "--sf-equal-min-col-6"
+    },
+    {
+      "id": 366,
+      "name": "--sf-field-block"
+    },
+    {
+      "id": 367,
+      "name": "--sf-field-padding-block"
+    },
+    {
+      "id": 368,
+      "name": "--sf-field-padding-inline"
+    },
+    {
+      "id": 369,
+      "name": "--sf-field-radius"
+    },
+    {
+      "id": 370,
+      "name": "--sf-field-required-marker"
+    },
+    {
+      "id": 371,
+      "name": "--sf-flow-space"
+    },
+    {
+      "id": 372,
+      "name": "--sf-fluid-max-vw"
+    },
+    {
+      "id": 373,
+      "name": "--sf-fluid-min-vw"
+    },
+    {
+      "id": 374,
+      "name": "--sf-focus-ring-color"
+    },
+    {
+      "id": 375,
+      "name": "--sf-focus-ring-offset"
+    },
+    {
+      "id": 376,
+      "name": "--sf-focus-ring-shadow"
+    },
+    {
+      "id": 377,
+      "name": "--sf-focus-ring-style"
+    },
+    {
+      "id": 378,
+      "name": "--sf-focus-ring-width"
+    },
+    {
+      "id": 379,
+      "name": "--sf-font-body"
+    },
+    {
+      "id": 380,
+      "name": "--sf-font-display"
+    },
+    {
+      "id": 381,
+      "name": "--sf-font-features"
+    },
+    {
+      "id": 382,
+      "name": "--sf-font-geometric"
+    },
+    {
+      "id": 383,
+      "name": "--sf-font-heading"
+    },
+    {
+      "id": 384,
+      "name": "--sf-font-humanist"
+    },
+    {
+      "id": 385,
+      "name": "--sf-font-mono"
+    },
+    {
+      "id": 386,
+      "name": "--sf-font-numeric"
+    },
+    {
+      "id": 387,
+      "name": "--sf-font-slab"
+    },
+    {
+      "id": 388,
+      "name": "--sf-font-variation"
+    },
+    {
+      "id": 389,
+      "name": "--sf-font-weight-body"
+    },
+    {
+      "id": 390,
+      "name": "--sf-font-weight-bold"
+    },
+    {
+      "id": 391,
+      "name": "--sf-font-weight-display"
+    },
+    {
+      "id": 392,
+      "name": "--sf-font-weight-heading"
+    },
+    {
+      "id": 393,
+      "name": "--sf-font-weight-interactive"
+    },
+    {
+      "id": 394,
+      "name": "--sf-font-weight-light"
+    },
+    {
+      "id": 395,
+      "name": "--sf-font-weight-medium"
+    },
+    {
+      "id": 396,
+      "name": "--sf-font-weight-normal"
+    },
+    {
+      "id": 397,
+      "name": "--sf-font-weight-semibold"
+    },
+    {
+      "id": 398,
+      "name": "--sf-font-weight-strong"
+    },
+    {
+      "id": 399,
+      "name": "--sf-frame-ratio"
+    },
+    {
+      "id": 400,
+      "name": "--sf-gap"
+    },
+    {
+      "id": 401,
+      "name": "--sf-gradient-brand"
+    },
+    {
+      "id": 402,
+      "name": "--sf-gradient-fade--b"
+    },
+    {
+      "id": 403,
+      "name": "--sf-gradient-fade--l"
+    },
+    {
+      "id": 404,
+      "name": "--sf-gradient-fade--r"
+    },
+    {
+      "id": 405,
+      "name": "--sf-gradient-fade--t"
+    },
+    {
+      "id": 406,
+      "name": "--sf-gradient-primary"
+    },
+    {
+      "id": 407,
+      "name": "--sf-gradient-secondary"
+    },
+    {
+      "id": 408,
+      "name": "--sf-gradient-surface"
+    },
+    {
+      "id": 409,
+      "name": "--sf-gradient-tertiary"
+    },
+    {
+      "id": 410,
+      "name": "--sf-grid-gap"
+    },
+    {
+      "id": 411,
+      "name": "--sf-grid-min"
+    },
+    {
+      "id": 412,
+      "name": "--sf-grid-min-2xl"
+    },
+    {
+      "id": 413,
+      "name": "--sf-grid-min-l"
+    },
+    {
+      "id": 414,
+      "name": "--sf-grid-min-m"
+    },
+    {
+      "id": 415,
+      "name": "--sf-grid-min-s"
+    },
+    {
+      "id": 416,
+      "name": "--sf-grid-min-xl"
+    },
+    {
+      "id": 417,
+      "name": "--sf-grid-min-xs"
+    },
+    {
+      "id": 418,
+      "name": "--sf-gutter"
+    },
+    {
+      "id": 419,
+      "name": "--sf-h1-font-weight"
+    },
+    {
+      "id": 420,
+      "name": "--sf-h1-letter-spacing"
+    },
+    {
+      "id": 421,
+      "name": "--sf-h1-line-height"
+    },
+    {
+      "id": 422,
+      "name": "--sf-h1-max-width"
+    },
+    {
+      "id": 423,
+      "name": "--sf-h1-size"
+    },
+    {
+      "id": 424,
+      "name": "--sf-h2-font-weight"
+    },
+    {
+      "id": 425,
+      "name": "--sf-h2-letter-spacing"
+    },
+    {
+      "id": 426,
+      "name": "--sf-h2-line-height"
+    },
+    {
+      "id": 427,
+      "name": "--sf-h2-max-width"
+    },
+    {
+      "id": 428,
+      "name": "--sf-h2-size"
+    },
+    {
+      "id": 429,
+      "name": "--sf-h3-font-weight"
+    },
+    {
+      "id": 430,
+      "name": "--sf-h3-letter-spacing"
+    },
+    {
+      "id": 431,
+      "name": "--sf-h3-line-height"
+    },
+    {
+      "id": 432,
+      "name": "--sf-h3-max-width"
+    },
+    {
+      "id": 433,
+      "name": "--sf-h3-size"
+    },
+    {
+      "id": 434,
+      "name": "--sf-h4-font-weight"
+    },
+    {
+      "id": 435,
+      "name": "--sf-h4-letter-spacing"
+    },
+    {
+      "id": 436,
+      "name": "--sf-h4-line-height"
+    },
+    {
+      "id": 437,
+      "name": "--sf-h4-max-width"
+    },
+    {
+      "id": 438,
+      "name": "--sf-h4-size"
+    },
+    {
+      "id": 439,
+      "name": "--sf-h5-font-weight"
+    },
+    {
+      "id": 440,
+      "name": "--sf-h5-letter-spacing"
+    },
+    {
+      "id": 441,
+      "name": "--sf-h5-line-height"
+    },
+    {
+      "id": 442,
+      "name": "--sf-h5-max-width"
+    },
+    {
+      "id": 443,
+      "name": "--sf-h5-size"
+    },
+    {
+      "id": 444,
+      "name": "--sf-h6-font-weight"
+    },
+    {
+      "id": 445,
+      "name": "--sf-h6-letter-spacing"
+    },
+    {
+      "id": 446,
+      "name": "--sf-h6-line-height"
+    },
+    {
+      "id": 447,
+      "name": "--sf-h6-max-width"
+    },
+    {
+      "id": 448,
+      "name": "--sf-h6-size"
+    },
+    {
+      "id": 449,
+      "name": "--sf-header-height"
+    },
+    {
+      "id": 450,
+      "name": "--sf-header-height-desktop"
+    },
+    {
+      "id": 451,
+      "name": "--sf-header-height-mobile"
+    },
+    {
+      "id": 452,
+      "name": "--sf-heading-color"
+    },
+    {
+      "id": 453,
+      "name": "--sf-heading-font-family"
+    },
+    {
+      "id": 454,
+      "name": "--sf-heading-text-wrap"
+    },
+    {
+      "id": 455,
+      "name": "--sf-icon-2xl"
+    },
+    {
+      "id": 456,
+      "name": "--sf-icon-box-bg"
+    },
+    {
+      "id": 457,
+      "name": "--sf-icon-box-border"
+    },
+    {
+      "id": 458,
+      "name": "--sf-icon-box-pad"
+    },
+    {
+      "id": 459,
+      "name": "--sf-icon-box-radius"
+    },
+    {
+      "id": 460,
+      "name": "--sf-icon-l"
+    },
+    {
+      "id": 461,
+      "name": "--sf-icon-m"
+    },
+    {
+      "id": 462,
+      "name": "--sf-icon-s"
+    },
+    {
+      "id": 463,
+      "name": "--sf-icon-xl"
+    },
+    {
+      "id": 464,
+      "name": "--sf-icon-xs"
+    },
+    {
+      "id": 465,
+      "name": "--sf-imposter-margin"
+    },
+    {
+      "id": 466,
+      "name": "--sf-is-active"
+    },
+    {
+      "id": 467,
+      "name": "--sf-is-current"
+    },
+    {
+      "id": 468,
+      "name": "--sf-is-dark"
+    },
+    {
+      "id": 469,
+      "name": "--sf-is-open"
+    },
+    {
+      "id": 470,
+      "name": "--sf-is-pressed"
+    },
+    {
+      "id": 471,
+      "name": "--sf-leading-normal"
+    },
+    {
+      "id": 472,
+      "name": "--sf-leading-relaxed"
+    },
+    {
+      "id": 473,
+      "name": "--sf-leading-snug"
+    },
+    {
+      "id": 474,
+      "name": "--sf-leading-taper"
+    },
+    {
+      "id": 475,
+      "name": "--sf-leading-tight"
+    },
+    {
+      "id": 476,
+      "name": "--sf-line-clamp"
+    },
+    {
+      "id": 477,
+      "name": "--sf-link-external-marker"
+    },
+    {
+      "id": 478,
+      "name": "--sf-link-underline-offset"
+    },
+    {
+      "id": 479,
+      "name": "--sf-link-underline-thickness"
+    },
+    {
+      "id": 480,
+      "name": "--sf-lumlocker"
+    },
+    {
+      "id": 481,
+      "name": "--sf-mask-scrim-end"
+    },
+    {
+      "id": 482,
+      "name": "--sf-mask-scrim-start"
+    },
+    {
+      "id": 483,
+      "name": "--sf-motion-scale"
+    },
+    {
+      "id": 484,
+      "name": "--sf-object-fit"
+    },
+    {
+      "id": 485,
+      "name": "--sf-object-position"
+    },
+    {
+      "id": 486,
+      "name": "--sf-opacity-disabled"
+    },
+    {
+      "id": 487,
+      "name": "--sf-opacity-muted"
+    },
+    {
+      "id": 488,
+      "name": "--sf-optical-sizing"
+    },
+    {
+      "id": 489,
+      "name": "--sf-palette-mix-100"
+    },
+    {
+      "id": 490,
+      "name": "--sf-palette-mix-200"
+    },
+    {
+      "id": 491,
+      "name": "--sf-palette-mix-300"
+    },
+    {
+      "id": 492,
+      "name": "--sf-palette-mix-400"
+    },
+    {
+      "id": 493,
+      "name": "--sf-palette-mix-50"
+    },
+    {
+      "id": 494,
+      "name": "--sf-palette-mix-600"
+    },
+    {
+      "id": 495,
+      "name": "--sf-palette-mix-700"
+    },
+    {
+      "id": 496,
+      "name": "--sf-palette-mix-800"
+    },
+    {
+      "id": 497,
+      "name": "--sf-palette-mix-900"
+    },
+    {
+      "id": 498,
+      "name": "--sf-palette-mix-950"
+    },
+    {
+      "id": 499,
+      "name": "--sf-print-base-size"
+    },
+    {
+      "id": 500,
+      "name": "--sf-print-page-margin"
+    },
+    {
+      "id": 501,
+      "name": "--sf-print-page-size"
+    },
+    {
+      "id": 502,
+      "name": "--sf-prose-block-margin"
+    },
+    {
+      "id": 503,
+      "name": "--sf-prose-blockquote-border"
+    },
+    {
+      "id": 504,
+      "name": "--sf-prose-blockquote-padding"
+    },
+    {
+      "id": 505,
+      "name": "--sf-prose-figcaption-size"
+    },
+    {
+      "id": 506,
+      "name": "--sf-prose-figure-margin"
+    },
+    {
+      "id": 507,
+      "name": "--sf-prose-heading-gap"
+    },
+    {
+      "id": 508,
+      "name": "--sf-prose-hr-margin"
+    },
+    {
+      "id": 509,
+      "name": "--sf-prose-list-gap"
+    },
+    {
+      "id": 510,
+      "name": "--sf-prose-marker-color"
+    },
+    {
+      "id": 511,
+      "name": "--sf-prose-media-margin"
+    },
+    {
+      "id": 512,
+      "name": "--sf-prose-media-radius"
+    },
+    {
+      "id": 513,
+      "name": "--sf-prose-nested-list-gap"
+    },
+    {
+      "id": 514,
+      "name": "--sf-prose-paragraph"
+    },
+    {
+      "id": 515,
+      "name": "--sf-prose-table-pad"
+    },
+    {
+      "id": 516,
+      "name": "--sf-radius-2xl"
+    },
+    {
+      "id": 517,
+      "name": "--sf-radius-2xs"
+    },
+    {
+      "id": 518,
+      "name": "--sf-radius-3xl"
+    },
+    {
+      "id": 519,
+      "name": "--sf-radius-4xl"
+    },
+    {
+      "id": 520,
+      "name": "--sf-radius-full"
+    },
+    {
+      "id": 521,
+      "name": "--sf-radius-l"
+    },
+    {
+      "id": 522,
+      "name": "--sf-radius-m"
+    },
+    {
+      "id": 523,
+      "name": "--sf-radius-none"
+    },
+    {
+      "id": 524,
+      "name": "--sf-radius-outer"
+    },
+    {
+      "id": 525,
+      "name": "--sf-radius-pill"
+    },
+    {
+      "id": 526,
+      "name": "--sf-radius-s"
+    },
+    {
+      "id": 527,
+      "name": "--sf-radius-scale"
+    },
+    {
+      "id": 528,
+      "name": "--sf-radius-xl"
+    },
+    {
+      "id": 529,
+      "name": "--sf-radius-xs"
+    },
+    {
+      "id": 530,
+      "name": "--sf-ratio-3-2"
+    },
+    {
+      "id": 531,
+      "name": "--sf-ratio-4-3"
+    },
+    {
+      "id": 532,
+      "name": "--sf-ratio-cinema"
+    },
+    {
+      "id": 533,
+      "name": "--sf-ratio-golden"
+    },
+    {
+      "id": 534,
+      "name": "--sf-ratio-portrait"
+    },
+    {
+      "id": 535,
+      "name": "--sf-ratio-square"
+    },
+    {
+      "id": 536,
+      "name": "--sf-ratio-video"
+    },
+    {
+      "id": 537,
+      "name": "--sf-reel-gap"
+    },
+    {
+      "id": 538,
+      "name": "--sf-reel-height"
+    },
+    {
+      "id": 539,
+      "name": "--sf-reel-item-width"
+    },
+    {
+      "id": 540,
+      "name": "--sf-safe-bottom"
+    },
+    {
+      "id": 541,
+      "name": "--sf-safe-left"
+    },
+    {
+      "id": 542,
+      "name": "--sf-safe-right"
+    },
+    {
+      "id": 543,
+      "name": "--sf-safe-top"
+    },
+    {
+      "id": 544,
+      "name": "--sf-scrim-color"
+    },
+    {
+      "id": 545,
+      "name": "--sf-scrim-direction"
+    },
+    {
+      "id": 546,
+      "name": "--sf-scrim-gradient"
+    },
+    {
+      "id": 547,
+      "name": "--sf-scrim-text-shadow"
+    },
+    {
+      "id": 548,
+      "name": "--sf-scroll-shadow-size"
+    },
+    {
+      "id": 549,
+      "name": "--sf-scroll-timeline-range-end"
+    },
+    {
+      "id": 550,
+      "name": "--sf-scroll-timeline-range-start"
+    },
+    {
+      "id": 551,
+      "name": "--sf-scrollbar-thumb"
+    },
+    {
+      "id": 552,
+      "name": "--sf-scrollbar-track"
+    },
+    {
+      "id": 553,
+      "name": "--sf-section-pad"
+    },
+    {
+      "id": 554,
+      "name": "--sf-section-pad--2xl"
+    },
+    {
+      "id": 555,
+      "name": "--sf-section-pad--l"
+    },
+    {
+      "id": 556,
+      "name": "--sf-section-pad--m"
+    },
+    {
+      "id": 557,
+      "name": "--sf-section-pad--s"
+    },
+    {
+      "id": 558,
+      "name": "--sf-section-pad--xl"
+    },
+    {
+      "id": 559,
+      "name": "--sf-section-pad--xs"
+    },
+    {
+      "id": 560,
+      "name": "--sf-section-scale"
+    },
+    {
+      "id": 561,
+      "name": "--sf-shadow-2xl"
+    },
+    {
+      "id": 562,
+      "name": "--sf-shadow-color"
+    },
+    {
+      "id": 563,
+      "name": "--sf-shadow-glow"
+    },
+    {
+      "id": 564,
+      "name": "--sf-shadow-glow-color"
+    },
+    {
+      "id": 565,
+      "name": "--sf-shadow-inner"
+    },
+    {
+      "id": 566,
+      "name": "--sf-shadow-l"
+    },
+    {
+      "id": 567,
+      "name": "--sf-shadow-lightness"
+    },
+    {
+      "id": 568,
+      "name": "--sf-shadow-m"
+    },
+    {
+      "id": 569,
+      "name": "--sf-shadow-none"
+    },
+    {
+      "id": 570,
+      "name": "--sf-shadow-s"
+    },
+    {
+      "id": 571,
+      "name": "--sf-shadow-strength"
+    },
+    {
+      "id": 572,
+      "name": "--sf-shadow-xl"
+    },
+    {
+      "id": 573,
+      "name": "--sf-shadow-xs"
+    },
+    {
+      "id": 574,
+      "name": "--sf-sidebar-gap"
+    },
+    {
+      "id": 575,
+      "name": "--sf-sidebar-min-width"
+    },
+    {
+      "id": 576,
+      "name": "--sf-sidebar-width"
+    },
+    {
+      "id": 577,
+      "name": "--sf-size-l"
+    },
+    {
+      "id": 578,
+      "name": "--sf-size-m"
+    },
+    {
+      "id": 579,
+      "name": "--sf-size-s"
+    },
+    {
+      "id": 580,
+      "name": "--sf-size-xl"
+    },
+    {
+      "id": 581,
+      "name": "--sf-size-xs"
+    },
+    {
+      "id": 582,
+      "name": "--sf-space-2xl"
+    },
+    {
+      "id": 583,
+      "name": "--sf-space-2xs"
+    },
+    {
+      "id": 584,
+      "name": "--sf-space-3xl"
+    },
+    {
+      "id": 585,
+      "name": "--sf-space-4xl"
+    },
+    {
+      "id": 586,
+      "name": "--sf-space-base-max"
+    },
+    {
+      "id": 587,
+      "name": "--sf-space-base-min"
+    },
+    {
+      "id": 588,
+      "name": "--sf-space-l"
+    },
+    {
+      "id": 589,
+      "name": "--sf-space-m"
+    },
+    {
+      "id": 590,
+      "name": "--sf-space-none"
+    },
+    {
+      "id": 591,
+      "name": "--sf-space-px"
+    },
+    {
+      "id": 592,
+      "name": "--sf-space-ratio-max"
+    },
+    {
+      "id": 593,
+      "name": "--sf-space-ratio-min"
+    },
+    {
+      "id": 594,
+      "name": "--sf-space-s"
+    },
+    {
+      "id": 595,
+      "name": "--sf-space-scale"
+    },
+    {
+      "id": 596,
+      "name": "--sf-space-xl"
+    },
+    {
+      "id": 597,
+      "name": "--sf-space-xs"
+    },
+    {
+      "id": 598,
+      "name": "--sf-stack-gap"
+    },
+    {
+      "id": 599,
+      "name": "--sf-state-pending-opacity"
+    },
+    {
+      "id": 600,
+      "name": "--sf-sticky-offset"
+    },
+    {
+      "id": 601,
+      "name": "--sf-sticky-offset-desktop"
+    },
+    {
+      "id": 602,
+      "name": "--sf-sticky-offset-mobile"
+    },
+    {
+      "id": 603,
+      "name": "--sf-surface-color"
+    },
+    {
+      "id": 604,
+      "name": "--sf-switcher-gap"
+    },
+    {
+      "id": 605,
+      "name": "--sf-switcher-threshold"
+    },
+    {
+      "id": 606,
+      "name": "--sf-text-2xl"
+    },
+    {
+      "id": 607,
+      "name": "--sf-text-2xl-font-weight"
+    },
+    {
+      "id": 608,
+      "name": "--sf-text-2xl-letter-spacing"
+    },
+    {
+      "id": 609,
+      "name": "--sf-text-2xl-line-height"
+    },
+    {
+      "id": 610,
+      "name": "--sf-text-2xl-max-width"
+    },
+    {
+      "id": 611,
+      "name": "--sf-text-2xs"
+    },
+    {
+      "id": 612,
+      "name": "--sf-text-2xs-font-weight"
+    },
+    {
+      "id": 613,
+      "name": "--sf-text-2xs-letter-spacing"
+    },
+    {
+      "id": 614,
+      "name": "--sf-text-2xs-line-height"
+    },
+    {
+      "id": 615,
+      "name": "--sf-text-2xs-max-width"
+    },
+    {
+      "id": 616,
+      "name": "--sf-text-3xl"
+    },
+    {
+      "id": 617,
+      "name": "--sf-text-3xl-font-weight"
+    },
+    {
+      "id": 618,
+      "name": "--sf-text-3xl-letter-spacing"
+    },
+    {
+      "id": 619,
+      "name": "--sf-text-3xl-line-height"
+    },
+    {
+      "id": 620,
+      "name": "--sf-text-3xl-max-width"
+    },
+    {
+      "id": 621,
+      "name": "--sf-text-4xl"
+    },
+    {
+      "id": 622,
+      "name": "--sf-text-4xl-font-weight"
+    },
+    {
+      "id": 623,
+      "name": "--sf-text-4xl-letter-spacing"
+    },
+    {
+      "id": 624,
+      "name": "--sf-text-4xl-line-height"
+    },
+    {
+      "id": 625,
+      "name": "--sf-text-4xl-max-width"
+    },
+    {
+      "id": 626,
+      "name": "--sf-text-base-max"
+    },
+    {
+      "id": 627,
+      "name": "--sf-text-base-min"
+    },
+    {
+      "id": 628,
+      "name": "--sf-text-display-base-max"
+    },
+    {
+      "id": 629,
+      "name": "--sf-text-display-base-min"
+    },
+    {
+      "id": 630,
+      "name": "--sf-text-display-l"
+    },
+    {
+      "id": 631,
+      "name": "--sf-text-display-m"
+    },
+    {
+      "id": 632,
+      "name": "--sf-text-display-s"
+    },
+    {
+      "id": 633,
+      "name": "--sf-text-display-scale"
+    },
+    {
+      "id": 634,
+      "name": "--sf-text-l"
+    },
+    {
+      "id": 635,
+      "name": "--sf-text-l-font-weight"
+    },
+    {
+      "id": 636,
+      "name": "--sf-text-l-letter-spacing"
+    },
+    {
+      "id": 637,
+      "name": "--sf-text-l-line-height"
+    },
+    {
+      "id": 638,
+      "name": "--sf-text-l-max-width"
+    },
+    {
+      "id": 639,
+      "name": "--sf-text-m"
+    },
+    {
+      "id": 640,
+      "name": "--sf-text-m-font-weight"
+    },
+    {
+      "id": 641,
+      "name": "--sf-text-m-letter-spacing"
+    },
+    {
+      "id": 642,
+      "name": "--sf-text-m-line-height"
+    },
+    {
+      "id": 643,
+      "name": "--sf-text-m-max-width"
+    },
+    {
+      "id": 644,
+      "name": "--sf-text-ratio-max"
+    },
+    {
+      "id": 645,
+      "name": "--sf-text-ratio-min"
+    },
+    {
+      "id": 646,
+      "name": "--sf-text-s"
+    },
+    {
+      "id": 647,
+      "name": "--sf-text-s-font-weight"
+    },
+    {
+      "id": 648,
+      "name": "--sf-text-s-letter-spacing"
+    },
+    {
+      "id": 649,
+      "name": "--sf-text-s-line-height"
+    },
+    {
+      "id": 650,
+      "name": "--sf-text-s-max-width"
+    },
+    {
+      "id": 651,
+      "name": "--sf-text-scale"
+    },
+    {
+      "id": 652,
+      "name": "--sf-text-shadow-l"
+    },
+    {
+      "id": 653,
+      "name": "--sf-text-shadow-m"
+    },
+    {
+      "id": 654,
+      "name": "--sf-text-shadow-none"
+    },
+    {
+      "id": 655,
+      "name": "--sf-text-shadow-s"
+    },
+    {
+      "id": 656,
+      "name": "--sf-text-xl"
+    },
+    {
+      "id": 657,
+      "name": "--sf-text-xl-font-weight"
+    },
+    {
+      "id": 658,
+      "name": "--sf-text-xl-letter-spacing"
+    },
+    {
+      "id": 659,
+      "name": "--sf-text-xl-line-height"
+    },
+    {
+      "id": 660,
+      "name": "--sf-text-xl-max-width"
+    },
+    {
+      "id": 661,
+      "name": "--sf-text-xs"
+    },
+    {
+      "id": 662,
+      "name": "--sf-text-xs-font-weight"
+    },
+    {
+      "id": 663,
+      "name": "--sf-text-xs-letter-spacing"
+    },
+    {
+      "id": 664,
+      "name": "--sf-text-xs-line-height"
+    },
+    {
+      "id": 665,
+      "name": "--sf-text-xs-max-width"
+    },
+    {
+      "id": 666,
+      "name": "--sf-theme-transition-duration"
+    },
+    {
+      "id": 667,
+      "name": "--sf-touch-target"
+    },
+    {
+      "id": 668,
+      "name": "--sf-tracking-normal"
+    },
+    {
+      "id": 669,
+      "name": "--sf-tracking-tight"
+    },
+    {
+      "id": 670,
+      "name": "--sf-tracking-wide"
+    },
+    {
+      "id": 671,
+      "name": "--sf-tracking-wider"
+    },
+    {
+      "id": 672,
+      "name": "--sf-tracking-widest"
+    },
+    {
+      "id": 673,
+      "name": "--sf-transition-colors"
+    },
+    {
+      "id": 674,
+      "name": "--sf-transition-enter"
+    },
+    {
+      "id": 675,
+      "name": "--sf-transition-exit"
+    },
+    {
+      "id": 676,
+      "name": "--sf-transition-fast"
+    },
+    {
+      "id": 677,
+      "name": "--sf-transition-form-field"
+    },
+    {
+      "id": 678,
+      "name": "--sf-transition-opacity"
+    },
+    {
+      "id": 679,
+      "name": "--sf-transition-overlay"
+    },
+    {
+      "id": 680,
+      "name": "--sf-transition-shadow"
+    },
+    {
+      "id": 681,
+      "name": "--sf-transition-slow"
+    },
+    {
+      "id": 682,
+      "name": "--sf-transition-transform"
+    },
+    {
+      "id": 683,
+      "name": "--sf-z-base"
+    },
+    {
+      "id": 684,
+      "name": "--sf-z-below"
+    },
+    {
+      "id": 685,
+      "name": "--sf-z-dropdown"
+    },
+    {
+      "id": 686,
+      "name": "--sf-z-fixed"
+    },
+    {
+      "id": 687,
+      "name": "--sf-z-modal"
+    },
+    {
+      "id": 688,
+      "name": "--sf-z-overlay"
+    },
+    {
+      "id": 689,
+      "name": "--sf-z-raised"
+    },
+    {
+      "id": 690,
+      "name": "--sf-z-sticky"
+    },
+    {
+      "id": 691,
+      "name": "--sf-z-toast"
+    },
+    {
+      "id": 692,
+      "name": "--sf-z-tooltip"
+    }
+  ]
+}

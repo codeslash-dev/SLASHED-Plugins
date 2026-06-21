@@ -1,0 +1,71 @@
+{
+  "_sync": {
+    "generatedBy": "configurator/scripts/sync-api.mjs",
+    "source": "bundle.config.json",
+    "cdnBase": "https://cdn.jsdelivr.net/gh/codeslash-dev/SLASHED@dist"
+  },
+  "bundles": [
+    {
+      "id": "essential",
+      "output": "slashed.essential.css",
+      "min": "slashed.essential.min.css",
+      "cdn": "https://cdn.jsdelivr.net/gh/codeslash-dev/SLASHED@dist/slashed.essential.min.css",
+      "fileCount": 13,
+      "optionalModules": []
+    },
+    {
+      "id": "optimal",
+      "output": "slashed.optimal.css",
+      "min": "slashed.optimal.min.css",
+      "cdn": "https://cdn.jsdelivr.net/gh/codeslash-dev/SLASHED@dist/slashed.optimal.min.css",
+      "fileCount": 16,
+      "optionalModules": [
+        "optional/tokens.palette.css",
+        "optional/forms.css",
+        "optional/legacy.css"
+      ]
+    },
+    {
+      "id": "optimal-utilities",
+      "output": "slashed.optimal-utilities.css",
+      "min": "slashed.optimal-utilities.min.css",
+      "cdn": "https://cdn.jsdelivr.net/gh/codeslash-dev/SLASHED@dist/slashed.optimal-utilities.min.css",
+      "fileCount": 17,
+      "optionalModules": [
+        "optional/tokens.palette.css",
+        "optional/forms.css",
+        "optional/utilities.css",
+        "optional/legacy.css"
+      ]
+    },
+    {
+      "id": "optimal-components",
+      "output": "slashed.optimal-components.css",
+      "min": "slashed.optimal-components.min.css",
+      "cdn": "https://cdn.jsdelivr.net/gh/codeslash-dev/SLASHED@dist/slashed.optimal-components.min.css",
+      "fileCount": 18,
+      "optionalModules": [
+        "optional/tokens.palette.css",
+        "optional/forms.css",
+        "optional/tokens.components.css",
+        "optional/components.css",
+        "optional/legacy.css"
+      ]
+    },
+    {
+      "id": "full",
+      "output": "slashed.full.css",
+      "min": "slashed.full.min.css",
+      "cdn": "https://cdn.jsdelivr.net/gh/codeslash-dev/SLASHED@dist/slashed.full.min.css",
+      "fileCount": 19,
+      "optionalModules": [
+        "optional/tokens.palette.css",
+        "optional/forms.css",
+        "optional/tokens.components.css",
+        "optional/components.css",
+        "optional/utilities.css",
+        "optional/legacy.css"
+      ]
+    }
+  ]
+}
