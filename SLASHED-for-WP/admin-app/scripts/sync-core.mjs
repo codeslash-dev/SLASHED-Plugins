@@ -187,6 +187,13 @@ async function main() {
     resolve(SRC, 'data/api-index.generated.json'),
   );
 
+  // The token id registry — paired with lib/codec.js for the "Open in
+  // Configurator" config code (kept identical to the configurator's copy).
+  await syncGhFile(
+    `${CFG_SRC}/data/token-registry.generated.json`,
+    resolve(SRC, 'data/token-registry.generated.json'),
+  );
+
   // Top-level CSS (configurator chrome styles, if any live at src/)
   const topLevel = await ghFetch(CFG_SRC);
   if (Array.isArray(topLevel)) {

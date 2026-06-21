@@ -1,10 +1,33 @@
 <script>
-  import { ui, wpSettings } from '../lib/store.svelte.js';
+  import { ui, wpSettings, overrides } from '../lib/store.svelte.js';
   import { savePluginSettings } from '../lib/wp-api.js';
+  import { encode } from '../lib/codec.js';
+  import registry from '../data/token-registry.generated.json';
+
+  // Fallback when no configurator URL is configured — the hosted instance.
+  // Keep in sync with includes/class-manual-css-page.php::CONFIGURATOR_URL.
+  const CONFIGURATOR_URL = 'https://slashed.codeslash.dev/configurator/';
 
   let form = $state({
     manual_css_mode: wpSettings.manual_css_mode ?? true,
     configurator_url: wpSettings.configurator_url ?? '',
+  });
+
+  /** Tokens currently overridden on this site (hydrated from WP). */
+  const overrideCount = $derived(Object.keys(overrides).length);
+
+  /**
+   * "Open in configurator" link target. The site's current token overrides are
+   * packed into a config code (the same Guild-Wars-2-style codec the
+   * configurator's own share links use — vendored at lib/codec.js +
+   * data/token-registry.generated.json) and handed over in the URL fragment, so
+   * the configurator opens pre-loaded with these exact tokens. With no
+   * overrides it opens at its defaults. The fragment never reaches any server.
+   */
+  const configuratorHref = $derived.by(() => {
+    const base = (form.configurator_url || CONFIGURATOR_URL).trim() || CONFIGURATOR_URL;
+    const code = encode(overrides, registry);
+    return code ? `${base}#c=${code}` : base;
   });
 
   let status = $state(/** @type {'idle'|'saving'|'saved'|'error'} */('idle'));
@@ -67,6 +90,15 @@
         placeholder="https://codeslash.net/configurator"
         bind:value={form.configurator_url}
       />
+      <p class="field__open">
+        <a class="open-link" href={configuratorHref} target="_blank" rel="noopener noreferrer">
+          Open in configurator ↗
+        </a>
+        {#if overrideCount > 0}
+          <span class="field__hint">— pre-loaded with your {overrideCount} saved
+            token{overrideCount === 1 ? '' : 's'}</span>
+        {/if}
+      </p>
     </div>
 
     <!-- Other settings note -->
@@ -223,6 +255,21 @@
     border-color: var(--cfg-accent, oklch(0.6 0.18 250));
     box-shadow: 0 0 0 2px color-mix(in oklch, var(--cfg-accent, oklch(0.6 0.18 250)) 20%, transparent);
   }
+
+  .field__open {
+    margin: 0.125rem 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    font-size: 0.8125rem;
+  }
+  .open-link {
+    color: var(--cfg-accent, oklch(0.6 0.18 250));
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .open-link:hover { text-decoration: underline; }
 
   .settings-note {
     padding: 0.75rem 1rem;
