@@ -49,6 +49,8 @@ jobs:
         run: node scripts/changelog-release.js --from-tag
 
       - name: Build admin-app
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: npm run build:admin-app
 
       - name: Build plugin zip

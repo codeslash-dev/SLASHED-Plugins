@@ -121,7 +121,11 @@ async function ghFetch(path) {
     headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   }
   const res = await fetch(url, { headers });
-  if (!res.ok) throw new Error(`GitHub API ${res.status} for ${path}`);
+  if (!res.ok) {
+    const err = new Error(`GitHub API ${res.status} for ${path}`);
+    err.status = res.status;
+    throw err;
+  }
   return res.json();
 }
 
@@ -134,7 +138,19 @@ async function syncGhFile(ghPath, destPath) {
     process.stdout.write(`  skip  src/${rel} (syncignore)\n`);
     return;
   }
-  const info = await ghFetch(ghPath);
+  let info;
+  try {
+    info = await ghFetch(ghPath);
+  } catch (err) {
+    // Rate-limit (403) or missing (404): keep the vendored copy if one exists.
+    if ((err.status === 403 || err.status === 404) && existsSync(destPath)) {
+      process.stdout.write(
+        `  keep  src/${rel} (GitHub API ${err.status} — keeping vendored copy)\n`,
+      );
+      return;
+    }
+    throw err;
+  }
   if (typeof info.content !== 'string') {
     throw new Error(`Unexpected API response for ${ghPath}: missing content`);
   }
@@ -206,7 +222,7 @@ async function main() {
       resolve(SRC, 'data/token-registry.generated.json'),
     );
   } catch (err) {
-    if (!String(err.message).includes('404')) throw err;
+    if (err.status !== 404) throw err;
     process.stdout.write(
       '  skip  src/data/token-registry.generated.json (not on framework main yet — keeping vendored copy)\n',
     );
