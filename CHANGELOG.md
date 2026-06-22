@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.9] - 2026-06-22
+
+### Fixed
+
+- Pass GITHUB_TOKEN to admin-app build and tolerate 403 in sync-core
+
+## [0.3.9] - 2026-06-22
+
+### Fixed
+
+- Pass GITHUB_TOKEN to admin-app build and tolerate 403 in sync-core
+
 ## [0.3.8] - 2026-06-22
 
 ### Added
