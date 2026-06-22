@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.8] - 2026-06-22
+
+### Added
+
+- Import shared config codes; remove manual CSS and legacy admin app
+
+## [0.3.8] - 2026-06-22
+
+### Added
+
+- Import shared config codes; remove manual CSS and legacy admin app
+
 ## [0.3.8] - 2026-06-21
 
 ### Added
