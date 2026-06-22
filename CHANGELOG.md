@@ -9,17 +9,19 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
-## [0.3.7] - 2026-06-21
+## [0.3.8] - 2026-06-21
 
 ### Added
 
-- "Open in configurator" with current tokens preloaded
+- "Import shared config" — paste a config code or configurator link to load a
+  shared design; applies through the token-override pipeline (undoable)
 
-### Fixed
+### Removed
 
-- Vendor bundles manifest so the synced build resolves
-- Re-vendor hardened config codec
-- Tolerate missing token registry during core sync
+- Manual CSS page and mode — raw-CSS injection is gone; token overrides are the
+  single styling path
+- Legacy Bricks-specific admin app and its standalone-plugin bundle fallback;
+  the unified admin app is now the only admin SPA
 
 ## [0.3.7] - 2026-06-21
 

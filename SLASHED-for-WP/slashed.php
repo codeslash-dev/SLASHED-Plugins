@@ -3,7 +3,7 @@
  * Plugin Name: SLASHED
  * Plugin URI: https://github.com/codeslash-dev/SLASHED
  * Description: SLASHED cascade-layer CSS framework for WordPress. Activate integrations per builder from the settings page (Bricks, Gutenberg — more coming).
- * Version: 0.3.6
+ * Version: 0.3.8
  * Author: Jack Granatowski
  * Author URI: https://codeslash.net
  * License: GPL-2.0-or-later
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // ─── Canonical constants ────────────────────────────────────────────
 
-define( 'SLASHED_VERSION', '0.3.6' );
+define( 'SLASHED_VERSION', '0.3.8' );
 define( 'SLASHED_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SLASHED_URL', plugin_dir_url( __FILE__ ) );
 
@@ -65,18 +65,9 @@ add_action(
 );
 
 // Inject token override CSS after whichever integration enqueued slashed-framework.
-// In manual CSS mode the raw CSS stored by Slashed_Manual_CSS_Page is used directly;
-// otherwise the token-based generator runs as before.
+// Overrides are generated from the stored design tokens (Slashed_CSS_Generator).
 function slashed_inject_token_overrides() {
 	if ( ! wp_style_is( 'slashed-framework', 'enqueued' ) ) {
-		return;
-	}
-
-	if ( class_exists( 'Slashed_Manual_CSS_Page' ) && Slashed_Manual_CSS_Page::is_active() ) {
-		$css = Slashed_Manual_CSS_Page::get_css();
-		if ( $css ) {
-			wp_add_inline_style( 'slashed-framework', $css );
-		}
 		return;
 	}
 
@@ -90,7 +81,6 @@ add_action( 'enqueue_block_editor_assets', 'slashed_inject_token_overrides', 20 
 // ─── Unified admin page ───────────────────────────────────────────────
 
 require_once SLASHED_PATH . 'includes/class-token-page.php';     // also used on frontend (Bricks editor)
-require_once SLASHED_PATH . 'includes/class-manual-css-page.php'; // needed on frontend for CSS injection
 
 if ( is_admin() ) {
 	require_once SLASHED_PATH . 'includes/class-admin.php';
@@ -101,8 +91,6 @@ if ( is_admin() ) {
 			new Slashed_Admin();
 			new Slashed_Token_Page();
 			new Slashed_Framework_Updater();
-			new Slashed_Manual_CSS_Page();
-			// After Manual CSS so "Bricks settings" lands last in the menu.
 			new Slashed_Bricks_Settings_Page();
 		}
 	);

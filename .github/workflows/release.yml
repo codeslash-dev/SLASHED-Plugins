@@ -48,8 +48,8 @@ jobs:
       - name: Update CHANGELOG and readme.txt for this release
         run: node scripts/changelog-release.js --from-tag
 
-      - name: Build new admin-app
-        run: npm run build:new-admin-app
+      - name: Build admin-app
+        run: npm run build:admin-app
 
       - name: Build plugin zip
         run: npm run build:zip

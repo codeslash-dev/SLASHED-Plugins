@@ -10,7 +10,6 @@
  *                      instead of localStorage
  *   • persist()        debounces a POST to /tokens/overrides (REST API)
  *                      and writes a local cache for page-transition speed
- *   • ui               has two extra WP fields: useManualCss, manualCssText
  *   • wpSettings       exposes plugin-level settings (bundle, version, …)
  */
 
@@ -52,9 +51,6 @@ export const ui = $state({
   sidebarOpen:   true,
   previewOpen:   false,
   outputOpen:    false,
-  // WP-specific — manual CSS is the default until the configurator returns in v0.8.0
-  useManualCss:  !!(boot.pluginSettings?.manual_css_mode ?? true),
-  manualCssText: '',
 });
 
 /** @type {{ past: string[], future: string[] }} */

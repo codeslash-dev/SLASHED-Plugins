@@ -9,7 +9,7 @@ itself lives in a separate repo; here we bundle its CSS and build the plugin.
 ```sh
 npm ci                                                          # root tooling
 npm --prefix SLASHED-for-WP/integrations/bricks/editor-app ci   # editor SPA
-npm --prefix SLASHED-for-WP/integrations/bricks/admin-app  ci   # admin SPA
+npm --prefix SLASHED-for-WP/admin-app                      ci   # admin SPA
 ```
 
 `npm ci` runs `prepare`, which points git at `.githooks` (commitlint +

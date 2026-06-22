@@ -3,8 +3,7 @@
  * SLASHED token editor admin page.
  *
  * Registers the "Tokens" admin page and mounts the Svelte SPA built from
- * admin-app/ (new unified build) with a fallback to the legacy
- * integrations/bricks/admin-app/ build.
+ * admin-app/ (the unified build under assets/admin-app/).
  *
  * @package SLASHED
  */
@@ -22,6 +21,12 @@ class Slashed_Token_Page {
 	 * Admin page slug.
 	 */
 	const PAGE_SLUG = 'slashed-tokens';
+
+	/**
+	 * Hosted standalone configurator URL — the default the admin app links to
+	 * ("Open in Configurator") and offers as the import source.
+	 */
+	const CONFIGURATOR_URL = 'https://slashed.codeslash.dev/configurator/';
 
 	/** @var string Hook suffix from add_*_page(), used to gate asset enqueue. */
 	private $hook_suffix = '';
@@ -64,37 +69,15 @@ class Slashed_Token_Page {
 	/**
 	 * Resolve the base URL and path for the admin-app bundle.
 	 *
-	 * Prefers the new top-level admin-app/ build (SLASHED_PATH/assets/admin-app/).
-	 * Falls back to the legacy integrations/bricks/assets/admin-app/ location
-	 * so existing installations keep working until the new build is present.
+	 * The unified admin SPA is served from SLASHED_PATH/assets/admin-app/. If the
+	 * build artifact is absent, enqueue_assets() shows a "bundle missing" notice.
 	 *
 	 * @return array{url: string, path: string}
 	 */
 	private function resolve_bundle_base() {
-		if ( defined( 'SLASHED_PATH' ) && file_exists( SLASHED_PATH . 'assets/admin-app/app.js' ) ) {
-			return array(
-				'url'  => SLASHED_URL,
-				'path' => SLASHED_PATH,
-			);
-		}
-
-		if ( defined( 'SLASHED_PATH' ) && defined( 'SLASHED_URL' ) ) {
-			return array(
-				'url'  => SLASHED_URL . 'integrations/bricks/',
-				'path' => SLASHED_PATH . 'integrations/bricks/',
-			);
-		}
-
-		// Standalone Bricks plugin: SLASHED_BRICKS_* already point to integrations/bricks/.
-		if ( ! defined( 'SLASHED_BRICKS_URL' ) || ! defined( 'SLASHED_BRICKS_PATH' ) ) {
-			return array(
-				'url'  => '',
-				'path' => '',
-			);
-		}
 		return array(
-			'url'  => SLASHED_BRICKS_URL,
-			'path' => SLASHED_BRICKS_PATH,
+			'url'  => defined( 'SLASHED_URL' ) ? SLASHED_URL : '',
+			'path' => defined( 'SLASHED_PATH' ) ? SLASHED_PATH : '',
 		);
 	}
 
@@ -155,12 +138,9 @@ class Slashed_Token_Page {
 				'defaults'           => Slashed_Token_Defaults::get_all(),
 				'settings'           => Slashed_Token_Store::get_settings(),
 				'pluginSettings'     => array_merge(
-					array(
-						'manual_css_mode'  => true,
-						'configurator_url' => Slashed_Manual_CSS_Page::CONFIGURATOR_URL,
-					),
+					array( 'configurator_url' => self::CONFIGURATOR_URL ),
 					$plugin_settings,
-					array( 'configurator_url' => Slashed_Manual_CSS_Page::CONFIGURATOR_URL )
+					array( 'configurator_url' => self::CONFIGURATOR_URL )
 				),
 				'inventory'          => class_exists( 'Slashed_Bricks_Inventory' ) ? Slashed_Bricks_Inventory::get() : null,
 				'bricksElements'     => class_exists( 'Slashed_Bricks_Elements' ) ? (object) Slashed_Bricks_Elements::get_all() : (object) array(),

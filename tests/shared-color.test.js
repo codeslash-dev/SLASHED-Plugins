@@ -22,7 +22,7 @@ import {
   suggestBrandPalette,
   farthestHue,
   suggestPalette,
-} from '../SLASHED-for-WP/integrations/bricks/admin-app/src/lib/color.js';
+} from '../SLASHED-for-WP/admin-app/src/lib/color.js';
 
 const WHITE = [255, 255, 255];
 const BLACK = [0, 0, 0];

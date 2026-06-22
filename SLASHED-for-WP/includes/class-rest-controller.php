@@ -191,10 +191,6 @@ class Slashed_REST_Controller {
 							'type'     => 'boolean',
 							'required' => false,
 						),
-						'manual_css_mode'        => array(
-							'type'     => 'boolean',
-							'required' => false,
-						),
 						'configurator_url'       => array(
 							'type'              => 'string',
 							'required'          => false,
@@ -360,7 +356,6 @@ class Slashed_REST_Controller {
 		$show_class_hints       = $request->get_param( 'show_class_hints' );
 		$rebemer_enabled        = $request->get_param( 'rebemer_enabled' );
 		$show_color_panel       = $request->get_param( 'show_color_panel' );
-		$manual_css_mode        = $request->get_param( 'manual_css_mode' );
 		$configurator_url       = $request->get_param( 'configurator_url' );
 		$rebemer_element_map    = $request->get_param( 'rebemer_element_map' );
 
@@ -370,7 +365,6 @@ class Slashed_REST_Controller {
 			null === $show_class_hints &&
 			null === $rebemer_enabled &&
 			null === $show_color_panel &&
-			null === $manual_css_mode &&
 			null === $configurator_url &&
 			null === $rebemer_element_map
 		) {
@@ -393,9 +387,6 @@ class Slashed_REST_Controller {
 		}
 		if ( null !== $show_color_panel ) {
 			$settings['show_color_panel'] = (bool) $show_color_panel;
-		}
-		if ( null !== $manual_css_mode ) {
-			$settings['manual_css_mode'] = (bool) $manual_css_mode;
 		}
 		if ( null !== $configurator_url ) {
 			$settings['configurator_url'] = (string) $configurator_url;
