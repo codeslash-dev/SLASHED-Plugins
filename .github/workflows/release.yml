@@ -1,1 +1,118 @@
-bmFtZTogUmVsZWFzZQoKIyBUcmlnZ2VyZWQgd2hlbiBhIHZlcnNpb24gdGFnIChlLmcuIHYwLjEuMCkgaXMgcHVzaGVkLgojIEFsc28gdHJpZ2dlcmFibGUgbWFudWFsbHkgdG8gcmUtYXR0YWNoIHRoZSB6aXAgdG8gYW4gZXhpc3RpbmcgcmVsZWFzZQojICh3b3JrZmxvd19kaXNwYXRjaCBsZXRzIHlvdSByZXRyeSB3aXRob3V0IGRlbGV0aW5nIGFuZCByZS1wdXNoaW5nIHRoZSB0YWcpLgojCiMgU3luY3MgdGhlIGJ1bmRsZWQgZnJhbWV3b3JrIENTUyB0byB0aGUgbGF0ZXN0IHJlbGVhc2UsIHN0YW1wcyB0aGUgdGFnCiMgdmVyc2lvbiBpbnRvIGFsbCBwbHVnaW4gZmlsZXMsIGJ1aWxkcyB0aGUgZGlzdHJpYnV0YWJsZSB6aXAsIGNyZWF0ZXMKIyBhIEdpdEh1YiBSZWxlYXNlIChvciB1cGRhdGVzIGFuIGV4aXN0aW5nIG9uZSksIGFuZCB1cGxvYWRzCiMgc2xhc2hlZC56aXAgYXMgYSByZWxlYXNlIGFzc2V0LgoKb246CiAgcHVzaDoKICAgIHRhZ3M6CiAgICAgIC0gJ3ZbMC05XSonCiAgd29ya2Zsb3dfZGlzcGF0Y2g6CiAgICBpbnB1dHM6CiAgICAgIHRhZzoKICAgICAgICBkZXNjcmlwdGlvbjogJ1RhZyB0byBidWlsZCBhbmQgdXBsb2FkIChlLmcuIHYwLjEuMCknCiAgICAgICAgcmVxdWlyZWQ6IHRydWUKCnBlcm1pc3Npb25zOgogIGNvbnRlbnRzOiB3cml0ZQoKam9iczoKICByZWxlYXNlOgogICAgbmFtZTogQnVpbGQgJiBwdWJsaXNoIFdvcmRQcmVzcyBwbHVnaW4gemlwCiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CiAgICBzdGVwczoKICAgICAgLSB1c2VzOiBhY3Rpb25zL2NoZWNrb3V0QDljMDkxYmIyMWI3YzFjMWQxOTkxYmI5MDhkODllNGU5ZGRkZmUzZTAgICMgdjcuMC4wCiAgICAgICAgd2l0aDoKICAgICAgICAgIGZldGNoLWRlcHRoOiAwCiAgICAgICAgICAjIEZvciB3b3JrZmxvd19kaXNwYXRjaCwgY2hlY2sgb3V0IHRoZSBzcGVjaWZpZWQgdGFnLgogICAgICAgICAgcmVmOiAke3sgZ2l0aHViLmV2ZW50LmlucHV0cy50YWcgfHwgZ2l0aHViLnJlZiB9fQoKICAgICAgIyBObyBkZXBlbmRlbmN5IGNhY2hlIG9uIHRoZSByZWxlYXNlIHBhdGg6IGEgcG9pc29uZWQgY2FjaGUgY291bGQgYmUKICAgICAgIyBiYWtlZCBpbnRvIHRoZSBwdWJsaXNoZWQgcGx1Z2luIHppcC4gRmV0Y2ggZnJlc2ggZnJvbSB0aGUgcmVnaXN0cnkKICAgICAgIyB3aXRoIGludGVncml0eSB2ZXJpZmljYXRpb24gKGZsYWdnZWQgYnkgeml6bW9yOiBjYWNoZS1wb2lzb25pbmcpLgogICAgICAtIHVzZXM6IGFjdGlvbnMvc2V0dXAtbm9kZUA0OGI1NWEwMTFiZGE5ZjVkNmFlYjRjMmQ5YzczNjJlOGRhZTQwNDFlICAjIHY2LjQuMAogICAgICAgIHdpdGg6CiAgICAgICAgICBub2RlLXZlcnNpb246IDIyCgogICAgICAtIG5hbWU6IEluc3RhbGwgZGVwZW5kZW5jaWVzCiAgICAgICAgcnVuOiBucG0gY2kKCiAgICAgIC0gbmFtZTogU3luYyBidW5kbGVkIGZyYW1ld29yayBDU1MgdG8gbGF0ZXN0IHJlbGVhc2UKICAgICAgICBydW46IG5wbSBydW4gdXBkYXRlLWZyYW1ld29yawoKICAgICAgLSBuYW1lOiBTdGFtcCB2ZXJzaW9uIGZyb20gdGFnIGludG8gcGx1Z2luIGZpbGVzCiAgICAgICAgcnVuOiBucG0gcnVuIHZlcnNpb24tc3luYyAtLSAtLWZyb20tdGFnCgogICAgICAtIG5hbWU6IFVwZGF0ZSBDSEFOR0VMT0cgYW5kIHJlYWRtZS50eHQgZm9yIHRoaXMgcmVsZWFzZQogICAgICAgIHJ1bjogbm9kZSBzY3JpcHRzL2NoYW5nZWxvZy1yZWxlYXNlLmpzIC0tZnJvbS10YWcKCiAgICAgIC0gbmFtZTogQnVpbGQgYWRtaW4tYXBwCiAgICAgICAgZW52OgogICAgICAgICAgR0lUSFVCX1RPS0VOOiAke3sgZ2l0aHViLnRva2VuIH19CiAgICAgICAgcnVuOiBucG0gcnVuIGJ1aWxkOmFkbWluLWFwcAoKICAgICAgLSBuYW1lOiBCdWlsZCBwbHVnaW4gemlwCiAgICAgICAgcnVuOiBucG0gcnVuIGJ1aWxkOnppcAoKICAgICAgLSBuYW1lOiBDb21taXQgZnJhbWV3b3JrIHN5bmMgKyBDSEFOR0VMT0cgdG8gZGVmYXVsdCBicmFuY2gKICAgICAgICBydW46IHwKICAgICAgICAgIFRBRz0iJHt7IGdpdGh1Yi5ldmVudC5pbnB1dHMudGFnIHx8IGdpdGh1Yi5yZWZfbmFtZSB9fSIKICAgICAgICAgIERFRkFVTFRfQlJBTkNIPSIkKGdpdCByZW1vdGUgc2hvdyBvcmlnaW4gfCBzZWQgLW4gJy9IRUFEIGJyYW5jaC9zLy4qOiAvL3AnKSIKICAgICAgICAgIGdpdCBjb25maWcgdXNlci5uYW1lICAiZ2l0aHViLWFjdGlvbnNbYm90XSIKICAgICAgICAgIGdpdCBjb25maWcgdXNlci5lbWFpbCAiZ2l0aHViLWFjdGlvbnNbYm90XUB1c2Vycy5ub3JlcGx5LmdpdGh1Yi5jb20iCiAgICAgICAgICBnaXQgZmV0Y2ggb3JpZ2luICIkREVGQVVMVF9CUkFOQ0giCgogICAgICAgICAgIyBQcmVzZXJ2ZSB0aGUgZmlsZXMgdXBkYXRlZCBieSB1cGRhdGUtZnJhbWV3b3JrIGJlZm9yZSB3ZSBzd2l0Y2gKICAgICAgICAgICMgYnJhbmNoZXMgLS0gZ2l0IGNoZWNrb3V0IHJlc2V0cyB0cmFja2VkIGZpbGVzIHRvIHRoZSBicmFuY2ggc3RhdGUuCiAgICAgICAgICBta2RpciAtcCAvdG1wL2Z3LWRpc3QgL3RtcC9mdy1kYXRhIC90bXAvZnctYnJpY2tzLWRhdGEKICAgICAgICAgIGNwIC1hIFNMQVNIRUQtZm9yLVdQL2Rpc3QvLiAvdG1wL2Z3LWRpc3QvCiAgICAgICAgICBjcCAtYSBTTEFTSEVELWZvci1XUC9kYXRhLy4gL3RtcC9mdy1kYXRhLwogICAgICAgICAgY3AgLWEgU0xBU0hFRC1mb3ItV1AvaW50ZWdyYXRpb25zL2JyaWNrcy9kYXRhLy4gL3RtcC9mdy1icmlja3MtZGF0YS8KICAgICAgICAgIGNwIFNMQVNIRUQtZm9yLVdQL3NsYXNoZWQucGhwIC90bXAvZnctc2xhc2hlZC5waHAKICAgICAgICAgIGNwIFNMQVNIRUQtZm9yLVdQL2ludGVncmF0aW9ucy9icmlja3Mvc2xhc2hlZC1icmlja3MucGhwIC90bXAvZnctc2xhc2hlZC1icmlja3MucGhwCiAgICAgICAgICBjcCBTTEFTSEVELWZvci1XUC9pbnRlZ3JhdGlvbnMvZ3V0ZW5iZXJnL3NsYXNoZWQtZ3V0ZW5iZXJnLnBocCAvdG1wL2Z3LXNsYXNoZWQtZ3V0ZW5iZXJnLnBocAoKICAgICAgICAgIGdpdCBjaGVja291dCAiJERFRkFVTFRfQlJBTkNIIgoKICAgICAgICAgICMgUmVzdG9yZSBmcmFtZXdvcmsgZmlsZXMgb250byB0aGUgZGVmYXVsdCBicmFuY2guCiAgICAgICAgICBjcCAtYSAvdG1wL2Z3LWRpc3QvLiBTTEFTSEVELWZvci1XUC9kaXN0LwogICAgICAgICAgY3AgLWEgL3RtcC9mdy1kYXRhLy4gU0xBU0hFRC1mb3ItV1AvZGF0YS8KICAgICAgICAgIGNwIC1hIC90bXAvZnctYnJpY2tzLWRhdGEvLiBTTEFTSEVELWZvci1XUC9pbnRlZ3JhdGlvbnMvYnJpY2tzL2RhdGEvCiAgICAgICAgICBjcCAvdG1wL2Z3LXNsYXNoZWQucGhwIFNMQVNIRUQtZm9yLVdQL3NsYXNoZWQucGhwCiAgICAgICAgICBjcCAvdG1wL2Z3LXNsYXNoZWQtYnJpY2tzLnBocCBTTEFTSEVELWZvci1XUC9pbnRlZ3JhdGlvbnMvYnJpY2tzL3NsYXNoZWQtYnJpY2tzLnBocAogICAgICAgICAgY3AgL3RtcC9mdy1zbGFzaGVkLWd1dGVuYmVyZy5waHAgU0xBU0hFRC1mb3ItV1AvaW50ZWdyYXRpb25zL2d1dGVuYmVyZy9zbGFzaGVkLWd1dGVuYmVyZy5waHAKCiAgICAgICAgICAjIFJlLXJ1biBjaGFuZ2Vsb2ctcmVsZWFzZSBvbiB0aGUgZGVmYXVsdCBicmFuY2ggc28gaXQgcGlja3MgdXAgdGhlCiAgICAgICAgICAjIGNvbW1pdHRlZCB0YWcgKHRoZSByZWxlYXNlIHdvcmtmbG93IGNoZWNrcyBvdXQgdGhlIHRhZyByZWYgYWJvdmUpLgogICAgICAgICAgbm9kZSBzY3JpcHRzL2NoYW5nZWxvZy1yZWxlYXNlLmpzIC0tZnJvbS10YWcKCiAgICAgICAgICBnaXQgYWRkIENIQU5HRUxPRy5tZCBTTEFTSEVELWZvci1XUC9yZWFkbWUudHh0IFwKICAgICAgICAgICAgU0xBU0hFRC1mb3ItV1AvZGlzdC8gXAogICAgICAgICAgICBTTEFTSEVELWZvci1XUC9kYXRhLyBcCiAgICAgICAgICAgIFNMQVNIRUQtZm9yLVdQL2ludGVncmF0aW9ucy9icmlja3MvZGF0YS8gXAogICAgICAgICAgICBTTEFTSEVELWZvci1XUC9zbGFzaGVkLnBocCBcCiAgICAgICAgICAgIFNMQVNIRUQtZm9yLVdQL2ludGVncmF0aW9ucy9icmlja3Mvc2xhc2hlZC1icmlja3MucGhwIFwKICAgICAgICAgICAgU0xBU0hFRC1mb3ItV1AvaW50ZWdyYXRpb25zL2d1dGVuYmVyZy9zbGFzaGVkLWd1dGVuYmVyZy5waHAKICAgICAgICAgIGdpdCBkaWZmIC0tc3RhZ2VkIC0tcXVpZXQgJiYgZWNobyAibm90aGluZyB0byBjb21taXQiICYmIGV4aXQgMAogICAgICAgICAgZ2l0IGNvbW1pdCAtbSAiY2hvcmU6IHN5bmMgZnJhbWV3b3JrICsgdXBkYXRlIGRvY3MgZm9yICRUQUciCiAgICAgICAgICBnaXQgcHVzaCBvcmlnaW4gIiRERUZBVUxUX0JSQU5DSCIKCiAgICAgIC0gbmFtZTogQ3JlYXRlIG9yIHVwZGF0ZSBHaXRIdWIgUmVsZWFzZSBhbmQgdXBsb2FkIHppcAogICAgICAgIGVudjoKICAgICAgICAgIEdIX1RPS0VOOiAke3sgZ2l0aHViLnRva2VuIH19CiAgICAgICAgcnVuOiB8CiAgICAgICAgICBUQUc9IiR7eyBnaXRodWIuZXZlbnQuaW5wdXRzLnRhZyB8fCBnaXRodWIucmVmX25hbWUgfX0iCiAgICAgICAgICAjIENyZWF0ZSB0aGUgcmVsZWFzZSBpZiBpdCBkb2Vzbid0IGV4aXN0IHlldDsgbm8tb3AgaWYgaXQgYWxyZWFkeSBkb2VzLgogICAgICAgICAgZ2ggcmVsZWFzZSBjcmVhdGUgIiRUQUciIFwKICAgICAgICAgICAgLS10aXRsZSAiU0xBU0hFRCAkVEFHIiBcCiAgICAgICAgICAgIC0tZ2VuZXJhdGUtbm90ZXMgfHwgdHJ1ZQogICAgICAgICAgIyBVcGxvYWQgKG9yIHJlcGxhY2UpIHRoZSB6aXAgb24gd2hhdGV2ZXIgcmVsZWFzZSBleGlzdHMgZm9yIHRoaXMgdGFnLgogICAgICAgICAgZ2ggcmVsZWFzZSB1cGxvYWQgIiRUQUciIFwKICAgICAgICAgICAgImRpc3Qvc2xhc2hlZC56aXAjc2xhc2hlZC56aXAiIFwKICAgICAgICAgICAgLS1jbG9iYmVyCg==
+name: Release
+
+# Triggered when a version tag (e.g. v0.1.0) is pushed.
+# Also triggerable manually to re-attach the zip to an existing release
+# (workflow_dispatch lets you retry without deleting and re-pushing the tag).
+#
+# Syncs the bundled framework CSS to the latest release, stamps the tag
+# version into all plugin files, builds the distributable zip, creates
+# a GitHub Release (or updates an existing one), and uploads
+# slashed.zip as a release asset.
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to build and upload (e.g. v0.1.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & publish WordPress plugin zip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          fetch-depth: 0
+          # For workflow_dispatch, check out the specified tag.
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      # No dependency cache on the release path: a poisoned cache could be
+      # baked into the published plugin zip. Fetch fresh from the registry
+      # with integrity verification (flagged by zizmor: cache-poisoning).
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e  # v6.4.0
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync bundled framework CSS to latest release
+        run: npm run update-framework
+
+      - name: Stamp version from tag into plugin files
+        run: npm run version-sync -- --from-tag
+
+      - name: Update CHANGELOG and readme.txt for this release
+        run: node scripts/changelog-release.js --from-tag
+
+      - name: Build admin-app
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npm run build:admin-app
+
+      - name: Build plugin zip
+        run: npm run build:zip
+
+      - name: Commit framework sync + CHANGELOG to default branch
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          DEFAULT_BRANCH="$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin "$DEFAULT_BRANCH"
+
+          # Preserve the files updated by update-framework before we switch
+          # branches -- git checkout resets tracked files to the branch state.
+          mkdir -p /tmp/fw-dist /tmp/fw-data /tmp/fw-bricks-data
+          cp -a SLASHED-for-WP/dist/. /tmp/fw-dist/
+          cp -a SLASHED-for-WP/data/. /tmp/fw-data/
+          cp -a SLASHED-for-WP/integrations/bricks/data/. /tmp/fw-bricks-data/
+          cp SLASHED-for-WP/slashed.php /tmp/fw-slashed.php
+          cp SLASHED-for-WP/integrations/bricks/slashed-bricks.php /tmp/fw-slashed-bricks.php
+          cp SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php /tmp/fw-slashed-gutenberg.php
+
+          git checkout "$DEFAULT_BRANCH"
+
+          # Restore framework files onto the default branch.
+          cp -a /tmp/fw-dist/. SLASHED-for-WP/dist/
+          cp -a /tmp/fw-data/. SLASHED-for-WP/data/
+          cp -a /tmp/fw-bricks-data/. SLASHED-for-WP/integrations/bricks/data/
+          cp /tmp/fw-slashed.php SLASHED-for-WP/slashed.php
+          cp /tmp/fw-slashed-bricks.php SLASHED-for-WP/integrations/bricks/slashed-bricks.php
+          cp /tmp/fw-slashed-gutenberg.php SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php
+
+          # Re-run changelog-release on the default branch so it picks up the
+          # committed tag (the release workflow checks out the tag ref above).
+          node scripts/changelog-release.js --from-tag
+
+          git add CHANGELOG.md SLASHED-for-WP/readme.txt \
+            SLASHED-for-WP/dist/ \
+            SLASHED-for-WP/data/ \
+            SLASHED-for-WP/integrations/bricks/data/ \
+            SLASHED-for-WP/slashed.php \
+            SLASHED-for-WP/integrations/bricks/slashed-bricks.php \
+            SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php
+          git diff --staged --quiet && echo "nothing to commit" && exit 0
+          git commit -m "chore: sync framework + update docs for $TAG"
+          git push origin "$DEFAULT_BRANCH"
+
+      - name: Create or update GitHub Release and upload zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          # Create the release if it doesn't exist yet; no-op if it already does.
+          gh release create "$TAG" \
+            --title "SLASHED $TAG" \
+            --generate-notes || true
+          # Upload (or replace) the zip on whatever release exists for this tag.
+          gh release upload "$TAG" \
+            "dist/slashed.zip#slashed.zip" \
+            --clobber
