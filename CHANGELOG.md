@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.11] - 2026-06-23
+
+### Fixed
+
+- Commit synced registry-sources.js back to main after release
+- Remove deleted tokens.sizes-extended.css from registry-sources; sync from framework on update
+
+## [0.3.11] - 2026-06-23
+
+### Fixed
+
+- Commit synced registry-sources.js back to main after release
+- Remove deleted tokens.sizes-extended.css from registry-sources; sync from framework on update
+
 ## [0.3.9] - 2026-06-22
 
 ### Fixed

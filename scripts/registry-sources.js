@@ -7,7 +7,6 @@
  *   scripts/audit.js
  *   scripts/gen-token-reference.js
  *   scripts/gen-class-reference.js
- *   scripts/gen-bricks-inventory.js
  *   tests/token-api.spec.js
  */
 

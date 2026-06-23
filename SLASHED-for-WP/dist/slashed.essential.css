@@ -1,4 +1,4 @@
-/* SLASHED v0.5.46 — slashed.essential.css */
+/* SLASHED v0.6.10 — slashed.essential.css */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -51,17 +51,18 @@
      }
 
    BEM CONSUMER API — most tokens are intentionally unused by the
-   framework itself. Tokens such as --sf-shadow-*, --sf-blur-*, --sf-gap,
+   framework itself. Tokens such as --sf-shadow-*, --sf-blur, --sf-gap,
    --sf-gradient-* etc. are meant for use in your own BEM classes:
      .card { box-shadow: var(--sf-shadow-m); gap: var(--sf-gap); }
    "Not used internally" does NOT mean dead code: every token is exercised
    in docs/demo.html and validated by the regression suite (tests/), so an
    unreferenced token is never untested or orphaned.
 
-   RELATION TO tokens.layout.css — the spacing aliases in the "Spacing
-   aliases" section are the source of truth for --sf-space-gap and
-   --sf-space-content in tokens.layout.css. Overriding --sf-gap changes the
-   gaps across all layout primitives (cluster, grid, sidebar, etc.).
+   RELATION TO tokens.layout.css — the semantic gap tokens here
+   (--sf-gap, --sf-content-gap, --sf-gutter) are the source of truth that
+   every layout primitive defaults to. Overriding --sf-gap changes the
+   gaps across all layout primitives (cluster, grid, sidebar, etc.); a
+   single primitive is overridden via its own token (e.g. --sf-cluster-gap).
 
    PUBLIC API vs INTERNAL (token-API freeze contract)
    ─────────────────────────────────────────────────
@@ -81,7 +82,7 @@
      · consumption — a ready-to-use OUTPUT you READ; a value DERIVED from other
                      tokens (references var(--sf-…), incl. light-dark()/
                      oklch(from …)/color-mix()). e.g. --sf-color-bg,
-                     --sf-color-primary-600, --sf-space-xl-to-m.
+                     --sf-color-primary-600, --sf-color-text.
    Role is computed deterministically from the declared value; see
    scripts/token-tiers.js (roleOf) and docs/token-index.md.
 
@@ -100,11 +101,11 @@
      · gradients (--sf-gradient-*)
      · shadows (--sf-shadow-{none,xs,s,m,l,xl,2xl,inner})
      · text/drop shadows (--sf-text-shadow-*, --sf-drop-shadow-*)
-     · blur (--sf-blur-*)
-     · opacity (--sf-opacity-{0,10,25,50,75,100}, --sf-opacity-disabled, --sf-state-pending-opacity)
+     · blur (--sf-blur)
+     · opacity (--sf-opacity-muted, --sf-opacity-disabled, --sf-state-pending-opacity)
      · spacing (--sf-space-{none,px,gutter,2xs..4xl})
      · font families (--sf-font-{body,heading,display,mono,humanist,geometric,slab})
-     · font weights (--sf-font-weight-{thin..black,body,heading,display})
+     · font weights (--sf-font-weight-{light,normal,medium,semibold,bold,body,heading,display,interactive,strong})
      · font sizes (--sf-text-{2xs..4xl}, --sf-text-display-{s,m,l})
      · leading (--sf-leading-{tight,snug,normal,relaxed})
      · tracking (--sf-tracking-{tight,normal,wide,wider,widest})
@@ -138,9 +139,7 @@
      · current-font-weight (--sf-current-font-weight)
      · color scheme (--sf-color-scheme)
      · color anchors (--sf-color-white, --sf-color-black)
-     · stroke (--sf-stroke-{thin,regular,bold,heavy})
      · object fit (--sf-object-fit, --sf-object-position)
-     · multi-column (--sf-col-width-{s,m,l}, --sf-col-rule-width-{s,m,l})
      · layout tokens — all of tokens.layout.css (per-primitive gaps, sidebar, grid, bento, etc.)
      · macro tokens — all of tokens.macros.css (flow-space, line-clamp, aspect, scroll-shadow-size)
      · palette tokens — all of optional/tokens.palette.css
@@ -155,21 +154,14 @@
      · --sf-font-features, --sf-font-variation, --sf-optical-sizing (OpenType)
      · --sf-space-scale, --sf-text-scale, --sf-text-display-scale,
        --sf-radius-scale, --sf-motion-scale, --sf-section-scale (global multipliers)
-     · --sf-leading-taper (progressive per-size leading tightener,
-       consumed by optional/tokens.sizes-extended.css)
+     · --sf-leading-taper (progressive per-size leading tightener)
      · --sf-fluid-{min,max}-vw (fluid interpolation viewport range, rem/unitless)
      · --sf-text-ratio-{min,max}, --sf-text-base-{min,max},
        --sf-text-display-base-{min,max} (generative TYPE scale inputs)
      · --sf-space-ratio-{min,max}, --sf-space-base-{min,max} (generative SPACE scale inputs)
-     · --sf-fluid-custom-{1,2,3}-{min,max} (custom fluid slot endpoints) and
-       --sf-fluid-custom-{1,2,3} (the fluid slot outputs you read)
-     · --sf-{space,text}-{step}-to-{step} (fluid pairwise interpolation bridges,
-       optional/tokens.sizes-extended.css — generated OUTPUTS of the same scale
-       engine whose inputs above are ADVANCED; one per ordered pair of steps)
      · --sf-scroll-timeline-range-{start,end} (scroll-driven animation)
      · --sf-mask-scrim-{start,end} (edge-fade masks)
      · --sf-safe-{top,bottom,left,right} (safe-area insets)
-     · --sf-truncate-suffix (ellipsis character override)
      · --sf-radius-outer (concentric radius helper)
      · --sf-is-active, --sf-is-current, --sf-is-pressed, --sf-is-open (state flags)
      · --sf-focus-ring-shadow (composite focus shadow)
@@ -178,15 +170,14 @@
    INTERNAL — implementation detail, may change without a major bump:
      · --sf-is-dark (mode flag — set via data-theme, not directly)
 
-   CANONICAL-SOURCE ALIASES (intentional synonym hops, kept by design):
-     · --sf-space-gap     → --sf-gap          (layout primitives read this name)
-     · --sf-space-content → --sf-content-gap  (stack / prose rhythm)
-     · --sf-section-pad   → --sf-section-pad--m (unsuffixed = the -m default)
-   These are deliberate two-name contracts: override the canonical token
-   (right side) to move everything downstream. The alias graph is otherwise
-   ≤3 hops (per-primitive → layout-system → canonical source), giving three
-   override levels: local (style="--sf-cluster-gap"), all-primitives
-   (--sf-space-gap), or global (--sf-gap).
+   SEMANTIC GAP TOKENS (base → semantic → component model):
+     · --sf-gap         (loose: between components — cluster, grid, sidebar…)
+     · --sf-content-gap (tight: within content — stack, flow, prose)
+     · --sf-gutter      (wide: page/section edge gutters — center, container)
+     · --sf-section-pad → --sf-section-pad--m (unsuffixed = the -m default)
+   Two override levels: global (set --sf-gap to move every loose primitive)
+   or local (style="--sf-cluster-gap: …" for one element). Each primitive
+   token defaults directly to its semantic source — no middle alias tier.
    ============================================================ */
 
 @layer slashed.tokens {
@@ -325,7 +316,7 @@
      Registered as <number> so they can be used as pow() exponents/operands
      and multiplied by 1rem in calc(). Requires CSS pow() (Chrome 125+,
      Safari 15.4+, Firefox 118+); the effective SLASHED floor is higher
-     (Chrome 125 / Safari 17.5 / Firefox 128), set by the colour system —
+     (Chrome 125 / Safari 18.0 / Firefox 129), set by the colour system —
      see browser floor. Plain :root mirrors
      below keep values readable; do NOT edit them independently. */
   @property --sf-fluid-min-vw          { syntax: "<number>"; inherits: true; initial-value: 22.5; }
@@ -341,22 +332,6 @@
   @property --sf-space-base-min        { syntax: "<number>"; inherits: true; initial-value: 1; }
   @property --sf-space-base-max        { syntax: "<number>"; inherits: true; initial-value: 2; }
 
-  /* Custom fluid slots — open endpoint pairs for ad-hoc fluid values.
-     Set the two endpoints (unitless rem numbers), read the slot:
-       :root { --sf-fluid-custom-1-min: 0.875; --sf-fluid-custom-1-max: 1.375; }
-       .my-component { padding-inline: var(--sf-fluid-custom-1); }
-     The slot resolves to a length that interpolates between the endpoints
-     across the engine's viewport range, so ad-hoc values stay calibrated
-     when --sf-fluid-{min,max}-vw are retuned. Endpoints may be redefined
-     per scope. Descending ranges (min > max) are not supported by clamp() —
-     swap the endpoints and negate at the use site instead. */
-  @property --sf-fluid-custom-1-min    { syntax: "<number>"; inherits: true; initial-value: 1; }
-  @property --sf-fluid-custom-1-max    { syntax: "<number>"; inherits: true; initial-value: 2; }
-  @property --sf-fluid-custom-2-min    { syntax: "<number>"; inherits: true; initial-value: 1; }
-  @property --sf-fluid-custom-2-max    { syntax: "<number>"; inherits: true; initial-value: 2; }
-  @property --sf-fluid-custom-3-min    { syntax: "<number>"; inherits: true; initial-value: 1; }
-  @property --sf-fluid-custom-3-max    { syntax: "<number>"; inherits: true; initial-value: 2; }
-
   :root {
     --sf-fluid-min-vw:          22.5;
     --sf-fluid-max-vw:          90;
@@ -370,19 +345,6 @@
     --sf-space-ratio-max:       1.333;
     --sf-space-base-min:        1;
     --sf-space-base-max:        2;
-
-    /* Custom fluid slot endpoints (unitless rem) */
-    --sf-fluid-custom-1-min:    1;
-    --sf-fluid-custom-1-max:    2;
-    --sf-fluid-custom-2-min:    1;
-    --sf-fluid-custom-2-max:    2;
-    --sf-fluid-custom-3-min:    1;
-    --sf-fluid-custom-3-max:    2;
-
-    /* Custom fluid slot outputs — read these */
-    --sf-fluid-custom-1: clamp(calc(var(--sf-fluid-custom-1-min) * 1rem), calc((var(--sf-fluid-custom-1-max) - var(--sf-fluid-custom-1-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-fluid-custom-1-min) * 1rem), calc(var(--sf-fluid-custom-1-max) * 1rem));
-    --sf-fluid-custom-2: clamp(calc(var(--sf-fluid-custom-2-min) * 1rem), calc((var(--sf-fluid-custom-2-max) - var(--sf-fluid-custom-2-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-fluid-custom-2-min) * 1rem), calc(var(--sf-fluid-custom-2-max) * 1rem));
-    --sf-fluid-custom-3: clamp(calc(var(--sf-fluid-custom-3-min) * 1rem), calc((var(--sf-fluid-custom-3-max) - var(--sf-fluid-custom-3-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-fluid-custom-3-min) * 1rem), calc(var(--sf-fluid-custom-3-max) * 1rem));
   }
 
   /* ============================================================
@@ -426,7 +388,26 @@
        Text-on-color — plain var aliases (ungated)
        ---------------------------------------------------------- */
     --sf-color-text--on-base:    var(--sf-color-text);
-    --sf-color-text--on-surface: var(--sf-color-text--on-base);   /* compat alias → base */
+
+    /* Static fallbacks for engines that support oklch(from …) but not sign()
+       (Chrome 125–137, Firefox 128–130). The sign() gate below overrides these
+       with the exact auto-contrast formula when the engine supports it.
+       Derived from the default palette at threshold 0.6: surfaces with L < 0.6
+       get near-white text (0.95); warning (L 0.75) and code (on light inset)
+       get near-black (0.1). Custom palettes must override --sf-color-text--on-*
+       manually if their surface colours differ from the defaults. */
+    --sf-color-text--on-primary:   oklch(0.95 0 0);
+    --sf-color-text--on-secondary: oklch(0.95 0 0);
+    --sf-color-text--on-tertiary:  oklch(0.95 0 0);
+    --sf-color-text--on-action:    oklch(0.95 0 0);
+    --sf-color-text--on-neutral:   oklch(0.95 0 0);
+    --sf-color-text--on-success:   oklch(0.95 0 0);
+    --sf-color-text--on-warning:   oklch(0.1  0 0);
+    --sf-color-text--on-error:     oklch(0.95 0 0);
+    --sf-color-text--on-info:      oklch(0.95 0 0);
+    --sf-color-text--on-danger:    oklch(0.95 0 0);
+    --sf-color-text--on-inverse:   oklch(0.95 0 0);
+    --sf-color-code-text:          oklch(0.1  0 0);
 
     /* ----------------------------------------------------------
        Borders — plain var aliases (ungated)
@@ -925,21 +906,22 @@
     /* ----------------------------------------------------------
        Font weights
        ---------------------------------------------------------- */
-    /* Numeric scale */
-    --sf-font-weight-thin:       100;
-    --sf-font-weight-extralight: 200;
-    --sf-font-weight-light:      300;
-    --sf-font-weight-normal:     400;
-    --sf-font-weight-medium:     500;
-    --sf-font-weight-semibold:   600;
-    --sf-font-weight-bold:       700;
-    --sf-font-weight-extrabold:  800;
-    --sf-font-weight-black:      900;
+    /* Base weights — trimmed, recognizable names. For an off-scale weight
+       (e.g. 100/900 display work) write font-weight: 100 directly, or re-tune
+       a role token below globally — every weight here is overridable. */
+    --sf-font-weight-light:    300;
+    --sf-font-weight-normal:   400;
+    --sf-font-weight-medium:   500;
+    --sf-font-weight-semibold: 600;
+    --sf-font-weight-bold:     700;
 
-    /* Semantic aliases — reference the numeric scale */
-    --sf-font-weight-body:    var(--sf-font-weight-normal);
-    --sf-font-weight-heading: var(--sf-font-weight-semibold);
-    --sf-font-weight-display: var(--sf-font-weight-bold);
+    /* Semantic role aliases — set intent, not a number. Override these to
+       reweight the whole site (e.g. --sf-font-weight-body: 300). */
+    --sf-font-weight-body:        var(--sf-font-weight-normal);    /* body copy            */
+    --sf-font-weight-heading:     var(--sf-font-weight-semibold);  /* h1–h6                */
+    --sf-font-weight-display:     var(--sf-font-weight-bold);      /* hero / display       */
+    --sf-font-weight-interactive: var(--sf-font-weight-semibold);  /* buttons, badges, nav */
+    --sf-font-weight-strong:      var(--sf-font-weight-bold);      /* <strong> / emphasis  */
 
     /* State token — consumed by .is-current in states.css.
        Override to match your nav design (e.g. semibold for thin fonts). */
@@ -979,8 +961,8 @@
     --sf-leading-relaxed: 1.625;
 
     /* Leading taper — progressive tightener for the per-size line-height
-       tokens in optional/tokens.sizes-extended.css. Each step up the type
-       scale subtracts `step-index × taper` from that step's default leading.
+       tokens below. Each step up the type scale subtracts
+       `step-index × taper` from that step's default leading.
        0 (default) keeps the curated stepped defaults; try 0.02 for a smooth
        metric taper across the scale. */
     --sf-leading-taper: 0;
@@ -1009,6 +991,61 @@
     --sf-font-numeric: tabular-nums;
 
     /* ----------------------------------------------------------
+       Per-size typography sub-properties
+       Not auto-applied — opt-in composable overrides. Wire alongside
+       font-size in your own rules:
+         .element { line-height: var(--sf-text-xl-line-height); }
+       Small text: relaxed leading. Body: normal. Large: progressively
+       tighter. --sf-leading-taper (default 0) tightens the whole
+       scale at once.
+       ---------------------------------------------------------- */
+
+    --sf-text-2xs-line-height:            var(--sf-leading-relaxed);
+    --sf-text-2xs-font-weight:            var(--sf-font-weight-body);
+    --sf-text-2xs-letter-spacing:         var(--sf-tracking-normal);
+    --sf-text-2xs-max-width:              55ch;
+
+    --sf-text-xs-line-height:             calc(var(--sf-leading-relaxed) - 1 * var(--sf-leading-taper));
+    --sf-text-xs-font-weight:             var(--sf-font-weight-body);
+    --sf-text-xs-letter-spacing:          var(--sf-tracking-normal);
+    --sf-text-xs-max-width:               60ch;
+
+    --sf-text-s-line-height:              calc(var(--sf-leading-relaxed) - 2 * var(--sf-leading-taper));
+    --sf-text-s-font-weight:              var(--sf-font-weight-body);
+    --sf-text-s-letter-spacing:           var(--sf-tracking-normal);
+    --sf-text-s-max-width:                65ch;
+
+    --sf-text-m-line-height:              calc(var(--sf-leading-normal) - 3 * var(--sf-leading-taper));
+    --sf-text-m-font-weight:              var(--sf-font-weight-body);
+    --sf-text-m-letter-spacing:           var(--sf-tracking-normal);
+    --sf-text-m-max-width:                65ch;
+
+    --sf-text-l-line-height:              calc(var(--sf-leading-normal) - 4 * var(--sf-leading-taper));
+    --sf-text-l-font-weight:              var(--sf-font-weight-body);
+    --sf-text-l-letter-spacing:           var(--sf-tracking-normal);
+    --sf-text-l-max-width:                none;
+
+    --sf-text-xl-line-height:             calc(var(--sf-leading-snug) - 5 * var(--sf-leading-taper));
+    --sf-text-xl-font-weight:             var(--sf-font-weight-body);
+    --sf-text-xl-letter-spacing:          var(--sf-tracking-normal);
+    --sf-text-xl-max-width:               none;
+
+    --sf-text-2xl-line-height:            calc(var(--sf-leading-snug) - 6 * var(--sf-leading-taper));
+    --sf-text-2xl-font-weight:            var(--sf-font-weight-heading);
+    --sf-text-2xl-letter-spacing:         var(--sf-tracking-normal);
+    --sf-text-2xl-max-width:              none;
+
+    --sf-text-3xl-line-height:            calc(var(--sf-leading-tight) - 7 * var(--sf-leading-taper));
+    --sf-text-3xl-font-weight:            var(--sf-font-weight-heading);
+    --sf-text-3xl-letter-spacing:         var(--sf-tracking-tight);
+    --sf-text-3xl-max-width:              none;
+
+    --sf-text-4xl-line-height:            calc(var(--sf-leading-tight) - 8 * var(--sf-leading-taper));
+    --sf-text-4xl-font-weight:            var(--sf-font-weight-heading);
+    --sf-text-4xl-letter-spacing:         var(--sf-tracking-tight);
+    --sf-text-4xl-max-width:              none;
+
+    /* ----------------------------------------------------------
        Icon sizes — em-based by design.
        Icons are sized in em so they scale with the surrounding
        text: an icon in a button at --sf-text-m renders at 1rem;
@@ -1034,8 +1071,6 @@
        ---------------------------------------------------------- */
     --sf-space-none:   0;
     --sf-space-px:     1px;
-    --sf-gutter-width: var(--sf-space-l);
-    --sf-space-gutter: var(--sf-gutter-width);
 
     /* Spacing — fluid (generative). Same engine as type; space uses base_max=2
        (more dramatic growth than type's 1.25). Step exponent N relative to
@@ -1173,19 +1208,13 @@
 
     /* ----------------------------------------------------------
        Blur & opacity
+       One frosted-surface default (nav/overlay glass) and one general
+       de-emphasis opacity. For other amounts write the value directly:
+       backdrop-filter: blur(24px); opacity: .3;
+       (--sf-opacity-disabled is defined with the interaction tokens.)
        ---------------------------------------------------------- */
-    --sf-blur-xs: 4px;
-    --sf-blur-s:  8px;
-    --sf-blur-m:  16px;
-    --sf-blur-l:  32px;
-    --sf-blur-xl: 48px;
-
-    --sf-opacity-0:   0;
-    --sf-opacity-10:  0.1;
-    --sf-opacity-25:  0.25;
-    --sf-opacity-50:  0.5;
-    --sf-opacity-75:  0.75;
-    --sf-opacity-100: 1;
+    --sf-blur:          12px;
+    --sf-opacity-muted: 0.5;
 
     /* ----------------------------------------------------------
        Motion & easing
@@ -1196,6 +1225,11 @@
     --sf-duration-normal:  calc(250ms * var(--sf-motion-scale));
     --sf-duration-slow:    calc(400ms * var(--sf-motion-scale));
     --sf-duration-slower:  calc(600ms * var(--sf-motion-scale));
+
+    /* Opt-in light/dark cross-fade duration — the knob for .sf-theme-transition
+       (core/themes.css). Registered <color> tokens make the fade possible;
+       this controls how long it takes. */
+    --sf-theme-transition-duration: calc(300ms * var(--sf-motion-scale));
 
     --sf-ease-linear:  linear;
     --sf-ease-out:     cubic-bezier(0.25, 0, 0.15, 1);
@@ -1255,32 +1289,26 @@
     /* ----------------------------------------------------------
        Z-index
        ---------------------------------------------------------- */
+    /* Semantic z-index ladder — UI roles, not magic integers. Follows the
+       Bootstrap/Chakra convention (1000-base, ordered by stacking role) so
+       the names are familiar and the gaps leave room to insert custom layers.
+       Low-level rungs (below/base/raised) handle local stacking; the named
+       roles handle page chrome and overlays.
+
+       Modal / popover / tooltip components render in the browser TOP LAYER
+       (native <dialog> / [popover]), ordered above the page independently of
+       z-index. The --sf-z-modal / --sf-z-overlay / --sf-z-tooltip rungs are
+       the fallback for non-top-layer implementations that must beat the page. */
     --sf-z-below:  -1;
     --sf-z-base:    0;
     --sf-z-raised:  1;
-    --sf-z-low:    10;
-    --sf-z-mid:   100;
-    --sf-z-high:  500;
-    --sf-z-top:   900;
-    --sf-z-max:  9999;
-
-    /* Semantic z-index aliases — map UI roles onto the numeric ladder
-       above so component authors target intent, not magic integers.
-       Every role that can overlap another on the scroll plane gets its
-       OWN rung, ordered: raised < sticky < fixed < dropdown < toast.
-       Notably --sf-z-dropdown sits ABOVE sticky and fixed so a navbar
-       menu clears the sticky header it opens from (and any fixed chrome).
-       Modal / popover / tooltip are intentionally absent: SLASHED's
-       dialog & popover components render in the browser TOP LAYER (native
-       <dialog> / [popover]), which is ordered above the page and its
-       ::backdrop independently of z-index — a z token there would be dead.
-       The --sf-z-overlay fallback is provided only for non-top-layer
-       implementations that still need to beat everything else. */
-    --sf-z-sticky:   var(--sf-z-low);   /* 10   sticky headers / sidebars      */
-    --sf-z-fixed:    var(--sf-z-mid);   /* 100  fixed app chrome (navbar, FAB)  */
-    --sf-z-dropdown: var(--sf-z-high);  /* 500  menus — clear sticky + fixed    */
-    --sf-z-toast:    var(--sf-z-top);   /* 900  transient notifications         */
-    --sf-z-overlay:  var(--sf-z-max);   /* 9999 non-top-layer modal/popover fallback */
+    --sf-z-sticky:   1000;  /* sticky headers / sidebars            */
+    --sf-z-fixed:    1010;  /* fixed app chrome (navbar, FAB)       */
+    --sf-z-dropdown: 1020;  /* menus — clear sticky + fixed         */
+    --sf-z-overlay:  1030;  /* scrims / non-top-layer backdrops     */
+    --sf-z-modal:    1040;  /* dialogs (non-top-layer fallback)     */
+    --sf-z-toast:    1050;  /* transient notifications              */
+    --sf-z-tooltip:  1060;  /* tooltips — above everything          */
 
     /* ----------------------------------------------------------
        Layout & a11y
@@ -1348,32 +1376,12 @@
     --sf-print-base-size:   11pt;
 
     /* ----------------------------------------------------------
-       Stroke widths
-       ---------------------------------------------------------- */
-    --sf-stroke-thin:    1px;
-    --sf-stroke-regular: 1.5px;
-    --sf-stroke-bold:    2px;
-    --sf-stroke-heavy:   3px;
-
-    /* ----------------------------------------------------------
        Object fit / position — global defaults for replaced elements.
        Applied in core/base.css on img and video. Override per element
        via inline style="--sf-object-position: top" or in BEM CSS.
        ---------------------------------------------------------- */
     --sf-object-fit:      cover;
     --sf-object-position: 50% 50%;
-
-    /* ----------------------------------------------------------
-       CSS multi-column — tokens for the `columns` layout property.
-       column-width is ch-based (character units) so columns maintain
-       a comfortable reading measure regardless of font-size.
-       ---------------------------------------------------------- */
-    --sf-col-width-s:       16ch;
-    --sf-col-width-m:       24ch;
-    --sf-col-width-l:       32ch;
-    --sf-col-rule-width-s:  var(--sf-border-width-1);
-    --sf-col-rule-width-m:  var(--sf-border-width-2);
-    --sf-col-rule-width-l:  var(--sf-border-width-3);
 
   }
 
@@ -1438,7 +1446,7 @@
     --sf-body-font-family:   var(--sf-font-body);
     --sf-body-color:         var(--sf-color-text);
     --sf-body-text-wrap:     pretty;
-    --sf-body-strong-weight: var(--sf-font-weight-bold);
+    --sf-body-strong-weight: var(--sf-font-weight-strong);
     --sf-body-em-style:      italic;
 
     --sf-code-font-size:     0.875em;
@@ -1492,15 +1500,14 @@
     --sf-h6-max-width: none;
 
     /* ----------------------------------------------------------
-       Spacing aliases — BEM consumer API
-       Use in your own BEM classes: .nav { gap: var(--sf-gap); }
-       Source of truth for tokens.layout.css:
-         --sf-space-gap     → var(--sf-gap)        (all layout primitives)
-         --sf-space-content → var(--sf-content-gap) (stack, prose)
+       Semantic gap tokens — the three rhythms every layout primitive
+       defaults to. Also the BEM consumer API: .nav { gap: var(--sf-gap); }
+       Override globally to retune all primitives of that rhythm at once.
        ---------------------------------------------------------- */
-    --sf-gap:           var(--sf-space-m);  /* gap between BEM elements */
-    --sf-content-gap:   var(--sf-space-s);  /* rhythm within a component */
-    --sf-component-pad: var(--sf-space-m);  /* standard component padding */
+    --sf-gap:           var(--sf-space-m);  /* loose: between components   */
+    --sf-content-gap:   var(--sf-space-s);  /* tight: within content       */
+    --sf-gutter:        var(--sf-space-l);  /* wide: page/section gutters  */
+    --sf-component-pad: var(--sf-space-m);  /* standard component padding  */
     --sf-field-block:   var(--sf-space-l);  /* form-field block spacing */
     --sf-field-required-marker: " *";
     /* Leading space is baked into the default so consumers can fully
@@ -1619,13 +1626,10 @@
    Prefix: --sf-
 
    DEPENDENCIES — requires tokens.css (loaded earlier).
-   Spacing aliases inherit from the BEM consumer API in tokens.css:
-     --sf-space-gap     → var(--sf-gap)         from tokens.css
-     --sf-space-content → var(--sf-content-gap) from tokens.css
-   Override --sf-gap or --sf-content-gap (the canonical source) to change
-   the gaps across all layout primitives at once. --sf-space-gap and
-   --sf-space-content are CANONICAL-SOURCE ALIASES — a second public name
-   kept for layout-primitive readability, not a redundant indirection.
+   Every primitive gap defaults directly to a semantic gap token from
+   tokens.css: --sf-gap (loose), --sf-content-gap (tight), --sf-gutter
+   (wide). Override one of those to retune all primitives of that rhythm
+   at once; override a single primitive via its own token.
 
    PUBLIC API — every --sf-*-gap / --sf-*-padding / --sf-*-min / etc. here
    is a per-primitive override knob (e.g. style="--sf-cluster-gap: …").
@@ -1639,20 +1643,9 @@
   :root {
 
     /* ----------------------------------------------------------
-       Shared spacing aliases
-       ---------------------------------------------------------- */
-    --sf-space-gap:     var(--sf-gap);       /* component-level gap */
-    --sf-space-content: var(--sf-content-gap);   /* within-component rhythm */
-
-    /* ----------------------------------------------------------
        Stack
        ---------------------------------------------------------- */
-    --sf-stack-gap: var(--sf-space-content);
-
-    /* ----------------------------------------------------------
-       Gap
-       ---------------------------------------------------------- */
-    --sf-gap-size: var(--sf-space-gap);
+    --sf-stack-gap: var(--sf-content-gap);
 
     /* ----------------------------------------------------------
        Box
@@ -1665,19 +1658,19 @@
        Center
        ---------------------------------------------------------- */
     --sf-center-max:    var(--sf-container-default);
-    --sf-center-gutter: var(--sf-space-gutter);
+    --sf-center-gutter: var(--sf-gutter);
 
     /* ----------------------------------------------------------
        Cluster
        ---------------------------------------------------------- */
-    --sf-cluster-gap:     var(--sf-space-gap);
+    --sf-cluster-gap:     var(--sf-gap);
     --sf-cluster-align:   center;
     --sf-cluster-justify: flex-start;
 
     /* ----------------------------------------------------------
        Sidebar
        ---------------------------------------------------------- */
-    --sf-sidebar-gap:           var(--sf-space-gap);
+    --sf-sidebar-gap:           var(--sf-gap);
     --sf-sidebar-min-width:     50%;           /* content column minimum */
     --sf-sidebar-width:         18rem;         /* sidebar panel default size */
 
@@ -1685,13 +1678,13 @@
        Switcher
        ---------------------------------------------------------- */
     --sf-switcher-threshold: 30rem;
-    --sf-switcher-gap:       var(--sf-space-gap);
+    --sf-switcher-gap:       var(--sf-gap);
 
     /* ----------------------------------------------------------
        Grid (auto-fill, breakpoint-free)
        ---------------------------------------------------------- */
     --sf-grid-min:         16rem;
-    --sf-grid-gap:         var(--sf-space-gap);
+    --sf-grid-gap:         var(--sf-gap);
 
     --sf-grid-min-xs:      10rem;
     --sf-grid-min-s:       13rem;
@@ -1710,7 +1703,7 @@
     --sf-equal-min-col-3: 15rem;
     --sf-equal-min-col-4: 16rem;
     --sf-equal-min-col-6: 10rem;
-    --sf-equal-gap:        var(--sf-space-gap);
+    --sf-equal-gap:        var(--sf-gap);
 
     /* ----------------------------------------------------------
        Cover
@@ -1737,7 +1730,7 @@
        Reel
        ---------------------------------------------------------- */
     --sf-reel-item-width: max-content;
-    --sf-reel-gap:        var(--sf-space-gap);
+    --sf-reel-gap:        var(--sf-gap);
     --sf-reel-height:     auto;
 
     /* ----------------------------------------------------------
@@ -1752,7 +1745,7 @@
     --sf-bento-row-default:  10rem;
     --sf-bento-row-compact:  6rem;
     --sf-bento-row-tall:     16rem;
-    --sf-bento-gap:          var(--sf-space-gap);
+    --sf-bento-gap:          var(--sf-gap);
 
     /* ----------------------------------------------------------
        Content grid (breakout pattern)
@@ -1763,13 +1756,13 @@
     /* ----------------------------------------------------------
        Prose
        ---------------------------------------------------------- */
-    --sf-prose-paragraph: var(--sf-space-content);
+    --sf-prose-paragraph: var(--sf-content-gap);
 
     /* ----------------------------------------------------------
        Alternate (zigzag)
        ---------------------------------------------------------- */
-    --sf-alternate-gap:       var(--sf-space-content);
-    --sf-alternate-inner-gap: var(--sf-space-gap);
+    --sf-alternate-gap:       var(--sf-content-gap);
+    --sf-alternate-inner-gap: var(--sf-gap);
 
   }
 }
@@ -1801,7 +1794,7 @@
        Flow — distance between flow children (lobotomized owl).
        Consumed by .sf-flow > * + *.
        ---------------------------------------------------------- */
-    --sf-flow-space: var(--sf-space-content);
+    --sf-flow-space: var(--sf-content-gap);
 
     /* ----------------------------------------------------------
        Line clamp — default line count for .sf-line-clamp-N.
@@ -1811,15 +1804,6 @@
        applies to .sf-line-clamp-N callers.
        ---------------------------------------------------------- */
     --sf-line-clamp: 3;
-
-    /* ----------------------------------------------------------
-       Truncate — ellipsis character for .sf-truncate.
-       Stays as a token so consumers can swap to ASCII "..." or a
-       localised character without rewriting the rule. The CSS
-       text-overflow: ellipsis property doesn't read it directly;
-       it's exposed for consumer-built variants.
-       ---------------------------------------------------------- */
-    --sf-truncate-suffix: "\2026";
 
     /* ----------------------------------------------------------
        Aspect ratio — default for .sf-aspect (generic ratio container,
@@ -1931,7 +1915,7 @@
     /* stylelint-disable-next-line property-no-vendor-prefix -- Safari <17: unprefixed text-size-adjust only landed in Safari 17 */
     -webkit-text-size-adjust: 100%;
     text-size-adjust:          100%;
-    scroll-padding-block-start: var(--sf-header-height, 5rem);
+    scroll-padding-block-start: calc(var(--sf-header-height, 5rem) + var(--sf-space-m, 1rem));
     scrollbar-gutter:    stable;
     color-scheme:        var(--sf-color-scheme, light dark);
     hanging-punctuation: first last;
@@ -2033,7 +2017,6 @@
     text-wrap:         var(--sf-heading-text-wrap);
     overflow-wrap:     break-word;
     text-rendering:    optimizelegibility;
-    scroll-margin-block-start: calc(var(--sf-header-height, 5rem) + var(--sf-space-m));
   }
 
   h1 { font-size: var(--sf-h1-size); line-height: var(--sf-h1-line-height); font-weight: var(--sf-h1-font-weight); letter-spacing: var(--sf-h1-letter-spacing); max-inline-size: var(--sf-h1-max-width); }
@@ -2173,10 +2156,6 @@
   hr {
     border:             none;
     border-block-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
-  }
-
-  :target {
-    scroll-margin-block-start: calc(var(--sf-header-height, 5rem) + var(--sf-space-m));
   }
 
   ::selection {
@@ -2583,6 +2562,39 @@
     }
   }
 
+  /* ─────────────────────────────────────────────────────────────────
+     OPT-IN THEME CROSS-FADE
+     ─────────────────────────────────────────────────────────────────
+     Add .sf-theme-transition to <html> (or any subtree) so colours fade
+     instead of switching instantly when [data-theme] flips. Tune the speed
+     with --sf-theme-transition-duration (core/tokens.css).
+
+     Implementation: transition the registered @property <color> SOURCE
+     tokens on the element itself — NOT background-color/color on every
+     descendant. The source tokens are inherited (and the surface/text/
+     border tokens derive from them via relative color), so the whole
+     subtree cross-fades while component-level `transition` declarations on
+     descendants (button hovers, transforms, etc.) are left untouched.
+     Disabled automatically under prefers-reduced-motion. */
+  .sf-theme-transition {
+    transition:
+      --sf-color-primary   var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-secondary var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-tertiary  var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-action    var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-neutral   var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-base      var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-success   var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-warning   var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-error     var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-info      var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-danger    var(--sf-theme-transition-duration) var(--sf-ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sf-theme-transition { transition: none; }
+  }
+
 }
 
 /* ─── core/layout.css ─── */
@@ -2677,7 +2689,7 @@
     width:          100%;
     max-width:      var(--sf-container-default);
     margin-inline:  auto;
-    padding-inline: var(--sf-space-gutter);
+    padding-inline: var(--sf-gutter);
   }
   .sf-container--narrow { max-width: var(--sf-container-narrow); }
   .sf-container--prose  { max-width: var(--sf-container-prose); }
@@ -2723,9 +2735,9 @@
      column) or .sf-cluster (flex-wrap row), .sf-gap is layout-
      agnostic — use it on elements that already have their own
      display context.
-     Override: style="--sf-gap-size: 2rem"
+     Override one instance: style="--sf-gap: 2rem"
      ---------------------------------------------------------- */
-  .sf-gap { gap: var(--sf-gap-size); }
+  .sf-gap { gap: var(--sf-gap); }
   .sf-gap--xs  { gap: var(--sf-space-xs); }
   .sf-gap--s   { gap: var(--sf-space-s); }
   .sf-gap--m   { gap: var(--sf-space-m); }
@@ -2752,6 +2764,7 @@
 
   .sf-center {
     box-sizing:      content-box;
+    width:           auto; /* guard: prevents width:100% + content-box padding from causing overflow */
     margin-inline:   auto;
     max-inline-size: var(--sf-center-max);
     padding-inline:  var(--sf-center-gutter);
@@ -2978,6 +2991,11 @@
     scrollbar-color:       var(--sf-scrollbar-thumb) var(--sf-scrollbar-track);
   }
 
+  /* WebKit (Safari) does not support scrollbar-width; use legacy pseudo-elements. */
+  .sf-reel::-webkit-scrollbar        { block-size: 6px; }
+  .sf-reel::-webkit-scrollbar-track  { background: var(--sf-scrollbar-track); border-radius: var(--sf-radius-full); }
+  .sf-reel::-webkit-scrollbar-thumb  { background: var(--sf-scrollbar-thumb); border-radius: var(--sf-radius-full); }
+
   .sf-reel > * {
     flex:              0 0 var(--sf-reel-item-width);
     scroll-snap-align: start;
@@ -3132,15 +3150,15 @@
     display: grid;
     grid-template-columns:
       [full-start]
-      minmax(var(--sf-space-gutter), 1fr)
+      minmax(var(--sf-gutter), 1fr)
       [breakout-start]
       minmax(0, calc((var(--sf-breakout-width) - var(--sf-content-width)) / 2))
       [content-start]
-      min(var(--sf-content-width), 100% - var(--sf-space-gutter) * 2)
+      min(var(--sf-content-width), 100% - var(--sf-gutter) * 2)
       [content-end]
       minmax(0, calc((var(--sf-breakout-width) - var(--sf-content-width)) / 2))
       [breakout-end]
-      minmax(var(--sf-space-gutter), 1fr)
+      minmax(var(--sf-gutter), 1fr)
       [full-end];
   }
 
@@ -3256,6 +3274,7 @@
   .sf-prose blockquote           { font-style: italic; padding-inline-start: var(--sf-prose-blockquote-padding); border-inline-start: var(--sf-prose-blockquote-border); }
   .sf-prose img                  { margin-block: var(--sf-prose-media-margin); border-radius: var(--sf-prose-media-radius); }
   .sf-prose :is(ul, ol)          { padding-inline-start: 1.25em; }
+  .sf-prose > :is(ul, ol)        { margin-block-end: 0; }
   .sf-prose :is(ul, ol) :is(ul, ol) { margin-block-start: var(--sf-prose-nested-list-gap); }
   .sf-prose ul                   { list-style: disc; }
   .sf-prose ol                   { list-style: decimal; }
@@ -3750,8 +3769,12 @@
     pointer-events: none;
   }
   /* Lift content above the scrim, but leave media below it so the
-     gradient actually darkens the picture. */
-  .sf-scrim > :not(img, picture, video, svg, canvas) {
+     gradient actually darkens the picture. .sf-scrim__content is the
+     explicit BEM alternative for complex nesting where media elements
+     are wrapped in divs and the classless :not() selector would
+     incorrectly lift the wrapper above the gradient overlay. */
+  .sf-scrim > :not(img, picture, video, svg, canvas),
+  .sf-scrim__content {
     position: relative;
     z-index:  1;
   }
@@ -3782,20 +3805,12 @@
      `background-clip: text` and `color: transparent` are required
      together — without clipping, transparent text is invisible.
 
-     WebKit only added the standard, unprefixed `background-clip: text`
-     in Safari 18; the framework floor is Safari 17.5, where the value
-     is recognised ONLY through `-webkit-background-clip`. The prefixed
-     declaration is therefore required, or gradient headings render as
-     invisible (transparent fill, unclipped background) on Safari
-     17.5–17.x. The unprefixed property is listed last so Chrome 125+,
-     Firefox 128+ and Safari 18+ use the standard form, while Safari
-     17.5–17.x fall back to the prefixed one (last valid wins per
-     browser). Firefox has never needed the prefix.
+     `background-clip: text` (unprefixed) is supported at the framework
+     floor (Safari 18.0+, Chrome 125+, Firefox 129+). The -webkit- prefix
+     is no longer required.
      ---------------------------------------------------------- */
   .sf-text-gradient {
     background-image: var(--sf-gradient-primary);
-    /* stylelint-disable-next-line property-no-vendor-prefix -- Safari <18 only supports background-clip:text via the -webkit- prefix; floor is Safari 17.5 */
-    -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
@@ -3960,6 +3975,12 @@
     position:       relative;
   }
 
+  /* color:transparent hides text but not hardcoded SVGs or inline images.
+     Hiding direct children ensures no layout artifacts overlap the spinner. */
+  .is-loading > * {
+    opacity: 0 !important;
+  }
+
   .is-loading::after {
     content:             "";
     position:            absolute;
@@ -3987,6 +4008,13 @@
        (unlike .is-loading, which masks content with a spinner). */
     opacity: var(--sf-state-pending-opacity);
     cursor:  progress;
+  }
+
+  /* Native <img> renders its source above the CSS background, hiding the shimmer.
+     Forcing opacity:0 allows the skeleton gradient to show through. */
+  img.is-skeleton,
+  .is-skeleton img {
+    opacity: 0 !important;
   }
 
   .is-skeleton {
@@ -4115,19 +4143,19 @@
   .is-sticky {
     position:         sticky;
     inset-block-start: var(--sf-sticky-offset, 0); /* logical: respects writing-mode */
-    z-index:           var(--sf-z-low);
+    z-index:           var(--sf-z-sticky);
   }
 
   .is-pinned {
     position:         sticky;
     inset-block-start: 0;
-    z-index:           var(--sf-z-mid);
+    z-index:           var(--sf-z-fixed);
   }
 
   .is-fixed {
     /* Intentionally bare — position only. Consumers must supply placement
        (inset, inset-block-start, etc.) and z-index via a modifier or inline style.
-       Example: <div class="is-fixed" style="inset: 0; z-index: var(--sf-z-max)"> */
+       Example: <div class="is-fixed" style="inset: 0; z-index: var(--sf-z-overlay)"> */
     position: fixed;
   }
 
@@ -4137,7 +4165,7 @@
        equivalent for elements not entered via that API. */
     position: fixed;
     inset:    0;
-    z-index:  var(--sf-z-max);
+    z-index:  var(--sf-z-overlay);
   }
 
   .is-resizable {
@@ -4171,7 +4199,7 @@
      ============================================================ */
 
   .is-dragging {
-    opacity: var(--sf-opacity-50);
+    opacity: var(--sf-opacity-muted);
     cursor:  grabbing;
   }
 
@@ -4281,6 +4309,8 @@
       }
     }
 
+    /* ── Animation presets ──────────────────────────────────────── */
+
     /* Animation presets — opt-in classes. Scoped to no-preference so
        reduced-motion users never trigger them (accessibility.css also
        neutralises animation-duration as a hard guarantee). These are
@@ -4295,6 +4325,8 @@
     .sf-slide-in-right { animation: var(--sf-animation-slide-in-right); }
     .sf-scale-up       { animation: var(--sf-animation-scale-up); }
     .sf-scale-down     { animation: var(--sf-animation-scale-down); }
+
+    /* ── Scroll-driven entrances ─────────────────────────────────── */
 
     /* Scroll-driven entrance effects — element animates into view
        as it enters the viewport. Uses CSS scroll-driven animations
@@ -4379,6 +4411,8 @@
   @keyframes sf-ping  { 75%, 100% { scale: 2; opacity: 0; } }
   @keyframes sf-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
   @keyframes sf-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -0.5rem; } }
+
+  /* ── @property color animation ───────────────────────────────── */
 
   /* @property color interpolation — animates --sf-color-primary-light smoothly
      because it is registered with syntax:"<color>" (see @property in tokens.css).
@@ -4554,11 +4588,7 @@
   @media (prefers-reduced-data: reduce) {
     :root {
       --sf-shadow-strength: 0;
-      --sf-blur-xs: 0px;
-      --sf-blur-s:  0px;
-      --sf-blur-m:  0px;
-      --sf-blur-l:  0px;
-      --sf-blur-xl: 0px;
+      --sf-blur: 0px;
     }
   }
 
@@ -4624,7 +4654,7 @@
     position:          absolute;
     inset-block-start: -100%;
     inset-inline-start: var(--sf-space-m);
-    z-index:           var(--sf-z-max);
+    z-index:           var(--sf-z-tooltip);
     padding:           var(--sf-space-s) var(--sf-space-m);
     background:        var(--sf-color-bg);
     color:             var(--sf-color-text);
@@ -4703,9 +4733,13 @@
      for single-link cards. Secondary links that also receive ::after are
      lifted to position:relative (interactive rule below), which scopes
      their ::after to themselves and keeps them independently clickable.
-     Explicit mode  — only [data-overlay-link] fills the card.          */
-  .sf-clickable-parent:not(:has([data-overlay-link])) a:where(:any-link)::after,
-  .sf-clickable-parent [data-overlay-link]::after {
+     Explicit mode  — only [data-overlay-link] or .sf-clickable-parent__overlay
+     fills the card. Use explicit mode when secondary links live at
+     different nesting depths (automatic :not(:first-of-type) is sibling-scoped
+     and does not see links nested inside wrappers).                    */
+  .sf-clickable-parent:not(:has([data-overlay-link], .sf-clickable-parent__overlay)) a:where(:any-link)::after,
+  .sf-clickable-parent [data-overlay-link]::after,
+  .sf-clickable-parent .sf-clickable-parent__overlay::after {
     content:        "";
     position:       absolute;
     inset:          0;
@@ -4726,7 +4760,8 @@
     [role="button"], [data-no-overlay]
   ),
   .sf-clickable-parent:has([data-overlay-link]) a:where(:any-link):not([data-overlay-link]),
-  .sf-clickable-parent:not(:has([data-overlay-link])) a:where(:any-link):not(:first-of-type) {
+  .sf-clickable-parent:has(.sf-clickable-parent__overlay) a:where(:any-link):not(.sf-clickable-parent__overlay),
+  .sf-clickable-parent:not(:has([data-overlay-link], .sf-clickable-parent__overlay)) a:where(:any-link):not(:first-of-type) {
     position: relative;
     z-index:  calc(var(--sf-clickable-overlay-z) + 1);
   }
@@ -4837,6 +4872,8 @@
 
 @layer slashed.print {
 
+  /* ── Print visibility utilities ──────────────────────────────── */
+
   /* Screen default: print-only content is hidden until the page is printed. */
   .print-only {
     display: none;
@@ -4919,20 +4956,15 @@
       display: revert !important;
     }
 
-    /* Preserve <details> content regardless of open state. Only
-       `summary` keeps `!important` — the disclosure chevron carries no
-       print value and the consumer should not be able to bring it back
-       inadvertently. The other two rules win against the UA stylesheet
-       on layered-author > UA precedence alone. */
-    details {
-      display: block;
-    }
-    details > summary {
-      display: none !important;
-    }
-    details > :not(summary) {
-      display: block;
-    }
+    /* Preserve <details> content regardless of open state. nav, aside,
+       and other interactive chrome are already hidden by the hide list
+       above, so the remaining <details> are content — force them open.
+       Only `summary` keeps `!important` — the disclosure chevron carries
+       no print value and the consumer should not be able to bring it back
+       inadvertently. */
+    details { display: block; }
+    details > summary { display: none !important; }
+    details > :not(summary) { display: block; }
 
     /* ── Opt-in colour treatment ─────────────────────────────────── */
 
