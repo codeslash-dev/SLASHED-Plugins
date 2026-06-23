@@ -114,7 +114,19 @@ function cloneFrameworkSource(tag) {
   execFileSync('git', ['clone', '--depth', '1', '--branch', tag, REPO_URL, FRAMEWORK_DIR], { stdio: 'inherit' });
 }
 
+function syncRegistrySources() {
+  const src = path.join(FRAMEWORK_DIR, 'scripts', 'registry-sources.js');
+  const dst = path.join(ROOT, 'scripts', 'registry-sources.js');
+  if (!fs.existsSync(src)) {
+    log('WARN: framework has no scripts/registry-sources.js — skipping sync');
+    return;
+  }
+  fs.copyFileSync(src, dst);
+  log('synced scripts/registry-sources.js from framework');
+}
+
 function regenerateData() {
+  syncRegistrySources();
   const env = { ...process.env, SLASHED_FRAMEWORK_DIR: FRAMEWORK_DIR };
   for (const script of ['gen-bricks-inventory.js', 'gen-class-hints.js']) {
     execFileSync('node', [path.join('scripts', script)], { cwd: ROOT, stdio: 'inherit', env });
