@@ -27,6 +27,14 @@
     "description": "Page section with vertical padding. Size modifiers",
     "category": "Layout"
   },
+  "sf-section--guttered": {
+    "description": "Page section with vertical padding. Size modifiers",
+    "category": "Layout"
+  },
+  "sf-container": {
+    "description": "Max-width container, centered with side gutters. Establishes",
+    "category": "Layout"
+  },
   "sf-section-group": {
     "description": "Page section with vertical padding. Size modifiers",
     "category": "Layout"
@@ -61,10 +69,6 @@
   },
   "sf-divider--gradient": {
     "description": "Standalone separator primitive. Token-driven; pairs with the",
-    "category": "Layout"
-  },
-  "sf-container": {
-    "description": "Max-width container, centered with side gutters. Establishes",
     "category": "Layout"
   },
   "sf-container--narrow": {
@@ -591,10 +595,6 @@
     "description": "Surface variant using the warning status palette.",
     "category": "Macros"
   },
-  "sf-surface--error": {
-    "description": "Surface variant using the error status palette.",
-    "category": "Macros"
-  },
   "sf-surface--info": {
     "description": "Surface variant using the info status palette.",
     "category": "Macros"
@@ -762,5 +762,9 @@
   "is-sr-only": {
     "description": "Visually hidden but accessible to screen readers.",
     "category": "States"
+  },
+  "sf-surface--error": {
+    "description": "Surface variant using the error status palette.",
+    "category": "Macros"
   }
 }

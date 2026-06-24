@@ -9,6 +9,22 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.13] - 2026-06-24
+
+### Fixed
+
+- Sync package-lock.json version in version-sync + release commit-back
+- Bump package.json to 0.3.11 to resolve pre-existing version drift
+- Include package.json in release commit-back to prevent version drift
+
+## [0.3.13] - 2026-06-24
+
+### Fixed
+
+- Sync package-lock.json version in version-sync + release commit-back
+- Bump package.json to 0.3.11 to resolve pre-existing version drift
+- Include package.json in release commit-back to prevent version drift
+
 ## [0.3.11] - 2026-06-23
 
 ### Fixed
