@@ -78,6 +78,8 @@ jobs:
           cp SLASHED-for-WP/integrations/bricks/slashed-bricks.php /tmp/fw-slashed-bricks.php
           cp SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php /tmp/fw-slashed-gutenberg.php
           cp scripts/registry-sources.js /tmp/fw-registry-sources.js
+          cp package.json /tmp/fw-package.json
+          cp package-lock.json /tmp/fw-package-lock.json
 
           git checkout "$DEFAULT_BRANCH"
 
@@ -89,6 +91,8 @@ jobs:
           cp /tmp/fw-slashed-bricks.php SLASHED-for-WP/integrations/bricks/slashed-bricks.php
           cp /tmp/fw-slashed-gutenberg.php SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php
           cp /tmp/fw-registry-sources.js scripts/registry-sources.js
+          cp /tmp/fw-package.json package.json
+          cp /tmp/fw-package-lock.json package-lock.json
 
           # Re-run changelog-release on the default branch so it picks up the
           # committed tag (the release workflow checks out the tag ref above).
@@ -101,7 +105,9 @@ jobs:
             SLASHED-for-WP/slashed.php \
             SLASHED-for-WP/integrations/bricks/slashed-bricks.php \
             SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php \
-            scripts/registry-sources.js
+            scripts/registry-sources.js \
+            package.json \
+            package-lock.json
           git diff --staged --quiet && echo "nothing to commit" && exit 0
           git commit -m "chore: sync framework + update docs for $TAG"
           git push origin "$DEFAULT_BRANCH"
