@@ -93,6 +93,22 @@ function main() {
     changed++;
   }
 
+  // Keep package-lock.json in sync with package.json.
+  const lockPath = 'package-lock.json';
+  try {
+    const lock = JSON.parse(read(lockPath));
+    let lockChanged = false;
+    if (lock.version !== version) { lock.version = version; lockChanged = true; }
+    if (lock.packages?.['']?.version !== version) { lock.packages[''].version = version; lockChanged = true; }
+    if (lockChanged) {
+      write(lockPath, JSON.stringify(lock, null, 2) + '\n');
+      console.log(`  bump package-lock.json  → ${version}`);
+      changed++;
+    }
+  } catch {
+    // No lockfile present — skip silently.
+  }
+
   changed += syncReplace(
     README,
     new RegExp(`(^Stable tag:\\s*)${SEMVER}`, 'm'),
