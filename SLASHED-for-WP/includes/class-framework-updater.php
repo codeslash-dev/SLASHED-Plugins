@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Slashed_Framework_Updater {
 
-	const BUNDLES          = array( 'essential', 'optimal', 'full' );
+	const BUNDLES          = array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' );
 	const TRANSIENT_KEY    = 'slashed_latest_framework_version';
 	const LOCAL_VER_OPTION = 'slashed_local_framework_version';
 	// Per-version CSS comes from the framework's GitHub Release assets (immutable

@@ -7,7 +7,7 @@
  * Two independent version concepts are checked:
  *
  *   1. Framework-tracked version (which framework release's CSS is bundled):
- *      - all three bundled dist/*.css headers carry the SAME `SLASHED vX.Y.Z`;
+ *      - all four bundled dist/*.css headers carry the SAME `SLASHED vX.Y.Z`;
  *      - SLASHED_CSS_REF / SLASHED_BRICKS_CSS_REF / SLASHED_GUTENBERG_CSS_REF
  *        all equal `v<that version>`;
  *      - the two shipped inventory.json copies are byte-identical.
@@ -28,7 +28,7 @@ import crypto from 'node:crypto';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const PLUGIN = 'SLASHED-for-WP';
 
-const DIST_BUNDLES = ['essential', 'optimal', 'full'];
+const DIST_BUNDLES = ['optimal', 'optimal-components', 'optimal-utilities', 'full'];
 
 // PHP files carrying the tracked-framework-version constant.
 const CSS_REF_TARGETS = [
@@ -64,7 +64,7 @@ function sha256(rel) {
   return crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, rel))).digest('hex');
 }
 
-/** Extract `X.Y.Z[-pre]` from a `/* SLASHED vX.Y.Z — file.css *​/` header. */
+/** Extract `X.Y.Z[-pre]` from a `/* SLASHED vX.Y.Z — file.css *\/` header. */
 function distHeaderVersion(rel) {
   const first = read(rel).split('\n', 1)[0];
   const m = first.match(/SLASHED\s+v(\d+\.\d+\.\d+(?:[-.][A-Za-z0-9.]+)*)/);

@@ -1,4 +1,4 @@
-/* SLASHED v0.6.13 — slashed.essential.css */
+/* SLASHED v0.6.13 — slashed.optimal-utilities.css */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -4852,6 +4852,846 @@
       color:       CanvasText  !important;
     }
 
+  }
+
+}
+
+/* ─── optional/tokens.palette.css ─── */
+/* ============================================================
+   SLASHED — optional/tokens.palette.css
+   Optional module. Auto-generates a full numeric scale, alpha
+   variants, and semantic + functional aliases for the 6 brand
+   color tokens using color-mix(in oklab). No build step required.
+   oklab (Cartesian) is used instead of oklch (polar) to prevent
+   hue drift when mixing colors with distant hues (e.g. yellow
+   mixed toward a blue-ish base would sweep through greens in oklch).
+
+   Status colors keep their subtle/muted/strong triplets in
+   core/tokens.css — they are NOT duplicated here.
+
+   This is a deliberate design choice: brand colours need a full 50-950
+   ramp for decorative/compositional use (backgrounds, borders, hover
+   states at arbitrary intensities). Status colours are functional — you
+   need a subtle background, a strong readable text, and a muted accent.
+   A full numeric scale for status/warnings would add ~185 tokens that
+   most consumers never use. If you need --sf-color-danger-300, replicate
+   the brand-palette formula:
+     --sf-color-danger-300: color-mix(in oklab, var(--sf-color-danger) 40%, var(--sf-color-surface));
+
+   Load after core/tokens.css:
+
+   Token families (per brand color):
+     -50 … -950   numeric scale. 500 = the base color.
+                  Tints (50-400) mix toward --sf-color-surface; shades
+                  (600-950) mix toward --sf-color-text. Both auto-adapt
+                  to light/dark. (base inverts the mix direction.)
+     -a5/a10/a30/a50/a80   alpha variants (mixed with transparent).
+                  For an intermediate alpha use oklch(from var(--sf-color-x) l c h / .NN).
+     shade aliases     superlight/xlight/lighter/darker/xdark/superdark
+                       → numeric steps via var() (one override propagates).
+     functional aliases hover/active/subtle/muted/ghost → other aliases.
+
+   RAMP SHAPE — PUBLIC-ADVANCED
+   Override --sf-palette-mix-{step} on :root to reshape the entire ramp
+   without editing every token. For example, to make tints spread wider:
+     :root { --sf-palette-mix-200: 30%; --sf-palette-mix-300: 55%; }
+   Applies to all 6 brand families simultaneously. For per-family
+   adjustment override the specific token directly instead:
+     :root { --sf-color-primary-300: color-mix(in oklab, var(--sf-color-primary) 55%, var(--sf-color-surface)); }
+   ============================================================ */
+
+@layer slashed.tokens {
+  /* ── @supports gate: oklch(from …) alpha scale ── */
+  @supports (color: oklch(from red l c h)) {
+  :root {
+
+    /* ----------------------------------------------------------
+       Palette shade mix percentages — PUBLIC-ADVANCED
+       Controls how far each numeric step blends toward surface (tints,
+       steps 50-400) or toward text (shades, steps 600-950). 500 = the
+       base color itself (no mixing). These are <percentage> values
+       consumed by color-mix() in every family below.
+       ---------------------------------------------------------- */
+    --sf-palette-mix-50:  4%;
+    --sf-palette-mix-100: 8%;
+    --sf-palette-mix-200: 20%;
+    --sf-palette-mix-300: 40%;
+    --sf-palette-mix-400: 65%;
+    --sf-palette-mix-600: 82%;
+    --sf-palette-mix-700: 62%;
+    --sf-palette-mix-800: 38%;
+    --sf-palette-mix-900: 18%;
+    --sf-palette-mix-950: 8%;
+
+    /* ----------------------------------------------------------
+       primary
+       ---------------------------------------------------------- */
+    --sf-color-primary-50:  color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-50),  var(--sf-color-surface));
+    --sf-color-primary-100: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-100), var(--sf-color-surface));
+    --sf-color-primary-200: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-200), var(--sf-color-surface));
+    --sf-color-primary-300: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-300), var(--sf-color-surface));
+    --sf-color-primary-400: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-primary-500: var(--sf-color-primary);
+    --sf-color-primary-600: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-600), var(--sf-color-text));
+    --sf-color-primary-700: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-700), var(--sf-color-text));
+    --sf-color-primary-800: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-800), var(--sf-color-text));
+    --sf-color-primary-900: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-900), var(--sf-color-text));
+    --sf-color-primary-950: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-950), var(--sf-color-text));
+
+    --sf-color-primary-a5:  oklch(from var(--sf-color-primary) l c h / 0.05);
+    --sf-color-primary-a10: oklch(from var(--sf-color-primary) l c h / 0.10);
+    --sf-color-primary-a30: oklch(from var(--sf-color-primary) l c h / 0.30);
+    --sf-color-primary-a50: oklch(from var(--sf-color-primary) l c h / 0.50);
+    --sf-color-primary-a80: oklch(from var(--sf-color-primary) l c h / 0.80);
+
+    --sf-color-primary-superlight: var(--sf-color-primary-50);
+    --sf-color-primary-xlight:     var(--sf-color-primary-200);
+    --sf-color-primary-lighter:    var(--sf-color-primary-400);
+    --sf-color-primary-darker:     var(--sf-color-primary-600);
+    --sf-color-primary-xdark:      var(--sf-color-primary-800);
+    --sf-color-primary-superdark:  var(--sf-color-primary-950);
+
+
+
+    /* ----------------------------------------------------------
+       secondary
+       ---------------------------------------------------------- */
+    --sf-color-secondary-50:  color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-50),  var(--sf-color-surface));
+    --sf-color-secondary-100: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-100), var(--sf-color-surface));
+    --sf-color-secondary-200: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-200), var(--sf-color-surface));
+    --sf-color-secondary-300: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-300), var(--sf-color-surface));
+    --sf-color-secondary-400: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-secondary-500: var(--sf-color-secondary);
+    --sf-color-secondary-600: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-600), var(--sf-color-text));
+    --sf-color-secondary-700: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-700), var(--sf-color-text));
+    --sf-color-secondary-800: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-800), var(--sf-color-text));
+    --sf-color-secondary-900: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-900), var(--sf-color-text));
+    --sf-color-secondary-950: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-950), var(--sf-color-text));
+
+    --sf-color-secondary-a5:  oklch(from var(--sf-color-secondary) l c h / 0.05);
+    --sf-color-secondary-a10: oklch(from var(--sf-color-secondary) l c h / 0.10);
+    --sf-color-secondary-a30: oklch(from var(--sf-color-secondary) l c h / 0.30);
+    --sf-color-secondary-a50: oklch(from var(--sf-color-secondary) l c h / 0.50);
+    --sf-color-secondary-a80: oklch(from var(--sf-color-secondary) l c h / 0.80);
+
+    --sf-color-secondary-superlight: var(--sf-color-secondary-50);
+    --sf-color-secondary-xlight:     var(--sf-color-secondary-200);
+    --sf-color-secondary-lighter:    var(--sf-color-secondary-400);
+    --sf-color-secondary-darker:     var(--sf-color-secondary-600);
+    --sf-color-secondary-xdark:      var(--sf-color-secondary-800);
+    --sf-color-secondary-superdark:  var(--sf-color-secondary-950);
+
+
+
+    /* ----------------------------------------------------------
+       tertiary
+       ---------------------------------------------------------- */
+    --sf-color-tertiary-50:  color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-50),  var(--sf-color-surface));
+    --sf-color-tertiary-100: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-100), var(--sf-color-surface));
+    --sf-color-tertiary-200: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-200), var(--sf-color-surface));
+    --sf-color-tertiary-300: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-300), var(--sf-color-surface));
+    --sf-color-tertiary-400: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-tertiary-500: var(--sf-color-tertiary);
+    --sf-color-tertiary-600: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-600), var(--sf-color-text));
+    --sf-color-tertiary-700: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-700), var(--sf-color-text));
+    --sf-color-tertiary-800: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-800), var(--sf-color-text));
+    --sf-color-tertiary-900: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-900), var(--sf-color-text));
+    --sf-color-tertiary-950: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-950), var(--sf-color-text));
+
+    --sf-color-tertiary-a5:  oklch(from var(--sf-color-tertiary) l c h / 0.05);
+    --sf-color-tertiary-a10: oklch(from var(--sf-color-tertiary) l c h / 0.10);
+    --sf-color-tertiary-a30: oklch(from var(--sf-color-tertiary) l c h / 0.30);
+    --sf-color-tertiary-a50: oklch(from var(--sf-color-tertiary) l c h / 0.50);
+    --sf-color-tertiary-a80: oklch(from var(--sf-color-tertiary) l c h / 0.80);
+
+    --sf-color-tertiary-superlight: var(--sf-color-tertiary-50);
+    --sf-color-tertiary-xlight:     var(--sf-color-tertiary-200);
+    --sf-color-tertiary-lighter:    var(--sf-color-tertiary-400);
+    --sf-color-tertiary-darker:     var(--sf-color-tertiary-600);
+    --sf-color-tertiary-xdark:      var(--sf-color-tertiary-800);
+    --sf-color-tertiary-superdark:  var(--sf-color-tertiary-950);
+
+
+
+    /* ----------------------------------------------------------
+       action
+       ---------------------------------------------------------- */
+    --sf-color-action-50:  color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-50),  var(--sf-color-surface));
+    --sf-color-action-100: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-100), var(--sf-color-surface));
+    --sf-color-action-200: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-200), var(--sf-color-surface));
+    --sf-color-action-300: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-300), var(--sf-color-surface));
+    --sf-color-action-400: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-action-500: var(--sf-color-action);
+    --sf-color-action-600: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-600), var(--sf-color-text));
+    --sf-color-action-700: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-700), var(--sf-color-text));
+    --sf-color-action-800: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-800), var(--sf-color-text));
+    --sf-color-action-900: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-900), var(--sf-color-text));
+    --sf-color-action-950: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-950), var(--sf-color-text));
+
+    --sf-color-action-a5:  oklch(from var(--sf-color-action) l c h / 0.05);
+    --sf-color-action-a10: oklch(from var(--sf-color-action) l c h / 0.10);
+    --sf-color-action-a30: oklch(from var(--sf-color-action) l c h / 0.30);
+    --sf-color-action-a50: oklch(from var(--sf-color-action) l c h / 0.50);
+    --sf-color-action-a80: oklch(from var(--sf-color-action) l c h / 0.80);
+
+    --sf-color-action-superlight: var(--sf-color-action-50);
+    --sf-color-action-xlight:     var(--sf-color-action-200);
+    --sf-color-action-lighter:    var(--sf-color-action-400);
+    --sf-color-action-darker:     var(--sf-color-action-600);
+    --sf-color-action-xdark:      var(--sf-color-action-800);
+    --sf-color-action-superdark:  var(--sf-color-action-950);
+
+
+
+    /* ----------------------------------------------------------
+       neutral
+       ---------------------------------------------------------- */
+    --sf-color-neutral-50:  color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-50),  var(--sf-color-surface));
+    --sf-color-neutral-100: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-100), var(--sf-color-surface));
+    --sf-color-neutral-200: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-200), var(--sf-color-surface));
+    --sf-color-neutral-300: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-300), var(--sf-color-surface));
+    --sf-color-neutral-400: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-neutral-500: var(--sf-color-neutral);
+    --sf-color-neutral-600: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-600), var(--sf-color-text));
+    --sf-color-neutral-700: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-700), var(--sf-color-text));
+    --sf-color-neutral-800: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-800), var(--sf-color-text));
+    --sf-color-neutral-900: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-900), var(--sf-color-text));
+    --sf-color-neutral-950: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-950), var(--sf-color-text));
+
+    --sf-color-neutral-a5:  oklch(from var(--sf-color-neutral) l c h / 0.05);
+    --sf-color-neutral-a10: oklch(from var(--sf-color-neutral) l c h / 0.10);
+    --sf-color-neutral-a30: oklch(from var(--sf-color-neutral) l c h / 0.30);
+    --sf-color-neutral-a50: oklch(from var(--sf-color-neutral) l c h / 0.50);
+    --sf-color-neutral-a80: oklch(from var(--sf-color-neutral) l c h / 0.80);
+
+    --sf-color-neutral-superlight: var(--sf-color-neutral-50);
+    --sf-color-neutral-xlight:     var(--sf-color-neutral-200);
+    --sf-color-neutral-lighter:    var(--sf-color-neutral-400);
+    --sf-color-neutral-darker:     var(--sf-color-neutral-600);
+    --sf-color-neutral-xdark:      var(--sf-color-neutral-800);
+    --sf-color-neutral-superdark:  var(--sf-color-neutral-950);
+
+
+
+    /* ----------------------------------------------------------
+       base — V-shaped ramp (inverted tint direction)
+       ────────────────────────────────────────────────────────
+       Unlike every other family, base is a near-white (light mode)
+       or near-black (dark mode) surface token, not a mid-lightness
+       brand colour. There is nowhere "lighter" to go from near-white,
+       so the tint direction is inverted: steps 50-400 mix --sf-color-text
+       INTO base (progressively darker in light mode, progressively
+       lighter in dark mode). Steps 600-950 mix base INTO text in both
+       modes (the same direction as other families' shades).
+
+       Approximate OKLCH L values — default palette, light mode:
+         base-50  ≈ 0.946   barely off-surface (dividers, zebra rows)
+         base-100 ≈ 0.931   subtle surface variant
+         base-200 ≈ 0.900   light gray (well / inset areas)
+         base-300 ≈ 0.840   medium-light gray
+         base-400 ≈ 0.748   medium gray (secondary UI elements)
+         base-500 ≈ 0.960   base itself (source token)
+         base-600 ≈ 0.850   medium-light (toward text, from 500)
+         base-700 ≈ 0.762
+         base-800 ≈ 0.630
+         base-900 ≈ 0.337
+         base-950 ≈ 0.170   near-black
+
+       Dark mode reverses the visual: base-50 becomes near-white-ish,
+       base-950 becomes near-black-ish, base-500 is the dark surface.
+
+       SEMANTIC ALIAS MAPPING (consistent position in ramp, not absolute L):
+         superlight = base-50   (closest to surface — barely distinguishable)
+         xlight     = base-200  (light gray)
+         lighter    = base-400  (medium gray — "lighter contrast" toward text)
+         darker     = base-600  (one step past base toward text from shade side)
+         xdark      = base-800
+         superdark  = base-950  (near ink color)
+
+       When you need surface-level differentiation, prefer
+       --sf-color-inset / --sf-color-raised / --sf-color-bg over the
+       numbered scale. For overlays, prefer the alpha variants (-a10…-a80)
+       which are mode-safe by transparency and compose cleanly on any bg.
+       ---------------------------------------------------------- */
+    --sf-color-base-50:  color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-50),  var(--sf-color-base));
+    --sf-color-base-100: color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-100), var(--sf-color-base));
+    --sf-color-base-200: color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-200), var(--sf-color-base));
+    --sf-color-base-300: color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-300), var(--sf-color-base));
+    --sf-color-base-400: color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-400), var(--sf-color-base));
+    --sf-color-base-500: var(--sf-color-base);
+    --sf-color-base-600: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-600), var(--sf-color-text));
+    --sf-color-base-700: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-700), var(--sf-color-text));
+    --sf-color-base-800: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-800), var(--sf-color-text));
+    --sf-color-base-900: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-900), var(--sf-color-text));
+    --sf-color-base-950: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-950), var(--sf-color-text));
+
+    --sf-color-base-a5:  oklch(from var(--sf-color-base) l c h / 0.05);
+    --sf-color-base-a10: oklch(from var(--sf-color-base) l c h / 0.10);
+    --sf-color-base-a30: oklch(from var(--sf-color-base) l c h / 0.30);
+    --sf-color-base-a50: oklch(from var(--sf-color-base) l c h / 0.50);
+    --sf-color-base-a80: oklch(from var(--sf-color-base) l c h / 0.80);
+
+    --sf-color-base-superlight: var(--sf-color-base-50);
+    --sf-color-base-xlight:     var(--sf-color-base-200);
+    --sf-color-base-lighter:    var(--sf-color-base-400);
+    --sf-color-base-darker:     var(--sf-color-base-600);
+    --sf-color-base-xdark:      var(--sf-color-base-800);
+    --sf-color-base-superdark:  var(--sf-color-base-950);
+
+
+  }
+  }
+}
+
+/* ─── optional/forms.css ─── */
+/* ============================================================
+   SLASHED — optional/forms.css
+   @layer slashed.forms
+
+   Classless form styling — opt-in element-level defaults for
+   <input>, <select>, <textarea>, and <button> without any classes.
+
+   USAGE:
+     — or include in a custom bundle via bundle.config.json.
+
+   PHILOSOPHY:
+     This file is OPTIONAL. SLASHED core does not style native form
+     elements beyond reset (font-inherit, box-sizing). If you prefer
+     full control via BEM components, skip this file entirely.
+
+   TOKENS CONSUMED:
+     --sf-radius-m, --sf-radius-full, --sf-border-width-1,
+     --sf-border-width-3, --sf-color-border,
+     --sf-color-border--focus, --sf-color-border--subtle,
+     --sf-color-surface, --sf-color-text, --sf-color-text--placeholder,
+     --sf-color-text--disabled, --sf-color-text--on-action,
+     --sf-color-bg--disabled, --sf-color-action, --sf-color-action--hover,
+     --sf-color-danger,
+     --sf-field-border-color, --sf-opacity-disabled,
+     --sf-space-xs, --sf-space-s, --sf-space-m,
+     --sf-text-m, --sf-leading-normal, --sf-font-weight-heading,
+     --sf-font-numeric,
+     --sf-duration-fast, --sf-ease-out, --sf-transition-colors,
+     --sf-focus-ring-width, --sf-focus-ring-style, --sf-focus-ring-offset,
+     --sf-field-required-marker
+
+   STATE INTEGRATION:
+     The shared field border reads --sf-field-border-color (set by the
+     `.is-valid/.is-invalid/.is-error/.is-warning/.is-success/.is-info/
+     .is-danger` classes in core/states.css), falling back to
+     --sf-color-border. Add a validation `.is-*` class to recolour a field.
+
+     Validation states also set --sf-field-text-color (e.g. error-strong,
+     success-strong). The framework does NOT consume this token — it is a
+     hook for your own component CSS. Wire it to your error message, label,
+     or helper-text class:
+       .form-error { color: var(--sf-field-text-color, inherit); }
+     The token inherits, so place the .is-* class on a wrapper and all
+     descendants can read it.
+   ============================================================ */
+
+@layer slashed.forms {
+
+  /* ----------------------------------------------------------
+     Shared base for text-like inputs, select, textarea
+     ---------------------------------------------------------- */
+  /* [type="color"] is intentionally excluded: it is a compact swatch button,
+     not a text field. Applying appearance:none and 100% width to a color input
+     removes the native swatch in WebKit and produces a broken box in Chrome.
+     Style color inputs separately if needed. */
+  input:where(
+    [type="text"], [type="email"], [type="password"], [type="url"],
+    [type="tel"], [type="number"], [type="search"], [type="date"],
+    [type="datetime-local"], [type="month"], [type="week"],
+    [type="time"], :not([type])
+  ),
+  select,
+  textarea {
+    /* Strip native form-control rendering so the CSS background-color
+       below actually paints. Without this, WebKit (Safari) overlays its
+       own dark-mode default field background (≈ #5f6163) on top of the
+       framework's --sf-color-surface, producing a 1.78 : 1 contrast
+       failure flagged by axe. Chromium and Firefox honour the CSS
+       background-color even without this; WebKit needs the explicit
+       opt-out. Native rendering of checkbox / radio / range / file /
+       datetime pickers is preserved because this :where() block only
+       matches text-like inputs (and select / textarea, which already
+       had `appearance: none` for chevron control). */
+    appearance: none;
+
+    display: block;
+    inline-size: 100%;
+    padding-block: var(--sf-space-xs);
+    padding-inline: var(--sf-space-s);
+    font-size: var(--sf-text-m);
+    line-height: var(--sf-leading-normal);
+    color: var(--sf-color-text);
+    background-color: var(--sf-color-surface);
+    border: var(--sf-border-width-1) solid var(--sf-field-border-color, var(--sf-color-border));
+    border-radius: var(--sf-radius-m);
+    transition: var(--sf-transition-form-field);
+  }
+
+  /* Focus */
+  input:where(
+    [type="text"], [type="email"], [type="password"], [type="url"],
+    [type="tel"], [type="number"], [type="search"], [type="date"],
+    [type="datetime-local"], [type="month"], [type="week"],
+    [type="time"], :not([type])
+  ):focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    border-color: var(--sf-color-border--focus);
+    outline: var(--sf-focus-ring-width) var(--sf-focus-ring-style, solid) var(--sf-color-border--focus);
+    outline-offset: var(--sf-focus-ring-offset);
+  }
+
+  /* Disabled */
+  input:disabled,
+  select:disabled,
+  textarea:disabled {
+    background-color: var(--sf-color-bg--disabled);
+    color: var(--sf-color-text--disabled);
+    opacity: var(--sf-opacity-disabled);
+    cursor: not-allowed;
+  }
+
+  /* Placeholder */
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--sf-color-text--placeholder);
+    opacity: 1;
+  }
+
+
+  /* ----------------------------------------------------------
+     Autofill — repaint the browser's autofill highlight to match
+     the framework surface. Browsers refuse to let CSS override the
+     autofill background-color directly; the inset box-shadow trick
+     paints over it (the only CSS-only workaround). A faint tint may
+     still bleed through on some browser/OS combinations — that is a
+     browser limitation, not a framework one. Both the standard
+     `:autofill` and the WebKit/Blink `:-webkit-autofill` selectors
+     are listed so the rule applies across engines.
+     ---------------------------------------------------------- */
+  /* stylelint-disable selector-pseudo-class-no-unknown */
+  input:-webkit-autofill {
+    box-shadow: inset 0 0 0 1000px var(--sf-color-surface);
+    -webkit-text-fill-color: var(--sf-color-text);
+    caret-color: var(--sf-color-text);
+    border-color: var(--sf-field-border-color, var(--sf-color-border));
+  }
+  input:autofill {
+    box-shadow: inset 0 0 0 1000px var(--sf-color-surface);
+    -webkit-text-fill-color: var(--sf-color-text);
+    caret-color: var(--sf-color-text);
+    border-color: var(--sf-field-border-color, var(--sf-color-border));
+  }
+  /* stylelint-enable selector-pseudo-class-no-unknown */
+
+
+  /* ----------------------------------------------------------
+     Native validation states — :user-invalid / :user-valid fire
+     only AFTER the user has interacted with a field (typed + blurred),
+     so a pristine required form never glows red before it is touched.
+     These set the same --sf-field-border-color token consumed by the
+     shared border rule above, so they slot in without duplication.
+
+     ADDITIVE — the JS-driven .is-valid / .is-invalid classes
+     (core/states.css) remain for server-side errors, cross-field
+     validation, and flows that need to control timing or show
+     messages (which these pseudo-classes cannot do on their own).
+     Universal browser support (Chrome, Firefox, Safari).
+     ---------------------------------------------------------- */
+  input:user-invalid,
+  select:user-invalid,
+  textarea:user-invalid {
+    --sf-field-border-color: var(--sf-color-danger);
+  }
+
+  input:user-valid,
+  select:user-valid,
+  textarea:user-valid {
+    --sf-field-border-color: var(--sf-color-success);
+  }
+
+
+  /* ----------------------------------------------------------
+     Numeric inputs — tabular figures so digits share a fixed
+     advance width and align in vertical columns (prices, quantities,
+     totals). Reads the public --sf-font-numeric token so consumers
+     can override it. Universal browser support.
+     ---------------------------------------------------------- */
+  input[type="number"] {
+    font-variant-numeric: var(--sf-font-numeric, tabular-nums);
+  }
+
+
+  /* ----------------------------------------------------------
+     Textarea specifics
+     ---------------------------------------------------------- */
+  textarea {
+    min-block-size: 6rem;
+    resize:         vertical; /* prevent horizontal resize that overflows 100% width container */
+  }
+  /* Auto-grow with content where supported. min-block-size acts as the
+     floor and resize:vertical remains the manual fallback, so on engines
+     without field-sizing the textarea behaves exactly as before — pure
+     progressive enhancement (Chrome/Edge 123+; Firefox/Safari pending). */
+  @supports (field-sizing: content) {
+    textarea {
+      field-sizing: content;
+    }
+  }
+
+
+  /* ----------------------------------------------------------
+     Select
+     ---------------------------------------------------------- */
+  select {
+    padding-inline-end: calc(var(--sf-space-s) + 1.5em);
+  }
+  /* Single-line selects get a chevron. CSS custom properties and `currentColor`
+     don't propagate into data-URI SVG backgrounds, so the stroke uses the CSS
+     system color `FieldText` — it resolves against the element's `color-scheme`
+     and therefore tracks scoped [data-theme] regions automatically.
+
+     Override path: to use a custom chevron colour or icon, override
+     background-image on `select:not([multiple], [size])` in your own CSS. */
+  select:not([multiple], [size]) {
+    background-repeat: no-repeat;
+    background-position: right var(--sf-space-s) center;
+    background-size: 1em;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='FieldText' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M2.5 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E");
+  }
+  /* RTL: mirror the chevron to the inline-end (left) edge. */
+  :dir(rtl) select:not([multiple], [size]) {
+    background-position: left var(--sf-space-s) center;
+  }
+
+
+  /* ----------------------------------------------------------
+     Button / submit / reset
+     ---------------------------------------------------------- */
+  button:not([class*="sf-"]),
+  input[type="submit"]:not([class*="sf-"]),
+  input[type="reset"]:not([class*="sf-"]),
+  input[type="button"]:not([class*="sf-"]) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sf-space-xs);
+    padding-block: var(--sf-space-xs);
+    padding-inline: var(--sf-space-m);
+    font-size: var(--sf-text-m);
+    font-weight: var(--sf-font-weight-heading);
+    line-height: var(--sf-leading-normal);
+    color: var(--sf-color-text--on-action);
+    background-color: var(--sf-color-action);
+    border: var(--sf-border-width-1) solid transparent;
+    border-radius: var(--sf-radius-m);
+    cursor: pointer;
+    transition: var(--sf-transition-colors);
+    text-decoration: none;
+  }
+
+  button:not([class*="sf-"]):hover,
+  input[type="submit"]:not([class*="sf-"]):hover,
+  input[type="reset"]:not([class*="sf-"]):hover,
+  input[type="button"]:not([class*="sf-"]):hover {
+    /* --sf-color-action--hover defined in optional/tokens.palette.css; fallback to
+       action colour so hover degrades gracefully if the palette file is not loaded */
+    background-color: var(--sf-color-action--hover, var(--sf-color-action));
+  }
+
+  button:not([class*="sf-"]):focus-visible,
+  input[type="submit"]:not([class*="sf-"]):focus-visible,
+  input[type="reset"]:not([class*="sf-"]):focus-visible,
+  input[type="button"]:not([class*="sf-"]):focus-visible {
+    outline: var(--sf-focus-ring-width) var(--sf-focus-ring-style, solid) var(--sf-color-border--focus);
+    outline-offset: var(--sf-focus-ring-offset);
+  }
+
+  button:not([class*="sf-"]):disabled,
+  input[type="submit"]:not([class*="sf-"]):disabled,
+  input[type="reset"]:not([class*="sf-"]):disabled,
+  input[type="button"]:not([class*="sf-"]):disabled {
+    opacity: var(--sf-opacity-disabled);
+    cursor:  not-allowed;
+    /* pointer-events: none is intentionally absent: native :disabled already
+       blocks interaction; adding pointer-events:none silences the cursor above. */
+  }
+
+
+  /* ----------------------------------------------------------
+     Checkbox & radio — minimal accent styling
+     ---------------------------------------------------------- */
+  input[type="checkbox"],
+  input[type="radio"] {
+    inline-size:    1.125em;
+    block-size:     1.125em;
+    accent-color:   var(--sf-color-action);
+    cursor:         pointer;
+    vertical-align: middle; /* center against adjacent inline label text */
+  }
+
+
+  /* ----------------------------------------------------------
+     File input — style the selector button like a button
+     ---------------------------------------------------------- */
+  input[type="file"] {
+    cursor: pointer;
+  }
+  input[type="file"]::file-selector-button {
+    appearance: none;
+    margin-inline-end: var(--sf-space-s);
+    padding-block: var(--sf-space-xs);
+    padding-inline: var(--sf-space-m);
+    font-weight: var(--sf-font-weight-heading);
+    color: var(--sf-color-text--on-action);
+    background-color: var(--sf-color-action);
+    border: var(--sf-border-width-1) solid transparent;
+    border-radius: var(--sf-radius-m);
+    cursor: pointer;
+    transition: var(--sf-transition-colors);
+  }
+  input[type="file"]::file-selector-button:hover {
+    background-color: var(--sf-color-action--hover, var(--sf-color-action));
+  }
+
+
+  /* ----------------------------------------------------------
+     Range — track + thumb (WebKit + Firefox)
+     ---------------------------------------------------------- */
+  input[type="range"] {
+    appearance: none;
+    inline-size: 100%;
+    background: transparent;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    block-size: var(--sf-border-width-3, 0.25rem);
+    background-color: var(--sf-color-border);
+    border-radius: var(--sf-radius-full);
+  }
+  input[type="range"]::-moz-range-track {
+    block-size: var(--sf-border-width-3, 0.25rem);
+    background-color: var(--sf-color-border);
+    border-radius: var(--sf-radius-full);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    inline-size: 1em;
+    block-size: 1em;
+    margin-block-start: calc((var(--sf-border-width-3, 0.25rem) - 1em) / 2);
+    background-color: var(--sf-color-action);
+    border-radius: var(--sf-radius-full);
+  }
+  input[type="range"]::-moz-range-thumb {
+    inline-size: 1em;
+    block-size: 1em;
+    background-color: var(--sf-color-action);
+    border: none;
+    border-radius: var(--sf-radius-full);
+  }
+  input[type="range"]:focus-visible {
+    outline: var(--sf-focus-ring-width) var(--sf-focus-ring-style, solid) var(--sf-color-border--focus);
+    outline-offset: var(--sf-focus-ring-offset);
+  }
+
+
+  /* ----------------------------------------------------------
+     Fieldset & legend
+     ---------------------------------------------------------- */
+  fieldset {
+    border: var(--sf-border-width-1) solid var(--sf-color-border--subtle);
+    border-radius: var(--sf-radius-m);
+    padding: var(--sf-space-m);
+  }
+
+  legend {
+    font-weight: var(--sf-font-weight-heading);
+    padding-inline: var(--sf-space-xs);
+  }
+
+
+  /* ----------------------------------------------------------
+     Label
+     ---------------------------------------------------------- */
+  label {
+    display: block;
+    font-weight: var(--sf-font-weight-heading);
+    margin-block-end: var(--sf-space-xs);
+    color: var(--sf-field-text-color, inherit);
+  }
+
+  /* Required-field marker — classless, no markup convention.
+     Covers: <label>Name <input required></label> (nested inside),
+     <label>Name</label><input required> (direct sibling), and
+     <label>Name</label><div><input required></div> (wrapped sibling). */
+  label:has(:required)::after,
+  label:has(+ :required)::after,
+  label:has(+ * :required)::after {
+    content: var(--sf-field-required-marker, " *");
+    color: var(--sf-color-danger);
+  }
+
+}
+
+/* ─── optional/utilities.css ─── */
+/* SLASHED — optional/utilities.css
+   @layer slashed.utilities
+   ────────────────────── */
+
+@layer slashed.utilities {
+
+  /* ============================================================
+   * HEADING HELPER CLASSES (.sf-h1 – .sf-h6)
+   * ============================================================
+   * Apply heading visual style to any element without altering
+   * semantics — e.g. a <p> styled as an h2, or an <h1> visually
+   * displayed at h3 scale for SEO/a11y reasons.
+   * Maps to the same --sf-h{N}-* tokens consumed by core/base.css.
+   *
+   * .sf-h1 {
+   *   font-size:       var(--sf-h1-size);
+   *   line-height:     var(--sf-h1-line-height);
+   *   font-weight:     var(--sf-h1-font-weight);
+   *   letter-spacing:  var(--sf-h1-letter-spacing);
+   *   font-family:     var(--sf-heading-font-family, var(--sf-font-heading));
+   *   color:           var(--sf-heading-color, var(--sf-color-heading));
+   *   max-inline-size: var(--sf-h1-max-width);
+   * }
+   * .sf-h2 {
+   *   font-size:       var(--sf-h2-size);
+   *   line-height:     var(--sf-h2-line-height);
+   *   font-weight:     var(--sf-h2-font-weight);
+   *   letter-spacing:  var(--sf-h2-letter-spacing);
+   *   font-family:     var(--sf-heading-font-family, var(--sf-font-heading));
+   *   color:           var(--sf-heading-color, var(--sf-color-heading));
+   *   max-inline-size: var(--sf-h2-max-width);
+   * }
+   * .sf-h3 {
+   *   font-size:       var(--sf-h3-size);
+   *   line-height:     var(--sf-h3-line-height);
+   *   font-weight:     var(--sf-h3-font-weight);
+   *   letter-spacing:  var(--sf-h3-letter-spacing);
+   *   font-family:     var(--sf-heading-font-family, var(--sf-font-heading));
+   *   color:           var(--sf-heading-color, var(--sf-color-heading));
+   *   max-inline-size: var(--sf-h3-max-width);
+   * }
+   * .sf-h4 {
+   *   font-size:       var(--sf-h4-size);
+   *   line-height:     var(--sf-h4-line-height);
+   *   font-weight:     var(--sf-h4-font-weight);
+   *   letter-spacing:  var(--sf-h4-letter-spacing);
+   *   font-family:     var(--sf-heading-font-family, var(--sf-font-heading));
+   *   color:           var(--sf-heading-color, var(--sf-color-heading));
+   *   max-inline-size: var(--sf-h4-max-width);
+   * }
+   * .sf-h5 {
+   *   font-size:       var(--sf-h5-size);
+   *   line-height:     var(--sf-h5-line-height);
+   *   font-weight:     var(--sf-h5-font-weight);
+   *   letter-spacing:  var(--sf-h5-letter-spacing);
+   *   font-family:     var(--sf-heading-font-family, var(--sf-font-heading));
+   *   color:           var(--sf-heading-color, var(--sf-color-heading));
+   *   max-inline-size: var(--sf-h5-max-width);
+   * }
+   * .sf-h6 {
+   *   font-size:       var(--sf-h6-size);
+   *   line-height:     var(--sf-h6-line-height);
+   *   font-weight:     var(--sf-h6-font-weight);
+   *   letter-spacing:  var(--sf-h6-letter-spacing);
+   *   font-family:     var(--sf-heading-font-family, var(--sf-font-heading));
+   *   color:           var(--sf-heading-color, var(--sf-color-heading));
+   *   max-inline-size: var(--sf-h6-max-width);
+   * }
+   */
+
+}
+
+/* ─── optional/legacy.css ─── */
+/* SLASHED — optional/legacy.css
+   @layer slashed.legacy
+
+   Load LAST, after every framework file. slashed.legacy is
+   declared before slashed.overrides in layers.css, so user
+   overrides always win.
+
+   IMPORTANT — what this file is NOT
+   ─────────────────────────────────
+   The framework's real support floor is Chrome 125+, Safari 18.0+,
+   Firefox 129+ (April–September 2024). That floor is set by the colour
+   system (light-dark(), @property with inherits, oklch() relative-color),
+   scroll-driven animations (animation-timeline: view()), and @starting-style.
+   This file does NOT extend the floor below @layer support.
+
+   What this file IS
+   ─────────────────
+   Property-level smoothing for non-colour features that landed
+   later than @layer itself. Specifically: dvh on Safari 15.0–15.3,
+   :focus-visible on Safari pre-15.4, scrollbar-gutter on Safari
+   (still missing). Useful only for users who pin to early-2022
+   Safari for non-colour reasons; on modern engines every block
+   below is inert via @supports not (...).
+
+   Scope: covers gaps in reset.css, base.css, accessibility.css.
+   ─────────────────────────────────────────────────── */
+
+@layer slashed.legacy {
+
+  /* ============================================================
+     1. Dynamic viewport units — dvh
+     Safari gained dvh in 15.4; 15.0–15.3 do not have it.
+     reset.css: body { min-height: 100dvh } → fall back to vh.
+     Safe degradation otherwise (no breakage), but the address-bar
+     gap on iOS is worth correcting where we can.
+     ============================================================ */
+
+  @supports not (height: 100dvh) {
+    body {
+      min-height: 100vh;
+    }
+  }
+
+
+  /* ============================================================
+     2. :focus-visible — CRITICAL accessibility
+     Safari < 15.4 lacks :focus-visible. Without a fallback the
+     entire accessibility.css focus rule is dropped (unknown
+     selector ⇒ whole rule invalid) and keyboard users lose the
+     visible focus ring — a WCAG 2.4.7 failure.
+
+     Established pattern: when :focus-visible is unsupported, every
+     :focus shows the ring (slightly broader than ideal, but
+     correct and accessible — visible focus on mouse too is far
+     better than none on keyboard).
+     ============================================================ */
+
+  @supports not selector(:focus-visible) {
+    :focus {
+      outline:        var(--sf-focus-ring-width, 2px)
+                      var(--sf-focus-ring-style, solid)
+                      var(--sf-focus-ring-color, var(--sf-color-action));
+      outline-offset: var(--sf-focus-ring-offset, 2px);
+    }
+  }
+
+
+  /* ============================================================
+     3. scrollbar-gutter: stable — layout-shift prevention
+     Absent in Safari (all versions to date). Degrades safely on
+     its own (possible horizontal shift when a scrollbar appears,
+     no breakage). Classic fallback reserves the bar permanently;
+     it has a cost (always-visible track) so it is applied only
+     where the modern property is missing.
+     ============================================================ */
+
+  @supports not (scrollbar-gutter: stable) {
+    html {
+      overflow-y: scroll;
+    }
   }
 
 }

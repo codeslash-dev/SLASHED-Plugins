@@ -30,7 +30,7 @@ class Slashed_Settings {
 	 */
 	const KNOWN_INTEGRATIONS = array( 'bricks', 'gutenberg' );
 
-	const ALLOWED_BUNDLES = array( 'essential', 'optimal', 'full' );
+	const ALLOWED_BUNDLES = array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' );
 
 	const ALLOWED_SOURCES = array( 'local', 'cdn' );
 
@@ -71,6 +71,11 @@ class Slashed_Settings {
 			}
 		}
 		$bundle = isset( $stored['css_bundle'] ) ? (string) $stored['css_bundle'] : 'optimal';
+		// Migrate: 'essential' was removed when the framework moved to the
+		// optimal / optimal-components / optimal-utilities / full bundle set.
+		if ( 'essential' === $bundle ) {
+			$bundle = 'optimal';
+		}
 		return in_array( $bundle, self::ALLOWED_BUNDLES, true ) ? $bundle : 'optimal';
 	}
 
@@ -154,6 +159,10 @@ class Slashed_Settings {
 		}
 
 		$bundle = isset( $data['css_bundle'] ) ? (string) $data['css_bundle'] : 'optimal';
+		// Migrate legacy 'essential' value on save so it is never re-stored.
+		if ( 'essential' === $bundle ) {
+			$bundle = 'optimal';
+		}
 		if ( ! in_array( $bundle, self::ALLOWED_BUNDLES, true ) ) {
 			$bundle = 'optimal';
 		}
@@ -192,6 +201,10 @@ class Slashed_Settings {
 	 */
 	public static function set_css_bundle( $bundle ) {
 		$bundle = (string) $bundle;
+		// Migrate legacy value.
+		if ( 'essential' === $bundle ) {
+			$bundle = 'optimal';
+		}
 		if ( ! in_array( $bundle, self::ALLOWED_BUNDLES, true ) ) {
 			$bundle = 'optimal';
 		}

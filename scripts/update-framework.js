@@ -5,8 +5,8 @@
  * The plugin ships local copies of the framework's CSS for offline/local-first
  * delivery. This script, end to end:
  *   1. Resolve the target version ("latest" → newest stable tag via jsDelivr).
- *   2. Download that release's CSS bundles (essential/optimal/full) from the
- *      framework's GitHub Release assets into SLASHED-for-WP/dist/.
+ *   2. Download that release's CSS bundles (optimal/optimal-components/optimal-utilities/full)
+ *      from the framework's GitHub Release assets into SLASHED-for-WP/dist/.
  *   3. Shallow-clone the framework source at that tag into ./.framework and
  *      regenerate data/inventory.json + data/classes-hints.json from it.
  *   4. Stamp the SLASHED_*_CSS_REF constants in the PHP entry points.
@@ -38,7 +38,7 @@ const REPO_URL      = 'https://github.com/codeslash-dev/SLASHED.git';
 const META_URL      = 'https://data.jsdelivr.com/v1/packages/gh/codeslash-dev/SLASHED';
 const RELEASE_BASE  = 'https://github.com/codeslash-dev/SLASHED/releases/download';
 
-const BUNDLES = ['essential', 'optimal', 'full'];
+const BUNDLES = ['optimal', 'optimal-components', 'optimal-utilities', 'full'];
 
 // PHP files + the constant whose value is the tracked framework version tag.
 const CSS_REF_TARGETS = [
