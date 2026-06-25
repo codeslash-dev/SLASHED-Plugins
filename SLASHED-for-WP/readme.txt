@@ -89,11 +89,12 @@ Section-level theming works too — a single dark section inside an otherwise li
 
 Pick the bundle that fits the project from the settings page:
 
-* **Essential** — core token layers, reset, base, layout, states, themes, motion, accessibility, print.
-* **Optimal** (recommended) — Essential plus extended palette and size tokens, form styles, and legacy browser fallbacks.
-* **Full** — everything, including the in-progress component stubs and the utilities scaffold.
+* **Optimal** (recommended) — the full core layer: design tokens, CSS reset, base element styles, themes (light &amp; dark mode), layout primitives, macro-classes, interaction states, motion, accessibility, and print — plus classless form styling.
+* **Optimal + Components** — Optimal plus the component token and style layers (8 component slots reserved; class definitions ship incrementally in upcoming 0.x releases).
+* **Optimal + Utilities** — Optimal plus the utilities layer slot (reserved; SLASHED ships no utility classes in 0.x).
+* **Full** — all layers: Optimal, Components, and Utilities combined.
 
-Two more variants (Optimal + Components, Optimal + Utilities) are available via CDN. The plugin bundles Essential, Optimal, and Full locally; all variants are reachable over CDN, where you can pin any published release tag.
+All four bundles ship locally with the plugin (kept up to date by the one-click updater in settings) and are also reachable via CDN, where you can pin any published release tag.
 
 = Browser support =
 
@@ -212,4 +213,3 @@ Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The pl
 
 = 0.3.0 =
 * Initial public release.
-</content>

@@ -25,4 +25,4 @@ define( 'SLASHED_GUTENBERG_VERSION', '0.0.0' );
 define( 'SLASHED_GUTENBERG_PATH', '/' );
 define( 'SLASHED_GUTENBERG_URL', 'https://example.test/' );
 define( 'SLASHED_GUTENBERG_CSS_REF', 'v0.0.0' );
-define( 'SLASHED_GUTENBERG_ALLOWED_BUNDLES', array( 'essential', 'optimal', 'full' ) );
+define( 'SLASHED_GUTENBERG_ALLOWED_BUNDLES', array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' ) );

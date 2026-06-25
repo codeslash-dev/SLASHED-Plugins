@@ -44,7 +44,7 @@ class Slashed_Token_Store {
 	/**
 	 * Allowed values for the css_bundle plugin setting.
 	 */
-	const ALLOWED_CSS_BUNDLES = array( 'essential', 'optimal', 'full' );
+	const ALLOWED_CSS_BUNDLES = array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' );
 
 	/**
 	 * Read all token overrides.

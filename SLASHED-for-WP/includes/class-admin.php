@@ -124,7 +124,7 @@ class Slashed_Admin {
 		<style>
 		.slashed-bundle-grid {
 			display: grid;
-			grid-template-columns: repeat(3, 1fr);
+			grid-template-columns: repeat(2, 1fr);
 			gap: 12px;
 			max-width: 920px;
 			margin: 12px 0 24px;
@@ -191,7 +191,7 @@ class Slashed_Admin {
 			position: relative;
 		}
 		.slashed-bundle-card__list li::before {
-			content: '✓';
+			content: '\2713';
 			position: absolute;
 			left: 0;
 			color: #00a32a;
@@ -234,40 +234,47 @@ class Slashed_Admin {
 
 				<?php
 				$bundles = array(
-					'essential' => array(
-						'label'   => __( 'Essential', 'slashed' ),
-						'tagline' => __( 'Core layer only', 'slashed' ),
-						'items'   => array(
-							__( 'Design tokens — color, type, spacing, layout, motion, shadows, radius, z-index', 'slashed' ),
-							__( 'HSL fallbacks for oklch/light-dark() (broad browser support)', 'slashed' ),
-							__( 'CSS reset &amp; base element styles', 'slashed' ),
-							__( 'Layout primitives — container, grid, stack, cluster', 'slashed' ),
-							__( 'Interaction states (.is-* classes)', 'slashed' ),
-							__( 'Themes — light &amp; dark mode', 'slashed' ),
-							__( 'Motion &amp; animation scale', 'slashed' ),
-							__( 'Accessibility &amp; print layers', 'slashed' ),
-						),
-					),
-					'optimal'   => array(
+					'optimal'            => array(
 						'label'   => __( 'Optimal', 'slashed' ),
 						'tagline' => __( 'Recommended for most sites', 'slashed' ),
 						'badge'   => __( 'Recommended', 'slashed' ),
-						'base'    => __( 'Everything in Essential, plus:', 'slashed' ),
 						'items'   => array(
-							__( 'Extended color palette — surface tints, tonal steps', 'slashed' ),
-							__( 'Extended size tokens — fluid type scale, fractional spacing', 'slashed' ),
-							__( 'Form element styles — inputs, selects, checkboxes, buttons', 'slashed' ),
-							__( 'Legacy browser support — CSS grid fallbacks, older resets', 'slashed' ),
+							__( 'Design tokens — color, type, spacing, layout, motion, macros, shadows, radius, z-index', 'slashed' ),
+							__( 'CSS reset &amp; base element styles', 'slashed' ),
+							__( 'Layout primitives — .sf-container, .sf-stack, .sf-grid, .sf-cluster, .sf-sidebar…', 'slashed' ),
+							__( 'Macro-classes — .sf-prose, .sf-flow, .sf-truncate, .sf-aspect, .sf-scroll-shadow…', 'slashed' ),
+							__( 'Interaction states (.is-* and .has-* classes)', 'slashed' ),
+							__( 'Themes — light &amp; dark mode via light-dark(); [data-theme] scoping', 'slashed' ),
+							__( 'Motion — animation tokens, keyframes, transitions', 'slashed' ),
+							__( 'Accessibility &amp; print layers', 'slashed' ),
+							__( 'Classless form styling — inputs, selects, checkboxes, buttons', 'slashed' ),
 						),
 					),
-					'full'      => array(
+					'optimal-components' => array(
+						'label'   => __( 'Optimal + Components', 'slashed' ),
+						'tagline' => __( 'Optimal plus component layer', 'slashed' ),
+						'base'    => __( 'Everything in Optimal, plus:', 'slashed' ),
+						'items'   => array(
+							__( 'Component token layer (slashed.tokens — ships incrementally in 0.x)', 'slashed' ),
+							__( 'Component styles layer (slashed.components — 8 slots reserved; class definitions ship in upcoming 0.x releases)', 'slashed' ),
+						),
+					),
+					'optimal-utilities'  => array(
+						'label'   => __( 'Optimal + Utilities', 'slashed' ),
+						'tagline' => __( 'Optimal plus utilities layer', 'slashed' ),
+						'base'    => __( 'Everything in Optimal, plus:', 'slashed' ),
+						'items'   => array(
+							__( 'Utilities layer (slashed.utilities — reserved; SLASHED ships no utility classes in 0.x)', 'slashed' ),
+						),
+					),
+					'full'               => array(
 						'label'   => __( 'Full', 'slashed' ),
 						'tagline' => __( 'All layers', 'slashed' ),
 						'base'    => __( 'Everything in Optimal, plus:', 'slashed' ),
 						'items'   => array(
-							__( 'Component tokens — card, button, badge, dialog, table, nav…', 'slashed' ),
-							__( 'UI component styles — .sf-card, .sf-btn, .sf-badge, .sf-dialog…', 'slashed' ),
-							__( 'Utility classes — .sf-flex, .sf-grid, .sf-text-*, .sf-bg-*…', 'slashed' ),
+							__( 'Component tokens (ships incrementally in 0.x)', 'slashed' ),
+							__( 'Component styles (8 slots reserved; class definitions ship in upcoming 0.x releases)', 'slashed' ),
+							__( 'Utilities layer (reserved; no utility classes in 0.x)', 'slashed' ),
 						),
 					),
 				);
