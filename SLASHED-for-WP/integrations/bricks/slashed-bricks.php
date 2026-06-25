@@ -58,7 +58,7 @@ if ( ! class_exists( 'Slashed_Token_Store' ) ) {
  * Delegates to the shared Slashed_CSS_Loader when running under the unified
  * plugin; falls back to the Bricks token store in standalone mode.
  *
- * @return string One of 'essential', 'optimal', 'full'.
+ * @return string One of 'optimal', 'optimal-components', 'optimal-utilities', 'full'.
  */
 function slashed_bricks_get_css_bundle() {
 	if ( class_exists( 'Slashed_CSS_Loader' ) ) {
@@ -66,6 +66,9 @@ function slashed_bricks_get_css_bundle() {
 	}
 	$settings = Slashed_Token_Store::get_plugin_settings();
 	$bundle   = isset( $settings['css_bundle'] ) ? (string) $settings['css_bundle'] : 'optimal';
+	if ( 'essential' === $bundle ) {
+		$bundle = 'optimal';
+	}
 	if ( ! in_array( $bundle, Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true ) ) {
 		$bundle = 'optimal';
 	}

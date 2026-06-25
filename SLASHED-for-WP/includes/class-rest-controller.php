@@ -559,10 +559,13 @@ class Slashed_REST_Controller {
 			$raw      = $body['plugin_settings'];
 			$existing = Slashed_Token_Store::get_plugin_settings();
 
-			if ( isset( $raw['css_bundle'] )
-				&& in_array( (string) $raw['css_bundle'], Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true )
+			if ( isset( $raw['css_bundle'] ) ) {
+				$imported_bundle = 'essential' === (string) $raw['css_bundle'] ? 'optimal' : (string) $raw['css_bundle'];
+			}
+			if ( isset( $imported_bundle )
+				&& in_array( $imported_bundle, Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true )
 			) {
-				$existing['css_bundle'] = (string) $raw['css_bundle'];
+				$existing['css_bundle'] = $imported_bundle;
 				$settings_imported      = true;
 			}
 			if ( isset( $raw['html_font_size'] )

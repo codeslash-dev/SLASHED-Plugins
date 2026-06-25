@@ -347,8 +347,9 @@ THIRD-PARTY LICENSES
 The following files bundled in this plugin are licensed separately from the
 plugin PHP code above.
 
-dist/slashed.essential.css
 dist/slashed.optimal.css
+dist/slashed.optimal-components.css
+dist/slashed.optimal-utilities.css
 dist/slashed.full.css
 
   SLASHED CSS Framework
