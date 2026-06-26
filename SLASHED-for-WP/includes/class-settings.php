@@ -37,7 +37,7 @@ class Slashed_Settings {
 	/**
 	 * Read settings from the database, applying defaults.
 	 *
-	 * @return array{integrations: array<string, bool>, css_bundle: string, css_source: string, cdn_version: string}
+	 * @return array{integrations: array<string, bool>, css_bundle: string, css_source: string, cdn_version: string, css_flat: bool}
 	 */
 	public static function get() {
 		$stored = get_option( self::OPTION_KEY, array() );
@@ -50,6 +50,7 @@ class Slashed_Settings {
 			'css_bundle'   => self::get_css_bundle( $stored ),
 			'css_source'   => self::get_css_source( $stored ),
 			'cdn_version'  => self::get_cdn_version( $stored ),
+			'css_flat'     => self::get_css_flat( $stored ),
 		);
 	}
 
@@ -124,6 +125,25 @@ class Slashed_Settings {
 	}
 
 	/**
+	 * Whether the flat CSS variant is enabled.
+	 *
+	 * Flat bundles omit @layer declarations, improving compatibility with themes
+	 * and plugins that do not support CSS cascade layers.
+	 *
+	 * @param array|null $stored Pre-fetched stored option.
+	 * @return bool
+	 */
+	public static function get_css_flat( $stored = null ) {
+		if ( null === $stored ) {
+			$stored = get_option( self::OPTION_KEY, array() );
+			if ( ! is_array( $stored ) ) {
+				$stored = array();
+			}
+		}
+		return ! empty( $stored['css_flat'] );
+	}
+
+	/**
 	 * Whether a given integration is enabled.
 	 *
 	 * Defaults to true so a fresh install activates every integration;
@@ -179,6 +199,8 @@ class Slashed_Settings {
 			$cdn_version = '';
 		}
 
+		$flat = ! empty( $data['css_flat'] );
+
 		return update_option(
 			self::OPTION_KEY,
 			array(
@@ -186,6 +208,7 @@ class Slashed_Settings {
 				'css_bundle'   => $bundle,
 				'css_source'   => $source,
 				'cdn_version'  => $cdn_version,
+				'css_flat'     => $flat,
 			)
 		);
 	}

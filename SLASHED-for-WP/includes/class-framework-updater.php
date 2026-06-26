@@ -91,6 +91,10 @@ class Slashed_Framework_Updater {
 	/**
 	 * Download all CSS bundles for a given version and save them to dist/.
 	 *
+	 * Base bundles are downloaded atomically (all-or-nothing). Flat variants
+	 * (.flat.css) are downloaded best-effort afterwards — a 404 for a flat
+	 * file is silently skipped so rollbacks to pre-flat releases still work.
+	 *
 	 * @param string $version Release tag, e.g. "v0.5.0".
 	 * @return true|WP_Error
 	 */
@@ -173,6 +177,29 @@ class Slashed_Framework_Updater {
 
 		update_option( self::LOCAL_VER_OPTION, $version );
 		delete_transient( self::TRANSIENT_KEY );
+
+		// Best-effort: download flat (.flat.css) variants. These were introduced
+		// alongside the layer-based bundles; older release tags may not have them,
+		// so a non-200 response is silently skipped rather than failing the update.
+		foreach ( self::BUNDLES as $bundle ) {
+			$filename = 'slashed.' . $bundle . '.flat.css';
+			$url      = sprintf( self::CDN_BASE, rawurlencode( $version ), $filename );
+
+			$response = wp_remote_get(
+				$url,
+				array(
+					'timeout'    => 30,
+					'user-agent' => 'SLASHED/' . SLASHED_VERSION . '; WordPress/' . get_bloginfo( 'version' ),
+				)
+			);
+
+			if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+				continue;
+			}
+
+			$content = wp_remote_retrieve_body( $response );
+			$wp_filesystem->put_contents( $dist_dir . $filename, $content, FS_CHMOD_FILE );
+		}
 
 		return true;
 	}

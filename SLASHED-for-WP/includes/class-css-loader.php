@@ -29,7 +29,7 @@ class Slashed_CSS_Loader {
 	 * Delegates to Slashed_Settings::get_css_bundle(), which validates the
 	 * value against the canonical allowlist and falls back to 'optimal'.
 	 *
-	 * @return string One of 'essential', 'optimal', 'full'.
+	 * @return string One of 'optimal', 'optimal-components', 'optimal-utilities', 'full'.
 	 */
 	public static function get_bundle() {
 		return Slashed_Settings::get_css_bundle();
@@ -54,7 +54,8 @@ class Slashed_CSS_Loader {
 	public static function get_url() {
 		$source   = Slashed_Settings::get_css_source();
 		$bundle   = self::get_bundle();
-		$filename = 'slashed.' . $bundle . '.css';
+		$flat     = Slashed_Settings::get_css_flat();
+		$filename = 'slashed.' . $bundle . ( $flat ? '.flat' : '' ) . '.css';
 
 		if ( 'cdn' === $source ) {
 			$version = Slashed_Settings::get_cdn_version();
