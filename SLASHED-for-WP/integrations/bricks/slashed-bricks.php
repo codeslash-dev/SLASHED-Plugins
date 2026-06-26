@@ -156,6 +156,33 @@ function slashed_bricks_is_bricks_active() {
 	return version_compare( $version, '1.9.2', '>=' );
 }
 
+// ─── Layer preamble ─────────────────────────────────────────────────────────
+//
+// Bricks outputs @layer bricks { ... } in its own stylesheet. When that
+// stylesheet loads after the SLASHED layered bundle, @layer bricks has higher
+// cascade priority than all slashed.* layers, causing Bricks' own defaults
+// (e.g. [class*=brxe-] { max-width: 100% }) to override SLASHED layout rules.
+//
+// Pre-declaring @layer bricks at wp_head priority 1 — before wp_print_styles
+// fires at priority 8 — locks bricks in as the lowest-priority layer. All
+// slashed.* layers declared afterward in the SLASHED bundle are higher priority.
+//
+// This hook lives here, not inside Slashed_Bricks_Enqueue, so it fires whenever
+// the Bricks integration is active (in unified mode: when the integration toggle
+// is on; in standalone mode: always) without requiring Bricks to be the active
+// theme. Emitting @layer bricks; on a site where Bricks is not active is
+// harmless — it declares an empty layer that is never populated.
+add_action(
+	'wp_head',
+	function () {
+		if ( function_exists( 'bricks_is_builder_main' ) && bricks_is_builder_main() ) {
+			return;
+		}
+		echo "<style>@layer bricks;</style>\n";
+	},
+	1
+);
+
 // Token admin page (Slashed_Token_Page) and the main REST controller
 // (Slashed_REST_Controller) are registered globally by slashed.php.
 // In standalone mode the shared classes are loaded above and bootstrapped below.
