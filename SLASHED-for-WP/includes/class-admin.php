@@ -74,10 +74,14 @@ class Slashed_Admin {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$raw_cdn_version = isset( $_POST['cdn_version'] ) ? sanitize_text_field( wp_unslash( $_POST['cdn_version'] ) ) : '';
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$raw_flat = ! empty( $_POST['css_flat'] );
+
 		$data = array(
 			'css_bundle'   => in_array( $raw_bundle, Slashed_Settings::ALLOWED_BUNDLES, true ) ? $raw_bundle : 'optimal',
 			'css_source'   => in_array( $raw_source, Slashed_Settings::ALLOWED_SOURCES, true ) ? $raw_source : 'local',
 			'cdn_version'  => $raw_cdn_version,
+			'css_flat'     => $raw_flat,
 			'integrations' => array(),
 		);
 		foreach ( Slashed_Settings::KNOWN_INTEGRATIONS as $slug ) {
@@ -113,10 +117,12 @@ class Slashed_Admin {
 		$css_bundle   = $settings['css_bundle'];
 		$css_source   = $settings['css_source'];
 		$cdn_version  = $settings['cdn_version'];
+		$css_flat     = $settings['css_flat'];
 		$saved        = ! empty( $_GET['slashed_saved'] ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		$local_version    = Slashed_Framework_Updater::get_local_version();
-		$local_file_ok    = file_exists( SLASHED_PATH . 'dist/slashed.' . $css_bundle . '.css' );
+		$flat_suffix      = $css_flat ? '.flat' : '';
+		$local_file_ok    = file_exists( SLASHED_PATH . 'dist/slashed.' . $css_bundle . $flat_suffix . '.css' );
 		$update_nonce     = wp_create_nonce( 'slashed_framework_update' );
 		$plugin_settings = Slashed_Token_Store::get_plugin_settings();
 		$html_font_size  = $plugin_settings['html_font_size'] ?? '';
@@ -203,6 +209,24 @@ class Slashed_Admin {
 			color: #2271b1;
 			font-weight: 700;
 		}
+		.slashed-flat-row {
+			max-width: 920px;
+			margin: 0 0 8px;
+			padding: 12px 16px;
+			border: 1px solid #c3c4c7;
+			border-radius: 6px;
+			background: #fff;
+		}
+		.slashed-flat-row label {
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			font-size: 13px;
+			color: #1e1e1e;
+			cursor: pointer;
+		}
+		.slashed-flat-row label input { margin-top: 2px; flex-shrink: 0; }
+		.slashed-flat-row p.description { margin: 4px 0 0 22px; }
 		@media (max-width: 900px) {
 			.slashed-bundle-grid { grid-template-columns: 1fr; }
 		}
@@ -310,6 +334,16 @@ class Slashed_Admin {
 						</ul>
 					</label>
 					<?php endforeach; ?>
+				</div>
+
+				<div class="slashed-flat-row">
+					<label>
+						<input type="checkbox" name="css_flat" value="1" <?php checked( $css_flat ); ?>>
+						<strong><?php esc_html_e( 'Use flat CSS bundle', 'slashed' ); ?></strong>
+					</label>
+					<p class="description">
+						<?php esc_html_e( 'Loads the flat variant of the selected bundle (e.g. slashed.optimal.flat.css). Flat bundles contain identical rules but without @layer declarations, which can fix conflicts with themes or plugins that do not support CSS cascade layers.', 'slashed' ); ?>
+					</p>
 				</div>
 
 				<h2 style="margin-top:1.5em;"><?php esc_html_e( 'CSS delivery', 'slashed' ); ?></h2>
