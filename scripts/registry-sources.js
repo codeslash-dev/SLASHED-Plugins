@@ -14,7 +14,6 @@ const TOKEN_FILES = [
   'core/tokens.css',
   'core/tokens.layout.css',
   'core/tokens.macros.css',
-  'optional/tokens.palette.css',
   'optional/tokens.components.css',
 ];
 

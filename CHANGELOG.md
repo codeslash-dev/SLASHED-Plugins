@@ -9,6 +9,24 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.14] - 2026-06-26
+
+### Fixed
+
+- Move @layer bricks preamble to integration bootstrap
+- Inject @layer bricks preamble to prevent cascade override
+- Update remaining bundle allowlists and license metadata
+- Replace essential/optimal/full with the new four-bundle framework set
+
+## [0.3.14] - 2026-06-26
+
+### Fixed
+
+- Move @layer bricks preamble to integration bootstrap
+- Inject @layer bricks preamble to prevent cascade override
+- Update remaining bundle allowlists and license metadata
+- Replace essential/optimal/full with the new four-bundle framework set
+
 ## [0.3.13] - 2026-06-24
 
 ### Fixed
