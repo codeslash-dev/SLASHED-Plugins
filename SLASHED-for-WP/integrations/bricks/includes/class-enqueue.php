@@ -20,6 +20,28 @@ class Slashed_Bricks_Enqueue {
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_editor_styles' ) );
+		add_action( 'wp_head', array( $this, 'inject_layer_preamble' ), 1 );
+	}
+
+	/**
+	 * Output a layer order preamble before any stylesheets are printed.
+	 *
+	 * Bricks registers @layer bricks { ... } in its own stylesheet. When that
+	 * stylesheet loads after SLASHED's layered bundle, the browser sees @layer
+	 * bricks declared later than @layer slashed.*, which means bricks has
+	 * higher cascade priority and overrides SLASHED layout values — e.g.
+	 * [class*=brxe-] { max-width: 100% } beats .sf-container's max-width.
+	 *
+	 * Pre-declaring @layer bricks here, at wp_head priority 1 (before
+	 * wp_print_styles fires at priority 8), locks bricks in as the first and
+	 * therefore lowest-priority layer. All slashed.* layers declared afterward
+	 * in the SLASHED bundle are higher priority and win.
+	 */
+	public function inject_layer_preamble() {
+		if ( function_exists( 'bricks_is_builder_main' ) && bricks_is_builder_main() ) {
+			return;
+		}
+		echo "<style>@layer bricks;</style>\n";
 	}
 
 	/**
