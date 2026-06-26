@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.3.15] - 2026-06-26
+
+### Added
+
+- Add flat CSS bundle toggle to plugin settings
+
+## [0.3.15] - 2026-06-26
+
+### Added
+
+- Add flat CSS bundle toggle to plugin settings
+
 ## [0.3.14] - 2026-06-26
 
 ### Fixed

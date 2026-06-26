@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, design-tokens, dark-mode, bem
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.3.14
+Stable tag: 0.3.15
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,9 @@ No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loa
 Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The plugin loads that exact version. Local mode serves the bundled `dist/` CSS, with a one-click updater and rollback list.
 
 == Changelog ==
+
+= 0.3.15 =
+* Added: Add flat CSS bundle toggle to plugin settings
 
 = 0.3.14 =
 * Fixed: Move @layer bricks preamble to integration bootstrap
