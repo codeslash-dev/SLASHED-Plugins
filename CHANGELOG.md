@@ -9,6 +9,24 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-06-28
+
+### Fixed
+
+- Rewrite SEMVER regex to eliminate ReDoS (CodeQL)
+- Validate semver after tag strip in changelog-release resolveVersion
+- Deduplicate CHANGELOG.md version sections
+- Apply brand color overrides on frontend; repair v0.4.2 release
+
+## [0.4.3] - 2026-06-28
+
+### Fixed
+
+- Rewrite SEMVER regex to eliminate ReDoS (CodeQL)
+- Validate semver after tag strip in changelog-release resolveVersion
+- Deduplicate CHANGELOG.md version sections
+- Apply brand color overrides on frontend; repair v0.4.2 release
+
 ## [0.4.2] - 2026-06-28
 
 ### Fixed

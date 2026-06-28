@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.2
+Stable tag: 0.4.3
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -118,6 +118,12 @@ Yes. Switch CSS delivery to CDN and enter a release tag. Local mode serves the b
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.3 =
+* Fixed: Rewrite SEMVER regex to eliminate ReDoS (CodeQL)
+* Fixed: Validate semver after tag strip in changelog-release resolveVersion
+* Fixed: Deduplicate CHANGELOG.md version sections
+* Fixed: Apply brand color overrides on frontend; repair v0.4.2 release
 
 = 0.4.2 =
 * Fixed: Brand and status color overrides set in Design Settings now recolor the live site.
