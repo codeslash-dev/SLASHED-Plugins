@@ -3,8 +3,13 @@
 # Plugin-specific build wiring lives OUTSIDE src/ (vite.config.js, package.json,
 # svelte.config.js, tsconfig.json) and is never touched by the sync.
 
-# src/main.ts is listed here because the upstream @framework-css alias and the
-# #slashed-admin-app mount-target change live on a feature branch that has not
-# yet merged to main. Once codeslash-dev/slashed#443 merges, remove this line
-# so future upstream changes to main.ts flow through automatically.
+# The following files were changed in codeslash-dev/slashed#443 (the companion
+# upstream PR that adds @framework-css aliases + the WP persistence seam).
+# Those changes live on the feature branch and have not yet merged to main.
+# The CI prebuild sync fetches from main and would overwrite these files with
+# pre-alias / pre-persistence versions, breaking the build and runtime.
+# Remove all four lines once slashed#443 merges to main.
 src/main.ts
+src/App.svelte
+src/components/shell/PreviewPanel.svelte
+src/vite-env.d.ts
