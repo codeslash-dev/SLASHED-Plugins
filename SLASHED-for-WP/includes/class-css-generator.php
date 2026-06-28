@@ -518,6 +518,34 @@ class Slashed_CSS_Generator {
 	}
 
 	/**
+	 * Validate an arbitrary token value for safe emission into a CSS
+	 * declaration, holding it to the same allowlist as the section-based
+	 * generators. Accepts anything those generators accept — a colour, a
+	 * dimension / number / ratio / math expression, or a font-family list —
+	 * and rejects everything else.
+	 *
+	 * This is the single gate the flat `{ "--sf-*": value }` override map is
+	 * run through (see Slashed_REST_Controller::sanitize_overrides) so that
+	 * path can never store a value the strict typed path would refuse. Every
+	 * branch first passes through is_css_safe(), so url()/@-rules/comments/
+	 * HTML/backslash escapes/unbalanced parens are blocked regardless of type.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return string|false Trimmed value when valid, false to drop it.
+	 */
+	public static function validate_override_value( $value ) {
+		$candidate = self::valid_color( $value );
+		if ( false !== $candidate ) {
+			return $candidate;
+		}
+		$candidate = self::valid_dimension( $value );
+		if ( false !== $candidate ) {
+			return $candidate;
+		}
+		return self::valid_font_family( $value );
+	}
+
+	/**
 	 * Validate a CSS color value: hex, named keyword, a known colour function,
 	 * or a var()/color-mix()/light-dark() reference. Returns the trimmed value
 	 * when valid, or false to skip emission (framework default then applies).

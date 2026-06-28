@@ -497,18 +497,35 @@ class Slashed_REST_Controller {
 	}
 
 	/**
-	 * Sanitize a flat override map: only allow -- prefixed property names.
+	 * Sanitize a flat override map.
+	 *
+	 * Two gates, both mandatory:
+	 *   1. The property name must be a custom-property identifier
+	 *      (`--` followed by letters, digits and hyphens) — nothing else can
+	 *      become a declaration property.
+	 *   2. The value must pass Slashed_CSS_Generator::validate_override_value(),
+	 *      the same allowlist (colour / dimension / font-family, each behind
+	 *      is_css_safe()) the section-based token path is held to. A value that
+	 *      fails is dropped, so this map can never carry a `}`, an @-rule, a
+	 *      url(), or any other CSS breakout into storage.
 	 *
 	 * @param  array $overrides Raw input.
-	 * @return array            Sanitized { string => string }.
+	 * @return array            Sanitized { "--name" => "value" }.
 	 */
 	private function sanitize_overrides( array $overrides ) {
 		$out = array();
 		foreach ( $overrides as $name => $value ) {
-			if ( ! is_string( $name ) || 0 !== strpos( $name, '--' ) ) {
+			if ( ! is_string( $name ) || ! is_string( $value ) ) {
 				continue;
 			}
-			$out[ sanitize_text_field( $name ) ] = sanitize_text_field( (string) $value );
+			if ( ! preg_match( '/^--[a-z0-9-]+$/i', $name ) ) {
+				continue;
+			}
+			$clean = Slashed_CSS_Generator::validate_override_value( $value );
+			if ( false === $clean ) {
+				continue;
+			}
+			$out[ $name ] = $clean;
 		}
 		return $out;
 	}
