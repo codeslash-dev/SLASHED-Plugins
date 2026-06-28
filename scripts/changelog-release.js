@@ -54,7 +54,12 @@ function resolveVersion() {
     if (!tag) { console.error('changelog-release: no git tags found'); process.exit(1); }
     // Strip a leading v/V case-insensitively so a mis-cased tag like `V0.4.2`
     // doesn't produce a `= V0.4.2 =` changelog heading.
-    return tag.replace(/^v/i, '');
+    const version = tag.replace(/^v/i, '');
+    if (!/^\d+\.\d+\.\d+(?:[-.][A-Za-z0-9.]+)*$/.test(version)) {
+      console.error(`changelog-release: tag "${tag}" does not resolve to a valid version`);
+      process.exit(1);
+    }
+    return version;
   }
   const v = arg('version');
   return v || null;
