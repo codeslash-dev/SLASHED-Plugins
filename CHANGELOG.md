@@ -9,6 +9,22 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-06-28
+
+### Fixed
+
+- Harden override validation per CodeRabbit review
+- Render the configurator's flat override map on the frontend
+- Validate flat override map against the typed CSS allowlist
+
+## [0.4.1] - 2026-06-28
+
+### Fixed
+
+- Harden override validation per CodeRabbit review
+- Render the configurator's flat override map on the frontend
+- Validate flat override map against the typed CSS allowlist
+
 ## [0.4.0] - 2026-06-28
 
 ### Added
