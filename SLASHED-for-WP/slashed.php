@@ -87,7 +87,12 @@ require_once SLASHED_PATH . 'includes/class-token-page.php';     // also used on
 // admin users; the page itself acts as the live preview.
 
 require_once SLASHED_PATH . 'includes/class-frontend-configurator.php';
-add_action( 'plugins_loaded', function () { new Slashed_Frontend_Configurator(); } );
+add_action(
+	'plugins_loaded',
+	function () {
+		new Slashed_Frontend_Configurator();
+	}
+);
 
 if ( is_admin() ) {
 	require_once SLASHED_PATH . 'includes/class-admin.php';

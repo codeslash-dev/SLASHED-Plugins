@@ -26,8 +26,8 @@ class Slashed_Frontend_Configurator {
 
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 30 );
-		add_action( 'admin_bar_menu',     array( $this, 'add_admin_bar_node' ), 100 );
-		add_action( 'wp_footer',          array( $this, 'render_container' ), 100 );
+		add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_node' ), 100 );
+		add_action( 'wp_footer', array( $this, 'render_container' ), 100 );
 	}
 
 	/**
@@ -40,7 +40,7 @@ class Slashed_Frontend_Configurator {
 			return;
 		}
 
-		$plugin_url  = defined( 'SLASHED_URL' )  ? SLASHED_URL  : '';
+		$plugin_url  = defined( 'SLASHED_URL' ) ? SLASHED_URL : '';
 		$plugin_path = defined( 'SLASHED_PATH' ) ? SLASHED_PATH : '';
 
 		$js_path  = $plugin_path . 'assets/admin-app/app.js';
@@ -95,7 +95,7 @@ class Slashed_Frontend_Configurator {
 			'slashed-frontend-overlay',
 			'slashedApp',
 			array(
-				'rest' => array(
+				'rest'      => array(
 					'url'   => esc_url_raw( rest_url( Slashed_REST_Controller::NAMESPACE ) ),
 					'nonce' => wp_create_nonce( 'wp_rest' ),
 				),
