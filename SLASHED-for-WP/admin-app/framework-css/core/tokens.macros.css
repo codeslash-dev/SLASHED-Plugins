@@ -1,0 +1,98 @@
+/* SLASHED — core/tokens.macros.css
+   @layer slashed.tokens
+   Macro recipe override tokens for prose, surfaces, flow, media, hero, scrims, and clamps.
+   Prefix: --sf-*; loaded before core/macros.css. */
+
+@layer slashed.tokens {
+  :root {
+
+    /* ----------------------------------------------------------
+       Flow — distance between flow children (lobotomized owl).
+       Consumed by .sf-flow > * + *.
+       ---------------------------------------------------------- */
+    --sf-flow-space: var(--sf-content-gap);
+
+    /* ----------------------------------------------------------
+       Line clamp — default line count for .sf-line-clamp-N.
+       Override per element: style="--sf-line-clamp: 5".
+       The fixed-N variants .sf-line-clamp-2 / -3 don't read this
+       token (they hardcode the value), so the default only
+       applies to .sf-line-clamp-N callers.
+       ---------------------------------------------------------- */
+    --sf-line-clamp: 3;
+
+    /* ----------------------------------------------------------
+       Aspect ratio — default for .sf-aspect (generic ratio container,
+       distinct from layout's .sf-frame which has its own --sf-frame-ratio).
+       ---------------------------------------------------------- */
+    --sf-aspect: 16 / 9;
+
+    /* ----------------------------------------------------------
+       Prose — per-instance override knobs for .sf-prose.
+       All values default to system spacing/color tokens so prose
+       stays in sync with the global scale unless overridden.
+
+       Override per-element:
+         style="--sf-prose-marker-color: var(--sf-color-secondary)"
+       ---------------------------------------------------------- */
+    --sf-prose-heading-gap:      var(--sf-space-s);
+    --sf-prose-list-gap:         var(--sf-space-xs);
+    --sf-prose-block-margin:     var(--sf-space-m);
+    --sf-prose-media-margin:     var(--sf-space-m);
+    --sf-prose-media-radius:     var(--sf-radius-m);
+    --sf-prose-figure-margin:    var(--sf-space-l);
+    --sf-prose-marker-color:     var(--sf-color-primary);
+    --sf-prose-figcaption-size:  var(--sf-text-s);
+    --sf-prose-blockquote-padding: var(--sf-space-m);
+    --sf-prose-blockquote-border:  var(--sf-border-width-2) solid var(--sf-color-border--subtle);
+    --sf-prose-hr-margin:          var(--sf-space-l);
+    --sf-prose-nested-list-gap:    var(--sf-space-2xs);
+    --sf-prose-table-pad:          var(--sf-space-xs);
+
+    /* ----------------------------------------------------------
+       Surface color — input for the generic .sf-surface macro.
+       Set it on any element carrying the class and the macro derives
+       background, auto-contrast foreground, and the full contextual
+       token set from it:
+         <section class="sf-surface"
+                  style="--sf-surface-color: var(--sf-color-primary-100)">
+       Inherits: a nested .sf-surface picks up the outer surface's
+       color unless it sets its own. Any resolvable CSS color works.
+       ---------------------------------------------------------- */
+    --sf-surface-color: var(--sf-color-base);
+
+    /* ----------------------------------------------------------
+       Scroll shadow / overflow fade — mask gradient size.
+       Used by .sf-scroll-shadow (top+bottom) and .sf-overflow-fade
+       (end-edge horizontal fade).
+       ---------------------------------------------------------- */
+    --sf-scroll-shadow-size: 2rem;
+
+    /* ----------------------------------------------------------
+       Content visibility — placeholder size for .sf-content-auto.
+       Feeds contain-intrinsic-size so offscreen sections reserve
+       space before their first render, keeping the scrollbar and
+       scroll position stable. Override per element:
+       style="--sf-content-intrinsic-size: 800px".
+       ---------------------------------------------------------- */
+    --sf-content-intrinsic-size: 500px;
+
+    /* ----------------------------------------------------------
+       Scrim — darkening overlay for text-over-image legibility,
+       consumed by the .sf-scrim macro. The gradient is composed
+       from a direction + a color stop so consumers can retune
+       either independently:
+         style="--sf-scrim-color: oklch(0 0 0 / 0.75)"
+         style="--sf-scrim-direction: to top right"
+       --sf-scrim-gradient is the final composed value; override it
+       directly for a multi-stop or radial scrim.
+       ---------------------------------------------------------- */
+    --sf-scrim-color:     oklch(0 0 0 / 0.55);
+    --sf-scrim-direction: to top;
+    --sf-scrim-gradient:  linear-gradient(var(--sf-scrim-direction), var(--sf-scrim-color), transparent);
+    /* Text-on-image legibility WITHOUT darkening the picture — a soft
+       shadow halo behind glyphs, consumed by .sf-text-protect. */
+    --sf-scrim-text-shadow: 0 1px 3px oklch(0 0 0 / 0.6);
+
+  }
+}

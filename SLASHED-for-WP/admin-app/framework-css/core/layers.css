@@ -1,0 +1,20 @@
+/* SLASHED — core/layers.css
+   Global cascade order for every SLASHED layer.
+   Import before all framework modules. */
+
+@layer
+  slashed.tokens,
+  slashed.reset,
+  slashed.base,
+  slashed.forms,
+  slashed.layout,
+  slashed.components,
+  slashed.macros,
+  slashed.utilities,
+  slashed.states,
+  slashed.themes,
+  slashed.motion,
+  slashed.accessibility,
+  slashed.print,
+  slashed.legacy,
+  slashed.overrides;

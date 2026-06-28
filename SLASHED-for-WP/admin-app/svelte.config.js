@@ -1,8 +1,5 @@
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-export default {
-  preprocess: vitePreprocess(),
-  compilerOptions: {
-    runes: true,
-  },
-};
+// Matches SLASHED/configurator/svelte.config.js. Runes mode is auto-detected
+// per component, so legacy dependencies (e.g. lucide-svelte) still compile.
+export default { preprocess: vitePreprocess() };

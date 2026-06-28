@@ -1,0 +1,143 @@
+/* SLASHED — core/tokens.layout.css
+   @layer slashed.tokens
+   Layout primitive override tokens for gaps, padding, min sizes, tracks, and containers.
+   Prefix: --sf-*; loaded before core/layout.css. */
+
+@layer slashed.tokens {
+  :root {
+
+    /* ----------------------------------------------------------
+       Stack
+       ---------------------------------------------------------- */
+    --sf-stack-gap: var(--sf-content-gap);
+
+    /* ----------------------------------------------------------
+       Box
+       ---------------------------------------------------------- */
+    --sf-box-padding:      var(--sf-space-m);
+    --sf-box-border-width: 0;
+    --sf-box-border-color: var(--sf-color-border);
+
+    /* ----------------------------------------------------------
+       Center
+       ---------------------------------------------------------- */
+    --sf-center-max:    var(--sf-container-default);
+    --sf-center-gutter: var(--sf-gutter);
+
+    /* ----------------------------------------------------------
+       Cluster
+       ---------------------------------------------------------- */
+    --sf-cluster-gap:     var(--sf-gap);
+    --sf-cluster-align:   center;
+    --sf-cluster-justify: flex-start;
+
+    /* ----------------------------------------------------------
+       Sidebar
+       ---------------------------------------------------------- */
+    --sf-sidebar-gap:           var(--sf-gap);
+    --sf-sidebar-min-width:     50%;           /* content column minimum */
+    --sf-sidebar-width:         18rem;         /* sidebar panel default size */
+
+    /* ----------------------------------------------------------
+       Switcher
+       ---------------------------------------------------------- */
+    --sf-switcher-threshold: 30rem;
+    --sf-switcher-gap:       var(--sf-gap);
+
+    /* ----------------------------------------------------------
+       Grid (auto-fill, breakpoint-free)
+       ---------------------------------------------------------- */
+    --sf-grid-min:         16rem;
+    --sf-grid-gap:         var(--sf-gap);
+
+    --sf-grid-min-xs:      10rem;
+    --sf-grid-min-s:       13rem;
+    --sf-grid-min-m:       16rem;
+    --sf-grid-min-l:       20rem;
+    --sf-grid-min-xl:      24rem;
+    --sf-grid-min-2xl:     28rem;
+
+    /* ----------------------------------------------------------
+       Equal columns (intrinsically responsive RAM)
+       min-col-N: minimum column width for the N-column preset.
+       Exact column count emerges from container ÷ min-col.
+       ---------------------------------------------------------- */
+    --sf-equal-min-col:   16rem;
+    --sf-equal-min-col-2: 28rem;
+    --sf-equal-min-col-3: 15rem;
+    --sf-equal-min-col-4: 16rem;
+    --sf-equal-min-col-6: 10rem;
+    --sf-equal-gap:        var(--sf-gap);
+
+    /* ----------------------------------------------------------
+       Cover
+       ---------------------------------------------------------- */
+    --sf-cover-min-height: 100dvh;
+    --sf-cover-padding:    var(--sf-section-pad);
+
+    /* ----------------------------------------------------------
+       Frame
+       ---------------------------------------------------------- */
+    --sf-frame-ratio: 16 / 9;    /* literal <ratio>, valid in aspect-ratio */
+
+    /* ----------------------------------------------------------
+       Background layer (.sf-bg) — cover media behind sibling content.
+       inset is a single length applied to every edge; the layer size is
+       derived from it, so a non-zero inset still fills correctly.
+       ---------------------------------------------------------- */
+    --sf-bg-inset:    0;
+    --sf-bg-fit:      cover;
+    --sf-bg-position: 50% 50%;
+    --sf-bg-radius:   0;
+    --sf-bg-z:        -2;        /* behind content; above the parent background */
+
+    /* ----------------------------------------------------------
+       Icon (boxed variant) — extras for .sf-icon--boxed.
+       The naked .sf-icon sizing tokens (--sf-icon-xs..xl) live in
+       core/tokens.css alongside the typography scale.
+       ---------------------------------------------------------- */
+    --sf-icon-box-pad:    0.5em;
+    --sf-icon-box-radius: var(--sf-radius-s);
+    --sf-icon-box-bg:     var(--sf-color-inset);
+    --sf-icon-box-border: var(--sf-border-width-1) solid var(--sf-color-border);
+
+    /* ----------------------------------------------------------
+       Reel
+       ---------------------------------------------------------- */
+    --sf-reel-item-width: max-content;
+    --sf-reel-gap:        var(--sf-gap);
+    --sf-reel-height:     auto;
+
+    /* ----------------------------------------------------------
+       Imposter (centered absolute/fixed overlay)
+       ---------------------------------------------------------- */
+    --sf-imposter-margin: var(--sf-space-m);
+
+    /* ----------------------------------------------------------
+       Bento grid
+       ---------------------------------------------------------- */
+    --sf-bento-cols-default: 4;
+    --sf-bento-row-default:  10rem;
+    --sf-bento-row-compact:  6rem;
+    --sf-bento-row-tall:     16rem;
+    --sf-bento-gap:          var(--sf-gap);
+
+    /* ----------------------------------------------------------
+       Content grid (breakout pattern)
+       ---------------------------------------------------------- */
+    --sf-breakout-width: var(--sf-container-wide);
+    --sf-content-width:  var(--sf-container-default);
+
+    /* ----------------------------------------------------------
+       Prose
+       ---------------------------------------------------------- */
+    --sf-prose-paragraph: var(--sf-content-gap);
+
+    /* ----------------------------------------------------------
+       Alternate (zigzag)
+       ---------------------------------------------------------- */
+    --sf-alternate-gap:       var(--sf-content-gap);
+    --sf-alternate-inner-gap: var(--sf-gap);
+
+  }
+}

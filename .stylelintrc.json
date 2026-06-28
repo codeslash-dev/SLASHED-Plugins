@@ -6,7 +6,8 @@
     "SLASHED-for-WP/integrations/bricks/assets/admin-app/**",
     "SLASHED-for-WP/integrations/bricks/assets/editor-app/**",
     "SLASHED-for-WP/assets/admin-app/**",
-    "SLASHED-for-WP/admin-app/src/styles/**"
+    "SLASHED-for-WP/admin-app/src/styles/**",
+    "SLASHED-for-WP/admin-app/framework-css/**"
   ],
   "rules": {
     "color-function-notation": "modern",

@@ -1,0 +1,358 @@
+/* SLASHED — core/macros.css
+   @layer slashed.macros
+   Reusable recipes: prose, surface, flow, cards, media, hero, scrims, clamps.
+   Prefix: .sf-*; values resolve through macro tokens. */
+
+@layer slashed.macros {
+
+  
+  .sf-prose {
+    max-width:     var(--sf-container-prose);
+    overflow-wrap: break-word;
+  }
+
+  .sf-prose > * + *              { margin-block-start: var(--sf-prose-paragraph); }
+  .sf-prose :is(h2, h3, h4, h5, h6) + * { margin-block-start: var(--sf-prose-heading-gap); }
+  .sf-prose li + li              { margin-block-start: var(--sf-prose-list-gap); }
+  .sf-prose :is(blockquote, pre) { margin-block: var(--sf-prose-block-margin); }
+  .sf-prose blockquote           { font-style: italic; padding-inline-start: var(--sf-prose-blockquote-padding); border-inline-start: var(--sf-prose-blockquote-border); }
+  .sf-prose img                  { margin-block: var(--sf-prose-media-margin); border-radius: var(--sf-prose-media-radius); }
+  .sf-prose :is(ul, ol)          { padding-inline-start: 1.25em; }
+  .sf-prose > :is(ul, ol)        { margin-block-end: 0; }
+  .sf-prose :is(ul, ol) :is(ul, ol) { margin-block-start: var(--sf-prose-nested-list-gap); }
+  .sf-prose ul                   { list-style: disc; }
+  .sf-prose ol                   { list-style: decimal; }
+  .sf-prose ::marker             { color: var(--sf-prose-marker-color); }
+  .sf-prose hr                   { margin-block: var(--sf-prose-hr-margin); }
+  .sf-prose figure               { margin-block: var(--sf-prose-figure-margin); }
+  .sf-prose figcaption           { font-size: var(--sf-prose-figcaption-size); color: var(--sf-color-text--muted); margin-block-start: var(--sf-prose-list-gap); }
+  .sf-prose table                { margin-block: var(--sf-prose-block-margin); display: block; overflow-x: auto; overflow-inline: auto; inline-size: 100%; max-inline-size: 100%; }
+  .sf-prose :is(th, td)          { padding: var(--sf-prose-table-pad); }
+  .sf-prose video                { margin-block: var(--sf-prose-media-margin); border-radius: var(--sf-prose-media-radius); }
+
+  /* Specificity 0-2-1 intentionally beats .sf-prose's 0-2-0 child selectors —
+     documented exception. */
+  .sf-prose .sf-not-prose > * + *    { margin-block-start: 0; }
+  .sf-prose .sf-not-prose li + li    { margin-block-start: 0; }
+
+  .sf-prose .sf-not-prose :is(ul,ol) { list-style: revert; padding-inline-start: revert; }
+  .sf-prose .sf-not-prose ::marker   { color: inherit; }
+  .sf-prose .sf-not-prose blockquote {
+    margin-block: 0;
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    font-style: normal;
+  }
+  .sf-prose .sf-not-prose hr         { margin-block: 0; }
+  .sf-prose .sf-not-prose img        { margin-block: 0; border-radius: 0; }
+  .sf-prose .sf-not-prose figure     { margin-block: 0; }
+  .sf-prose .sf-not-prose figcaption { font-size: inherit; color: inherit; margin-block-start: 0; }
+  .sf-prose .sf-not-prose table      { margin-block: 0; display: revert; overflow-x: revert; overflow-inline: revert; inline-size: revert; max-inline-size: revert; }
+  .sf-prose .sf-not-prose :is(th,td) { padding: revert; }
+  .sf-prose .sf-not-prose video      { margin-block: 0; border-radius: 0; }
+
+  .sf-flow > * + * {
+    margin-block-start: var(--sf-flow-space);
+  }
+
+  .sf-truncate {
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    white-space:   nowrap;
+  }
+
+  .sf-line-clamp-2,
+  .sf-line-clamp-3,
+  .sf-line-clamp-N {
+    display:            -webkit-box;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- de-facto standard; unprefixed CSS Overflow 4 line-clamp not yet shipped */
+    -webkit-box-orient: vertical;
+    overflow:           hidden;
+  }
+
+  /* stylelint-disable-next-line property-no-vendor-prefix -- see above */
+  .sf-line-clamp-2 { -webkit-line-clamp: 2; }
+  /* stylelint-disable-next-line property-no-vendor-prefix -- see above */
+  .sf-line-clamp-3 { -webkit-line-clamp: 3; }
+  .sf-line-clamp-N {
+    /* stylelint-disable-next-line property-no-vendor-prefix -- see above */
+    -webkit-line-clamp: var(--sf-line-clamp);
+  }
+
+  .sf-equal-height {
+    display:     flex;
+    align-items: stretch;
+  }
+  .sf-equal-height > * {
+    block-size: auto;
+    flex:       1 1 auto;
+  }
+
+  .sf-aspect {
+    aspect-ratio: var(--sf-aspect, 16 / 9);
+  }
+
+  .sf-scroll-shadow {
+    overflow-y:     auto;
+    overflow-block: auto;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image:
+      linear-gradient(to bottom,
+        transparent 0,
+        black var(--sf-scroll-shadow-size),
+        black calc(100% - var(--sf-scroll-shadow-size)),
+        transparent 100%);
+    mask-image:
+      linear-gradient(to bottom,
+        transparent 0,
+        black var(--sf-scroll-shadow-size),
+        black calc(100% - var(--sf-scroll-shadow-size)),
+        transparent 100%);
+  }
+
+  .sf-scroll-snap {
+    overflow-y:                auto;
+    overflow-block:            auto;
+    scroll-snap-type:          block mandatory;
+    overscroll-behavior-block: contain;
+  }
+  .sf-scroll-snap > * {
+    scroll-snap-align: start;
+  }
+
+  .sf-overflow-fade {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+  }
+
+  .sf-overflow-fade--right {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+  }
+
+  .sf-overflow-fade--left {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black 100%
+    );
+  }
+
+  .sf-overflow-fade--top {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black 100%
+    );
+  }
+
+  .sf-overflow-fade--bottom {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+  }
+
+  .sf-overflow-fade--block {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+  }
+
+  .sf-overflow-fade--inline {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+  }
+
+  .sf-no-tap-highlight {
+    /* stylelint-disable-next-line property-no-vendor-prefix -- no unprefixed equivalent */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sf-surface { background: var(--sf-surface-color); }
+
+  .sf-surface--primary   { --sf-surface-color: var(--sf-color-primary);   background: var(--sf-color-primary);   color: var(--sf-color-text--on-primary); }
+  .sf-surface--secondary { --sf-surface-color: var(--sf-color-secondary); background: var(--sf-color-secondary); color: var(--sf-color-text--on-secondary); }
+  .sf-surface--tertiary  { --sf-surface-color: var(--sf-color-tertiary);  background: var(--sf-color-tertiary);  color: var(--sf-color-text--on-tertiary); }
+  .sf-surface--action    { --sf-surface-color: var(--sf-color-action);    background: var(--sf-color-action);    color: var(--sf-color-text--on-action); }
+  .sf-surface--neutral   { --sf-surface-color: var(--sf-color-neutral);   background: var(--sf-color-neutral);   color: var(--sf-color-text--on-neutral); }
+  .sf-surface--inverse   { --sf-surface-color: var(--sf-color-inverse);   background: var(--sf-color-inverse);   color: var(--sf-color-text--on-inverse); }
+  .sf-surface--success   { --sf-surface-color: var(--sf-color-success);   background: var(--sf-color-success);   color: var(--sf-color-text--on-success); }
+  .sf-surface--warning   { --sf-surface-color: var(--sf-color-warning);   background: var(--sf-color-warning);   color: var(--sf-color-text--on-warning); }
+  .sf-surface--info      { --sf-surface-color: var(--sf-color-info);      background: var(--sf-color-info);      color: var(--sf-color-text--on-info); }
+  .sf-surface--danger    { --sf-surface-color: var(--sf-color-danger);    background: var(--sf-color-danger);    color: var(--sf-color-text--on-danger); }
+
+  @supports (color: oklch(from red l c h)) and (width: calc(1px * sign(1))) {
+    :is(.sf-surface,
+        .sf-surface--primary, .sf-surface--secondary, .sf-surface--tertiary,
+        .sf-surface--action, .sf-surface--neutral, .sf-surface--inverse,
+        .sf-surface--success, .sf-surface--warning,
+        .sf-surface--info, .sf-surface--danger) {
+
+      --sf-surface-contrast: oklch(from var(--sf-surface-color) clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0 / 1);
+      background: var(--sf-surface-color);
+      color: var(--sf-surface-contrast);
+      --sf-color-text:              var(--sf-surface-contrast);
+      --sf-color-heading:           var(--sf-surface-contrast);
+      --sf-color-link:              oklch(from var(--sf-surface-contrast) l calc(c + 0.08) h);
+      --sf-color-link--hover:       var(--sf-surface-contrast);
+      --sf-color-link--underline:   oklch(from var(--sf-surface-contrast) l c h / 0.5);
+      --sf-color-text--secondary:   oklch(from var(--sf-surface-contrast) l c h / 0.70);
+      --sf-color-text--placeholder: oklch(from var(--sf-surface-contrast) l c h / 0.45);
+      --sf-color-text--disabled:    oklch(from var(--sf-surface-contrast) l c h / 0.30);
+      --sf-color-border:            oklch(from var(--sf-surface-contrast) l c h / 0.20);
+      --sf-color-border--subtle:    oklch(from var(--sf-surface-contrast) l c h / 0.12);
+      --sf-color-border--strong:    oklch(from var(--sf-surface-contrast) l c h / 0.35);
+      --sf-focus-ring-color:        var(--sf-surface-contrast);
+      --sf-caret-color:             var(--sf-surface-contrast);
+
+      --sf-shadow-color:            oklch(from var(--sf-surface-color) var(--sf-shadow-lightness) c h);
+    }
+  }
+  .sf-scrim {
+    position:  relative;
+    isolation: isolate;
+  }
+  .sf-scrim::before {
+    content:        "";
+    position:       absolute;
+    inset:          0;
+    z-index:        0;
+    background:     var(--sf-scrim-gradient);
+    pointer-events: none;
+  }
+
+  .sf-scrim > :not(img, picture, video, svg, canvas),
+  .sf-scrim__content {
+    position: relative;
+    z-index:  1;
+  }
+  .sf-scrim--top    { --sf-scrim-direction: to bottom; }
+  .sf-scrim--bottom { --sf-scrim-direction: to top; }
+  .sf-scrim--full   { --sf-scrim-gradient: var(--sf-scrim-color); }
+
+  .sf-text-protect {
+    text-shadow: var(--sf-scrim-text-shadow);
+  }
+
+  .sf-text-gradient {
+    background-image: var(--sf-gradient-primary);
+    background-clip: text;
+    color: transparent;
+  }
+
+  .sf-link-external::after {
+    content:         var(--sf-link-external-marker);
+    display:         inline-block;
+    font-size:       0.85em;
+    text-decoration: none;
+  }
+
+  .sf-content-auto {
+    content-visibility:     auto;
+    contain-intrinsic-size: auto var(--sf-content-intrinsic-size, 500px);
+  }
+
+  .sf-tabular-nums {
+    font-variant-numeric: var(--sf-font-numeric, tabular-nums);
+  }
+
+  .sf-link--subtle:link,
+  .sf-link--subtle:visited {
+    text-decoration-line: none;
+  }
+  .sf-link--subtle:is(:link, :visited):hover,
+  .sf-link--subtle:is(:link, :visited):focus-visible {
+    text-decoration-line:  underline;
+    text-decoration-color: currentcolor;
+  }
+
+  .sf-link--reverse:link,
+  .sf-link--reverse:visited {
+    text-decoration-line: underline;
+  }
+  .sf-link--reverse:is(:link, :visited):hover,
+  .sf-link--reverse:is(:link, :visited):focus-visible {
+    text-decoration-line: none;
+  }
+
+}

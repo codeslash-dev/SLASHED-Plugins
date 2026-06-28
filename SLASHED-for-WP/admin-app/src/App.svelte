@@ -1,154 +1,265 @@
-<script>
-  /**
-   * WP Admin App shell — transitional state while the built-in configurator
-   * is deactivated pending framework v0.8.0.
-   *
-   * Grid layout: Header • Sidebar • Main.
-   * Design Settings shows SettingsTab only; Manual CSS is a separate WP subpage.
-   *
-   * WpSidebar, SettingsTab are WP-specific (in .syncignore).
-   */
-  import { ui, undo, redo } from './lib/store.svelte.js';
-  import { UI_STORAGE_KEY } from './lib/uiState.js';
-  import Header      from './components/Header.svelte';
-  import WpSidebar   from './components/WpSidebar.svelte';
-  import SettingsTab from './components/SettingsTab.svelte';
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import type { PreviewTemplate, PresetTheme, SlashedToken } from './types';
+  import StudioHeader from './components/shell/StudioHeader.svelte';
+  import SidebarNav from './components/shell/SidebarNav.svelte';
+  import StatusBar from './components/shell/StatusBar.svelte';
+  import PreviewPanel from './components/shell/PreviewPanel.svelte';
+  import DomainPanel from './components/DomainPanel.svelte';
+  import { fa } from './lib/codec';
+  import { loadInitialOverrides, persistOverrides, cancelPendingWpSave } from './lib/persistence';
+  import { domainOf } from './lib/domains';
+  import tokensRaw from './data/api-index.generated.json';
+  import CommandPalette from './components/CommandPalette.svelte';
 
-  // ── Sidebar pane-width resizing ───────────────────────────────────────────
-  const WIDTHS_KEY   = 'slashed-wp-admin/pane-widths/v2';
-  const SIDEBAR_MIN  = 160, SIDEBAR_MAX = 500;
-  const clampW = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const ALL_TOKENS = ((tokensRaw as any).tokens ?? tokensRaw) as SlashedToken[];
 
-  function loadSidebarWidth() {
-    if (typeof localStorage === 'undefined') return 240;
-    try {
-      const raw = localStorage.getItem(WIDTHS_KEY);
-      if (raw) {
-        const p = JSON.parse(raw);
-        return clampW(Number(p.sidebar) || 240, SIDEBAR_MIN, SIDEBAR_MAX);
+  const DOMAIN_LABELS: Record<string, string> = {
+    home: "Home", colors: "Colors", typography: "Typography", spacing: "Spacing",
+    layout: "Layout", borders: "Borders", shadows: "Shadows", motion: "Motion",
+    effects: "Effects", macros: "Macros", misc: "Misc", themes: "Themes",
+    wcag: "WCAG", setup: "Install", cheatsheet: "Classes",
+  };
+
+  function overridesByDomain(ov: Record<string, string>): Record<string, number> {
+    const map: Record<string, number> = {};
+    for (const k of Object.keys(ov)) {
+      const dom = domainOf(k);
+      map[dom] = (map[dom] ?? 0) + 1;
+    }
+    return map;
+  }
+
+  // Core state
+  let overrides = $state<Record<string, string>>(loadInitialOverrides());
+  let past = $state<Record<string, string>[]>([]);
+  let future = $state<Record<string, string>[]>([]);
+
+  let domain = $state("home");
+  let showPalette = $state(false);
+  let previewTheme = $state<"light" | "dark">("light");
+  let previewWidth = $state<"fluid" | "mobile" | "tablet" | "desktop">("fluid");
+  let previewMotion = $state<"normal" | "slow" | "none">("normal");
+  let previewTemplate = $state<PreviewTemplate>("marketing");
+
+  // Derived
+  let overridesCount = $derived(Object.keys(overrides).length);
+  let domainBadges = $derived(overridesByDomain(overrides));
+  let canUndo = $derived(past.length > 0);
+  let canRedo = $derived(future.length > 0);
+
+  // Persist + URL sync (standalone) or REST save (WP) + live style injection.
+  // Cancel any pending debounced WP save when the effect re-runs or component unmounts.
+  $effect(() => {
+    persistOverrides(overrides);
+    return cancelPendingWpSave;
+  });
+
+  function setOverrides(updater: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>) {
+    const prev = overrides;
+    const next = typeof updater === "function" ? updater(prev) : updater;
+    if (JSON.stringify(prev) !== JSON.stringify(next)) {
+      past = [...past.slice(-49), prev];
+      future = [];
+    }
+    overrides = next;
+  }
+
+  function handleSet(name: string, value: string) {
+    setOverrides((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function handleReset(name: string) {
+    setOverrides((prev) => {
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  }
+
+  function handleBulkChange(patch: Record<string, string | null>) {
+    setOverrides((prev) => {
+      const next = { ...prev };
+      for (const [k, v] of Object.entries(patch)) {
+        if (v === null) delete next[k];
+        else next[k] = v;
       }
-    } catch { /* ignore */ }
-    return 240;
+      return next;
+    });
   }
 
-  let sidebarWidth = $state(loadSidebarWidth());
-  let dragging     = $state(false);
-  let _dragStartX  = 0, _dragStartW = 0;
-  let shellEl      = $state(null);
-
-  function startResize(/** @type {PointerEvent} */ e) {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    dragging    = true;
-    _dragStartX = e.clientX;
-    _dragStartW = sidebarWidth;
-    e.preventDefault();
-  }
-  function onResizeMove(/** @type {PointerEvent} */ e) {
-    if (!dragging) return;
-    sidebarWidth = clampW(_dragStartW + (e.clientX - _dragStartX), SIDEBAR_MIN, SIDEBAR_MAX);
-  }
-  function endResize() {
-    if (!dragging) return;
-    dragging = false;
-    try { localStorage.setItem(WIDTHS_KEY, JSON.stringify({ sidebar: sidebarWidth })); } catch { /* ignore */ }
+  function handleApplyTheme(theme: PresetTheme) {
+    if (theme.id === "default") {
+      setOverrides({});
+    } else {
+      handleBulkChange(theme.overrides as Record<string, string | null>);
+    }
   }
 
-  // ── Routing ───────────────────────────────────────────────────────────────
+  function handleResetAll() {
+    setOverrides({});
+  }
 
-  // Design Settings shows only SettingsTab until the configurator returns in v0.8.0.
-  $effect(() => {
-    if (ui.domain !== 'settings') ui.domain = 'settings';
+  function handleUndo() {
+    if (past.length === 0) return;
+    const previous = past[past.length - 1];
+    const curr = overrides;
+    past = past.slice(0, -1);
+    future = [curr, ...future];
+    overrides = previous;
+  }
+
+  function handleRedo() {
+    if (future.length === 0) return;
+    const next = future[0];
+    const curr = overrides;
+    future = future.slice(1);
+    past = [...past, curr];
+    overrides = next;
+  }
+
+  function handleImport() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".css,.json";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result as string;
+        if (!text) return;
+        if (file.name.endsWith(".json")) {
+          try {
+            const data = JSON.parse(text);
+            if (data !== null && typeof data === "object" && !Array.isArray(data)) {
+              const safe = Object.fromEntries(
+                Object.entries(data as Record<string, unknown>).filter(([, v]) => typeof v === "string")
+              ) as Record<string, string>;
+              setOverrides(safe);
+            }
+          } catch {}
+        } else {
+          const parsed: Record<string, string> = {};
+          const re = /(--sf-[\w-]+)\s*:\s*([^;]+);/g;
+          let m;
+          while ((m = re.exec(text)) !== null) {
+            parsed[m[1].trim()] = m[2].trim();
+          }
+          if (Object.keys(parsed).length > 0) setOverrides((prev) => ({ ...prev, ...parsed }));
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
+  function handleExport() {
+    const css = fa(overrides, { mode: "layer", banner: true });
+    const blob = new Blob([css], { type: "text/css" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "slashed-overrides.css";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  onMount(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
+        e.preventDefault();
+        handleUndo();
+      }
+      if ((e.ctrlKey || e.metaKey) && ((e.shiftKey && e.key === "z") || e.key === "y")) {
+        e.preventDefault();
+        handleRedo();
+      }
+      if ((e.ctrlKey || e.metaKey) && !e.repeat && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        showPalette = !showPalette;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   });
-
-  // ── Persistence ───────────────────────────────────────────────────────────
-
-  $effect(() => { if (shellEl) shellEl.dataset.uiTheme = ui.uiTheme; });
-  $effect(() => {
-    const snap = JSON.stringify({ mode: ui.mode, domain: ui.domain, outputMode: ui.outputMode, uiTheme: ui.uiTheme });
-    try { localStorage.setItem(UI_STORAGE_KEY, snap); } catch { /* quota */ }
-  });
-
-  // ── Keyboard shortcuts ────────────────────────────────────────────────────
-
-  function onKey(e) {
-    const meta = e.ctrlKey || e.metaKey;
-    if (meta && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
-    if (meta && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); redo(); return; }
-  }
 </script>
 
-<svelte:window onkeydown={onKey} />
+<div class="w-screen h-screen flex flex-col overflow-hidden bg-[#0a0a0f] text-slate-200 font-sans">
+  <!-- Top header bar -->
+  <StudioHeader
+    {overridesCount}
+    {canUndo}
+    {canRedo}
+    onUndo={handleUndo}
+    onRedo={handleRedo}
+    onResetAll={handleResetAll}
+    onImport={handleImport}
+    onExport={handleExport}
+  />
 
-<div
-  class="shell"
-  class:shell--collapsed={!ui.sidebarOpen}
-  class:shell--dragging={dragging}
-  style="--shell-sw: {sidebarWidth}px"
-  bind:this={shellEl}
->
-  <Header />
+  <!-- Main body: sidebar + left panel + preview -->
+  <div class="flex flex-1 min-h-0">
+    <!-- Icon nav rail -->
+    <SidebarNav
+      activeId={domain}
+      onSelect={(d) => { domain = d; }}
+      overridesByDomain={domainBadges}
+    />
 
-  <WpSidebar />
+    <!-- Left domain panel — fixed 360px -->
+    <div class="w-[360px] shrink-0 bg-[#0c0c15] border-r border-white/8 flex flex-col min-h-0">
+      <!-- Panel heading -->
+      <div class="h-9 flex items-center px-4 border-b border-white/6 shrink-0">
+        <span data-testid="panel-heading" class="text-[11px] font-bold text-slate-300 uppercase tracking-widest flex-1">
+          {DOMAIN_LABELS[domain] ?? domain}
+        </span>
+      </div>
+      <!-- Scrollable panel content -->
+      <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
+        <DomainPanel
+          {domain}
+          tokens={ALL_TOKENS}
+          {overrides}
+          onSet={handleSet}
+          onReset={handleReset}
+          onBulkChange={handleBulkChange}
+          onApplyTheme={handleApplyTheme}
+          onSelectDomain={(d) => { domain = d; }}
+          onResetAll={handleResetAll}
+        />
+      </div>
+    </div>
 
-  {#if ui.sidebarOpen}
-    <div
-      class="resizer"
-      role="separator" aria-orientation="vertical" aria-label="Drag to resize sidebar"
-      onpointerdown={startResize}
-      onpointermove={onResizeMove}
-      onpointerup={endResize} onpointercancel={endResize} onlostpointercapture={endResize}
-    ></div>
+    <!-- Right: live preview -->
+    <div class="flex-1 flex flex-col min-h-0 min-w-0">
+      <PreviewPanel
+        {overrides}
+        {previewTheme}
+        {previewWidth}
+        {previewMotion}
+        {previewTemplate}
+        onThemeChange={(t) => { previewTheme = t; }}
+        onWidthChange={(w) => { previewWidth = w; }}
+        onMotionChange={(m) => { previewMotion = m; }}
+        onTemplateChange={(t) => { previewTemplate = t; }}
+      />
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <StatusBar
+    {overridesCount}
+    domain={DOMAIN_LABELS[domain] ?? domain}
+  />
+
+  <!-- Command palette -->
+  {#if showPalette}
+    <CommandPalette
+      tokens={ALL_TOKENS}
+      {overrides}
+      onNavigate={(d) => { domain = d; }}
+      onClose={() => { showPalette = false; }}
+    />
   {/if}
-
-  <main class="main" aria-label="SLASHED admin">
-    <SettingsTab />
-  </main>
 </div>
-
-<style>
-  .shell {
-    --shell-sw: 240px;
-    --shell-rs: 6px;
-    display: grid;
-    grid-template-columns: var(--shell-sw) var(--shell-rs) minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    grid-template-areas:
-      "header header header"
-      "side   rs1    main";
-    height: 100vh;
-  }
-  .shell--collapsed {
-    grid-template-columns: 60px var(--shell-rs) minmax(0, 1fr);
-  }
-  .shell--dragging, .shell--dragging * { cursor: col-resize !important; user-select: none; }
-
-  .main {
-    grid-area: main;
-    min-width: 0; min-height: 0;
-    overflow: hidden;
-    display: flex; flex-direction: column;
-    background: var(--cfg-bg);
-  }
-
-  .resizer {
-    grid-area: rs1;
-    position: relative; cursor: col-resize; z-index: 20;
-    touch-action: none; background: transparent; transition: background 0.1s;
-  }
-  .resizer::after {
-    content: ''; position: absolute; top: 0; bottom: 0;
-    left: 50%; transform: translateX(-50%);
-    width: 1px; background: var(--cfg-border);
-    pointer-events: none; transition: background 0.1s, width 0.15s;
-  }
-  .resizer:hover::after, .shell--dragging .resizer::after { background: var(--cfg-accent-strong); width: 3px; }
-
-  @media (max-width: 760px) {
-    .shell, .shell--collapsed {
-      grid-template-columns: 44px minmax(0, 1fr);
-      grid-template-areas: "header header" "side main";
-    }
-    .resizer { display: none; }
-    .main { border-left: 1px solid var(--cfg-border); }
-  }
-</style>

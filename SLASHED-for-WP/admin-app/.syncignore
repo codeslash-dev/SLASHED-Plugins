@@ -1,12 +1,19 @@
-# WP-specific files — NOT overwritten by sync-core.mjs.
-# Add any file here that has WP-specific logic or diverges intentionally
-# from the configurator's shared source.
-src/lib/store.svelte.js
-src/lib/wp-api.js
+# Files under src/ that sync-core.mjs must NOT overwrite.
+#
+# Plugin-specific build wiring lives OUTSIDE src/ (vite.config.js, package.json,
+# svelte.config.js, tsconfig.json) and is never touched by the sync.
+
+# The following files are part of codeslash-dev/slashed#443 (the companion
+# upstream PR that adds @framework-css aliases + the WP persistence seam).
+# Those changes live on the feature branch and have not yet merged to main.
+#
+# Modified files: the CI prebuild sync fetches from main and would overwrite
+# these with pre-alias / pre-persistence versions, breaking the build and runtime.
+# New files: the sync now wipes src/ before fetching, so any file that doesn't
+# exist on main would be deleted unless listed here.
+# Remove all five lines once slashed#443 merges to main.
+src/main.ts
 src/App.svelte
-src/main.js
-src/components/WpSidebar.svelte
-src/components/VersionTab.svelte
-src/components/SettingsTab.svelte
-src/components/Header.svelte
-src/components/WcagPanel.svelte
+src/components/shell/PreviewPanel.svelte
+src/vite-env.d.ts
+src/lib/persistence.ts
