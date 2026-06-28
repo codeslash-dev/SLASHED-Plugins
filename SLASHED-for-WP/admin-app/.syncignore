@@ -17,3 +17,7 @@ src/App.svelte
 src/components/shell/PreviewPanel.svelte
 src/vite-env.d.ts
 src/lib/persistence.ts
+
+# Plugin-specific: frontend overlay (not in upstream configurator).
+src/plugin-main.ts
+src/AppOverlay.svelte
