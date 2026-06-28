@@ -286,15 +286,23 @@ class Slashed_Inventory {
 	/**
 	 * Read admin-saved color overrides and map them to CSS variable names.
 	 *
-	 * Mirrors the mapping logic in Slashed_CSS_Generator::generate_color_declarations():
+	 * These keys feed the PHP hex-preview resolver (Slashed_Color_Resolver),
+	 * NOT the frontend CSS. The resolver keys each family's source by
+	 * `--sf-color-{family}-light` / `-dark`, so this map uses the same names:
 	 *   - brand_primary       -> --sf-color-primary-light
 	 *   - status_success      -> --sf-color-success-light
 	 *   - brand_dark_primary  -> --sf-color-primary-dark   (when dark overrides on)
 	 *   - status_dark_success -> --sf-color-success-dark   (when dark overrides on)
 	 *
-	 * Both the `-light` source and any explicit `-dark` override are returned
-	 * so the light AND dark hex maps stay in sync with what the generated CSS
-	 * actually emits — the dark resolver honours `-dark` over auto-derivation.
+	 * The frontend generator (Slashed_CSS_Generator::generate_color_declarations)
+	 * emits the framework's real source tokens instead — `-source-light` /
+	 * `-source-dark` — which is what the loaded CSS bundle actually reads. Both
+	 * paths take the same brand_* / status_* settings, so the editor preview and
+	 * the live site stay visually in agreement.
+	 *
+	 * Both the `-light` source and any explicit `-dark` override are returned so
+	 * the light AND dark hex maps reflect the user's colors — the dark resolver
+	 * honours `-dark` over auto-derivation.
 	 *
 	 * @return array<string, string> Map of CSS variable name to color value.
 	 */
@@ -311,9 +319,10 @@ class Slashed_Inventory {
 		$settings  = $tokens['colors'];
 		$overrides = array();
 
-		// Brand families: 'base' is the source token (--sf-color-base-light);
-		// 'surface' is a derived alias with no -light source, so it's excluded.
-		// Must stay in sync with Slashed_CSS_Generator::generate_color_declarations().
+		// Brand families: 'base' is a source family (previewed as --sf-color-base-light);
+		// 'surface' is a derived alias with no source of its own, so it's excluded.
+		// Family list must stay in sync with Slashed_CSS_Generator::generate_color_declarations();
+		// only the preview key suffix differs (-light/-dark here vs -source-light/-source-dark there).
 		$brand_colors  = array( 'primary', 'secondary', 'tertiary', 'action', 'neutral', 'base' );
 		$status_colors = array( 'success', 'warning', 'error', 'info', 'danger' );
 

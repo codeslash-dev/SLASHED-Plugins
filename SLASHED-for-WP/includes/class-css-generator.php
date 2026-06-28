@@ -176,13 +176,13 @@ class Slashed_CSS_Generator {
 		foreach ( $brand_colors as $color ) {
 			$value = self::valid_color( $settings[ 'brand_' . $color ] ?? '' );
 			if ( false !== $value ) {
-				$declarations[] = '--sf-color-' . $color . '-light: ' . $value . ';';
+				$declarations[] = '--sf-color-' . $color . '-source-light: ' . $value . ';';
 			}
 		}
 		foreach ( $status_colors as $color ) {
 			$value = self::valid_color( $settings[ 'status_' . $color ] ?? '' );
 			if ( false !== $value ) {
-				$declarations[] = '--sf-color-' . $color . '-light: ' . $value . ';';
+				$declarations[] = '--sf-color-' . $color . '-source-light: ' . $value . ';';
 			}
 		}
 
@@ -193,13 +193,13 @@ class Slashed_CSS_Generator {
 			foreach ( $brand_colors as $color ) {
 				$value = self::valid_color( $settings[ 'brand_dark_' . $color ] ?? '' );
 				if ( false !== $value ) {
-					$declarations[] = '--sf-color-' . $color . '-dark: ' . $value . ';';
+					$declarations[] = '--sf-color-' . $color . '-source-dark: ' . $value . ';';
 				}
 			}
 			foreach ( $status_colors as $color ) {
 				$value = self::valid_color( $settings[ 'status_dark_' . $color ] ?? '' );
 				if ( false !== $value ) {
-					$declarations[] = '--sf-color-' . $color . '-dark: ' . $value . ';';
+					$declarations[] = '--sf-color-' . $color . '-source-dark: ' . $value . ';';
 				}
 			}
 		}

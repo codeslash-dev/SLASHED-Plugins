@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: V0.4.2
+Stable tag: 0.4.2
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -119,20 +119,9 @@ Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
 
-= V0.4.2 =
-* Fixed: Drop /i flag from --sf- key regex (CSS props are case-sensitive)
-* Fixed: Address two Qodo review findings
-* Fixed: Sanitize POST rebemer_map values at read time
-* Fixed: Restrict emit-side override key to --sf- namespace
-* Fixed: Harden override validation per CodeRabbit review
-* Fixed: Render the configurator's flat override map on the frontend
-* Fixed: Validate flat override map against the typed CSS allowlist
-
 = 0.4.2 =
-* Fixed: Drop /i flag from --sf- key regex (CSS props are case-sensitive)
-* Fixed: Address two Qodo review findings
-* Fixed: Sanitize POST rebemer_map values at read time
-* Fixed: Restrict emit-side override key to --sf- namespace
+* Fixed: Brand and status color overrides set in Design Settings now recolor the live site.
+* Fixed: Hardened token-override validation and sanitization.
 
 = 0.4.1 =
 * Hardened validation and frontend rendering of token overrides.

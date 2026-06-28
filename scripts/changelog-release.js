@@ -52,7 +52,14 @@ function resolveVersion() {
   if (process.argv.includes('--from-tag')) {
     const tag = git('describe', '--tags', '--abbrev=0');
     if (!tag) { console.error('changelog-release: no git tags found'); process.exit(1); }
-    return tag.replace(/^v/, '');
+    // Strip a leading v/V case-insensitively so a mis-cased tag like `V0.4.2`
+    // doesn't produce a `= V0.4.2 =` changelog heading.
+    const version = tag.replace(/^v/i, '');
+    if (!/^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*)*$/.test(version)) {
+      console.error(`changelog-release: tag "${tag}" does not resolve to a valid version`);
+      process.exit(1);
+    }
+    return version;
   }
   const v = arg('version');
   return v || null;
@@ -247,7 +254,7 @@ function main() {
   const latestTag = git('describe', '--tags', '--abbrev=0');
   let prevTag = null;
   if (latestTag) {
-    if (version && latestTag.replace(/^v/, '') === version) {
+    if (version && latestTag.replace(/^v/i, '') === version) {
       // We're running after the tag was pushed — look for the tag before it.
       prevTag = git('describe', '--tags', '--abbrev=0', `${latestTag}^`) || null;
     } else {
