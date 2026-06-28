@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, design-tokens, dark-mode, bem
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.1
+Stable tag: 0.4.2
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,12 @@ No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loa
 Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The plugin loads that exact version. Local mode serves the bundled `dist/` CSS, with a one-click updater and rollback list.
 
 == Changelog ==
+
+= 0.4.2 =
+* Fixed: Drop /i flag from --sf- key regex (CSS props are case-sensitive)
+* Fixed: Address two Qodo review findings
+* Fixed: Sanitize POST rebemer_map values at read time
+* Fixed: Restrict emit-side override key to --sf- namespace
 
 = 0.4.1 =
 * Fixed: Harden override validation per CodeRabbit review

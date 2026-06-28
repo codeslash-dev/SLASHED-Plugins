@@ -9,6 +9,24 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-06-28
+
+### Fixed
+
+- Drop /i flag from --sf- key regex (CSS props are case-sensitive)
+- Address two Qodo review findings
+- Sanitize POST rebemer_map values at read time
+- Restrict emit-side override key to --sf- namespace
+
+## [0.4.2] - 2026-06-28
+
+### Fixed
+
+- Drop /i flag from --sf- key regex (CSS props are case-sensitive)
+- Address two Qodo review findings
+- Sanitize POST rebemer_map values at read time
+- Restrict emit-side override key to --sf- namespace
+
 ## [0.4.1] - 2026-06-28
 
 ### Fixed
