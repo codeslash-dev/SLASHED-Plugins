@@ -43,22 +43,13 @@ class Slashed_Frontend_Configurator {
 		$plugin_url  = defined( 'SLASHED_URL' ) ? SLASHED_URL : '';
 		$plugin_path = defined( 'SLASHED_PATH' ) ? SLASHED_PATH : '';
 
-		$js_path  = $plugin_path . 'assets/admin-app/app.js';
-		$css_path = $plugin_path . 'assets/admin-app/app.css';
+		$js_path = $plugin_path . 'assets/admin-app/app.js';
 
 		if ( ! file_exists( $js_path ) ) {
 			return;
 		}
 
-		$js_ver  = (string) filemtime( $js_path );
-		$css_ver = file_exists( $css_path ) ? (string) filemtime( $css_path ) : $js_ver;
-
-		wp_enqueue_style(
-			'slashed-frontend-overlay',
-			$plugin_url . 'assets/admin-app/app.css',
-			array(),
-			$css_ver
-		);
+		$js_ver = (string) filemtime( $js_path );
 
 		wp_enqueue_script(
 			'slashed-frontend-overlay',
@@ -95,6 +86,7 @@ class Slashed_Frontend_Configurator {
 			'slashed-frontend-overlay',
 			'slashedApp',
 			array(
+				'cssUrl'    => esc_url_raw( $plugin_url . 'assets/admin-app/app.css' ),
 				'rest'      => array(
 					'url'   => esc_url_raw( rest_url( Slashed_REST_Controller::NAMESPACE ) ),
 					'nonce' => wp_create_nonce( 'wp_rest' ),

@@ -151,10 +151,11 @@
 
   onMount(() => {
     const keydown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
       if (!isOpen) return;
-      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z')                  { e.preventDefault(); handleUndo(); }
-      if ((e.ctrlKey || e.metaKey) && ((e.shiftKey && e.key === 'z') || e.key === 'y')) { e.preventDefault(); handleRedo(); }
-      if ((e.ctrlKey || e.metaKey) && !e.repeat && e.key.toLowerCase() === 'k')       { e.preventDefault(); showPalette = !showPalette; }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key === 'z')                  { e.preventDefault(); handleUndo(); }
+      if ((e.ctrlKey || e.metaKey) && ((e.shiftKey && key === 'z') || key === 'y')) { e.preventDefault(); handleRedo(); }
+      if ((e.ctrlKey || e.metaKey) && !e.repeat && key === 'k')                     { e.preventDefault(); showPalette = !showPalette; }
     };
     const onToggle = () => toggle();
     window.addEventListener('keydown', keydown);
@@ -193,6 +194,8 @@
   class:translate-x-0={isOpen}
   style="top: 32px; width: 420px; height: calc(100vh - 32px);"
   aria-hidden={!isOpen}
+  inert={!isOpen}
+  class:pointer-events-none={!isOpen}
 >
   <!-- Compact header (40px) -->
   <div class="h-10 bg-[#0d0d14] border-b border-white/8 flex items-center px-2 gap-1.5 shrink-0">
