@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, design-tokens, dark-mode, bem
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.3.15
+Stable tag: 0.4.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,14 @@ No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loa
 Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The plugin loads that exact version. Local mode serves the bundled `dist/` CSS, with a one-click updater and rollback list.
 
 == Changelog ==
+
+= 0.4.0 =
+* Added: Replace deactivated fork with the framework configurator
+* Fixed: Harden handleImport JSON guard against null and arrays
+* Fixed: Isolate WP embedded mode and surface save failures in persistence.ts
+* Fixed: Wipe src/ before remote sync to prevent stale vendored files
+* Fixed: Protect all upstream-changed files from CI sync
+* Fixed: Unblock CI on PR#80
 
 = 0.3.15 =
 * Added: Add flat CSS bundle toggle to plugin settings

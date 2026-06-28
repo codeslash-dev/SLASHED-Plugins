@@ -9,6 +9,34 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-28
+
+### Added
+
+- Replace deactivated fork with the framework configurator
+
+### Fixed
+
+- Harden handleImport JSON guard against null and arrays
+- Isolate WP embedded mode and surface save failures in persistence.ts
+- Wipe src/ before remote sync to prevent stale vendored files
+- Protect all upstream-changed files from CI sync
+- Unblock CI on PR#80
+
+## [0.4.0] - 2026-06-28
+
+### Added
+
+- Replace deactivated fork with the framework configurator
+
+### Fixed
+
+- Harden handleImport JSON guard against null and arrays
+- Isolate WP embedded mode and surface save failures in persistence.ts
+- Wipe src/ before remote sync to prevent stale vendored files
+- Protect all upstream-changed files from CI sync
+- Unblock CI on PR#80
+
 ## [0.3.15] - 2026-06-26
 
 ### Added

@@ -1,4 +1,4 @@
-/* SLASHED v0.6.17 — slashed.optimal.css */
+/* SLASHED v0.6.21 — slashed.optimal.css */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -1764,6 +1764,17 @@
     --sf-frame-ratio: 16 / 9;    /* literal <ratio>, valid in aspect-ratio */
 
     /* ----------------------------------------------------------
+       Background layer (.sf-bg) — cover media behind sibling content.
+       inset is a single length applied to every edge; the layer size is
+       derived from it, so a non-zero inset still fills correctly.
+       ---------------------------------------------------------- */
+    --sf-bg-inset:    0;
+    --sf-bg-fit:      cover;
+    --sf-bg-position: 50% 50%;
+    --sf-bg-radius:   0;
+    --sf-bg-z:        -2;        /* behind content; above the parent background */
+
+    /* ----------------------------------------------------------
        Icon (boxed variant) — extras for .sf-icon--boxed.
        The naked .sf-icon sizing tokens (--sf-icon-xs..xl) live in
        core/tokens.css alongside the typography scale.
@@ -2699,7 +2710,48 @@
   .sf-frame--3-2      { aspect-ratio: var(--sf-ratio-3-2); }
   .sf-frame--golden   { aspect-ratio: var(--sf-ratio-golden); }
 
-  
+
+  /* Background layer — absolutely-positioned cover media that sits behind a
+     parent's content. The parent is auto-promoted to a positioned, isolated
+     stacking context via :has(), so .sf-bg composes natively under .sf-scrim
+     (background → scrim gradient → content). Works as a bare <img class="sf-bg">
+     or as a wrapper with a nested > img / > video. */
+  :where(:has(> .sf-bg)) {
+    position:  relative;
+    isolation: isolate;
+  }
+
+  .sf-bg {
+    position:        absolute;
+    inset:           var(--sf-bg-inset);
+    inline-size:     calc(100% - 2 * var(--sf-bg-inset));
+    block-size:      calc(100% - 2 * var(--sf-bg-inset));
+    object-fit:      var(--sf-bg-fit);
+    object-position: var(--sf-bg-position);
+    border-radius:   var(--sf-bg-radius);
+    z-index:         var(--sf-bg-z);
+    pointer-events:  none;
+  }
+
+  .sf-bg > :is(img, video, picture) {
+    inline-size:     100%;
+    block-size:      100%;
+    object-fit:      var(--sf-bg-fit);
+    object-position: var(--sf-bg-position);
+    border-radius:   var(--sf-bg-radius);
+    pointer-events:  none;
+  }
+
+  .sf-bg > picture > img {
+    inline-size:     100%;
+    block-size:      100%;
+    object-fit:      var(--sf-bg-fit);
+    object-position: var(--sf-bg-position);
+    border-radius:   var(--sf-bg-radius);
+    pointer-events:  none;
+  }
+
+
   .sf-reel {
     display:               flex;
     block-size:            var(--sf-reel-height);
@@ -3009,13 +3061,119 @@
     -webkit-mask-image: linear-gradient(
       to right,
       black 0,
-      black calc(100% - var(--sf-scroll-shadow-size)),
+      black calc(100% - var(--sf-mask-scrim-end)),
       transparent 100%
     );
     mask-image: linear-gradient(
       to right,
       black 0,
-      black calc(100% - var(--sf-scroll-shadow-size)),
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+  }
+
+  .sf-overflow-fade--right {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+  }
+
+  .sf-overflow-fade--left {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black 100%
+    );
+  }
+
+  .sf-overflow-fade--top {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black 100%
+    );
+  }
+
+  .sf-overflow-fade--bottom {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+  }
+
+  .sf-overflow-fade--block {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+  }
+
+  .sf-overflow-fade--inline {
+    overflow: hidden;
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 15.4 */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black calc(100% - var(--sf-mask-scrim-end)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--sf-mask-scrim-start),
+      black calc(100% - var(--sf-mask-scrim-end)),
       transparent 100%
     );
   }
