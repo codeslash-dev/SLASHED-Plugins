@@ -1,6 +1,6 @@
 === SLASHED ===
 Contributors: codeslash
-Tags: css, bricks, design-tokens, dark-mode, bem
+Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
 Stable tag: V0.4.2
@@ -8,152 +8,114 @@ Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A no-build CSS framework for WordPress with deep Bricks Builder tooling: token pickers, a color browser, class hints, and BEM automation.
+A no-build CSS framework for WordPress with native Bricks Builder tooling: token pickers, a color browser, class hints, and BEM automation.
 
 == Description ==
 
-SLASHED is an open-source CSS framework that loads on any WordPress site with zero build step, no Node, and no JavaScript on the frontend. This plugin enqueues the framework and wires it into **Bricks Builder** (and, more modestly for now, the Gutenberg block editor) so you author with the framework's design tokens and classes instead of hand-typing them.
+SLASHED loads a complete CSS framework on any WordPress site — no build step, no Node, no JavaScript on the frontend. You restyle the whole site by setting a handful of design tokens; the framework derives every color, dark-mode value, and fluid type and spacing scale from them in plain CSS.
 
-If you build sites in Bricks and want a real design-token system — not another utility-class soup — this is for you.
+The plugin enqueues the framework and wires it into the editors you use, so you pick tokens and classes from a list instead of typing them by hand. Bricks Builder gets the full toolset; Gutenberg gets presets and a token panel.
 
-= What SLASHED stands for =
+= Design Settings =
 
-The name is a working philosophy, one letter at a time:
+A visual editor for every token — brand and status colors, typography, spacing, borders, shadows, fluid scales, z-index — built into WordPress at **SLASHED → Design Settings**, with a live light/dark preview. You only ever set validated token values; there is no raw-CSS field.
 
-* **S — Standalone.** One stylesheet. No build pipeline, no package manager, no runtime.
-* **L — Lean.** Ships tokens and a thin layer of structure, not a 10,000-class kitchen sink.
-* **A — Agnostic.** Works with any theme, any builder, any stack. It styles the cascade, not your tooling.
-* **S — Structured.** 15 named CSS cascade layers in a fixed precedence order, so "what wins" is never a specificity guessing game.
-* **H — Hybrid.** A token API first, with opt-in classless styling for prose and forms when you want it.
-* **E — Explicit.** You rebrand by setting tokens you can read, not by overriding mystery selectors.
-* **D — Deterministic.** Colors, dark mode, and fluid scales are computed in plain CSS — same inputs, same output, every time.
+Set six brand colors (primary, secondary, tertiary, action, neutral, base) and five status colors (success, warning, error, info, danger), each with an optional separate dark value, and the framework recolors itself. Hover and active states, tints, shades, and tonal steps are all computed for you.
 
-In practice that means the **design tokens are the product**. You set a handful of brand colors and scale ratios; the framework derives the rest at runtime with native CSS (`oklch(from …)`, `light-dark()`, `clamp()`), no recompilation. SLASHED is BEM-first and ships no utility classes in the 0.x line — you build components against the token contract.
+The same editor runs as a standalone web app at https://slashed.codeslash.dev/configurator for designing without logging in. "Open in configurator" launches it preloaded with your current tokens; "Import shared config" pulls a shared design back in from a code or link.
 
-= Bricks Builder integration =
+= Bricks Builder =
 
-This is where the plugin does the most work. Enable the Bricks integration and the framework shows up natively inside the editor:
+Enable the Bricks integration and the framework shows up natively in the builder:
 
-* **Token pickers.** Every `--sf-*` custom property is registered with the Bricks variable pickers and code-editor autocomplete, grouped by category. Color tokens get a hex swatch resolved for both light and dark, so you pick `var(--sf-color-primary)` from a list instead of remembering it.
-* **Class autocomplete.** Every `.sf-*` layout/macro class and every `.is-*` state class is registered in the Bricks class input under "SLASHED Layout" and "SLASHED State".
-* **Color System panel.** A floating, in-builder browser for the whole `--sf-color-*` palette, organized by family and tonal step. Each swatch previews its light and dark value; a Light/Dark toggle drives the canvas theme. Click a swatch and it copies the token's `var(--sf-color-*)` reference and applies it to the selected element's background, text, or border.
-* **Class tooltip hints.** With "Show class hints" enabled, a small **?** icon appears beside each SLASHED class row — in the element's class list, in autocomplete, and in the global class manager. Hover it for a styled tooltip explaining what the class does and which category it belongs to. The icon is the only trigger, so it never covers Bricks' own row controls.
-* **reBEMer — BEM automation.** A subtree-scoped BEM class manager built into the Bricks structure panel. Select an element, name the block, and reBEMer generates clean `block__element` / `block--modifier` class names for the whole subtree in one pass. It supports add, rename, replace, add-modifier, and migrate-ID-styles modes, auto-numbers colliding siblings, and guards against shadowing reserved SLASHED utilities. reBEMer never deletes a global class — that stays your call in Bricks' own manager.
-* **Dark mode bridge.** Maps Bricks' `data-brx-theme` attribute to the SLASHED theme system (`--sf-is-dark` / `color-scheme`), so the builder's dark-mode toggle activates the SLASHED dark palette.
+* **Token pickers.** Every SLASHED variable is registered with Bricks' variable pickers and code-editor autocomplete, grouped by category. Color tokens show a swatch resolved for both light and dark.
+* **Class autocomplete.** Every SLASHED class is added to the Bricks class input — layout, macros, components, and utilities under "SLASHED Layout", and `.is-*` state classes under "SLASHED State". The list is read from the CSS bundle you actually loaded, so it always matches.
+* **Color System panel.** A floating, in-builder browser for the full color palette, organized by family and tone, with a light/dark canvas toggle. Click a swatch to copy its variable and apply it to the selected element's background, text, or border.
+* **Class hints.** With hints enabled, a **?** icon next to each SLASHED class explains what it does and which category it belongs to. The icon is the only trigger, so it never covers Bricks' own controls.
+* **reBEMer.** A BEM class manager in the structure panel. Select an element, name the block, and reBEMer generates clean `block__element` / `block--modifier` names across the whole subtree in one pass. It supports add, rename, replace, add-modifier, and migrate-ID-styles modes, auto-numbers colliding siblings, and won't shadow reserved SLASHED classes. It never deletes a global class.
+* **Dark mode bridge.** The Bricks dark-mode toggle drives the SLASHED dark palette.
 
-The token and class lists are parsed from the actual loaded CSS bundle at runtime — no hand-maintained list — so they stay in sync with whichever framework release you're running.
+= Gutenberg =
 
-= Design System Configurator =
+Enable the Gutenberg integration and you get:
 
-SLASHED ships a full visual configurator for tuning **every** token and knob — colors, typography, spacing, borders, shadows, fluid scales — with a live light/dark preview.
+* Framework CSS in the editor canvas and on the frontend.
+* SLASHED colors, gradients, font sizes, and spacing registered as native editor presets. On block themes this flows through theme.json automatically — no custom theme.json needed.
+* A floating token panel to browse and apply colors and gradients to the selected block, toggle SLASHED classes, and copy variables.
+* A dark mode bridge: the editor's dark-mode toggle drives the SLASHED dark palette.
 
-It is built right into WordPress at **SLASHED → Design Settings**: you adjust typed token values and watch the preview update in real time. There is no raw-CSS field and no copy-paste step — you only ever set validated token values, never freeform code. The same configurator is also hosted as a standalone web app at **https://slashed.codeslash.dev/configurator** for designing without a WordPress login; "Open in configurator" launches it preloaded with your current tokens, and "Import shared config" pulls a shared design (a config code or link) back into the plugin.
+reBEMer and class autocomplete are Bricks-only.
 
-= Gutenberg integration =
+= Dark mode, no JavaScript =
 
-The Gutenberg integration is an early implementation — the core preset wiring works today, but the deeper editor tooling is still in development. When enabled, what works now:
+Dark mode runs entirely in CSS:
 
-* Loads the framework CSS in the block editor canvas and on the frontend.
-* Registers `--sf-color-*` tokens as the editor color palette, `--sf-gradient-*` as gradient presets, `--sf-text-*` as font-size presets, and `--sf-space-*` as spacing presets. On block themes, presets flow through `wp_theme_json_data_theme` so no custom theme.json is needed.
-* **Dark mode bridge.** Maps WordPress's `data-wp-dark-mode-active` attribute to the SLASHED theme system, so the editor's dark-mode toggle activates the framework's dark palette.
+* Follows the operating-system setting by default.
+* `data-theme="dark"` forces dark for an element and its descendants.
+* `data-theme="light"` carves a light section out of a dark page.
 
-An in-editor token panel (browse/apply colors and gradients, toggle classes, copy variables) is in progress but not yet functional. reBEMer and native class autocomplete are not on the Gutenberg side. If you want the full tooling today, use Bricks.
-
-= Cascade layers, in one breath =
-
-SLASHED declares 15 named layers up front, in precedence order:
-
-`tokens → reset → base → forms → layout → components → macros → utilities → states → themes → motion → accessibility → print → legacy → overrides`
-
-Later layers always win, regardless of selector specificity. `slashed.overrides` sits on top and is yours — token overrides you set in the plugin land there, so they beat framework defaults without `!important` or specificity hacks. Because every layer is declared upfront, the order in which stylesheets concatenate never changes the cascade.
-
-= Rebrand with a handful of tokens =
-
-Six `-light` brand tokens fully recolor the framework:
-
-`--sf-color-primary-light`, `--sf-color-secondary-light`, `--sf-color-tertiary-light`, `--sf-color-action-light`, `--sf-color-neutral-light`, `--sf-color-base-light`
-
-Add optional `-dark` counterparts for per-mode control. Five status families (success, warning, danger, error, info) have their own built-in defaults and can each be overridden independently — for a maximum of 22 explicit source tokens (11 light + 11 dark). Everything else (hover, tint, shade, tonal steps) is computed at runtime with `oklch(from …)`.
-
-= Dark mode with no JavaScript =
-
-Dark mode runs entirely in CSS via `light-dark()`:
-
-* Follows the OS `prefers-color-scheme` by default.
-* `data-theme="dark"` on any element forces dark for it and its descendants.
-* `data-theme="light"` carves a light subtree out of a dark page.
-
-Section-level theming works too — a single dark section inside an otherwise light page, no script required.
+A single dark section inside a light page — or the reverse — works with no script.
 
 = CSS bundles =
 
-Pick the bundle that fits the project from the settings page:
+Pick the bundle that fits the project on the settings page:
 
-* **Optimal** (recommended) — the full core layer: design tokens, CSS reset, base element styles, themes (light &amp; dark mode), layout primitives, macro-classes, interaction states, motion, accessibility, and print — plus classless form styling.
-* **Optimal + Components** — Optimal plus the component token and style layers (8 component slots reserved; class definitions ship incrementally in upcoming 0.x releases).
-* **Optimal + Utilities** — Optimal plus the utilities layer slot (reserved; SLASHED ships no utility classes in 0.x).
-* **Full** — all layers: Optimal, Components, and Utilities combined.
+* **Optimal** (recommended) — tokens, CSS reset, base element styles, light/dark themes, layout primitives (container, stack, grid, cluster, sidebar, switcher, cover, center, frame, reel), macros (prose, flow, truncate, aspect, scroll-shadow), interaction states, motion, accessibility, print, and classless form styling.
+* **Optimal + Components** — adds prebuilt components: buttons, badges, tags, cards, tables, form rows, and loading skeletons, with status and style modifiers.
+* **Optimal + Utilities** — adds utility classes: object-fit, a z-index scale, text balancing, and animation helpers (spin, ping, blink, shimmer, float).
+* **Full** — everything above.
 
-All four bundles ship locally with the plugin (kept up to date by the one-click updater in settings) and are also reachable via CDN, where you can pin any published release tag.
+Bundles ship with the plugin and update from the settings page with one click. You can also load them from a CDN and pin any published release tag.
+
+= Predictable overrides =
+
+SLASHED puts every rule in a named CSS cascade layer with a fixed order, so a later layer always wins regardless of selector specificity. Your token overrides land in the top layer, so they beat framework defaults without `!important` or specificity hacks.
 
 = Browser support =
 
-SLASHED targets **Chrome 125+, Safari 18.0+, Firefox 129+** (released April–September 2024). It uses `light-dark()`, `oklch(from …)`, `@property`, `pow()`, scroll-driven animations, and `@starting-style` without fallback. Below that floor, derived colors collapse to `initial`, fluid scales stop computing, and scroll animations are unavailable. If you must support older engines, SLASHED isn't the right tool.
+SLASHED targets Chrome 125+, Safari 18.0+, and Firefox 129+. It uses `light-dark()`, relative-color `oklch()`, `@property`, and scroll-driven animations with no fallback. Older browsers are not supported.
 
 = Open source =
 
-The framework is maintained at https://github.com/codeslash-dev/SLASHED. Source and documentation for the plugin and its integrations live alongside it.
+The framework is developed at https://github.com/codeslash-dev/SLASHED.
 
 == Installation ==
 
-1. Upload the `slashed` folder to `/wp-content/plugins/`, or install the plugin ZIP from **Plugins → Add New → Upload Plugin**.
-2. Activate the plugin from the Plugins screen.
-3. Open **SLASHED** in the admin menu.
-4. Choose the CSS bundle for your project — **Optimal** is recommended for most sites.
-5. Enable the integrations you need (Bricks, Gutenberg, or both).
-6. For Bricks: open the builder and you'll find SLASHED tokens in the variable pickers, classes in autocomplete, the Color System panel, and reBEMer in the structure panel.
+1. Install the plugin ZIP from **Plugins → Add New → Upload Plugin**, or upload the `slashed` folder to `/wp-content/plugins/`.
+2. Activate it.
+3. Open **SLASHED** in the admin menu and pick a CSS bundle — **Optimal** suits most sites.
+4. Enable the integrations you use (Bricks, Gutenberg, or both).
+5. Set your brand colors and other tokens under **SLASHED → Design Settings**.
 
 == Frequently Asked Questions ==
 
-= Do I need Bricks Builder or Gutenberg to use it? =
+= Do I need Bricks or Gutenberg? =
 
-No. The CSS framework loads on every WordPress install regardless of theme or builder. The builder integrations are optional and toggle on or off from the settings page.
-
-= Is this just another utility-class framework? =
-
-No. SLASHED ships no utility classes in the 0.x line. It's BEM-first: the design-token API is the product, and you build components against it. The classes it does register in Bricks are structural layout/macro classes (`.sf-*`) and state classes (`.is-*`), not atomic utilities.
-
-= Where is the Design System Configurator? =
-
-It is built into the plugin admin at **SLASHED → Design Settings** — a live, in-WordPress visual editor for every token, with a light/dark preview and no raw-CSS field. It is also available as a standalone web app at https://slashed.codeslash.dev/configurator for designing without a WordPress login, with "Open in configurator" and "Import shared config" to move a design between the two.
-
-= How complete is the Gutenberg integration? =
-
-It's an early implementation. What works today: loading the CSS, registering color/gradient/font-size/spacing presets, and bridging WordPress dark mode. The in-editor token panel is still in development and not yet functional, and there's no reBEMer or class autocomplete on the Gutenberg side. For the full tooling, use Bricks.
-
-= What is reBEMer? =
-
-A BEM class manager in the Bricks structure panel. Select an element, name the block, and reBEMer generates `block__element` / `block--modifier` class names for the whole subtree in one transactional pass. It supports add, rename, replace, add-modifier, and migrate-ID-styles modes, auto-numbers colliding siblings, and refuses to shadow reserved SLASHED utilities. It never deletes a class globally.
-
-= What are the class tooltip hints? =
-
-When "Show class hints" is enabled, a **?** icon appears next to each SLASHED class row in Bricks. Hovering it shows a short, styled description of what that class does and its category — handy when you're learning the framework. The icon is the only trigger, so it never blocks Bricks' own row buttons.
+No. The framework CSS loads on any WordPress site, theme, or builder. The integrations are optional toggles.
 
 = How do I rebrand the framework? =
 
-Set the six `-light` brand color tokens (optionally their `-dark` counterparts). Everything else derives at runtime. Override tokens in Design Settings (the built-in configurator) or with the Configurator's exported CSS. Overrides are injected into the top `slashed.overrides` cascade layer, so they win without specificity hacks.
+Set the six brand colors (and optional dark values) under **SLASHED → Design Settings**, or in the standalone configurator. Everything else — hover and active states, tints, shades, tonal steps — derives from them automatically. Overrides land in the top cascade layer, so they win without specificity hacks.
 
-= What's the minimum browser requirement? =
+= What is reBEMer? =
 
-Chrome 125+, Safari 18.0+, Firefox 129+. The framework relies on `light-dark()`, `oklch(from …)`, `@property`, `pow()`, scroll-driven animations, and `@starting-style` with no fallback — all released in mid-2024.
+A BEM class manager in the Bricks structure panel. Select an element, name the block, and it generates `block__element` / `block--modifier` names across the whole subtree in one pass. It supports add, rename, replace, add-modifier, and migrate-ID-styles modes, and never deletes a global class. Bricks only.
+
+= How complete is the Gutenberg integration? =
+
+It loads the CSS, registers color, gradient, font-size, and spacing presets, bridges dark mode, and provides a token panel for applying colors and gradients, toggling classes, and copying variables. reBEMer and class autocomplete are Bricks-only.
 
 = Does it add any frontend JavaScript? =
 
-No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loads only inside the WordPress admin (settings pages, Bricks editor, and block editor).
+No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loads only in the WordPress admin and the builders.
 
-= Can I pin a specific framework version? =
+= Can I pin a framework version? =
 
-Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The plugin loads that exact version. Local mode serves the bundled `dist/` CSS, with a one-click updater and rollback list.
+Yes. Switch CSS delivery to CDN and enter a release tag. Local mode serves the bundled CSS with a one-click updater.
+
+= What's the minimum browser? =
+
+Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
 
@@ -173,80 +135,30 @@ Yes. Switch CSS delivery to CDN and enter a release tag (e.g. `v0.5.21`). The pl
 * Fixed: Restrict emit-side override key to --sf- namespace
 
 = 0.4.1 =
-* Fixed: Harden override validation per CodeRabbit review
-* Fixed: Render the configurator's flat override map on the frontend
-* Fixed: Validate flat override map against the typed CSS allowlist
+* Hardened validation and frontend rendering of token overrides.
 
 = 0.4.0 =
-* Added: Replace deactivated fork with the framework configurator
-* Fixed: Harden handleImport JSON guard against null and arrays
-* Fixed: Isolate WP embedded mode and surface save failures in persistence.ts
-* Fixed: Wipe src/ before remote sync to prevent stale vendored files
-* Fixed: Protect all upstream-changed files from CI sync
-* Fixed: Unblock CI on PR#80
+* Replaced the old fork with the SLASHED design-system configurator, built into the plugin.
 
 = 0.3.15 =
-* Added: Add flat CSS bundle toggle to plugin settings
+* Added a flat CSS bundle option to the settings page.
 
 = 0.3.14 =
-* Fixed: Move @layer bricks preamble to integration bootstrap
-* Fixed: Inject @layer bricks preamble to prevent cascade override
-* Fixed: Update remaining bundle allowlists and license metadata
-* Fixed: Replace essential/optimal/full with the new four-bundle framework set
-
-= 0.3.13 =
-* Fixed: Sync package-lock.json version in version-sync + release commit-back
-* Fixed: Bump package.json to 0.3.11 to resolve pre-existing version drift
-* Fixed: Include package.json in release commit-back to prevent version drift
-
-= 0.3.11 =
-* Fixed: Commit synced registry-sources.js back to main after release
-* Fixed: Remove deleted tokens.sizes-extended.css from registry-sources; sync from framework on update
-
-= 0.3.9 =
-* Fixed: Pass GITHUB_TOKEN to admin-app build and tolerate 403 in sync-core
+* Switched to the four-bundle set: Optimal, Optimal + Components, Optimal + Utilities, and Full.
 
 = 0.3.8 =
-* Added: "Import shared config" — paste a config code or configurator link to load a shared design (undoable)
-* Removed: Manual CSS page and mode; token overrides are now the single styling path
-* Removed: Legacy Bricks-specific admin app and standalone-plugin bundle fallback
+* Added "Import shared config" — paste a config code or configurator link to load a shared design.
+* Made design tokens the single styling path; removed the manual-CSS page.
 
 = 0.3.7 =
-* Added: "Open in configurator" with current tokens preloaded
-* Fixed: Vendor bundles manifest so the synced build resolves
-* Fixed: Re-vendor hardened config codec
-* Fixed: Tolerate missing token registry during core sync
+* Added "Open in configurator", preloaded with your current tokens.
 
 = 0.3.6 =
-* Added: New **reBEMer** tab in Bricks settings holding the reBEMer enable/disable
-* Added: toggle (the in-builder BEM badges + panel) alongside the element default-name
-* Added: list.
-* Added: Bricks settings → Options now has a toggle for the bottom-right "Colors"
-* Added: launcher pill.
-* Added: Layout containers (section / container / div / block) can now be given
-* Added: default BEM names in the reBEMer element list; they still default to their
-* Added: own Bricks type when left blank.
+* Added the reBEMer settings tab and the in-builder Colors launcher.
+* Layout containers can be given default BEM names.
 
 = 0.3.5 =
-* Changed: Consolidated every Bricks-specific option into one tabbed **Bricks settings**
-* Changed: admin subpage (Element names / Options / Filter hooks), placed after Manual
-* Changed: CSS. Class hints moved off Plugin Settings; the standalone Filter Hooks page
-* Changed: was folded into a tab.
-* Changed: reBEMer now always names layout containers (section / container / div / block)
-* Changed: after their own Bricks type. The `role` and `generic` container-naming modes,
-* Changed: and the `rebemer_container_mode` setting, were removed.
-
-= 0.3.4 =
-* Maintenance release.
-
-= 0.3.3 =
-* Adds default layout container type names, surface mapping settings, and fixes the type-default reset.
-
-= 0.3.2 =
-* Adds smarter default BEM names with configurable type mapping.
-
-= 0.3.1 =
-* Rewrites the plugin description to cover the SLASHED philosophy and all Bricks tooling.
+* Consolidated all Bricks options into one tabbed settings page.
 
 = 0.3.0 =
 * Initial public release.
