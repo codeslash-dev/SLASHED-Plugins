@@ -37,9 +37,15 @@ export function loadInitialOverrides(): Record<string, string> {
   if (typeof window === "undefined") return {};
 
   // WordPress: authoritative DB state printed by PHP at render time.
+  // The presence of `boot` is the embedded-mode boundary — if the host provided
+  // window.slashedApp but omitted overrides (e.g. fresh install), start clean
+  // rather than falling through to stale browser localStorage/hash state.
   const boot = wpBoot();
-  if (boot?.overrides && typeof boot.overrides === "object" && !Array.isArray(boot.overrides)) {
-    return { ...boot.overrides };
+  if (boot) {
+    if (boot.overrides && typeof boot.overrides === "object" && !Array.isArray(boot.overrides)) {
+      return { ...boot.overrides };
+    }
+    return {};
   }
 
   // Standalone: URL hash (shareable config) takes priority over localStorage.
@@ -69,7 +75,7 @@ let _saveTimer: ReturnType<typeof setTimeout> | null = null;
 
 async function wpSave(rest: { url?: string; nonce?: string }, ov: Record<string, string>): Promise<void> {
   const url = (rest.url ?? "").replace(/\/$/, "") + "/tokens/overrides";
-  await fetch(url, {
+  const res = await fetch(url, {
     method: "POST",
     credentials: "same-origin",
     headers: {
@@ -78,6 +84,11 @@ async function wpSave(rest: { url?: string; nonce?: string }, ov: Record<string,
     },
     body: JSON.stringify({ overrides: ov }),
   });
+  if (!res.ok) throw new Error(`slashed: save failed ${res.status} ${res.statusText}`);
+}
+
+export function cancelPendingWpSave(): void {
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
 }
 
 function saveStandalone(ov: Record<string, string>): void {
@@ -102,7 +113,9 @@ export function persistOverrides(ov: Record<string, string>): void {
   if (boot?.rest?.url) {
     const snapshot = { ...ov };
     if (_saveTimer) clearTimeout(_saveTimer);
-    _saveTimer = setTimeout(() => { void wpSave(boot.rest!, snapshot); }, SAVE_DEBOUNCE_MS);
+    _saveTimer = setTimeout(() => {
+      wpSave(boot.rest!, snapshot).catch((err) => console.warn("slashed: save failed", err));
+    }, SAVE_DEBOUNCE_MS);
     return;
   }
   saveStandalone(ov);

@@ -7,7 +7,7 @@
   import PreviewPanel from './components/shell/PreviewPanel.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
   import { fa } from './lib/codec';
-  import { loadInitialOverrides, persistOverrides } from './lib/persistence';
+  import { loadInitialOverrides, persistOverrides, cancelPendingWpSave } from './lib/persistence';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import CommandPalette from './components/CommandPalette.svelte';
@@ -49,8 +49,10 @@
   let canRedo = $derived(future.length > 0);
 
   // Persist + URL sync (standalone) or REST save (WP) + live style injection.
+  // Cancel any pending debounced WP save when the effect re-runs or component unmounts.
   $effect(() => {
     persistOverrides(overrides);
+    return cancelPendingWpSave;
   });
 
   function setOverrides(updater: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>) {
