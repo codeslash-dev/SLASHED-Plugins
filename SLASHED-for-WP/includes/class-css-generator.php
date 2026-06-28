@@ -57,7 +57,12 @@ class Slashed_CSS_Generator {
 		}
 
 		// Flat override map written by the in-WordPress configurator.
-		foreach ( Slashed_Token_Store::get_overrides() as $value ) {
+		// Apply the same key filter as generate_flat_override_declarations() so
+		// has_overrides() and the emitter always agree on what counts.
+		foreach ( Slashed_Token_Store::get_overrides() as $name => $value ) {
+			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/i', $name ) ) {
+				continue;
+			}
 			if ( '' !== (string) $value && null !== $value ) {
 				return true;
 			}
