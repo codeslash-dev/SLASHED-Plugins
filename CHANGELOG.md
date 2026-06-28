@@ -17,71 +17,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Address two Qodo review findings
 - Sanitize POST rebemer_map values at read time
 - Restrict emit-side override key to --sf- namespace
-- Harden override validation per CodeRabbit review
-- Render the configurator's flat override map on the frontend
-- Validate flat override map against the typed CSS allowlist
-
-## [0.4.2] - 2026-06-28
-
-### Fixed
-
-- Drop /i flag from --sf- key regex (CSS props are case-sensitive)
-- Address two Qodo review findings
-- Sanitize POST rebemer_map values at read time
-- Restrict emit-side override key to --sf- namespace
-- Harden override validation per CodeRabbit review
-- Render the configurator's flat override map on the frontend
-- Validate flat override map against the typed CSS allowlist
-
-## [0.4.1] - 2026-06-28
-
-### Fixed
-
-- Drop /i flag from --sf- key regex (CSS props are case-sensitive)
-- Address two Qodo review findings
-- Sanitize POST rebemer_map values at read time
-- Restrict emit-side override key to --sf- namespace
-- Harden override validation per CodeRabbit review
-- Render the configurator's flat override map on the frontend
-- Validate flat override map against the typed CSS allowlist
-
-## [0.4.1] - 2026-06-28
-
-### Fixed
-
-- Drop /i flag from --sf- key regex (CSS props are case-sensitive)
-- Address two Qodo review findings
-- Sanitize POST rebemer_map values at read time
-- Restrict emit-side override key to --sf- namespace
-- Harden override validation per CodeRabbit review
-- Render the configurator's flat override map on the frontend
-- Validate flat override map against the typed CSS allowlist
-
-## [0.4.2] - 2026-06-28
-
-### Fixed
-
-- Drop /i flag from --sf- key regex (CSS props are case-sensitive)
-- Address two Qodo review findings
-- Sanitize POST rebemer_map values at read time
-- Restrict emit-side override key to --sf- namespace
-
-## [0.4.2] - 2026-06-28
-
-### Fixed
-
-- Drop /i flag from --sf- key regex (CSS props are case-sensitive)
-- Address two Qodo review findings
-- Sanitize POST rebemer_map values at read time
-- Restrict emit-side override key to --sf- namespace
-
-## [0.4.1] - 2026-06-28
-
-### Fixed
-
-- Harden override validation per CodeRabbit review
-- Render the configurator's flat override map on the frontend
-- Validate flat override map against the typed CSS allowlist
 
 ## [0.4.1] - 2026-06-28
 
@@ -105,40 +40,11 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Protect all upstream-changed files from CI sync
 - Unblock CI on PR#80
 
-## [0.4.0] - 2026-06-28
-
-### Added
-
-- Replace deactivated fork with the framework configurator
-
-### Fixed
-
-- Harden handleImport JSON guard against null and arrays
-- Isolate WP embedded mode and surface save failures in persistence.ts
-- Wipe src/ before remote sync to prevent stale vendored files
-- Protect all upstream-changed files from CI sync
-- Unblock CI on PR#80
-
 ## [0.3.15] - 2026-06-26
 
 ### Added
 
 - Add flat CSS bundle toggle to plugin settings
-
-## [0.3.15] - 2026-06-26
-
-### Added
-
-- Add flat CSS bundle toggle to plugin settings
-
-## [0.3.14] - 2026-06-26
-
-### Fixed
-
-- Move @layer bricks preamble to integration bootstrap
-- Inject @layer bricks preamble to prevent cascade override
-- Update remaining bundle allowlists and license metadata
-- Replace essential/optimal/full with the new four-bundle framework set
 
 ## [0.3.14] - 2026-06-26
 
@@ -157,21 +63,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Bump package.json to 0.3.11 to resolve pre-existing version drift
 - Include package.json in release commit-back to prevent version drift
 
-## [0.3.13] - 2026-06-24
-
-### Fixed
-
-- Sync package-lock.json version in version-sync + release commit-back
-- Bump package.json to 0.3.11 to resolve pre-existing version drift
-- Include package.json in release commit-back to prevent version drift
-
-## [0.3.11] - 2026-06-23
-
-### Fixed
-
-- Commit synced registry-sources.js back to main after release
-- Remove deleted tokens.sizes-extended.css from registry-sources; sync from framework on update
-
 ## [0.3.11] - 2026-06-23
 
 ### Fixed
@@ -185,25 +76,7 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 - Pass GITHUB_TOKEN to admin-app build and tolerate 403 in sync-core
 
-## [0.3.9] - 2026-06-22
-
-### Fixed
-
-- Pass GITHUB_TOKEN to admin-app build and tolerate 403 in sync-core
-
 ## [0.3.8] - 2026-06-22
-
-### Added
-
-- Import shared config codes; remove manual CSS and legacy admin app
-
-## [0.3.8] - 2026-06-22
-
-### Added
-
-- Import shared config codes; remove manual CSS and legacy admin app
-
-## [0.3.8] - 2026-06-21
 
 ### Added
 
@@ -233,17 +106,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ### Added
 
-- Move reBEMer toggle + element list into a reBEMer tab
-- Add reBEMer + Colors toggles and container rename rows
-
-### Fixed
-
-- Sync plugin version to 0.3.5; address review nits
-
-## [0.3.6] - 2026-06-21
-
-### Added
-
 - New **reBEMer** tab in Bricks settings holding the reBEMer enable/disable
   toggle (the in-builder BEM badges + panel) alongside the element default-name
   list.
@@ -252,6 +114,10 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Layout containers (section / container / div / block) can now be given
   default BEM names in the reBEMer element list; they still default to their
   own Bricks type when left blank.
+
+### Fixed
+
+- Sync plugin version to 0.3.5; address review nits
 
 ## [0.3.5] - 2026-06-21
 
@@ -263,17 +129,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ### Changed
 
-- Satisfy WordPress PHPCS in the reBEMer admin page
-
-### Fixed
-
-- Address CodeRabbit review findings
-- Address review findings on the elements helper + tab
-
-## [0.3.5] - 2026-06-21
-
-### Changed
-
 - Consolidated every Bricks-specific option into one tabbed **Bricks settings**
   admin subpage (Element names / Options / Filter hooks), placed after Manual
   CSS. Class hints moved off Plugin Settings; the standalone Filter Hooks page
@@ -282,8 +137,24 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
   after their own Bricks type. The `role` and `generic` container-naming modes,
   and the `rebemer_container_mode` setting, were removed.
 
+### Fixed
+
+- Address CodeRabbit review findings
+- Address review findings on the elements helper + tab
+
 ## [0.3.4] - 2026-06-20
-## [0.3.4] - 2026-06-20
+
+### Added
+
+- Auto-sync readme.txt changelog on release
+
+### Fixed
+
+- Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
+- Preserve free-form changelog lines in readme sync, add missing JSDoc
+- Derive readme.txt changelog from mergedBody not raw commits
+- Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
+
 ## [0.3.3] - 2026-06-20
 
 ### Added
@@ -294,29 +165,19 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 ### Fixed
 
 - Reset to 'type' default and reconcile docs
+- Mark readme.txt and license.txt as required in zip packaging
+- Include readme.txt and license.txt in plugin zip, fix phpcs:disable scope
+- Extend phpcs:disable to cover both lines of the manual CSS POST read
 
-## [0.3.3] - 2026-06-20
+## [0.3.2] - 2026-06-20
 
 ### Added
 
-- Default layout containers to their Bricks type name
-- Surface mapping settings in the active admin app
+- Smarter default BEM names + configurable type mapping
 
 ### Fixed
 
-- Reset to 'type' default and reconcile docs
-
-## [0.3.2] - 2026-06-20
-
-### Added
-
-- Smarter default BEM names + configurable type mapping
-
-## [0.3.2] - 2026-06-20
-
-### Added
-
-- Smarter default BEM names + configurable type mapping
+- Resolve WordPress Plugin Check errors and warnings
 
 ## [0.3.1] - 2026-06-20
 
@@ -328,29 +189,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 - Mark Gutenberg in-editor panel as not yet functional
 - Correct four factual errors
-
-## [0.3.1] - 2026-06-20
-
-### Changed
-
-- Update readme.txt
-
-### Fixed
-
-- Mark Gutenberg in-editor panel as not yet functional
-- Correct four factual errors
-
-## [0.3.1] - 2026-06-20
-
-### Changed
-
-- Update readme.txt
-
-## [0.3.1] - 2026-06-20
-
-### Changed
-
-- Update readme.txt
 
 ## [0.3.0] - 2026-06-20
 
@@ -374,80 +212,6 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Include readme.txt and license.txt in plugin zip, fix phpcs:disable scope
 - Extend phpcs:disable to cover both lines of the manual CSS POST read
 - Resolve WordPress Plugin Check errors and warnings
-- Preserve sf- prefix in variable hints for Bricks lookup
-- Correct sf-bento--compact description to row height not gap
-- Correct PHPCS alignment and class hint accuracy
-- Replace deprecated word-wrap with overflow-wrap in panel.css
-- Fix variable picker ? button, add descriptions to tooltip
-
-## [0.3.0] - 2026-06-20
-
-### Added
-
-- Auto-sync readme.txt changelog on release
-- Sync plugin data with latest framework tokens and classes
-- Update plugin data and UI for SLASHED v0.6.0 token changes
-
-### Changed
-
-- Cleanup changelog by removing outdated entries
-
-### Fixed
-
-- Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
-- Preserve free-form changelog lines in readme sync, add missing JSDoc
-- Derive readme.txt changelog from mergedBody not raw commits
-- Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
-- Mark readme.txt and license.txt as required in zip packaging
-- Include readme.txt and license.txt in plugin zip, fix phpcs:disable scope
-- Extend phpcs:disable to cover both lines of the manual CSS POST read
-- Resolve WordPress Plugin Check errors and warnings
-- Preserve sf- prefix in variable hints for Bricks lookup
-- Correct sf-bento--compact description to row height not gap
-- Correct PHPCS alignment and class hint accuracy
-- Replace deprecated word-wrap with overflow-wrap in panel.css
-- Fix variable picker ? button, add descriptions to tooltip
-
-## [0.3.5] - 2026-06-20
-## [0.3.5] - 2026-06-20
-## [0.3.4] - 2026-06-19
-
-### Added
-
-- Auto-sync readme.txt changelog on release
-
-### Fixed
-
-- Only suppress ENOENT in syncReadmeChangelog, re-throw other errors
-- Preserve free-form changelog lines in readme sync, add missing JSDoc
-- Derive readme.txt changelog from mergedBody not raw commits
-- Eliminate TOCTOU race in syncReadmeChangelog (CodeQL)
-
-## [0.3.3] - 2026-06-19
-
-### Fixed
-
-- Mark readme.txt and license.txt as required in zip packaging
-- Include readme.txt and license.txt in plugin zip, fix phpcs:disable scope
-- Extend phpcs:disable to cover both lines of the manual CSS POST read
-
-## [0.3.2] - 2026-06-19
-
-### Fixed
-
-- Resolve WordPress Plugin Check errors and warnings
-
-## [0.3.1] - 2026-06-19
-
-## [0.3.0] - 2026-06-19
-
-### Added
-
-- Sync plugin data with latest framework tokens and classes
-- Update plugin data and UI for SLASHED v0.6.0 token changes
-
-### Fixed
-
 - Preserve sf- prefix in variable hints for Bricks lookup
 - Correct sf-bento--compact description to row height not gap
 - Correct PHPCS alignment and class hint accuracy
