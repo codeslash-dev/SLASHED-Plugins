@@ -56,46 +56,40 @@ const INVENTORY_COPIES = [
   `${PLUGIN}/integrations/bricks/data/inventory.json`,
 ];
 
-function read(rel) {
-  return fs.readFileSync(path.join(ROOT, rel), 'utf8');
-}
-
-function sha256(rel) {
-  return crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, rel))).digest('hex');
-}
-
 /** Extract `X.Y.Z[-pre]` from a `/* SLASHED vX.Y.Z — file.css *\/` header. */
-function distHeaderVersion(rel) {
+function distHeaderVersion(read, rel) {
   const first = read(rel).split('\n', 1)[0];
   const m = first.match(/SLASHED\s+v(\d+\.\d+\.\d+(?:[-.][A-Za-z0-9.]+)*)/);
   return m ? m[1] : null;
 }
 
-function cssRefValue(rel, name) {
+function cssRefValue(read, rel, name) {
   const m = read(rel).match(new RegExp(`define\\(\\s*'${name}',\\s*'([^']*)'\\s*\\)`));
   return m ? m[1] : null;
 }
 
-function versionHeaderValue(rel) {
+function versionHeaderValue(read, rel) {
   const m = read(rel).match(/^\s*\*\s*Version:\s*(.+?)\s*$/m);
   return m ? m[1] : null;
 }
 
-function stableTagValue(rel) {
+function stableTagValue(read, rel) {
   const m = read(rel).match(/^Stable tag:\s*(.+?)\s*$/m);
   return m ? m[1] : null;
 }
 
 export function runChecks(root = ROOT) {
-  // Allow tests/callers to point at a different checkout root.
-  if (root !== ROOT) throw new Error('runChecks: custom root is not supported');
+  const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8');
+  const sha256 = (rel) =>
+    crypto.createHash('sha256').update(fs.readFileSync(path.join(root, rel))).digest('hex');
+
   const errors = [];
   const info = [];
 
   // ── 1. Framework-tracked version ──────────────────────────────────────────
   const distVersions = DIST_BUNDLES.map((b) => {
     const rel = `${PLUGIN}/dist/slashed.${b}.css`;
-    const v = distHeaderVersion(rel);
+    const v = distHeaderVersion(read, rel);
     if (!v) errors.push(`Cannot read SLASHED version header from ${rel}`);
     return v;
   });
@@ -113,7 +107,7 @@ export function runChecks(root = ROOT) {
 
   const expectedRef = distVersion ? `v${distVersion}` : null;
   for (const { file, name } of CSS_REF_TARGETS) {
-    const val = cssRefValue(file, name);
+    const val = cssRefValue(read, file, name);
     if (val === null) {
       errors.push(`Cannot find ${name} define in ${file}`);
       continue;
@@ -134,8 +128,8 @@ export function runChecks(root = ROOT) {
 
   // ── 2. Plugin's own release version ───────────────────────────────────────
   const pkgVersion = JSON.parse(read('package.json')).version;
-  const stableTag = stableTagValue(`${PLUGIN}/readme.txt`);
-  const headerVersions = VERSION_HEADER_FILES.map((f) => [f, versionHeaderValue(f)]);
+  const stableTag = stableTagValue(read, `${PLUGIN}/readme.txt`);
+  const headerVersions = VERSION_HEADER_FILES.map((f) => [f, versionHeaderValue(read, f)]);
 
   if (stableTag !== pkgVersion) {
     errors.push(`readme.txt Stable tag '${stableTag}' != package.json version '${pkgVersion}' — run \`npm run version-sync\``);
@@ -145,7 +139,7 @@ export function runChecks(root = ROOT) {
     else if (v !== pkgVersion) errors.push(`${file} Version: '${v}' != package.json version '${pkgVersion}' — run \`npm run version-sync\``);
   }
   for (const { file, name } of VERSION_CONSTANTS) {
-    const val = cssRefValue(file, name);
+    const val = cssRefValue(read, file, name);
     if (val === null) errors.push(`Cannot find ${name} define in ${file}`);
     else if (val !== pkgVersion) errors.push(`${name} = '${val}' != package.json version '${pkgVersion}' — run \`npm run version-sync\``);
   }
