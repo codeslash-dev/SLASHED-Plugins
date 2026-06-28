@@ -469,7 +469,7 @@ class Slashed_REST_Controller {
 	 * GET /tokens/overrides — returns the flat override map.
 	 */
 	public function get_overrides( WP_REST_Request $request ) {
-		return rest_ensure_response( (object) get_option( 'slashed_overrides', array() ) );
+		return rest_ensure_response( (object) Slashed_Token_Store::get_overrides() );
 	}
 
 	/**
@@ -484,7 +484,7 @@ class Slashed_REST_Controller {
 			$raw = array();
 		}
 		$sanitized = $this->sanitize_overrides( $raw );
-		update_option( 'slashed_overrides', $sanitized );
+		Slashed_Token_Store::update_overrides( $sanitized );
 		return rest_ensure_response( (object) $sanitized );
 	}
 
@@ -492,23 +492,40 @@ class Slashed_REST_Controller {
 	 * DELETE /tokens/overrides — removes all stored overrides.
 	 */
 	public function clear_overrides( WP_REST_Request $request ) {
-		delete_option( 'slashed_overrides' );
+		Slashed_Token_Store::delete_overrides();
 		return rest_ensure_response( (object) array() );
 	}
 
 	/**
-	 * Sanitize a flat override map: only allow -- prefixed property names.
+	 * Sanitize a flat override map.
+	 *
+	 * Two gates, both mandatory:
+	 *   1. The property name must be a custom-property identifier
+	 *      (`--` followed by letters, digits and hyphens) — nothing else can
+	 *      become a declaration property.
+	 *   2. The value must pass Slashed_CSS_Generator::validate_override_value(),
+	 *      the same allowlist (colour / dimension / font-family, each behind
+	 *      is_css_safe()) the section-based token path is held to. A value that
+	 *      fails is dropped, so this map can never carry a `}`, an @-rule, a
+	 *      url(), or any other CSS breakout into storage.
 	 *
 	 * @param  array $overrides Raw input.
-	 * @return array            Sanitized { string => string }.
+	 * @return array            Sanitized { "--name" => "value" }.
 	 */
 	private function sanitize_overrides( array $overrides ) {
 		$out = array();
 		foreach ( $overrides as $name => $value ) {
-			if ( ! is_string( $name ) || 0 !== strpos( $name, '--' ) ) {
+			if ( ! is_string( $name ) || ( ! is_string( $value ) && ! is_int( $value ) && ! is_float( $value ) ) ) {
 				continue;
 			}
-			$out[ sanitize_text_field( $name ) ] = sanitize_text_field( (string) $value );
+			if ( ! preg_match( '/^--sf-[a-z0-9-]+$/i', $name ) ) {
+				continue;
+			}
+			$clean = Slashed_CSS_Generator::validate_override_value( $value );
+			if ( false === $clean ) {
+				continue;
+			}
+			$out[ $name ] = $clean;
 		}
 		return $out;
 	}

@@ -37,24 +37,29 @@ class Slashed_CSS_Generator {
 	public static function has_overrides() {
 		$settings = Slashed_Token_Store::get_settings();
 
-		if ( ! is_array( $settings ) || empty( $settings ) ) {
-			return false;
+		if ( is_array( $settings ) && ! empty( $settings ) ) {
+			foreach ( $settings as $values ) {
+				if ( ! is_array( $values ) ) {
+					continue;
+				}
+				foreach ( $values as $value ) {
+					if ( is_array( $value ) ) {
+						foreach ( $value as $v ) {
+							if ( '' !== $v && null !== $v ) {
+								return true;
+							}
+						}
+					} elseif ( '' !== $value && null !== $value ) {
+						return true;
+					}
+				}
+			}
 		}
 
-		foreach ( $settings as $values ) {
-			if ( ! is_array( $values ) ) {
-				continue;
-			}
-			foreach ( $values as $value ) {
-				if ( is_array( $value ) ) {
-					foreach ( $value as $v ) {
-						if ( '' !== $v && null !== $v ) {
-							return true;
-						}
-					}
-				} elseif ( '' !== $value && null !== $value ) {
-					return true;
-				}
+		// Flat override map written by the in-WordPress configurator.
+		foreach ( Slashed_Token_Store::get_overrides() as $value ) {
+			if ( '' !== (string) $value && null !== $value ) {
+				return true;
 			}
 		}
 
@@ -71,45 +76,47 @@ class Slashed_CSS_Generator {
 			return self::$cache;
 		}
 
-		$settings = Slashed_Token_Store::get_settings();
-
-		if ( empty( $settings ) ) {
-			self::$cache = '';
-			return self::$cache;
-		}
-
 		$declarations = array();
 
-		$vp_min = self::resolve_viewport_min( $settings['spacing']['viewport_min'] ?? '' );
-		$vp_max = self::resolve_viewport_max( $settings['spacing']['viewport_max'] ?? '' );
+		$settings = Slashed_Token_Store::get_settings();
 
-		if ( ! empty( $settings['colors'] ) && is_array( $settings['colors'] ) ) {
-			$declarations = array_merge( $declarations, self::generate_color_declarations( $settings['colors'] ) );
+		if ( is_array( $settings ) && ! empty( $settings ) ) {
+			$vp_min = self::resolve_viewport_min( $settings['spacing']['viewport_min'] ?? '' );
+			$vp_max = self::resolve_viewport_max( $settings['spacing']['viewport_max'] ?? '' );
+
+			if ( ! empty( $settings['colors'] ) && is_array( $settings['colors'] ) ) {
+				$declarations = array_merge( $declarations, self::generate_color_declarations( $settings['colors'] ) );
+			}
+			if ( ! empty( $settings['typography'] ) && is_array( $settings['typography'] ) ) {
+				$declarations = array_merge( $declarations, self::generate_typography_declarations( $settings['typography'], $vp_min, $vp_max ) );
+			}
+			if ( ! empty( $settings['spacing'] ) && is_array( $settings['spacing'] ) ) {
+				$declarations = array_merge( $declarations, self::generate_spacing_declarations( $settings['spacing'], $vp_min, $vp_max ) );
+			}
+			if ( ! empty( $settings['radius'] ) && is_array( $settings['radius'] ) ) {
+				$declarations = array_merge( $declarations, self::generate_radius_declarations( $settings['radius'] ) );
+			}
+			if ( ! empty( $settings['shadows'] ) && is_array( $settings['shadows'] ) ) {
+				$declarations = array_merge( $declarations, self::generate_shadow_declarations( $settings['shadows'] ) );
+			}
+			if ( ! empty( $settings['motion'] ) && is_array( $settings['motion'] ) ) {
+				$declarations = array_merge( $declarations, self::generate_motion_declarations( $settings['motion'] ) );
+			}
+			if ( ! empty( $settings['zindex'] ) && is_array( $settings['zindex'] ) ) {
+				$declarations = array_merge( $declarations, self::generate_zindex_declarations( $settings['zindex'] ) );
+			}
+			if ( ! empty( $settings['contrast'] ) && is_array( $settings['contrast'] ) ) {
+				$declarations = array_merge( $declarations, self::generate_contrast_declarations( $settings['contrast'] ) );
+			}
+			if ( ! empty( $settings['layouts'] ) && is_array( $settings['layouts'] ) ) {
+				$declarations = array_merge( $declarations, self::generate_layout_declarations( $settings['layouts'], $vp_min, $vp_max ) );
+			}
 		}
-		if ( ! empty( $settings['typography'] ) && is_array( $settings['typography'] ) ) {
-			$declarations = array_merge( $declarations, self::generate_typography_declarations( $settings['typography'], $vp_min, $vp_max ) );
-		}
-		if ( ! empty( $settings['spacing'] ) && is_array( $settings['spacing'] ) ) {
-			$declarations = array_merge( $declarations, self::generate_spacing_declarations( $settings['spacing'], $vp_min, $vp_max ) );
-		}
-		if ( ! empty( $settings['radius'] ) && is_array( $settings['radius'] ) ) {
-			$declarations = array_merge( $declarations, self::generate_radius_declarations( $settings['radius'] ) );
-		}
-		if ( ! empty( $settings['shadows'] ) && is_array( $settings['shadows'] ) ) {
-			$declarations = array_merge( $declarations, self::generate_shadow_declarations( $settings['shadows'] ) );
-		}
-		if ( ! empty( $settings['motion'] ) && is_array( $settings['motion'] ) ) {
-			$declarations = array_merge( $declarations, self::generate_motion_declarations( $settings['motion'] ) );
-		}
-		if ( ! empty( $settings['zindex'] ) && is_array( $settings['zindex'] ) ) {
-			$declarations = array_merge( $declarations, self::generate_zindex_declarations( $settings['zindex'] ) );
-		}
-		if ( ! empty( $settings['contrast'] ) && is_array( $settings['contrast'] ) ) {
-			$declarations = array_merge( $declarations, self::generate_contrast_declarations( $settings['contrast'] ) );
-		}
-		if ( ! empty( $settings['layouts'] ) && is_array( $settings['layouts'] ) ) {
-			$declarations = array_merge( $declarations, self::generate_layout_declarations( $settings['layouts'], $vp_min, $vp_max ) );
-		}
+
+		// Flat override map written by the in-WordPress configurator
+		// (Design Settings → POST /tokens/overrides). Appended last so a value
+		// set there wins over a legacy section override of the same property.
+		$declarations = array_merge( $declarations, self::generate_flat_override_declarations() );
 
 		if ( empty( $declarations ) ) {
 			self::$cache = '';
@@ -126,6 +133,34 @@ class Slashed_CSS_Generator {
 		self::$cache = apply_filters( 'slashed/override_css', $css );
 
 		return self::$cache;
+	}
+
+	/**
+	 * Build declarations from the flat { "--name": "value" } override map the
+	 * in-WordPress configurator saves via POST /tokens/overrides.
+	 *
+	 * Every entry is re-validated here with the same name + value allowlist the
+	 * save path enforces (validate_override_value(), itself behind
+	 * is_css_safe()). Validating again at emission — not just at save — means
+	 * data written before that hardening, or by any other future writer of the
+	 * option, still cannot emit an unsafe declaration. Names are restricted to a
+	 * custom-property identifier so nothing else can become a property.
+	 *
+	 * @return string[] CSS declaration strings ("--name: value;").
+	 */
+	private static function generate_flat_override_declarations() {
+		$declarations = array();
+		foreach ( Slashed_Token_Store::get_overrides() as $name => $value ) {
+			if ( ! is_string( $name ) || ! preg_match( '/^--[a-z0-9-]+$/i', $name ) ) {
+				continue;
+			}
+			$clean = self::validate_override_value( $value );
+			if ( false === $clean ) {
+				continue;
+			}
+			$declarations[] = $name . ': ' . $clean . ';';
+		}
+		return $declarations;
 	}
 
 	private static function generate_color_declarations( $settings ) {
@@ -487,7 +522,7 @@ class Slashed_CSS_Generator {
 		if ( preg_match( '/[\x00-\x1F\x7F]/', $v ) ) {
 			return false;
 		}
-		if ( preg_match( '#url\s*\(|image-set\s*\(|@|/\*|\*/|</|\\\\#i', $v ) ) {
+		if ( preg_match( '#[{};]|url\s*\(|image-set\s*\(|@|/\*|\*/|</|\\\\#i', $v ) ) {
 			return false;
 		}
 		return self::balanced_parens( $v );
@@ -515,6 +550,34 @@ class Slashed_CSS_Generator {
 			}
 		}
 		return 0 === $depth;
+	}
+
+	/**
+	 * Validate an arbitrary token value for safe emission into a CSS
+	 * declaration, holding it to the same allowlist as the section-based
+	 * generators. Accepts anything those generators accept — a colour, a
+	 * dimension / number / ratio / math expression, or a font-family list —
+	 * and rejects everything else.
+	 *
+	 * This is the single gate the flat `{ "--sf-*": value }` override map is
+	 * run through (see Slashed_REST_Controller::sanitize_overrides) so that
+	 * path can never store a value the strict typed path would refuse. Every
+	 * branch first passes through is_css_safe(), so url()/@-rules/comments/
+	 * HTML/backslash escapes/unbalanced parens are blocked regardless of type.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return string|false Trimmed value when valid, false to drop it.
+	 */
+	public static function validate_override_value( $value ) {
+		$candidate = self::valid_color( $value );
+		if ( false !== $candidate ) {
+			return $candidate;
+		}
+		$candidate = self::valid_dimension( $value );
+		if ( false !== $candidate ) {
+			return $candidate;
+		}
+		return self::valid_font_family( $value );
 	}
 
 	/**
@@ -594,8 +657,9 @@ class Slashed_CSS_Generator {
 		if ( ! self::is_css_safe( $v ) ) {
 			return false;
 		}
-		// var() with optional fallback — paren balance validated by is_css_safe().
-		if ( preg_match( '/^var\s*\(\s*--[a-z0-9-]+/i', $v ) ) {
+		// var() with optional fallback — require a complete, closed expression so a
+		// trailing "; color:red" cannot sneak through a prefix-only match.
+		if ( preg_match( '/^var\s*\(\s*--[a-z0-9-]+(?:\s*,\s*[a-z0-9 ,"\'()-]+)?\s*\)$/i', $v ) ) {
 			return $v;
 		}
 		if ( preg_match( '/^[a-z0-9 ,"\'-]+$/i', $v ) ) {

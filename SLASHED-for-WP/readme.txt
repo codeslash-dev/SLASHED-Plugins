@@ -45,9 +45,9 @@ The token and class lists are parsed from the actual loaded CSS bundle at runtim
 
 = Design System Configurator =
 
-SLASHED has a full visual configurator for tuning **every** token and knob — colors, typography, spacing, borders, shadows, fluid scales — with a live light/dark preview, then exporting ready-to-paste override CSS.
+SLASHED ships a full visual configurator for tuning **every** token and knob — colors, typography, spacing, borders, shadows, fluid scales — with a live light/dark preview.
 
-For now it runs as a standalone web app at **https://slashed.codeslash.dev/configurator**. It is **not yet built into this plugin's admin UI** — full in-WordPress integration is planned for framework **version 0.8.0+**. Until then, configure your tokens in the web app, copy the generated `@layer slashed.overrides { … }` block, and paste it into the plugin's Manual CSS page or your theme.
+It is built right into WordPress at **SLASHED → Design Settings**: you adjust typed token values and watch the preview update in real time. There is no raw-CSS field and no copy-paste step — you only ever set validated token values, never freeform code. The same configurator is also hosted as a standalone web app at **https://slashed.codeslash.dev/configurator** for designing without a WordPress login; "Open in configurator" launches it preloaded with your current tokens, and "Import shared config" pulls a shared design (a config code or link) back into the plugin.
 
 = Gutenberg integration =
 
@@ -125,7 +125,7 @@ No. SLASHED ships no utility classes in the 0.x line. It's BEM-first: the design
 
 = Where is the Design System Configurator? =
 
-It currently runs as a standalone web app at https://slashed.codeslash.dev/configurator. It is not yet embedded in the plugin admin — full in-WordPress integration is planned for framework version 0.8.0+. For now, tune your tokens there, copy the generated override CSS, and paste it into the plugin's Manual CSS page or your theme.
+It is built into the plugin admin at **SLASHED → Design Settings** — a live, in-WordPress visual editor for every token, with a light/dark preview and no raw-CSS field. It is also available as a standalone web app at https://slashed.codeslash.dev/configurator for designing without a WordPress login, with "Open in configurator" and "Import shared config" to move a design between the two.
 
 = How complete is the Gutenberg integration? =
 
@@ -141,7 +141,7 @@ When "Show class hints" is enabled, a **?** icon appears next to each SLASHED cl
 
 = How do I rebrand the framework? =
 
-Set the six `-light` brand color tokens (optionally their `-dark` counterparts). Everything else derives at runtime. Override tokens from Design Settings, the Manual CSS page, or the Configurator's exported CSS. Overrides are stored in the `slashed_tokens` option and injected into the top `slashed.overrides` cascade layer, so they win without specificity hacks.
+Set the six `-light` brand color tokens (optionally their `-dark` counterparts). Everything else derives at runtime. Override tokens in Design Settings (the built-in configurator) or with the Configurator's exported CSS. Overrides are injected into the top `slashed.overrides` cascade layer, so they win without specificity hacks.
 
 = What's the minimum browser requirement? =
 

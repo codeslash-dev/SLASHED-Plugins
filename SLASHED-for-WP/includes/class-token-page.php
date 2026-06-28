@@ -143,7 +143,7 @@ class Slashed_Token_Page {
 					'url'   => esc_url_raw( rest_url( Slashed_REST_Controller::NAMESPACE ) ),
 					'nonce' => wp_create_nonce( 'wp_rest' ),
 				),
-				'overrides'          => (object) get_option( 'slashed_overrides', array() ),
+				'overrides'          => (object) Slashed_Token_Store::get_overrides(),
 				'tabs'               => Slashed_Tab_Registry::get_all(),
 				'defaults'           => Slashed_Token_Defaults::get_all(),
 				'settings'           => Slashed_Token_Store::get_settings(),
