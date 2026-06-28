@@ -45,7 +45,7 @@ const VERSION_CONSTANT_FILES = [
 
 const README = `${PLUGIN}/readme.txt`;
 
-const SEMVER = String.raw`\d+\.\d+\.\d+(?:[-.][A-Za-z0-9.]+)*`;
+const SEMVER = String.raw`\d+\.\d+\.\d+(?:[-+][A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*)*`;
 
 // Matches an existing version that may carry a stray leading v/V, so a value
 // corrupted by a mis-cased tag (e.g. "Stable tag: V0.4.2") is still found and
