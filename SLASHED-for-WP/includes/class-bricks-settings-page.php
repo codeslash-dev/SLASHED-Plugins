@@ -229,7 +229,14 @@ class Slashed_Bricks_Settings_Page {
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer above.
 		$settings['rebemer_enabled'] = isset( $_POST['rebemer_enabled'] );
-		$posted_map                  = ( isset( $_POST['rebemer_map'] ) && is_array( $_POST['rebemer_map'] ) ) ? wp_unslash( $_POST['rebemer_map'] ) : array();
+		$posted_map                  = array();
+		if ( isset( $_POST['rebemer_map'] ) && is_array( $_POST['rebemer_map'] ) ) {
+			foreach ( wp_unslash( $_POST['rebemer_map'] ) as $k => $v ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( is_string( $v ) ) {
+					$posted_map[ $k ] = sanitize_text_field( $v );
+				}
+			}
+		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		$elements  = self::elements();
