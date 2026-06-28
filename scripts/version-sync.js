@@ -47,6 +47,11 @@ const README = `${PLUGIN}/readme.txt`;
 
 const SEMVER = String.raw`\d+\.\d+\.\d+(?:[-.][A-Za-z0-9.]+)*`;
 
+// Matches an existing version that may carry a stray leading v/V, so a value
+// corrupted by a mis-cased tag (e.g. "Stable tag: V0.4.2") is still found and
+// healed back to the clean numeric form on the next run.
+const SEMVER_MATCH = String.raw`[vV]?${SEMVER}`;
+
 function read(rel) {
   return fs.readFileSync(path.join(ROOT, rel), 'utf8');
 }
@@ -59,7 +64,15 @@ function resolveVersion() {
     const tag = execFileSync('git', ['describe', '--tags', '--abbrev=0'], { cwd: ROOT })
       .toString()
       .trim();
-    return tag.replace(/^v/, '');
+    // Strip a leading v/V case-insensitively. The Release workflow trigger is
+    // lowercase-only (`v[0-9]*`), but a mis-cased tag like `V0.4.2` must never
+    // be stamped verbatim into the version strings — that produced a non-numeric
+    // `Stable tag: V0.4.2` that broke a later release run.
+    const version = tag.replace(/^v/i, '');
+    if (!new RegExp(`^${SEMVER}$`).test(version)) {
+      throw new Error(`version-sync: tag "${tag}" does not resolve to a valid version`);
+    }
+    return version;
   }
   return JSON.parse(read('package.json')).version;
 }
@@ -111,7 +124,7 @@ function main() {
 
   changed += syncReplace(
     README,
-    new RegExp(`(^Stable tag:\\s*)${SEMVER}`, 'm'),
+    new RegExp(`(^Stable tag:\\s*)${SEMVER_MATCH}`, 'm'),
     `$1${version}`,
     `Stable tag = ${version}`
   ) ? 1 : 0;
@@ -119,7 +132,7 @@ function main() {
   for (const file of VERSION_HEADER_FILES) {
     changed += syncReplace(
       file,
-      new RegExp(`(^\\s*\\*\\s*Version:\\s*)${SEMVER}`, 'm'),
+      new RegExp(`(^\\s*\\*\\s*Version:\\s*)${SEMVER_MATCH}`, 'm'),
       `$1${version}`,
       `Version: = ${version}`
     ) ? 1 : 0;
@@ -128,7 +141,7 @@ function main() {
   for (const { file, name } of VERSION_CONSTANT_FILES) {
     changed += syncReplace(
       file,
-      new RegExp(`(define\\(\\s*'${name}',\\s*')${SEMVER}('\\s*\\))`),
+      new RegExp(`(define\\(\\s*'${name}',\\s*')${SEMVER_MATCH}('\\s*\\))`),
       `$1${version}$2`,
       `${name} = ${version}`
     ) ? 1 : 0;

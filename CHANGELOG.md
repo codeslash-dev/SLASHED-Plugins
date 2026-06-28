@@ -9,7 +9,7 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
-## [V0.4.2] - 2026-06-28
+## [0.4.2] - 2026-06-28
 
 ### Fixed
 
@@ -21,7 +21,7 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 - Render the configurator's flat override map on the frontend
 - Validate flat override map against the typed CSS allowlist
 
-## [V0.4.2] - 2026-06-28
+## [0.4.2] - 2026-06-28
 
 ### Fixed
 
