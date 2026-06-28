@@ -151,7 +151,7 @@ class Slashed_CSS_Generator {
 	private static function generate_flat_override_declarations() {
 		$declarations = array();
 		foreach ( Slashed_Token_Store::get_overrides() as $name => $value ) {
-			if ( ! is_string( $name ) || ! preg_match( '/^--[a-z0-9-]+$/i', $name ) ) {
+			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/i', $name ) ) {
 				continue;
 			}
 			$clean = self::validate_override_value( $value );
