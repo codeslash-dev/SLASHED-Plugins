@@ -344,13 +344,10 @@ Public License instead of this License.
 THIRD-PARTY LICENSES
 ====================
 
-The following files bundled in this plugin are licensed separately from the
-plugin PHP code above.
-
-dist/slashed.optimal.css
-dist/slashed.optimal-components.css
-dist/slashed.optimal-utilities.css
-dist/slashed.full.css
+All CSS files bundled in this plugin that originate from the SLASHED CSS
+Framework are licensed separately from the plugin PHP code above. This
+includes all files under dist/, admin-app/framework-css/, and any compiled
+CSS assets that embed the framework.
 
   SLASHED CSS Framework
   Copyright (c) 2026 CODE/ (JackGranatowski.com - Jacek Granatowski)
