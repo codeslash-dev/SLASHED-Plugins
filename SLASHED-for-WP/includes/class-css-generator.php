@@ -60,7 +60,7 @@ class Slashed_CSS_Generator {
 		// Apply the same key filter as generate_flat_override_declarations() so
 		// has_overrides() and the emitter always agree on what counts.
 		foreach ( Slashed_Token_Store::get_overrides() as $name => $value ) {
-			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/i', $name ) ) {
+			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/', $name ) ) {
 				continue;
 			}
 			if ( '' !== (string) $value && null !== $value ) {
@@ -156,7 +156,7 @@ class Slashed_CSS_Generator {
 	private static function generate_flat_override_declarations() {
 		$declarations = array();
 		foreach ( Slashed_Token_Store::get_overrides() as $name => $value ) {
-			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/i', $name ) ) {
+			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/', $name ) ) {
 				continue;
 			}
 			$clean = self::validate_override_value( $value );

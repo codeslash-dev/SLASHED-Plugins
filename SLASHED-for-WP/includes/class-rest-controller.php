@@ -518,7 +518,7 @@ class Slashed_REST_Controller {
 			if ( ! is_string( $name ) || ( ! is_string( $value ) && ! is_int( $value ) && ! is_float( $value ) ) ) {
 				continue;
 			}
-			if ( ! preg_match( '/^--sf-[a-z0-9-]+$/i', $name ) ) {
+			if ( ! preg_match( '/^--sf-[a-z0-9-]+$/', $name ) ) {
 				continue;
 			}
 			$clean = Slashed_CSS_Generator::validate_override_value( $value );
