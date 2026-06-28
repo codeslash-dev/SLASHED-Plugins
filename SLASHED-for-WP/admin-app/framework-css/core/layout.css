@@ -1,0 +1,493 @@
+/* SLASHED — core/layout.css
+   @layer slashed.layout
+   Layout primitives: section, container, stack, cluster, grid, sidebar, switcher, frame.
+   Prefix: .sf-*; local rhythm via --sf-*-gap / sizing tokens. */
+
+@layer slashed.layout {
+
+  
+  .sf-section     { padding-block: var(--sf-section-pad); }
+  .sf-section--xs { --sf-section-pad: var(--sf-section-pad--xs); }
+  .sf-section--s  { --sf-section-pad: var(--sf-section-pad--s); }
+  .sf-section--m  { --sf-section-pad: var(--sf-section-pad--m); }
+  .sf-section--l  { --sf-section-pad: var(--sf-section-pad--l); }
+  .sf-section--xl { --sf-section-pad: var(--sf-section-pad--xl); }
+  .sf-section--2xl { --sf-section-pad: var(--sf-section-pad--2xl); }
+
+  .sf-section--guttered { padding-inline: var(--sf-gutter); }
+  .sf-section--guttered .sf-container { padding-inline: 0; }
+
+  .sf-section-group > .sf-section + .sf-section { padding-block-start: 0; }
+
+  /* Collapse modifier */
+  .sf-section--collapse:has(+ .sf-section--collapse) {
+    padding-block-end: calc(var(--sf-section-pad) / 2);
+  }
+  .sf-section--collapse + .sf-section--collapse {
+    padding-block-start: calc(var(--sf-section-pad) / 2);
+  }
+
+  .sf-divider {
+    border:             none;
+    border-block-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
+    margin-block:       var(--sf-divider-gap);
+  }
+  .sf-divider--vertical {
+    border-block-start:  none;
+    border-inline-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
+    margin-block:        0;
+    margin-inline:       var(--sf-divider-gap);
+    align-self:          stretch;
+  }
+
+  .sf-divider--soft   { --sf-divider-color: var(--sf-color-border--subtle); }
+  .sf-divider--strong { --sf-divider-color: var(--sf-color-border--strong); }
+  .sf-divider--dashed { --sf-divider-style: dashed; }
+  .sf-divider--dotted { --sf-divider-style: dotted; }
+
+  .sf-divider--gradient {
+    border:        none;
+    block-size:    var(--sf-divider-width);
+    background:    linear-gradient(to right, transparent, var(--sf-divider-color), transparent);
+  }
+
+  
+  .sf-container {
+    container:      sf-layout / inline-size;
+    width:          100%;
+    max-width:      var(--sf-container-default);
+    margin-inline:  auto;
+    padding-inline: var(--sf-gutter);
+  }
+  .sf-container--narrow { max-width: var(--sf-container-narrow); }
+  .sf-container--prose  { max-width: var(--sf-container-prose); }
+  .sf-container--wide   { max-width: var(--sf-container-wide); }
+  .sf-container--full   { max-width: var(--sf-container-full); }
+
+  /* .sf-cq: CQ scope without .sf-container's max-width/centering.
+     Use when a CQ-dependent primitive needs a container ancestor but no layout chrome. */
+  .sf-cq {
+    container-type: inline-size;
+  }
+
+  
+  .sf-stack {
+    display:        flex;
+    flex-direction: column;
+    gap:            var(--sf-stack-gap);
+  }
+  .sf-stack--xs  { gap: var(--sf-space-xs); }
+  .sf-stack--s   { gap: var(--sf-space-s); }
+  .sf-stack--m   { gap: var(--sf-space-m); }
+  .sf-stack--l   { gap: var(--sf-space-l); }
+  .sf-stack--xl  { gap: var(--sf-space-xl); }
+  .sf-stack--2xl { gap: var(--sf-space-2xl); }
+
+  .sf-stack--center  { align-items: center; }
+  .sf-stack--end     { align-items: flex-end; }
+  .sf-stack--stretch { align-items: stretch; }
+
+  .sf-gap { gap: var(--sf-gap); }
+  .sf-gap--xs  { gap: var(--sf-space-xs); }
+  .sf-gap--s   { gap: var(--sf-space-s); }
+  .sf-gap--m   { gap: var(--sf-space-m); }
+  .sf-gap--l   { gap: var(--sf-space-l); }
+  .sf-gap--xl  { gap: var(--sf-space-xl); }
+  .sf-gap--2xl { gap: var(--sf-space-2xl); }
+
+  
+  .sf-box {
+    padding: var(--sf-box-padding);
+    outline: var(--sf-box-border-width) solid var(--sf-box-border-color);
+  }
+
+  
+  .sf-center {
+    box-sizing:      content-box;
+    width:           auto;
+    margin-inline:   auto;
+    max-inline-size: var(--sf-center-max);
+    padding-inline:  var(--sf-center-gutter);
+  }
+
+  .sf-center--intrinsic {
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+  }
+
+  
+  .sf-cluster {
+    display:         flex;
+    flex-wrap:       wrap;
+    gap:             var(--sf-cluster-gap);
+    align-items:     var(--sf-cluster-align);
+    justify-content: var(--sf-cluster-justify);
+  }
+  .sf-cluster--xs      { gap: var(--sf-space-xs); }
+  .sf-cluster--s       { gap: var(--sf-space-s); }
+  .sf-cluster--m       { gap: var(--sf-space-m); }
+  .sf-cluster--l       { gap: var(--sf-space-l); }
+  .sf-cluster--xl      { gap: var(--sf-space-xl); }
+  .sf-cluster--2xl     { gap: var(--sf-space-2xl); }
+
+  .sf-cluster--no-wrap  { flex-wrap: nowrap; }
+  .sf-cluster--center   { justify-content: center; }
+  .sf-cluster--end      { justify-content: flex-end; }
+  .sf-cluster--between  { justify-content: space-between; }
+
+  
+  .sf-sidebar {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       var(--sf-sidebar-gap);
+  }
+
+  .sf-sidebar > :first-child {
+    flex-basis: var(--sf-sidebar-width);
+    flex-grow:  1;
+  }
+
+  .sf-sidebar > :last-child {
+    flex-basis:      0;
+    flex-grow:       999;
+    min-inline-size: var(--sf-sidebar-min-width);
+  }
+
+  .sf-sidebar--right > :first-child {
+    flex-basis:      0;
+    flex-grow:       999;
+    min-inline-size: var(--sf-sidebar-min-width);
+  }
+
+  .sf-sidebar--right > :last-child {
+    flex-basis: var(--sf-sidebar-width);
+    flex-grow:  1;
+  }
+
+  .sf-sidebar--narrow { --sf-sidebar-width: 12rem; }
+  .sf-sidebar--wide   { --sf-sidebar-width: 26rem; }
+
+  
+  .sf-switcher {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       var(--sf-switcher-gap);
+  }
+
+  .sf-switcher > * {
+    flex-grow:  1;
+    flex-basis: calc((var(--sf-switcher-threshold) - 100%) * 999);
+  }
+
+  .sf-switcher--no-wrap  { flex-wrap: nowrap; overflow-x: auto; overflow-inline: auto; }
+  .sf-switcher--vertical { flex-direction: column; }
+
+  
+  .sf-grid {
+    display:               grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(var(--sf-grid-min), 100%), 1fr));
+    gap:                   var(--sf-grid-gap);
+  }
+
+  .sf-grid--fit {
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--sf-grid-min), 100%), 1fr));
+  }
+
+  .sf-grid--xs { --sf-grid-min: var(--sf-grid-min-xs); }
+  .sf-grid--s  { --sf-grid-min: var(--sf-grid-min-s); }
+  .sf-grid--m  { --sf-grid-min: var(--sf-grid-min-m); }
+  .sf-grid--l  { --sf-grid-min: var(--sf-grid-min-l); }
+  .sf-grid--xl { --sf-grid-min: var(--sf-grid-min-xl); }
+  .sf-grid--2xl { --sf-grid-min: var(--sf-grid-min-2xl); }
+
+  .sf-grid--dense { grid-auto-flow: dense; }
+
+  .sf-icon {
+    display:        inline-block;
+    inline-size:    var(--sf-icon-size, var(--sf-icon-m));
+    block-size:     var(--sf-icon-size, var(--sf-icon-m));
+    flex-shrink:    0;
+    vertical-align: text-bottom;
+    fill:           currentcolor;
+  }
+  .sf-icon--xs  { --sf-icon-size: var(--sf-icon-xs); }
+  .sf-icon--s   { --sf-icon-size: var(--sf-icon-s); }
+  .sf-icon--m   { --sf-icon-size: var(--sf-icon-m); }
+  .sf-icon--l   { --sf-icon-size: var(--sf-icon-l); }
+  .sf-icon--xl  { --sf-icon-size: var(--sf-icon-xl); }
+  .sf-icon--2xl { --sf-icon-size: var(--sf-icon-2xl); }
+
+  .sf-icon--boxed {
+    inline-size:    calc(var(--sf-icon-size, var(--sf-icon-m)) + var(--sf-icon-box-pad) * 2);
+    block-size:     calc(var(--sf-icon-size, var(--sf-icon-m)) + var(--sf-icon-box-pad) * 2);
+    padding:        var(--sf-icon-box-pad);
+    border:         var(--sf-icon-box-border);
+    border-radius:  var(--sf-icon-box-radius);
+    background:     var(--sf-icon-box-bg);
+    box-sizing:     border-box;
+  }
+
+  
+  .sf-cover {
+    display:        flex;
+    flex-direction: column;
+    min-height:     var(--sf-cover-min-height);
+    padding-block:  var(--sf-cover-padding);
+  }
+
+  .sf-cover > .sf-cover__center {
+    margin-block: auto;
+  }
+
+  .sf-cover--min { min-height: 50dvh; }
+
+  .sf-cover--max { min-height: 0; max-block-size: 100dvh; }
+  .sf-cover--padding-s { padding-block: var(--sf-space-xl); }
+  .sf-cover--padding-l { padding-block: var(--sf-space-4xl); }
+
+  
+  .sf-frame {
+    aspect-ratio:    var(--sf-frame-ratio);
+    overflow:        hidden;
+    display:         flex;
+    justify-content: center;
+    align-items:     center;
+  }
+
+  .sf-frame > img,
+  .sf-frame > video {
+    inline-size: 100%;
+    block-size:  100%;
+    object-fit:  cover;
+  }
+
+  .sf-frame--square   { aspect-ratio: var(--sf-ratio-square); }
+  .sf-frame--video    { aspect-ratio: var(--sf-ratio-video); }
+  .sf-frame--cinema   { aspect-ratio: var(--sf-ratio-cinema); }
+  .sf-frame--portrait { aspect-ratio: var(--sf-ratio-portrait); }
+  .sf-frame--4-3      { aspect-ratio: var(--sf-ratio-4-3); }
+  .sf-frame--3-2      { aspect-ratio: var(--sf-ratio-3-2); }
+  .sf-frame--golden   { aspect-ratio: var(--sf-ratio-golden); }
+
+
+  /* Background layer — absolutely-positioned cover media that sits behind a
+     parent's content. The parent is auto-promoted to a positioned, isolated
+     stacking context via :has(), so .sf-bg composes natively under .sf-scrim
+     (background → scrim gradient → content). Works as a bare <img class="sf-bg">
+     or as a wrapper with a nested > img / > video. */
+  :where(:has(> .sf-bg)) {
+    position:  relative;
+    isolation: isolate;
+  }
+
+  .sf-bg {
+    position:        absolute;
+    inset:           var(--sf-bg-inset);
+    inline-size:     calc(100% - 2 * var(--sf-bg-inset));
+    block-size:      calc(100% - 2 * var(--sf-bg-inset));
+    object-fit:      var(--sf-bg-fit);
+    object-position: var(--sf-bg-position);
+    border-radius:   var(--sf-bg-radius);
+    z-index:         var(--sf-bg-z);
+    pointer-events:  none;
+  }
+
+  .sf-bg > :is(img, video, picture) {
+    inline-size:     100%;
+    block-size:      100%;
+    object-fit:      var(--sf-bg-fit);
+    object-position: var(--sf-bg-position);
+    border-radius:   var(--sf-bg-radius);
+    pointer-events:  none;
+  }
+
+  .sf-bg > picture > img {
+    inline-size:     100%;
+    block-size:      100%;
+    object-fit:      var(--sf-bg-fit);
+    object-position: var(--sf-bg-position);
+    border-radius:   var(--sf-bg-radius);
+    pointer-events:  none;
+  }
+
+
+  .sf-reel {
+    display:               flex;
+    block-size:            var(--sf-reel-height);
+    gap:                   var(--sf-reel-gap);
+    overflow-x:                 auto;
+    overflow-inline:            auto;
+    scroll-snap-type:           inline mandatory;
+    scroll-padding-inline:      var(--sf-reel-gap);
+    overscroll-behavior-inline: contain;
+    scrollbar-width:       thin;
+    scrollbar-color:       var(--sf-scrollbar-thumb) var(--sf-scrollbar-track);
+  }
+
+  .sf-reel::-webkit-scrollbar        { block-size: 6px; }
+  .sf-reel::-webkit-scrollbar-track  { background: var(--sf-scrollbar-track); border-radius: var(--sf-radius-full); }
+  .sf-reel::-webkit-scrollbar-thumb  { background: var(--sf-scrollbar-thumb); border-radius: var(--sf-radius-full); }
+
+  .sf-reel > * {
+    flex:              0 0 var(--sf-reel-item-width);
+    scroll-snap-align: start;
+  }
+
+  
+  /* Physical left (not inset-inline-start): translate() uses the physical axis,
+     so logical + translate breaks centering in RTL layouts. */
+  .sf-imposter {
+    position:          absolute;
+    inset-block-start: 50%;
+    left:              50%;
+    translate:         -50% -50%;
+  }
+
+  .sf-imposter--fixed {
+    position: fixed;
+  }
+
+  .sf-imposter--contain {
+    max-inline-size: calc(100% - var(--sf-imposter-margin) * 2);
+    max-block-size:  calc(100% - var(--sf-imposter-margin) * 2);
+    overflow:        auto;
+  }
+
+  
+  .sf-alternate {
+    display:   grid;
+    gap:       var(--sf-alternate-gap);
+    container: sf-alternate / inline-size;
+  }
+
+  .sf-alternate > * {
+    display:     grid;
+    gap:         var(--sf-alternate-inner-gap);
+    align-items: center;
+  }
+
+  @container sf-alternate (min-width: 48em) {
+    .sf-alternate > * {
+      grid-template-columns: 1fr 1fr;
+    }
+    .sf-alternate > :nth-child(even) > :first-child { order: 2; }
+    .sf-alternate > :nth-child(even) > :last-child  { order: 1; }
+  }
+
+  
+  .sf-pancake {
+    display:             grid;
+    grid-template-rows:  auto 1fr auto;
+    min-height:          100dvh;
+  }
+
+  
+  .sf-grid-cols-1 {
+    display: grid;
+    gap:     var(--sf-grid-gap);
+  }
+
+  
+  .sf-grid-cols-2, .sf-grid-cols-3, .sf-grid-cols-4, .sf-grid-cols-6 {
+    display:   grid;
+    gap:       var(--sf-grid-gap);
+    container: sf-grid / inline-size;
+  }
+
+  /* Cannot use var() inside @container per CSS spec — breakpoints hardcoded. */
+  @container (min-width: 30em) {
+    .sf-grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+    .sf-grid-cols-6 { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @container (min-width: 48em) {
+    .sf-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .sf-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .sf-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .sf-grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+  }
+
+  
+  .sf-grid-cols-1-2, .sf-grid-cols-2-1,
+  .sf-grid-cols-1-3, .sf-grid-cols-3-1 {
+    display: grid;
+    gap:     var(--sf-grid-gap);
+  }
+
+  @container (min-width: 48em) {
+    .sf-grid-cols-1-2 { grid-template-columns: 1fr 2fr; }
+    .sf-grid-cols-2-1 { grid-template-columns: 2fr 1fr; }
+    .sf-grid-cols-1-3 { grid-template-columns: 1fr 3fr; }
+    .sf-grid-cols-3-1 { grid-template-columns: 3fr 1fr; }
+  }
+
+  .sf-equal {
+    display:               grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--sf-equal-min-col), 100%), 1fr));
+    gap:                   var(--sf-equal-gap);
+  }
+  .sf-equal--2 { --sf-equal-min-col: var(--sf-equal-min-col-2); }
+  .sf-equal--3 { --sf-equal-min-col: var(--sf-equal-min-col-3); }
+  .sf-equal--4 { --sf-equal-min-col: var(--sf-equal-min-col-4); }
+  .sf-equal--6 { --sf-equal-min-col: var(--sf-equal-min-col-6); }
+
+  
+  .sf-content-grid {
+    display: grid;
+    grid-template-columns:
+      [full-start]
+      minmax(var(--sf-gutter), 1fr)
+      [breakout-start]
+      minmax(0, calc((var(--sf-breakout-width) - var(--sf-content-width)) / 2))
+      [content-start]
+      min(var(--sf-content-width), 100% - var(--sf-gutter) * 2)
+      [content-end]
+      minmax(0, calc((var(--sf-breakout-width) - var(--sf-content-width)) / 2))
+      [breakout-end]
+      minmax(var(--sf-gutter), 1fr)
+      [full-end];
+  }
+
+  .sf-content-grid > *              { grid-column: content; }
+  .sf-content-grid > .sf-breakout   { grid-column: breakout; }
+  .sf-content-grid > .sf-full-bleed { grid-column: full; }
+
+  
+  .sf-bento {
+    display:               grid;
+    grid-template-columns: repeat(var(--sf-bento-cols, var(--sf-bento-cols-default)), 1fr);
+    grid-auto-rows:        minmax(var(--sf-bento-row, var(--sf-bento-row-default)), auto);
+    grid-auto-flow:        dense;
+    gap:                   var(--sf-bento-gap);
+    container:             sf-bento / inline-size;
+  }
+
+  @container (max-width: 29.99em) {
+    .sf-bento { grid-template-columns: 1fr; }
+  }
+
+  @container (min-width: 30em) and (max-width: 47.99em) {
+    .sf-bento { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Container column modifiers */
+  .sf-bento--2       { --sf-bento-cols: 2; }
+  .sf-bento--3       { --sf-bento-cols: 3; }
+  .sf-bento--6       { --sf-bento-cols: 6; }
+
+  /* Container row height modifiers */
+  .sf-bento--compact { --sf-bento-row: var(--sf-bento-row-compact); }
+  .sf-bento--tall    { --sf-bento-row: var(--sf-bento-row-tall); }
+
+  /* Child span modifiers */
+  .sf-bento-wide     { grid-column: span 2; }
+  .sf-bento-full     { grid-column: 1 / -1; }
+  .sf-bento-tall     { grid-row:    span 2; }
+  .sf-bento-featured { grid-column: span 2; grid-row: span 2; }
+
+  
+  .sf-subgrid      { display: grid; grid-template-columns: subgrid; }
+  .sf-subgrid-rows { display: grid; grid-template-rows:    subgrid; }
+
+}

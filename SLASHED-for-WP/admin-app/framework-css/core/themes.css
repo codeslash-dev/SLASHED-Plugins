@@ -1,0 +1,215 @@
+/* SLASHED — core/themes.css
+   @layer slashed.themes
+   Light/dark activation, scoped theme color inheritance, LumLocker, and scheme-aware color adjustments.
+   Uses data-theme and token overrides. */
+
+@layer slashed.themes {
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      color-scheme: dark;
+      --sf-is-dark: 1;
+    }
+  }
+
+  [data-theme="light"] { color-scheme: light; --sf-is-dark: 0; }
+  [data-theme="dark"]  { color-scheme: dark;  --sf-is-dark: 1; }
+
+  :where([data-theme]:not(:root, html)) {
+    background-color: var(--sf-color-bg);
+    color:            var(--sf-color-text);
+  }
+
+  /* LumLocker: locks 4 brand colors to shared OKLCH L. Neutral/base excluded —
+     forcing them to the same L breaks their semantic role. */
+  @supports (color: oklch(from red l c h)) {
+  :root[data-lumlocker] {
+    --sf-color-primary: light-dark(
+      oklch(from var(--sf-color-primary-source-light) var(--sf-lumlocker) c h),
+      oklch(from var(--sf-color-primary-source-dark, var(--sf-color-primary-source-light)) var(--sf-lumlocker) c h)
+    );
+    --sf-color-secondary: light-dark(
+      oklch(from var(--sf-color-secondary-source-light) var(--sf-lumlocker) c h),
+      oklch(from var(--sf-color-secondary-source-dark, var(--sf-color-secondary-source-light)) var(--sf-lumlocker) c h)
+    );
+    --sf-color-tertiary: light-dark(
+      oklch(from var(--sf-color-tertiary-source-light) var(--sf-lumlocker) c h),
+      oklch(from var(--sf-color-tertiary-source-dark, var(--sf-color-tertiary-source-light)) var(--sf-lumlocker) c h)
+    );
+    --sf-color-action: light-dark(
+      oklch(from var(--sf-color-action-source-light) var(--sf-lumlocker) c h),
+      oklch(from var(--sf-color-action-source-dark, var(--sf-color-action-source-light)) var(--sf-lumlocker) c h)
+    );
+  }
+
+  :root[data-lumlocker] [data-theme="dark"] {
+    --sf-color-primary:   oklch(from var(--sf-color-primary-source-dark,   var(--sf-color-primary-source-light))   var(--sf-lumlocker) c h);
+    --sf-color-secondary: oklch(from var(--sf-color-secondary-source-dark, var(--sf-color-secondary-source-light)) var(--sf-lumlocker) c h);
+    --sf-color-tertiary:  oklch(from var(--sf-color-tertiary-source-dark,  var(--sf-color-tertiary-source-light))  var(--sf-lumlocker) c h);
+    --sf-color-action:    oklch(from var(--sf-color-action-source-dark,    var(--sf-color-action-source-light))    var(--sf-lumlocker) c h);
+  }
+  :root[data-lumlocker] [data-theme="light"] {
+    --sf-color-primary:   oklch(from var(--sf-color-primary-source-light)   var(--sf-lumlocker) c h);
+    --sf-color-secondary: oklch(from var(--sf-color-secondary-source-light) var(--sf-lumlocker) c h);
+    --sf-color-tertiary:  oklch(from var(--sf-color-tertiary-source-light)  var(--sf-lumlocker) c h);
+    --sf-color-action:    oklch(from var(--sf-color-action-source-light)    var(--sf-lumlocker) c h);
+  }
+  }
+
+  /* SECTION-LEVEL THEMING */
+  /* light-dark() bakes at :root declaration time; re-declarations on [data-theme]
+     elements are required for section-level theming to work. */
+  @supports (color: oklch(from red l c h)) {
+
+        :root {
+      --sf-color-primary-source-dark:   oklch(from var(--sf-color-primary-source-light)   clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
+      --sf-color-secondary-source-dark: oklch(from var(--sf-color-secondary-source-light) clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
+      --sf-color-tertiary-source-dark:  oklch(from var(--sf-color-tertiary-source-light)  clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
+      --sf-color-action-source-dark:    oklch(from var(--sf-color-action-source-light)    clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
+      --sf-color-neutral-source-dark:   oklch(from var(--sf-color-neutral-source-light)   clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
+      --sf-color-base-source-dark:      oklch(from var(--sf-color-base-source-light)      clamp(0.16, calc(1.18 - l),        0.24) calc(c * 0.5) h);
+      --sf-color-success-source-dark:   oklch(from var(--sf-color-success-source-light)   clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
+      --sf-color-warning-source-dark:   oklch(from var(--sf-color-warning-source-light)   clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
+      --sf-color-info-source-dark:      oklch(from var(--sf-color-info-source-light)      clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
+      --sf-color-danger-source-dark:    oklch(from var(--sf-color-danger-source-light)    clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
+    }
+
+        [data-theme="dark"] {
+
+      --sf-color-primary:   var(--sf-color-primary-source-dark);
+      --sf-color-secondary: var(--sf-color-secondary-source-dark);
+      --sf-color-tertiary:  var(--sf-color-tertiary-source-dark);
+      --sf-color-action:    var(--sf-color-action-source-dark);
+      --sf-color-neutral:   var(--sf-color-neutral-source-dark);
+      --sf-color-base:      var(--sf-color-base-source-dark);
+      --sf-color-surface:   var(--sf-color-base);
+
+      --sf-color-bg:      oklch(from var(--sf-color-base) calc(l + 0.02) c h);
+      --sf-color-inset:   oklch(from var(--sf-color-base) calc(l - 0.02) c h);
+      --sf-color-raised:  oklch(from var(--sf-color-base) calc(l + 0.04) c h);
+      --sf-color-overlay: oklch(from var(--sf-color-base) l c h / 0.9);
+      --sf-color-inverse: oklch(from var(--sf-color-base) calc(1 - l) c h);
+
+      --sf-color-success: var(--sf-color-success-source-dark);
+      --sf-color-warning: var(--sf-color-warning-source-dark);
+      --sf-color-info:    var(--sf-color-info-source-dark);
+      --sf-color-danger:  var(--sf-color-danger-source-dark);
+
+      --sf-color-text:              oklch(from var(--sf-color-neutral) clamp(0.70, calc(l + 0.25 + var(--sf-contrast-bias)), 1)    c h);
+      --sf-color-text--secondary:   oklch(from var(--sf-color-neutral) clamp(0.55, calc(l + 0.1 + var(--sf-contrast-bias)), 0.90) c h);
+      --sf-color-text--placeholder: oklch(from var(--sf-color-neutral) clamp(0.35, calc(l - 0.1),  0.65) c h);
+      --sf-color-text--disabled:    oklch(from var(--sf-color-neutral) clamp(0.25, calc(l - 0.2),  0.55) c h);
+      --sf-color-text--inverse:     oklch(from var(--sf-color-neutral) clamp(0.05, calc(l - 0.4),  0.35) c h);
+      --sf-color-heading:           oklch(from var(--sf-color-neutral) clamp(0.70, calc(l + 0.25 + var(--sf-contrast-bias)), 1)    c h);
+
+      --sf-color-border:         oklch(from var(--sf-color-neutral) clamp(0.25, calc(l - 0.3),  0.55) 0.005 h);
+      --sf-color-border--subtle: oklch(from var(--sf-color-neutral) clamp(0.20, calc(l - 0.38), 0.45) 0.005 h);
+      --sf-color-border--strong: oklch(from var(--sf-color-neutral) clamp(0.38, calc(l - 0.1),  0.65) 0.02  h);
+
+      --sf-color-link:          oklch(from var(--sf-color-action) clamp(0.68, l, 1) c h);
+      --sf-color-link--hover:   oklch(from var(--sf-color-action) clamp(0, max(l + 0.10, 0.68), 1) c h);
+      --sf-color-link--active:  oklch(from var(--sf-color-action) clamp(0, max(l + 0.15, 0.74), 1) c h);
+      --sf-color-link--visited: oklch(from var(--sf-color-action) clamp(0.68, l, 1) c calc(h + 60));
+
+      --sf-color-selection-bg: oklch(from var(--sf-color-action-source-dark) clamp(0.62, calc(0.93 - l * 0.4), 0.78) c h / 0.55);
+
+      --sf-color-success-strong: oklch(from var(--sf-color-success) clamp(0.70, calc(l + 0.15), 1) c h);
+      --sf-color-warning-strong: oklch(from var(--sf-color-warning) clamp(0.70, calc(l + 0.05), 1) c h);
+      --sf-color-info-strong:    oklch(from var(--sf-color-info)    clamp(0.70, calc(l + 0.15), 1) c h);
+      --sf-color-danger-strong:  oklch(from var(--sf-color-danger)  clamp(0.70, calc(l + 0.15), 1) c h);
+    }
+
+        [data-theme="light"] {
+
+      --sf-color-primary:   var(--sf-color-primary-source-light);
+      --sf-color-secondary: var(--sf-color-secondary-source-light);
+      --sf-color-tertiary:  var(--sf-color-tertiary-source-light);
+      --sf-color-action:    var(--sf-color-action-source-light);
+      --sf-color-neutral:   var(--sf-color-neutral-source-light);
+      --sf-color-base:      var(--sf-color-base-source-light);
+      --sf-color-surface:   var(--sf-color-base);
+
+      --sf-color-bg:      oklch(from var(--sf-color-base) calc(l + 0.02) c h);
+      --sf-color-inset:   oklch(from var(--sf-color-base) calc(l - 0.02) c h);
+      --sf-color-raised:  oklch(from var(--sf-color-base) calc(l + 0.04) c h);
+      --sf-color-overlay: oklch(from var(--sf-color-base) l c h / 0.9);
+      --sf-color-inverse: oklch(from var(--sf-color-base) calc(1 - l) c h);
+
+      --sf-color-success: var(--sf-color-success-source-light);
+      --sf-color-warning: var(--sf-color-warning-source-light);
+      --sf-color-info:    var(--sf-color-info-source-light);
+      --sf-color-danger:  var(--sf-color-danger-source-light);
+
+      --sf-color-text:              oklch(from var(--sf-color-neutral-source-light) clamp(0.05, calc(l - 0.4 - var(--sf-contrast-bias)), 0.35) c h);
+      --sf-color-text--secondary:   oklch(from var(--sf-color-neutral-source-light) clamp(0.15, calc(l - 0.25 - var(--sf-contrast-bias)), 0.45) c h);
+      --sf-color-text--placeholder: oklch(from var(--sf-color-neutral-source-light) clamp(0.45, calc(l + 0.15), 0.75) c h);
+      --sf-color-text--disabled:    oklch(from var(--sf-color-neutral-source-light) clamp(0.55, calc(l + 0.25), 0.82) c h);
+      --sf-color-text--inverse:     oklch(from var(--sf-color-neutral-source-light) clamp(0.85, calc(l + 0.4),  0.98) c h);
+      --sf-color-heading:           oklch(from var(--sf-color-neutral-source-light) clamp(0.05, calc(l - 0.4 - var(--sf-contrast-bias)), 0.35) c h);
+
+      --sf-color-border:         oklch(from var(--sf-color-neutral-source-light) clamp(0.70, calc(l + 0.35), 0.95) 0.005 h);
+      --sf-color-border--subtle: oklch(from var(--sf-color-neutral-source-light) clamp(0.75, calc(l + 0.4),  0.97) 0.005 h);
+      --sf-color-border--strong: oklch(from var(--sf-color-neutral-source-light) clamp(0.55, calc(l + 0.1),  0.85) 0.02  h);
+
+      --sf-color-link:          oklch(from var(--sf-color-action) clamp(0, min(l - 0.07, 0.48), 1) c h);
+      --sf-color-link--hover:   oklch(from var(--sf-color-action) clamp(0, min(l - 0.15, 0.40), 1) c h);
+      --sf-color-link--active:  oklch(from var(--sf-color-action) clamp(0, min(l - 0.21, 0.34), 1) c h);
+      --sf-color-link--visited: oklch(from var(--sf-color-action) clamp(0, min(l - 0.07, 0.48), 1) c calc(h + 60));
+
+      --sf-color-selection-bg: oklch(from var(--sf-color-action-source-light) l c h / 0.28);
+
+      --sf-color-success-strong: oklch(from var(--sf-color-success-source-light) calc(l - 0.15) c h);
+      --sf-color-warning-strong: oklch(from var(--sf-color-warning-source-light) calc(l - 0.25) c h);
+      --sf-color-info-strong:    oklch(from var(--sf-color-info-source-light)    calc(l - 0.1)  c h);
+      --sf-color-danger-strong:  oklch(from var(--sf-color-danger-source-light)  calc(l - 0.1)  c h);
+    }
+
+  }
+
+  @supports (color: oklch(from red l c h)) and (width: calc(1px * sign(1))) {
+    [data-theme="dark"] {
+      --sf-color-text--on-primary:   oklch(from var(--sf-color-primary)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-secondary: oklch(from var(--sf-color-secondary) clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-tertiary:  oklch(from var(--sf-color-tertiary)  clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-action:    oklch(from var(--sf-color-action)    clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-neutral:   oklch(from var(--sf-color-neutral)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-success:   oklch(from var(--sf-color-success)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-warning:   oklch(from var(--sf-color-warning)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-info:      oklch(from var(--sf-color-info)      clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-danger:    oklch(from var(--sf-color-danger)    clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-inverse:   oklch(from var(--sf-color-inverse)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+    }
+    [data-theme="light"] {
+      --sf-color-text--on-primary:   oklch(from var(--sf-color-primary)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-secondary: oklch(from var(--sf-color-secondary) clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-tertiary:  oklch(from var(--sf-color-tertiary)  clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-action:    oklch(from var(--sf-color-action)    clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-neutral:   oklch(from var(--sf-color-neutral)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-success:   oklch(from var(--sf-color-success)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-warning:   oklch(from var(--sf-color-warning)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-info:      oklch(from var(--sf-color-info)      clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-danger:    oklch(from var(--sf-color-danger)    clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      --sf-color-text--on-inverse:   oklch(from var(--sf-color-inverse)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+    }
+  }
+
+  /* OPT-IN THEME CROSS-FADE */
+  .sf-theme-transition {
+    transition:
+      --sf-color-primary   var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-secondary var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-tertiary  var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-action    var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-neutral   var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-base      var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-success   var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-warning   var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-info      var(--sf-theme-transition-duration) var(--sf-ease-out),
+      --sf-color-danger    var(--sf-theme-transition-duration) var(--sf-ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sf-theme-transition { transition: none; }
+  }
+
+}

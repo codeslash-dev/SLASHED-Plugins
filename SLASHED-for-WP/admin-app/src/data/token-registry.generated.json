@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedBy": "scripts/gen-token-registry.js",
-    "nextId": 693
+    "nextId": 701
   },
   "tokens": [
     {
@@ -206,15 +206,18 @@
     },
     {
       "id": 50,
-      "name": "--sf-button-padding-block"
+      "name": "--sf-button-padding-block",
+      "removed": true
     },
     {
       "id": 51,
-      "name": "--sf-button-padding-inline"
+      "name": "--sf-button-padding-inline",
+      "removed": true
     },
     {
       "id": 52,
-      "name": "--sf-button-radius"
+      "name": "--sf-button-radius",
+      "removed": true
     },
     {
       "id": 53,
@@ -322,7 +325,7 @@
     },
     {
       "id": 79,
-      "name": "--sf-color-action-dark"
+      "name": "--sf-color-action-source-dark"
     },
     {
       "id": 80,
@@ -334,7 +337,7 @@
     },
     {
       "id": 82,
-      "name": "--sf-color-action-light"
+      "name": "--sf-color-action-source-light"
     },
     {
       "id": 83,
@@ -442,7 +445,7 @@
     },
     {
       "id": 109,
-      "name": "--sf-color-base-dark"
+      "name": "--sf-color-base-source-dark"
     },
     {
       "id": 110,
@@ -454,7 +457,7 @@
     },
     {
       "id": 112,
-      "name": "--sf-color-base-light"
+      "name": "--sf-color-base-source-light"
     },
     {
       "id": 113,
@@ -550,11 +553,11 @@
     },
     {
       "id": 136,
-      "name": "--sf-color-danger-dark"
+      "name": "--sf-color-danger-source-dark"
     },
     {
       "id": 137,
-      "name": "--sf-color-danger-light"
+      "name": "--sf-color-danger-source-light"
     },
     {
       "id": 138,
@@ -574,27 +577,33 @@
     },
     {
       "id": 142,
-      "name": "--sf-color-error"
+      "name": "--sf-color-error",
+      "removed": true
     },
     {
       "id": 143,
-      "name": "--sf-color-error-dark"
+      "name": "--sf-color-error-dark",
+      "removed": true
     },
     {
       "id": 144,
-      "name": "--sf-color-error-light"
+      "name": "--sf-color-error-light",
+      "removed": true
     },
     {
       "id": 145,
-      "name": "--sf-color-error-muted"
+      "name": "--sf-color-error-muted",
+      "removed": true
     },
     {
       "id": 146,
-      "name": "--sf-color-error-strong"
+      "name": "--sf-color-error-strong",
+      "removed": true
     },
     {
       "id": 147,
-      "name": "--sf-color-error-subtle"
+      "name": "--sf-color-error-subtle",
+      "removed": true
     },
     {
       "id": 148,
@@ -606,11 +615,11 @@
     },
     {
       "id": 150,
-      "name": "--sf-color-info-dark"
+      "name": "--sf-color-info-source-dark"
     },
     {
       "id": 151,
-      "name": "--sf-color-info-light"
+      "name": "--sf-color-info-source-light"
     },
     {
       "id": 152,
@@ -742,7 +751,7 @@
     },
     {
       "id": 184,
-      "name": "--sf-color-neutral-dark"
+      "name": "--sf-color-neutral-source-dark"
     },
     {
       "id": 185,
@@ -754,7 +763,7 @@
     },
     {
       "id": 187,
-      "name": "--sf-color-neutral-light"
+      "name": "--sf-color-neutral-source-light"
     },
     {
       "id": 188,
@@ -866,7 +875,7 @@
     },
     {
       "id": 215,
-      "name": "--sf-color-primary-dark"
+      "name": "--sf-color-primary-source-dark"
     },
     {
       "id": 216,
@@ -878,7 +887,7 @@
     },
     {
       "id": 218,
-      "name": "--sf-color-primary-light"
+      "name": "--sf-color-primary-source-light"
     },
     {
       "id": 219,
@@ -994,7 +1003,7 @@
     },
     {
       "id": 247,
-      "name": "--sf-color-secondary-dark"
+      "name": "--sf-color-secondary-source-dark"
     },
     {
       "id": 248,
@@ -1006,7 +1015,7 @@
     },
     {
       "id": 250,
-      "name": "--sf-color-secondary-light"
+      "name": "--sf-color-secondary-source-light"
     },
     {
       "id": 251,
@@ -1050,11 +1059,11 @@
     },
     {
       "id": 261,
-      "name": "--sf-color-success-dark"
+      "name": "--sf-color-success-source-dark"
     },
     {
       "id": 262,
-      "name": "--sf-color-success-light"
+      "name": "--sf-color-success-source-light"
     },
     {
       "id": 263,
@@ -1150,7 +1159,7 @@
     },
     {
       "id": 286,
-      "name": "--sf-color-tertiary-dark"
+      "name": "--sf-color-tertiary-source-dark"
     },
     {
       "id": 287,
@@ -1162,7 +1171,7 @@
     },
     {
       "id": 289,
-      "name": "--sf-color-tertiary-light"
+      "name": "--sf-color-tertiary-source-light"
     },
     {
       "id": 290,
@@ -1222,7 +1231,8 @@
     },
     {
       "id": 304,
-      "name": "--sf-color-text--on-error"
+      "name": "--sf-color-text--on-error",
+      "removed": true
     },
     {
       "id": 305,
@@ -1270,11 +1280,11 @@
     },
     {
       "id": 316,
-      "name": "--sf-color-warning-dark"
+      "name": "--sf-color-warning-source-dark"
     },
     {
       "id": 317,
-      "name": "--sf-color-warning-light"
+      "name": "--sf-color-warning-source-light"
     },
     {
       "id": 318,
@@ -2775,6 +2785,38 @@
     {
       "id": 692,
       "name": "--sf-z-tooltip"
+    },
+    {
+      "id": 693,
+      "name": "--sf-bg-fit"
+    },
+    {
+      "id": 694,
+      "name": "--sf-bg-inset"
+    },
+    {
+      "id": 695,
+      "name": "--sf-bg-position"
+    },
+    {
+      "id": 696,
+      "name": "--sf-bg-radius"
+    },
+    {
+      "id": 697,
+      "name": "--sf-bg-z"
+    },
+    {
+      "id": 698,
+      "name": "--sf-btn-padding-block"
+    },
+    {
+      "id": 699,
+      "name": "--sf-btn-padding-inline"
+    },
+    {
+      "id": 700,
+      "name": "--sf-btn-radius"
     }
   ]
 }

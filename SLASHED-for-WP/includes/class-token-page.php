@@ -123,6 +123,16 @@ class Slashed_Token_Page {
 
 		add_filter( 'script_loader_tag', array( $this, 'mark_as_module' ), 10, 3 );
 
+		// The configurator bundle reads the framework version from a global baked
+		// in at build time (vite `define` → window.__SLASHED_FW_VERSION__). Emit
+		// it before the module so the version pill renders the active version.
+		$fw_version = ltrim( self::get_loaded_framework_version(), 'v' );
+		wp_add_inline_script(
+			'slashed-admin-app',
+			'window.__SLASHED_FW_VERSION__=' . wp_json_encode( $fw_version ) . ';',
+			'before'
+		);
+
 		$plugin_settings = Slashed_Token_Store::get_plugin_settings();
 
 		wp_localize_script(
