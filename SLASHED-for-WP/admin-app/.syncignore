@@ -1,10 +1,10 @@
 # Files under src/ that sync-core.mjs must NOT overwrite.
 #
-# The framework configurator is now embeddable on its own: src/App.svelte uses
-# lib/persistence.ts, which auto-detects WordPress (window.slashedApp) and saves
-# through the REST API, and src/main.ts mounts into #slashed-admin-app via the
-# @framework-css alias. So nothing in src/ needs to diverge from upstream and
-# this list is intentionally empty.
-#
 # Plugin-specific build wiring lives OUTSIDE src/ (vite.config.js, package.json,
 # svelte.config.js, tsconfig.json) and is never touched by the sync.
+
+# src/main.ts is listed here because the upstream @framework-css alias and the
+# #slashed-admin-app mount-target change live on a feature branch that has not
+# yet merged to main. Once codeslash-dev/slashed#443 merges, remove this line
+# so future upstream changes to main.ts flow through automatically.
+src/main.ts

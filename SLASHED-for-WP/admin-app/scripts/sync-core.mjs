@@ -236,6 +236,8 @@ async function vendorChromeRemote() {
     const dest = join(VENDOR_CORE, name);
     try {
       const content = await ghFetchContent(`core/${name}`);
+      // lgtm[js/path-injection] -- dest is join(VENDOR_CORE, name) where name
+      // is from the hardcoded CHROME_LAYERS array, not from network data.
       writeFileSync(dest, content, 'utf8');
       process.stdout.write(`  fetch framework-css/core/${name}\n`);
     } catch (err) {
