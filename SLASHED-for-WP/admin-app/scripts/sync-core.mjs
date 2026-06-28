@@ -269,6 +269,25 @@ async function main() {
   }
 
   console.log(`  source: GitHub ${SLASHED_REPO}@${REF}`);
+  // Fresh tree: drop stale files before fetching, but preserve any syncignored
+  // files so plugin-specific overrides survive the wipe.
+  const preserved = new Map();
+  if (existsSync(SRC)) {
+    for (const entry of syncIgnore) {
+      const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
+      const p = join(SRC, rel);
+      if (existsSync(p)) {
+        preserved.set(p, readFileSync(p));
+        process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
+      }
+    }
+    rmSync(SRC, { recursive: true, force: true });
+  }
+  mkdirSync(SRC, { recursive: true });
+  for (const [p, content] of preserved) {
+    mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p, content);
+  }
   // Recursively vendor the entire configurator/src tree (components, lib, data,
   // and root files: App.svelte, main.ts, types.ts, app.css, vite-env.d.ts).
   await syncGhDir(CFG_SRC, SRC);
