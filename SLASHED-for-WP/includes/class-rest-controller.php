@@ -515,10 +515,10 @@ class Slashed_REST_Controller {
 	private function sanitize_overrides( array $overrides ) {
 		$out = array();
 		foreach ( $overrides as $name => $value ) {
-			if ( ! is_string( $name ) || ! is_string( $value ) ) {
+			if ( ! is_string( $name ) || ( ! is_string( $value ) && ! is_int( $value ) && ! is_float( $value ) ) ) {
 				continue;
 			}
-			if ( ! preg_match( '/^--[a-z0-9-]+$/i', $name ) ) {
+			if ( ! preg_match( '/^--sf-[a-z0-9-]+$/i', $name ) ) {
 				continue;
 			}
 			$clean = Slashed_CSS_Generator::validate_override_value( $value );

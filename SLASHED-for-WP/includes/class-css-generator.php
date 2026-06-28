@@ -522,7 +522,7 @@ class Slashed_CSS_Generator {
 		if ( preg_match( '/[\x00-\x1F\x7F]/', $v ) ) {
 			return false;
 		}
-		if ( preg_match( '#url\s*\(|image-set\s*\(|@|/\*|\*/|</|\\\\#i', $v ) ) {
+		if ( preg_match( '#[{};]|url\s*\(|image-set\s*\(|@|/\*|\*/|</|\\\\#i', $v ) ) {
 			return false;
 		}
 		return self::balanced_parens( $v );
@@ -657,8 +657,9 @@ class Slashed_CSS_Generator {
 		if ( ! self::is_css_safe( $v ) ) {
 			return false;
 		}
-		// var() with optional fallback — paren balance validated by is_css_safe().
-		if ( preg_match( '/^var\s*\(\s*--[a-z0-9-]+/i', $v ) ) {
+		// var() with optional fallback — require a complete, closed expression so a
+		// trailing "; color:red" cannot sneak through a prefix-only match.
+		if ( preg_match( '/^var\s*\(\s*--[a-z0-9-]+(?:\s*,\s*[a-z0-9 ,"\'()-]+)?\s*\)$/i', $v ) ) {
 			return $v;
 		}
 		if ( preg_match( '/^[a-z0-9 ,"\'-]+$/i', $v ) ) {
