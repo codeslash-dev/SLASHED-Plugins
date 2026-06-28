@@ -469,7 +469,7 @@ class Slashed_REST_Controller {
 	 * GET /tokens/overrides — returns the flat override map.
 	 */
 	public function get_overrides( WP_REST_Request $request ) {
-		return rest_ensure_response( (object) get_option( 'slashed_overrides', array() ) );
+		return rest_ensure_response( (object) Slashed_Token_Store::get_overrides() );
 	}
 
 	/**
@@ -484,7 +484,7 @@ class Slashed_REST_Controller {
 			$raw = array();
 		}
 		$sanitized = $this->sanitize_overrides( $raw );
-		update_option( 'slashed_overrides', $sanitized );
+		Slashed_Token_Store::update_overrides( $sanitized );
 		return rest_ensure_response( (object) $sanitized );
 	}
 
@@ -492,7 +492,7 @@ class Slashed_REST_Controller {
 	 * DELETE /tokens/overrides — removes all stored overrides.
 	 */
 	public function clear_overrides( WP_REST_Request $request ) {
-		delete_option( 'slashed_overrides' );
+		Slashed_Token_Store::delete_overrides();
 		return rest_ensure_response( (object) array() );
 	}
 

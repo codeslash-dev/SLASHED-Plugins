@@ -42,6 +42,16 @@ class Slashed_Token_Store {
 	const SETTINGS_OPTION_NAME = 'slashed_bricks_settings';
 
 	/**
+	 * Option name for the flat token-override map written by the in-WordPress
+	 * configurator (Design Settings → POST /tokens/overrides).
+	 *
+	 * Shape: array<string,string> keyed by full custom-property name, e.g.
+	 * array( '--sf-color-primary-light' => 'oklch(0.7 0.15 250)' ). Distinct
+	 * from OPTION_NAME, which holds the legacy per-section maps.
+	 */
+	const OVERRIDES_OPTION_NAME = 'slashed_overrides';
+
+	/**
 	 * Allowed values for the css_bundle plugin setting.
 	 */
 	const ALLOWED_CSS_BUNDLES = array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' );
@@ -109,10 +119,40 @@ class Slashed_Token_Store {
 
 	/**
 	 * Drop the entire token overrides option ("Reset all").
+	 *
+	 * Clears both the section-based map and the flat configurator override
+	 * map so "Reset all" returns the site to framework defaults in full.
 	 */
 	public static function delete_settings() {
 		delete_option( self::OPTION_NAME );
 		delete_option( self::LEGACY_OPTION_NAME );
+		delete_option( self::OVERRIDES_OPTION_NAME );
+	}
+
+	/**
+	 * Read the flat configurator override map.
+	 *
+	 * @return array<string,string> Always an array (empty when unset/corrupt).
+	 */
+	public static function get_overrides() {
+		$overrides = get_option( self::OVERRIDES_OPTION_NAME, array() );
+		return is_array( $overrides ) ? $overrides : array();
+	}
+
+	/**
+	 * Persist the flat configurator override map.
+	 *
+	 * @param array $overrides Already-sanitized { "--name" => "value" } map.
+	 */
+	public static function update_overrides( array $overrides ) {
+		update_option( self::OVERRIDES_OPTION_NAME, $overrides );
+	}
+
+	/**
+	 * Drop the flat configurator override map.
+	 */
+	public static function delete_overrides() {
+		delete_option( self::OVERRIDES_OPTION_NAME );
 	}
 
 	/**
