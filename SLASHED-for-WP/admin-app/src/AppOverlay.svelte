@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import type { PresetTheme, SlashedToken } from './types';
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
@@ -46,18 +46,39 @@
   let future    = $state<Record<string, string>[]>([]);
   let domain    = $state(readStr(LS_DOMAIN_KEY, 'home'));
   let showPalette = $state(false);
+  let showResetConfirm = $state(false);
+  let resetCancelBtn = $state<HTMLButtonElement | null>(null);
+  let resetConfirmBtn = $state<HTMLButtonElement | null>(null);
+
+  $effect(() => {
+    if (showResetConfirm) {
+      tick().then(() => resetCancelBtn?.focus());
+    }
+  });
 
   let overridesCount = $derived(Object.keys(overrides).length);
   let domainBadges   = $derived(overridesByDomain(overrides));
   let canUndo        = $derived(past.length > 0);
   let canRedo        = $derived(future.length > 0);
 
-  let lastSavedSnapshot = $state(JSON.stringify(overrides));
+  function shallowEq(a: Record<string, string>, b: Record<string, string>): boolean {
+    const ak = Object.keys(a);
+    if (ak.length !== Object.keys(b).length) return false;
+    return ak.every((k) => a[k] === b[k]);
+  }
+
+  let lastSavedOverrides = $state<Record<string, string>>({ ...overrides });
   let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
-  let hasPendingChanges = $derived(JSON.stringify(overrides) !== lastSavedSnapshot);
+  let hasPendingChanges = $derived(!shallowEq(overrides, lastSavedOverrides));
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
   $effect(() => { injectLivePreview(overrides); });
+
+  // Push page content left instead of covering it when the panel is open.
+  $effect(() => {
+    document.body.style.marginRight = isOpen ? '420px' : '';
+    document.body.style.transition = 'margin-right 200ms ease-in-out';
+  });
 
   $effect(() => {
     try { localStorage.setItem(LS_OPEN_KEY,   String(isOpen)); } catch {}
@@ -72,7 +93,7 @@
   function setOverrides(updater: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>) {
     const prev = overrides;
     const next = typeof updater === 'function' ? updater(prev) : updater;
-    if (JSON.stringify(prev) !== JSON.stringify(next)) {
+    if (!shallowEq(prev, next)) {
       past = [...past.slice(-49), prev];
       future = [];
       if (saveState === 'saved') saveState = 'idle';
@@ -82,12 +103,12 @@
 
   async function handleSave() {
     if (!hasPendingChanges || saveState === 'saving') return;
-    const snapshot = JSON.stringify(overrides);
+    const snapshot = { ...overrides };
     saveState = 'saving';
     try {
       await saveOverrides(overrides);
-      if (JSON.stringify(overrides) === snapshot) {
-        lastSavedSnapshot = snapshot;
+      if (shallowEq(overrides, snapshot)) {
+        lastSavedOverrides = snapshot;
         saveState = 'saved';
         if (saveStateTimer) clearTimeout(saveStateTimer);
         saveStateTimer = setTimeout(() => {
@@ -116,7 +137,9 @@
     if (theme.id === 'default') setOverrides({});
     else handleBulkChange(theme.overrides as Record<string, string | null>);
   }
-  function handleResetAll() { setOverrides({}); }
+  function handleResetAll() { showResetConfirm = true; }
+  function confirmResetAll() { showResetConfirm = false; setOverrides({}); }
+  function cancelResetAll() { showResetConfirm = false; }
 
   function handleUndo() {
     if (!past.length) return;
@@ -242,6 +265,29 @@
 
     <div class="flex-1 min-w-0"></div>
 
+    <button
+      onclick={handleSave}
+      disabled={!hasPendingChanges || saveState === 'saving'}
+      title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
+      aria-label={saveState === 'saving' ? 'Saving changes' : hasPendingChanges ? 'Save changes' : 'No unsaved changes'}
+      class={[
+        "p-1 rounded transition-colors cursor-pointer shrink-0 disabled:pointer-events-none",
+        saveState === 'saved'
+          ? "text-emerald-300"
+          : hasPendingChanges
+            ? "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+            : "text-slate-500 opacity-40",
+      ].join(' ')}
+    >
+      {#if saveState === 'saving'}
+        <Loader2 class="w-3 h-3 animate-spin" />
+      {:else if saveState === 'saved'}
+        <Check class="w-3 h-3" />
+      {:else}
+        <Save class="w-3 h-3" />
+      {/if}
+    </button>
+
     <button onclick={handleUndo} disabled={!canUndo} title="Undo (Ctrl+Z)"
       class="p-1 rounded text-slate-400 hover:text-white hover:bg-white/8 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0">
       <Undo2 class="w-3 h-3" />
@@ -264,28 +310,6 @@
     <button onclick={handleResetAll} disabled={overridesCount === 0} title="Reset all overrides"
       class="p-1 rounded text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0">
       <Trash2 class="w-3 h-3" />
-    </button>
-
-    <button
-      onclick={handleSave}
-      disabled={!hasPendingChanges || saveState === 'saving'}
-      title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
-      class={[
-        "p-1 rounded transition-all cursor-pointer shrink-0 disabled:pointer-events-none",
-        saveState === 'saved'
-          ? "text-emerald-300"
-          : hasPendingChanges
-            ? "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
-            : "text-slate-500 opacity-40",
-      ].join(' ')}
-    >
-      {#if saveState === 'saving'}
-        <Loader2 class="w-3 h-3 animate-spin" />
-      {:else if saveState === 'saved'}
-        <Check class="w-3 h-3" />
-      {:else}
-        <Save class="w-3 h-3" />
-      {/if}
     </button>
 
     <div class="w-px h-3.5 bg-white/10 mx-0.5 shrink-0"></div>
@@ -336,5 +360,48 @@
       onNavigate={(d) => { domain = d; }}
       onClose={() => { showPalette = false; }}
     />
+  {/if}
+
+  <!-- Reset-all confirmation dialog -->
+  {#if showResetConfirm}
+    <div
+      class="absolute inset-0 z-[100001] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="reset-confirm-title"
+      onkeydown={(e) => {
+        if (e.key === 'Escape') { e.stopPropagation(); cancelResetAll(); }
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const focused = document.activeElement;
+          if (focused === resetCancelBtn) resetConfirmBtn?.focus();
+          else resetCancelBtn?.focus();
+        }
+      }}
+    >
+      <div class="bg-[#1a1a2e] border border-white/10 rounded-xl p-5 mx-4 shadow-2xl w-full max-w-[320px]">
+        <h3 id="reset-confirm-title" class="text-white font-bold text-sm mb-2">Reset all overrides?</h3>
+        <p class="text-slate-400 text-xs mb-4">
+          This will clear all {overridesCount} customisation{overridesCount !== 1 ? 's' : ''}.
+          You can still undo this before saving.
+        </p>
+        <div class="flex gap-2 justify-end">
+          <button
+            bind:this={resetCancelBtn}
+            onclick={cancelResetAll}
+            class="px-3 py-1.5 text-xs rounded-lg bg-white/8 text-slate-300 hover:bg-white/12 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            bind:this={resetConfirmBtn}
+            onclick={confirmResetAll}
+            class="px-3 py-1.5 text-xs rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold transition-colors cursor-pointer"
+          >
+            Reset all
+          </button>
+        </div>
+      </div>
+    </div>
   {/if}
 </div>
