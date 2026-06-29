@@ -48,9 +48,11 @@
   let canUndo = $derived(past.length > 0);
   let canRedo = $derived(future.length > 0);
 
-  // Save state
-  let hasPendingChanges = $state(false);
+  // Save state — hasPendingChanges is derived so undo/redo update it automatically.
+  let lastSavedSnapshot = $state(JSON.stringify(overrides));
   let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
+  let hasPendingChanges = $derived(JSON.stringify(overrides) !== lastSavedSnapshot);
+  let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Live CSS preview on every change — actual persistence only on explicit save.
   $effect(() => { injectLivePreview(overrides); });
@@ -61,7 +63,6 @@
     if (JSON.stringify(prev) !== JSON.stringify(next)) {
       past = [...past.slice(-49), prev];
       future = [];
-      hasPendingChanges = true;
       if (saveState === 'saved') saveState = 'idle';
     }
     overrides = next;
@@ -69,12 +70,22 @@
 
   async function handleSave() {
     if (!hasPendingChanges || saveState === 'saving') return;
+    const snapshot = JSON.stringify(overrides);
     saveState = 'saving';
     try {
       await saveOverrides(overrides);
-      hasPendingChanges = false;
-      saveState = 'saved';
-      setTimeout(() => { if (saveState === 'saved') saveState = 'idle'; }, 2000);
+      // Only mark clean if overrides haven't changed since save started.
+      if (JSON.stringify(overrides) === snapshot) {
+        lastSavedSnapshot = snapshot;
+        saveState = 'saved';
+        if (saveStateTimer) clearTimeout(saveStateTimer);
+        saveStateTimer = setTimeout(() => {
+          if (saveState === 'saved') saveState = 'idle';
+          saveStateTimer = null;
+        }, 2000);
+      } else {
+        saveState = 'idle';
+      }
     } catch (err) {
       console.warn('slashed: save failed', err);
       saveState = 'idle';
@@ -201,7 +212,10 @@
       }
     };
     window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    return () => {
+      window.removeEventListener("keydown", handler);
+      if (saveStateTimer) clearTimeout(saveStateTimer);
+    };
   });
 </script>
 

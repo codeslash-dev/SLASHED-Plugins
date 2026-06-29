@@ -52,8 +52,10 @@
   let canUndo        = $derived(past.length > 0);
   let canRedo        = $derived(future.length > 0);
 
-  let hasPendingChanges = $state(false);
+  let lastSavedSnapshot = $state(JSON.stringify(overrides));
   let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
+  let hasPendingChanges = $derived(JSON.stringify(overrides) !== lastSavedSnapshot);
+  let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
   $effect(() => { injectLivePreview(overrides); });
 
@@ -73,7 +75,6 @@
     if (JSON.stringify(prev) !== JSON.stringify(next)) {
       past = [...past.slice(-49), prev];
       future = [];
-      hasPendingChanges = true;
       if (saveState === 'saved') saveState = 'idle';
     }
     overrides = next;
@@ -81,12 +82,21 @@
 
   async function handleSave() {
     if (!hasPendingChanges || saveState === 'saving') return;
+    const snapshot = JSON.stringify(overrides);
     saveState = 'saving';
     try {
       await saveOverrides(overrides);
-      hasPendingChanges = false;
-      saveState = 'saved';
-      setTimeout(() => { if (saveState === 'saved') saveState = 'idle'; }, 2000);
+      if (JSON.stringify(overrides) === snapshot) {
+        lastSavedSnapshot = snapshot;
+        saveState = 'saved';
+        if (saveStateTimer) clearTimeout(saveStateTimer);
+        saveStateTimer = setTimeout(() => {
+          if (saveState === 'saved') saveState = 'idle';
+          saveStateTimer = null;
+        }, 2000);
+      } else {
+        saveState = 'idle';
+      }
     } catch (err) {
       console.warn('slashed: save failed', err);
       saveState = 'idle';
@@ -180,6 +190,7 @@
     return () => {
       window.removeEventListener('keydown', keydown);
       document.removeEventListener('slashed:toggle-overlay', onToggle);
+      if (saveStateTimer) clearTimeout(saveStateTimer);
     };
   });
 </script>
