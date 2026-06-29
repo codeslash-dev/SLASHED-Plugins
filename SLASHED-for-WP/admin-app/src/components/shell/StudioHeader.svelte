@@ -1,17 +1,20 @@
 <script lang="ts">
-  import { Undo2, Redo2, Trash2, Share2, FolderOpen, Check } from 'lucide-svelte';
+  import { Undo2, Redo2, Trash2, Share2, FolderOpen, Check, Save, Loader2 } from 'lucide-svelte';
 
   const version = typeof __SLASHED_VERSION__ !== "undefined" ? __SLASHED_VERSION__ : "";
 
-  let { overridesCount, canUndo, canRedo, onUndo, onRedo, onResetAll, onImport, onExport }: {
+  let { overridesCount, canUndo, canRedo, hasPendingChanges, saveState, onUndo, onRedo, onResetAll, onImport, onExport, onSave }: {
     overridesCount: number;
     canUndo: boolean;
     canRedo: boolean;
+    hasPendingChanges: boolean;
+    saveState: 'idle' | 'saving' | 'saved';
     onUndo: () => void;
     onRedo: () => void;
     onResetAll: () => void;
     onImport: () => void;
     onExport: () => void;
+    onSave: () => void;
   } = $props();
 
   let shareFeedback = $state(false);
@@ -103,6 +106,33 @@
       class="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
     >
       <Trash2 class="w-3.5 h-3.5" />
+    </button>
+
+    <div class="w-px h-4 bg-white/10 mx-1"></div>
+
+    <button
+      onclick={onSave}
+      disabled={!hasPendingChanges || saveState === 'saving'}
+      title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
+      class={[
+        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer",
+        saveState === 'saved'
+          ? "bg-emerald-900/40 border border-emerald-500/30 text-emerald-300"
+          : hasPendingChanges
+            ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shadow-emerald-600/30"
+            : "bg-white/5 text-slate-500 disabled:opacity-40 disabled:pointer-events-none",
+      ].join(' ')}
+    >
+      {#if saveState === 'saving'}
+        <Loader2 class="w-3.5 h-3.5 animate-spin" />
+        Saving…
+      {:else if saveState === 'saved'}
+        <Check class="w-3.5 h-3.5" />
+        Saved
+      {:else}
+        <Save class="w-3.5 h-3.5" />
+        Save
+      {/if}
     </button>
   </div>
 </header>

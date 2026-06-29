@@ -7,7 +7,7 @@
   import PreviewPanel from './components/shell/PreviewPanel.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
   import { fa } from './lib/codec';
-  import { loadInitialOverrides, persistOverrides, cancelPendingWpSave } from './lib/persistence';
+  import { loadInitialOverrides, injectLivePreview, saveOverrides } from './lib/persistence';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import CommandPalette from './components/CommandPalette.svelte';
@@ -48,12 +48,12 @@
   let canUndo = $derived(past.length > 0);
   let canRedo = $derived(future.length > 0);
 
-  // Persist + URL sync (standalone) or REST save (WP) + live style injection.
-  // Cancel any pending debounced WP save when the effect re-runs or component unmounts.
-  $effect(() => {
-    persistOverrides(overrides);
-    return cancelPendingWpSave;
-  });
+  // Save state
+  let hasPendingChanges = $state(false);
+  let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
+
+  // Live CSS preview on every change — actual persistence only on explicit save.
+  $effect(() => { injectLivePreview(overrides); });
 
   function setOverrides(updater: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>) {
     const prev = overrides;
@@ -61,8 +61,24 @@
     if (JSON.stringify(prev) !== JSON.stringify(next)) {
       past = [...past.slice(-49), prev];
       future = [];
+      hasPendingChanges = true;
+      if (saveState === 'saved') saveState = 'idle';
     }
     overrides = next;
+  }
+
+  async function handleSave() {
+    if (!hasPendingChanges || saveState === 'saving') return;
+    saveState = 'saving';
+    try {
+      await saveOverrides(overrides);
+      hasPendingChanges = false;
+      saveState = 'saved';
+      setTimeout(() => { if (saveState === 'saved') saveState = 'idle'; }, 2000);
+    } catch (err) {
+      console.warn('slashed: save failed', err);
+      saveState = 'idle';
+    }
   }
 
   function handleSet(name: string, value: string) {
@@ -175,6 +191,10 @@
         e.preventDefault();
         handleRedo();
       }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        handleSave();
+      }
       if ((e.ctrlKey || e.metaKey) && !e.repeat && e.key.toLowerCase() === "k") {
         e.preventDefault();
         showPalette = !showPalette;
@@ -191,11 +211,14 @@
     {overridesCount}
     {canUndo}
     {canRedo}
+    {hasPendingChanges}
+    {saveState}
     onUndo={handleUndo}
     onRedo={handleRedo}
     onResetAll={handleResetAll}
     onImport={handleImport}
     onExport={handleExport}
+    onSave={handleSave}
   />
 
   <!-- Main body: sidebar + left panel + preview -->
