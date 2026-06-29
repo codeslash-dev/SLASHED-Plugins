@@ -258,9 +258,26 @@ async function main() {
   const local = findLocalCfgSrc();
   if (local) {
     console.log(`  source: local ${local}`);
-    // Fresh tree: drop any stale files from the previous fork before copying.
-    if (existsSync(SRC)) rmSync(SRC, { recursive: true, force: true });
+    // Fresh tree: drop any stale files from the previous fork before copying,
+    // but preserve syncignored plugin-specific files across the wipe (mirrors
+    // the same logic used in GitHub API mode).
+    const preserved = new Map();
+    if (existsSync(SRC)) {
+      for (const entry of syncIgnore) {
+        const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
+        const p = join(SRC, rel);
+        if (existsSync(p)) {
+          preserved.set(p, readFileSync(p));
+          process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
+        }
+      }
+      rmSync(SRC, { recursive: true, force: true });
+    }
     mkdirSync(SRC, { recursive: true });
+    for (const [p, content] of preserved) {
+      mkdirSync(dirname(p), { recursive: true });
+      writeFileSync(p, content);
+    }
     copyLocalDir(local, local);
     vendorChromeLocal(resolve(local, '../..')); // configurator/src -> repo root
     vendorFullBundle();
