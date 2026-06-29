@@ -86,6 +86,9 @@
         overridden={"--sf-gap" in overrides}
         onChange={(v) => onSet("--sf-gap", `${v}rem`)}
         onReset={() => onReset("--sf-gap")}
+        rawDefault="var(--sf-space-m)"
+        currentRaw={overrides["--sf-gap"]}
+        onRawSet={(v) => onSet("--sf-gap", v)}
       />
       <SliderRow
         label="Content gap" value={contentGapVal} min={0} max={2} step={0.0625} unit="rem"
@@ -93,6 +96,9 @@
         overridden={"--sf-content-gap" in overrides}
         onChange={(v) => onSet("--sf-content-gap", `${v}rem`)}
         onReset={() => onReset("--sf-content-gap")}
+        rawDefault="var(--sf-space-s)"
+        currentRaw={overrides["--sf-content-gap"]}
+        onRawSet={(v) => onSet("--sf-content-gap", v)}
       />
       <SliderRow
         label="Gutter" value={gutterVal} min={0} max={6} step={0.0625} unit="rem"
@@ -100,6 +106,9 @@
         overridden={"--sf-gutter" in overrides}
         onChange={(v) => onSet("--sf-gutter", `${v}rem`)}
         onReset={() => onReset("--sf-gutter")}
+        rawDefault="var(--sf-space-l)"
+        currentRaw={overrides["--sf-gutter"]}
+        onRawSet={(v) => onSet("--sf-gutter", v)}
       />
     {/if}
   </section>

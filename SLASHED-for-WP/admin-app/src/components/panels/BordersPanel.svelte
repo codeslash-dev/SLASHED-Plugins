@@ -15,24 +15,24 @@
 
   const BORDER_STYLES = ["solid", "dashed", "dotted"];
   const RADIUS_STEPS = ["xs", "s", "m", "l", "xl", "2xl", "full"];
-  const BASE_RADII: Record<string, number> = { xs: 2, s: 4, m: 6, l: 10, xl: 14, "2xl": 20, full: 9999 };
+  const BASE_RADII: Record<string, number> = { xs: 2, s: 4, m: 8, l: 12, xl: 16, "2xl": 24, full: 9999 };
 
-  const RADIUS_FINE: Array<{ step: string; name: string; default: number; max: number; step_size: number }> = [
-    { step: "xs",  name: "--sf-radius-xs",  default: 2,  max: 16, step_size: 0.5 },
-    { step: "s",   name: "--sf-radius-s",   default: 4,  max: 24, step_size: 0.5 },
-    { step: "m",   name: "--sf-radius-m",   default: 6,  max: 32, step_size: 1   },
-    { step: "l",   name: "--sf-radius-l",   default: 10, max: 48, step_size: 1   },
-    { step: "xl",  name: "--sf-radius-xl",  default: 14, max: 64, step_size: 1   },
-    { step: "2xl", name: "--sf-radius-2xl", default: 20, max: 80, step_size: 2   },
+  const RADIUS_FINE: Array<{ step: string; name: string; default: number; max: number; step_size: number; rawDefault: string }> = [
+    { step: "xs",  name: "--sf-radius-xs",  default: 2,  max: 16, step_size: 0.5, rawDefault: "calc(2px * var(--sf-radius-scale))"  },
+    { step: "s",   name: "--sf-radius-s",   default: 4,  max: 24, step_size: 0.5, rawDefault: "calc(4px * var(--sf-radius-scale))"  },
+    { step: "m",   name: "--sf-radius-m",   default: 8,  max: 32, step_size: 1,   rawDefault: "calc(8px * var(--sf-radius-scale))"  },
+    { step: "l",   name: "--sf-radius-l",   default: 12, max: 48, step_size: 1,   rawDefault: "calc(12px * var(--sf-radius-scale))" },
+    { step: "xl",  name: "--sf-radius-xl",  default: 16, max: 64, step_size: 1,   rawDefault: "calc(16px * var(--sf-radius-scale))" },
+    { step: "2xl", name: "--sf-radius-2xl", default: 24, max: 80, step_size: 2,   rawDefault: "calc(24px * var(--sf-radius-scale))" },
   ];
 
   const COMPONENT_TOKENS = [
-    { label: "Button radius",         token: "--sf-button-radius",          unit: "rem", min: 0, max: 2, step: 0.05, default: 0.375, help: "--sf-button-radius" },
-    { label: "Button padding block",  token: "--sf-button-padding-block",   unit: "rem", min: 0, max: 1, step: 0.025, default: 0.375, help: "--sf-button-padding-block" },
-    { label: "Button padding inline", token: "--sf-button-padding-inline",  unit: "rem", min: 0, max: 2, step: 0.025, default: 0.875, help: "--sf-button-padding-inline" },
-    { label: "Field radius",          token: "--sf-field-radius",           unit: "rem", min: 0, max: 2, step: 0.05, default: 0.375, help: "--sf-field-radius" },
-    { label: "Field padding block",   token: "--sf-field-padding-block",    unit: "rem", min: 0, max: 1, step: 0.025, default: 0.375, help: "--sf-field-padding-block" },
-    { label: "Field padding inline",  token: "--sf-field-padding-inline",   unit: "rem", min: 0, max: 2, step: 0.025, default: 0.75, help: "--sf-field-padding-inline" },
+    { label: "Button radius",         token: "--sf-btn-radius",         unit: "rem", min: 0, max: 2,   step: 0.05,  default: 0.5,   rawDefault: "var(--sf-radius-m)",  help: "--sf-btn-radius" },
+    { label: "Button padding block",  token: "--sf-btn-padding-block",  unit: "rem", min: 0, max: 1,   step: 0.025, default: 0.375, rawDefault: "var(--sf-space-xs)", help: "--sf-btn-padding-block" },
+    { label: "Button padding inline", token: "--sf-btn-padding-inline", unit: "rem", min: 0, max: 2,   step: 0.025, default: 1,     rawDefault: "var(--sf-space-m)",  help: "--sf-btn-padding-inline" },
+    { label: "Field radius",          token: "--sf-field-radius",       unit: "rem", min: 0, max: 2,   step: 0.05,  default: 0.5,   rawDefault: "var(--sf-radius-m)",  help: "--sf-field-radius" },
+    { label: "Field padding block",   token: "--sf-field-padding-block",  unit: "rem", min: 0, max: 1, step: 0.025, default: 0.375, rawDefault: "var(--sf-space-xs)", help: "--sf-field-padding-block" },
+    { label: "Field padding inline",  token: "--sf-field-padding-inline", unit: "rem", min: 0, max: 2, step: 0.025, default: 0.75,  rawDefault: "var(--sf-space-s)",  help: "--sf-field-padding-inline" },
   ];
 
   const knobs = KNOBS_BY_DOMAIN["borders"] ?? [];
@@ -58,7 +58,7 @@
   let focusWidth   = $derived(parseNum(overrides["--sf-focus-ring-width"], 2, "px"));
   let focusOffset  = $derived(parseNum(overrides["--sf-focus-ring-offset"], 2, "px"));
   let dividerWidth = $derived(parseNum(overrides["--sf-divider-width"]?.replace("px",""), 1));
-  let dividerGap   = $derived(parseNum(overrides["--sf-divider-gap"]?.replace("rem",""), 1));
+  let dividerGap   = $derived(parseNum(overrides["--sf-divider-gap"]?.replace("rem",""), 1));  // ~1rem ≈ var(--sf-space-m) at default scale
   let borderColor  = $derived(overrides["--sf-color-border"] ?? "");
   let borderStyle  = $derived(overrides["--sf-border-style"] ?? "solid");
   let focusRingColor = $derived(overrides["--sf-focus-ring-color"] ?? "");
@@ -71,13 +71,15 @@
   function getRadiusValue(r: typeof RADIUS_FINE[0]): number {
     const raw = overrides[r.name];
     if (!raw) return r.default;
-    return parseFloat(raw);
+    if (/^(var|calc|clamp)\(/.test(raw.trim())) return r.default;
+    return parseFloat(raw) || r.default;
   }
 
   function getComponentVal(t: typeof COMPONENT_TOKENS[0]): number {
     const raw = overrides[t.token];
     if (!raw) return t.default;
-    return parseFloat(raw);
+    if (/^(var|calc|clamp)\(/.test(raw.trim())) return t.default;
+    return parseFloat(raw) || t.default;
   }
 </script>
 
@@ -254,6 +256,9 @@
         overridden={"--sf-divider-width" in overrides}
         onChange={(v) => onSet("--sf-divider-width", `${v}px`)}
         onReset={() => onReset("--sf-divider-width")}
+        rawDefault="var(--sf-border-width-1)"
+        currentRaw={overrides["--sf-divider-width"]}
+        onRawSet={(v) => onSet("--sf-divider-width", v)}
       />
       <SliderRow
         label="Gap" value={dividerGap} min={0} max={4} step={0.125} unit="rem"
@@ -261,6 +266,9 @@
         overridden={"--sf-divider-gap" in overrides}
         onChange={(v) => onSet("--sf-divider-gap", `${v}rem`)}
         onReset={() => onReset("--sf-divider-gap")}
+        rawDefault="var(--sf-space-m)"
+        currentRaw={overrides["--sf-divider-gap"]}
+        onRawSet={(v) => onSet("--sf-divider-gap", v)}
       />
     {/if}
   </section>
@@ -363,6 +371,9 @@
             overridden={r.name in overrides}
             onChange={(v) => onSet(r.name, `${v}px`)}
             onReset={() => onReset(r.name)}
+            rawDefault={r.rawDefault}
+            currentRaw={overrides[r.name]}
+            onRawSet={(v) => onSet(r.name, v)}
           />
         {/each}
       </div>
@@ -419,6 +430,9 @@
             overridden={t.token in overrides}
             onChange={(v) => onSet(t.token, `${v}${t.unit}`)}
             onReset={() => onReset(t.token)}
+            rawDefault={t.rawDefault}
+            currentRaw={overrides[t.token]}
+            onRawSet={(v) => onSet(t.token, v)}
           />
         {/each}
       </div>
