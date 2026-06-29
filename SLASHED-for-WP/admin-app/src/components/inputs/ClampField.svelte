@@ -152,6 +152,7 @@
             <span class="text-[9px] text-slate-500 w-14 shrink-0">{row.side}</span>
             <select
               value={row.active !== undefined ? String(row.active) : ""}
+              aria-label={`${row.side} modular scale ratio preset`}
               onchange={(e) => {
                 const v = parseFloat((e.target as HTMLSelectElement).value);
                 if (Number.isFinite(v)) row.onChange?.(clampRatio(v));
@@ -167,6 +168,7 @@
             </select>
             <input
               type="number" min={ratioMin_bound} max={ratioMax_bound} step={0.001} value={row.value}
+              aria-label={`${row.side} modular scale custom ratio`}
               onchange={(e) => { const n = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(n)) row.onChange?.(clampRatio(n)); }}
               class="w-16 shrink-0 bg-white/5 border border-white/10 rounded text-[11px] font-mono text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500"
             />

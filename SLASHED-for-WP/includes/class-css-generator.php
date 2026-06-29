@@ -25,16 +25,18 @@ class Slashed_CSS_Generator {
 	/**
 	 * Check whether any token overrides exist.
 	 *
+	 * Uses validate_override_value() so this method and the emitter agree on
+	 * exactly which entries count as active — an entry that would be silently
+	 * dropped at emit time is not counted here either.
+	 *
 	 * @return bool
 	 */
 	public static function has_overrides() {
-		// Apply the same key filter as generate_flat_override_declarations() so
-		// has_overrides() and the emitter always agree on what counts.
 		foreach ( Slashed_Token_Store::get_overrides() as $name => $value ) {
 			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/', $name ) ) {
 				continue;
 			}
-			if ( '' !== (string) $value && null !== $value ) {
+			if ( false !== self::validate_override_value( $value ) ) {
 				return true;
 			}
 		}
@@ -170,7 +172,64 @@ class Slashed_CSS_Generator {
 		if ( false !== $candidate ) {
 			return $candidate;
 		}
+		$candidate = self::valid_timing_function( $value );
+		if ( false !== $candidate ) {
+			return $candidate;
+		}
+		$candidate = self::valid_timeline_range( $value );
+		if ( false !== $candidate ) {
+			return $candidate;
+		}
 		return self::valid_font_family( $value );
+	}
+
+	/**
+	 * Validate a CSS easing / timing-function value.
+	 *
+	 * Accepts named keywords (ease, linear, ease-in, ease-out, ease-in-out,
+	 * step-start, step-end) and functional forms cubic-bezier(), linear(), and
+	 * steps() whose bodies are restricted to digits, letters, spaces, and the
+	 * punctuation that appears in valid timing-function syntax.
+	 *
+	 * @param mixed $value Raw timing-function input.
+	 * @return string|false Trimmed value when valid, false otherwise.
+	 */
+	private static function valid_timing_function( $value ) {
+		$v = trim( (string) $value );
+		if ( ! self::is_css_safe( $v ) ) {
+			return false;
+		}
+		if ( preg_match( '/^(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end)$/i', $v ) ) {
+			return $v;
+		}
+		if ( preg_match( '/^(cubic-bezier|linear|steps)\s*\(/i', $v )
+			&& preg_match( '/^[a-z0-9\s.,%()\-+]+$/i', $v ) ) {
+			return $v;
+		}
+		return false;
+	}
+
+	/**
+	 * Validate a CSS scroll-timeline range value.
+	 *
+	 * Accepts the named range keywords (normal, entry, exit, cover, contain)
+	 * with an optional numeric offset (number + optional CSS unit), matching
+	 * the syntax the Motion panel writes for --sf-ease-* timeline ranges.
+	 *
+	 * @param mixed $value Raw timeline-range input.
+	 * @return string|false Trimmed value when valid, false otherwise.
+	 */
+	private static function valid_timeline_range( $value ) {
+		$v = trim( (string) $value );
+		if ( ! self::is_css_safe( $v ) ) {
+			return false;
+		}
+		$units   = 'px|rem|em|%|vw|vh|vmin|vmax|vi|vb|ch|ex|fr|dvh|svh|lvh|dvw|svw|lvw|cqi|cqb|cqw|cqh';
+		$pattern = '/^(normal|entry|exit|cover|contain)(\s+-?(\d+\.?\d*|\.\d+)(' . $units . ')?)?$/i';
+		if ( preg_match( $pattern, $v ) ) {
+			return $v;
+		}
+		return false;
 	}
 
 	/**
