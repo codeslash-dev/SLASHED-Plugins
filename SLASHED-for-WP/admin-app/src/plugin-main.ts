@@ -27,8 +27,8 @@ function mountOverlay() {
   let mounted = false;
   const doMount = () => {
     if (mounted) return;
-    mounted = true;
     mount(AppOverlay, { target: mountPoint });
+    mounted = true;
   };
 
   const cssUrl = (window as any).slashedApp?.cssUrl as string | undefined;
