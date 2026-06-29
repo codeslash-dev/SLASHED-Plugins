@@ -3,7 +3,7 @@
  * Plugin Name: SLASHED for Gutenberg
  * Plugin URI: https://github.com/codeslash-dev/SLASHED
  * Description: Integrates the SLASHED cascade-layer CSS framework with the WordPress block editor — CSS loading, color palette sync, and dark-mode bridging.
- * Version: 0.4.5
+ * Version: 0.4.6
  * Author: Jack Granatowski
  * Author URI: https://codeslash.net
  * License: GPL-2.0-or-later
@@ -26,10 +26,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * plugin they are not yet set and are defined here as usual.
  */
 if ( ! defined( 'SLASHED_GUTENBERG_VERSION' ) ) {
-	define( 'SLASHED_GUTENBERG_VERSION', '0.4.5' );
+	define( 'SLASHED_GUTENBERG_VERSION', '0.4.6' );
 	define( 'SLASHED_GUTENBERG_PATH', plugin_dir_path( __FILE__ ) );
 	define( 'SLASHED_GUTENBERG_URL', plugin_dir_url( __FILE__ ) );
-	define( 'SLASHED_GUTENBERG_CSS_REF', 'v0.6.24' );
+	define( 'SLASHED_GUTENBERG_CSS_REF', 'v0.6.25' );
 }
 
 define( 'SLASHED_GUTENBERG_ALLOWED_BUNDLES', array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' ) );

@@ -9,6 +9,34 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.6] - 2026-06-29
+
+### Added
+
+- Reset-all confirmation; save button left; panel gated on query param
+
+### Changed
+
+- Replace JSON.stringify comparisons with shallow equality in AppOverlay
+
+### Fixed
+
+- Address CodeRabbit/Qodo review findings + page-squeeze layout
+
+## [0.4.6] - 2026-06-29
+
+### Added
+
+- Reset-all confirmation; save button left; panel gated on query param
+
+### Changed
+
+- Replace JSON.stringify comparisons with shallow equality in AppOverlay
+
+### Fixed
+
+- Address CodeRabbit/Qodo review findings + page-squeeze layout
+
 ## [0.4.5] - 2026-06-29
 
 ### Added
