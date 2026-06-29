@@ -144,9 +144,6 @@ class Slashed_Token_Page {
 					'nonce' => wp_create_nonce( 'wp_rest' ),
 				),
 				'overrides'          => (object) Slashed_Token_Store::get_overrides(),
-				'tabs'               => Slashed_Tab_Registry::get_all(),
-				'defaults'           => Slashed_Token_Defaults::get_all(),
-				'settings'           => Slashed_Token_Store::get_settings(),
 				'pluginSettings'     => array_merge(
 					array( 'configurator_url' => self::CONFIGURATOR_URL ),
 					$plugin_settings,

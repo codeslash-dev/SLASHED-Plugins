@@ -48,9 +48,7 @@ new Slashed_Core_Enqueue();
 
 // ─── Token infrastructure (global — shared by all integrations) ───────────────────
 
-require_once SLASHED_PATH . 'includes/class-token-sanitizer.php';
 require_once SLASHED_PATH . 'includes/class-token-defaults.php';
-require_once SLASHED_PATH . 'includes/class-tab-registry.php';
 require_once SLASHED_PATH . 'includes/class-css-generator.php';
 require_once SLASHED_PATH . 'includes/class-rest-controller.php';
 

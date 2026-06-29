@@ -22,16 +22,17 @@
 
   let userRawMode = $state(false);
 
+  // Local draft so typing is never interrupted by re-renders. Declared before
+  // the derived below so `isEditing` is in scope where `showRaw` reads it.
+  let rawDraft = $state(currentRaw ?? '');
+  let isEditing = $state(false);
+
   // Auto raw mode when override value is a CSS expression
   let isRawOverride = $derived(
     !!currentRaw && /^(var|calc|clamp|min|max|env)\(/.test(currentRaw.trim())
   );
 
   let showRaw = $derived(!!(rawDefault && onRawSet && (userRawMode || isRawOverride || isEditing)));
-
-  // Local draft so typing is never interrupted by re-renders
-  let rawDraft = $state(currentRaw ?? '');
-  let isEditing = $state(false);
 
   // Sync draft from external currentRaw changes only when user is not actively editing
   $effect(() => {
