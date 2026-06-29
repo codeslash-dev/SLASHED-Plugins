@@ -149,13 +149,15 @@ class Slashed_Frontend_Configurator {
 
 	/**
 	 * Whether the overlay should load on this request.
-	 * Only on the public frontend, with the admin bar visible, for admins.
+	 * Only on the public frontend, with the admin bar visible, for admins,
+	 * and only when the ?slashed-frontend-panel query parameter is present.
 	 *
 	 * @return bool
 	 */
 	private function should_load() {
 		return ! is_admin()
 			&& is_admin_bar_showing()
-			&& current_user_can( 'manage_options' );
+			&& current_user_can( 'manage_options' )
+			&& isset( $_GET['slashed-frontend-panel'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 }

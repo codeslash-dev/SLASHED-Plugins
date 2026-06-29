@@ -46,6 +46,7 @@
   let future    = $state<Record<string, string>[]>([]);
   let domain    = $state(readStr(LS_DOMAIN_KEY, 'home'));
   let showPalette = $state(false);
+  let showResetConfirm = $state(false);
 
   let overridesCount = $derived(Object.keys(overrides).length);
   let domainBadges   = $derived(overridesByDomain(overrides));
@@ -116,7 +117,9 @@
     if (theme.id === 'default') setOverrides({});
     else handleBulkChange(theme.overrides as Record<string, string | null>);
   }
-  function handleResetAll() { setOverrides({}); }
+  function handleResetAll() { showResetConfirm = true; }
+  function confirmResetAll() { showResetConfirm = false; setOverrides({}); }
+  function cancelResetAll() { showResetConfirm = false; }
 
   function handleUndo() {
     if (!past.length) return;
@@ -242,6 +245,28 @@
 
     <div class="flex-1 min-w-0"></div>
 
+    <button
+      onclick={handleSave}
+      disabled={!hasPendingChanges || saveState === 'saving'}
+      title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
+      class={[
+        "p-1 rounded transition-all cursor-pointer shrink-0 disabled:pointer-events-none",
+        saveState === 'saved'
+          ? "text-emerald-300"
+          : hasPendingChanges
+            ? "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+            : "text-slate-500 opacity-40",
+      ].join(' ')}
+    >
+      {#if saveState === 'saving'}
+        <Loader2 class="w-3 h-3 animate-spin" />
+      {:else if saveState === 'saved'}
+        <Check class="w-3 h-3" />
+      {:else}
+        <Save class="w-3 h-3" />
+      {/if}
+    </button>
+
     <button onclick={handleUndo} disabled={!canUndo} title="Undo (Ctrl+Z)"
       class="p-1 rounded text-slate-400 hover:text-white hover:bg-white/8 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0">
       <Undo2 class="w-3 h-3" />
@@ -264,28 +289,6 @@
     <button onclick={handleResetAll} disabled={overridesCount === 0} title="Reset all overrides"
       class="p-1 rounded text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0">
       <Trash2 class="w-3 h-3" />
-    </button>
-
-    <button
-      onclick={handleSave}
-      disabled={!hasPendingChanges || saveState === 'saving'}
-      title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
-      class={[
-        "p-1 rounded transition-all cursor-pointer shrink-0 disabled:pointer-events-none",
-        saveState === 'saved'
-          ? "text-emerald-300"
-          : hasPendingChanges
-            ? "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
-            : "text-slate-500 opacity-40",
-      ].join(' ')}
-    >
-      {#if saveState === 'saving'}
-        <Loader2 class="w-3 h-3 animate-spin" />
-      {:else if saveState === 'saved'}
-        <Check class="w-3 h-3" />
-      {:else}
-        <Save class="w-3 h-3" />
-      {/if}
     </button>
 
     <div class="w-px h-3.5 bg-white/10 mx-0.5 shrink-0"></div>
@@ -322,7 +325,7 @@
           onBulkChange={handleBulkChange}
           onApplyTheme={handleApplyTheme}
           onSelectDomain={(d) => { domain = d; }}
-          onResetAll={handleResetAll}
+          onResetAll={confirmResetAll}
         />
       </div>
     </div>
@@ -336,5 +339,37 @@
       onNavigate={(d) => { domain = d; }}
       onClose={() => { showPalette = false; }}
     />
+  {/if}
+
+  <!-- Reset-all confirmation dialog -->
+  {#if showResetConfirm}
+    <div
+      class="absolute inset-0 z-[100001] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="reset-confirm-title"
+    >
+      <div class="bg-[#1a1a2e] border border-white/10 rounded-xl p-5 mx-4 shadow-2xl w-full max-w-[320px]">
+        <h3 id="reset-confirm-title" class="text-white font-bold text-sm mb-2">Reset all overrides?</h3>
+        <p class="text-slate-400 text-xs mb-4">
+          This will clear all {overridesCount} customisation{overridesCount !== 1 ? 's' : ''}.
+          You can still undo this before saving.
+        </p>
+        <div class="flex gap-2 justify-end">
+          <button
+            onclick={cancelResetAll}
+            class="px-3 py-1.5 text-xs rounded-lg bg-white/8 text-slate-300 hover:bg-white/12 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            onclick={confirmResetAll}
+            class="px-3 py-1.5 text-xs rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold transition-colors cursor-pointer"
+          >
+            Reset all
+          </button>
+        </div>
+      </div>
+    </div>
   {/if}
 </div>
