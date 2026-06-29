@@ -61,9 +61,10 @@ newer release exists. Build/check scripts resolve the framework from
   fatal white screen on activation). WordPress 6.4+, PHP 7.4+.
 - **CSS** — bundled framework CSS is generated; only hand-author CSS inside the
   integrations, and keep stylelint green.
-- **Editor/admin SPAs** — Svelte sources live under
-  `integrations/bricks/{editor-app,admin-app}`; commit the built assets they
-  emit into `assets/` so the plugin ships without a build step.
+- **Editor/admin SPAs** — the Bricks editor SPA lives at
+  `integrations/bricks/editor-app/`; the shared admin SPA lives at
+  `SLASHED-for-WP/admin-app/`. Commit the built assets they emit into `assets/`
+  so the plugin ships without a build step.
 - **Two version concepts** (kept distinct by `verify-sync.js`):
   - **Plugin version** — `package.json`, the `Version:` header + `SLASHED_*_VERSION`
     constants in the three entry files, and `readme.txt` `Stable tag`.

@@ -9,22 +9,13 @@ Bricks Builder and Gutenberg integrations. Framework-level items live in the
   element mutation API so Bricks' own Ctrl-Z treats the operation as one step;
   restore the pre-apply snapshot on mid-apply error. (Drops the in-panel undo
   ring buffer from scope.)
-- **Color contrast tab** — WCAG AA/AAA ratios for every semantic fg/bg token
-  pair, light and dark, computed against the user's current saved overrides via
-  `class-color-resolver.php`.
-- **Class documentation tooltips** — info icon beside each SLASHED class row in
-  the Bricks class manager, gated by a `show_class_hints` setting.
 - **Inventory stale-detection** — weekly cron checks for a newer framework
   version; surfaces a dashboard widget. Skipped if a version is pinned.
-- **REST token validation** — HTTP wrapper around `class-token-sanitizer.php`
-  for inline admin-SPA validation.
 
 ## Post-1.0 — Gutenberg
 
 - `--sf-*` → `--wp--custom--*` theme.json mapping for the Site Editor Global
   Styles UI.
-- Token override admin UI (Svelte panel, parallel to Bricks). Until then,
-  override via the `slashed_gutenberg/css_bundle_url` filter or a child theme.
 - reBEMer parity (not scoped; currently Bricks-specific).
 
 ## Post-1.0 — Bricks
@@ -38,3 +29,16 @@ Bricks Builder and Gutenberg integrations. Framework-level items live in the
 
 - Per-page CSS bundle override — covered by the `slashed_bricks/css_bundle_url`
   filter.
+
+---
+
+## Shipped (no longer tracked here)
+
+- **Class documentation hints** — `?` icon beside each SLASHED class row in the
+  Bricks class manager, gated by `show_class_hints`. *(shipped)*
+- **REST token validation** — `POST /wp-json/slashed/v1/tokens/validate`
+  dry-runs the sanitizer without saving. *(shipped)*
+- **WCAG contrast tab** — AA/AAA ratios for every semantic fg/bg token pair,
+  light and dark, built into the Design Settings SPA. *(shipped)*
+- **Frontend design overlay** — click **/ Design** in the admin bar to edit
+  tokens on any live page without leaving the site. *(shipped in 0.4.4)*
