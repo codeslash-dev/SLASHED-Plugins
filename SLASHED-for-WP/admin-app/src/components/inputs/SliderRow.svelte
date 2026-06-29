@@ -27,7 +27,7 @@
     !!currentRaw && /^(var|calc|clamp|min|max|env)\(/.test(currentRaw.trim())
   );
 
-  let showRaw = $derived(!!(rawDefault && onRawSet && (userRawMode || isRawOverride)));
+  let showRaw = $derived(!!(rawDefault && onRawSet && (userRawMode || isRawOverride || isEditing)));
 
   // Local draft so typing is never interrupted by re-renders
   let rawDraft = $state(currentRaw ?? '');
@@ -75,15 +75,14 @@
       value={rawDraft}
       placeholder={rawDefault}
       onfocus={() => { isEditing = true; }}
-      onblur={() => { isEditing = false; }}
+      onblur={() => {
+        isEditing = false;
+        if (!rawDraft.trim()) onReset();
+      }}
       oninput={(e) => {
         rawDraft = (e.target as HTMLInputElement).value;
         const v = rawDraft.trim();
-        if (!v) {
-          onReset();
-        } else if (onRawSet) {
-          onRawSet(v);
-        }
+        if (v && onRawSet) onRawSet(v);
       }}
       class="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-[11px] font-mono text-slate-300 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
     />

@@ -174,7 +174,7 @@ export function injectLivePreview(ov: Record<string, string>): void {
   // Include pre-computed derived tokens alongside source tokens so they win
   // as unlayered CSS over any hardcoded clamp values in @layer slashed.overrides.
   const derived = computeScaleTokens(ov);
-  const preview = Object.keys(derived).length > 0 ? { ...ov, ...derived } : ov;
+  const preview = Object.keys(derived).length > 0 ? { ...derived, ...ov } : ov;
   styleEl.textContent = fa(preview, { mode: "root", banner: false });
 }
 

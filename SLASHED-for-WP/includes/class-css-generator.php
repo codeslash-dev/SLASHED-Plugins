@@ -207,7 +207,7 @@ class Slashed_CSS_Generator {
 	private static function flat_has_any( $keys ) {
 		$overrides = Slashed_Token_Store::get_overrides();
 		foreach ( $keys as $key ) {
-			if ( isset( $overrides[ $key ] ) && '' !== (string) $overrides[ $key ] ) {
+			if ( isset( $overrides[ $key ] ) && false !== self::validate_override_value( $overrides[ $key ] ) ) {
 				return true;
 			}
 		}
