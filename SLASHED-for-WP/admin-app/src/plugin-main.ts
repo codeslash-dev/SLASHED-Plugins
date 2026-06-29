@@ -29,6 +29,8 @@ function mountOverlay() {
     if (mounted) return;
     mount(AppOverlay, { target: mountPoint });
     mounted = true;
+    // Signal to the admin-bar onclick that the toggle listener is live.
+    overlayTarget.setAttribute('data-slashed-ready', '');
   };
 
   const cssUrl = (window as any).slashedApp?.cssUrl as string | undefined;

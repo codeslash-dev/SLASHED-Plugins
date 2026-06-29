@@ -114,11 +114,16 @@ class Slashed_Frontend_Configurator {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$panel_active = isset( $_GET['slashed-frontend-panel'] );
 
+		// The overlay mount is deferred until its CSS loads (up to 5 s). Use a
+		// data-slashed-ready attribute set by plugin-main.ts after mount() to
+		// gate the toggle event, so early clicks fall back to a navigation
+		// instead of dispatching to an unmounted (no-listener) component.
+		$activate_url = esc_url( add_query_arg( 'slashed-frontend-panel', '' ) );
 		if ( $panel_active ) {
-			$href    = '#';
-			$onclick = 'document.dispatchEvent(new CustomEvent("slashed:toggle-overlay")); return false;';
+			$href    = $activate_url;
+			$onclick = "(function(e){var el=document.getElementById('slashed-frontend-overlay');if(el&&el.hasAttribute('data-slashed-ready')){document.dispatchEvent(new CustomEvent('slashed:toggle-overlay'));e.preventDefault();}})(event);";
 		} else {
-			$href    = esc_url( add_query_arg( 'slashed-frontend-panel', '' ) );
+			$href    = $activate_url;
 			$onclick = '';
 		}
 
