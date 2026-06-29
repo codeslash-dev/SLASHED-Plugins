@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.1",
-    "@commitlint/config-conventional": "^21.0.1",
+    "@commitlint/config-conventional": "^21.1.0",
     "stylelint": "^17.11.1",
     "stylelint-config-standard": "^40.0.0"
   }
