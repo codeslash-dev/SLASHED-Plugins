@@ -21,3 +21,7 @@ src/lib/persistence.ts
 # Plugin-specific: frontend overlay (not in upstream configurator).
 src/plugin-main.ts
 src/AppOverlay.svelte
+
+# StudioHeader has WP-specific Save button additions (hasPendingChanges/saveState/onSave)
+# that live on the feature branch in upstream; keep until the companion PR merges to main.
+src/components/shell/StudioHeader.svelte

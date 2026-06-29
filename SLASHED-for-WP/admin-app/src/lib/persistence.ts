@@ -2,13 +2,13 @@
  * Persistence seam for the configurator.
  *
  * Standalone (default): initial state from URL hash or localStorage; changes
- * are written back to both, plus a live `<style>` is injected.
+ * are written to both on explicit save. A live `<style>` is injected on every
+ * change for immediate preview regardless of save state.
  *
  * Embedded in WordPress: when `window.slashedApp` is present, initial state
  * comes from PHP hydration (`overrides`) and changes are saved via the REST API
- * (`rest.url` + `rest.nonce`), debounced. There are no WP-specific imports here
- * — only `fetch` + `window` globals — so the configurator stays
- * framework-agnostic and gains embeddability without taking a host dependency.
+ * on explicit save. There are no WP-specific imports here — only `fetch` +
+ * `window` globals — so the configurator stays framework-agnostic.
  *
  * In every mode a live `<style id="sf-parent-overrides">` is injected so the
  * chrome + preview reflect the current overrides immediately.
@@ -16,7 +16,6 @@
 import { Ja, Ga, fa } from "./codec";
 
 const LS_KEY = "slashed-studio/overrides/v2";
-const SAVE_DEBOUNCE_MS = 400;
 
 interface SlashedAppBoot {
   rest?: { url?: string; nonce?: string };
@@ -60,7 +59,8 @@ export function loadInitialOverrides(): Record<string, string> {
   return {};
 }
 
-function injectStyle(ov: Record<string, string>): void {
+/** Inject live CSS preview — called on every overrides change, no side-effects. */
+export function injectLivePreview(ov: Record<string, string>): void {
   if (typeof document === "undefined") return;
   let styleEl = document.getElementById("sf-parent-overrides");
   if (!styleEl) {
@@ -70,8 +70,6 @@ function injectStyle(ov: Record<string, string>): void {
   }
   styleEl.textContent = fa(ov, { mode: "root", banner: false });
 }
-
-let _saveTimer: ReturnType<typeof setTimeout> | null = null;
 
 async function wpSave(rest: { url?: string; nonce?: string }, ov: Record<string, string>): Promise<void> {
   const url = (rest.url ?? "").replace(/\/$/, "") + "/tokens/overrides";
@@ -87,10 +85,6 @@ async function wpSave(rest: { url?: string; nonce?: string }, ov: Record<string,
   if (!res.ok) throw new Error(`slashed: save failed ${res.status} ${res.statusText}`);
 }
 
-export function cancelPendingWpSave(): void {
-  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
-}
-
 function saveStandalone(ov: Record<string, string>): void {
   try { localStorage.setItem(LS_KEY, JSON.stringify(ov)); } catch { /* quota */ }
   const code = Ga(ov);
@@ -100,22 +94,12 @@ function saveStandalone(ov: Record<string, string>): void {
   }
 }
 
-/**
- * Persist the current overrides. The live `<style>` is injected synchronously
- * in all modes; the save itself is debounced in WP mode so rapid slider drags
- * don't flood the REST API.
- */
-export function persistOverrides(ov: Record<string, string>): void {
-  injectStyle(ov);
+/** Explicitly persist overrides — REST in WP mode, localStorage+hash in standalone. */
+export async function saveOverrides(ov: Record<string, string>): Promise<void> {
   if (typeof window === "undefined") return;
-
   const boot = wpBoot();
   if (boot?.rest?.url) {
-    const snapshot = { ...ov };
-    if (_saveTimer) clearTimeout(_saveTimer);
-    _saveTimer = setTimeout(() => {
-      wpSave(boot.rest!, snapshot).catch((err) => console.warn("slashed: save failed", err));
-    }, SAVE_DEBOUNCE_MS);
+    await wpSave(boot.rest!, { ...ov });
     return;
   }
   saveStandalone(ov);

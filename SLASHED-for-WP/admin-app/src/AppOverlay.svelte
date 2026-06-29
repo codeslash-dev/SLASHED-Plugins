@@ -5,11 +5,11 @@
   import DomainPanel from './components/DomainPanel.svelte';
   import CommandPalette from './components/CommandPalette.svelte';
   import { fa } from './lib/codec';
-  import { loadInitialOverrides, persistOverrides, cancelPendingWpSave } from './lib/persistence';
+  import { loadInitialOverrides, injectLivePreview, saveOverrides } from './lib/persistence';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import {
-    ChevronRight, Undo2, Redo2, Trash2, FolderOpen, Download,
+    ChevronRight, Undo2, Redo2, Trash2, FolderOpen, Download, Save, Check, Loader2,
   } from 'lucide-svelte';
 
   const ALL_TOKENS = ((tokensRaw as any).tokens ?? tokensRaw) as SlashedToken[];
@@ -52,10 +52,12 @@
   let canUndo        = $derived(past.length > 0);
   let canRedo        = $derived(future.length > 0);
 
-  $effect(() => {
-    persistOverrides(overrides);
-    return cancelPendingWpSave;
-  });
+  let lastSavedSnapshot = $state(JSON.stringify(overrides));
+  let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
+  let hasPendingChanges = $derived(JSON.stringify(overrides) !== lastSavedSnapshot);
+  let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
+
+  $effect(() => { injectLivePreview(overrides); });
 
   $effect(() => {
     try { localStorage.setItem(LS_OPEN_KEY,   String(isOpen)); } catch {}
@@ -73,8 +75,32 @@
     if (JSON.stringify(prev) !== JSON.stringify(next)) {
       past = [...past.slice(-49), prev];
       future = [];
+      if (saveState === 'saved') saveState = 'idle';
     }
     overrides = next;
+  }
+
+  async function handleSave() {
+    if (!hasPendingChanges || saveState === 'saving') return;
+    const snapshot = JSON.stringify(overrides);
+    saveState = 'saving';
+    try {
+      await saveOverrides(overrides);
+      if (JSON.stringify(overrides) === snapshot) {
+        lastSavedSnapshot = snapshot;
+        saveState = 'saved';
+        if (saveStateTimer) clearTimeout(saveStateTimer);
+        saveStateTimer = setTimeout(() => {
+          if (saveState === 'saved') saveState = 'idle';
+          saveStateTimer = null;
+        }, 2000);
+      } else {
+        saveState = 'idle';
+      }
+    } catch (err) {
+      console.warn('slashed: save failed', err);
+      saveState = 'idle';
+    }
   }
 
   function handleSet(name: string, value: string)       { setOverrides((p) => ({ ...p, [name]: value })); }
@@ -156,6 +182,7 @@
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key === 'z')                  { e.preventDefault(); handleUndo(); }
       if ((e.ctrlKey || e.metaKey) && ((e.shiftKey && key === 'z') || key === 'y')) { e.preventDefault(); handleRedo(); }
       if ((e.ctrlKey || e.metaKey) && !e.repeat && key === 'k')                     { e.preventDefault(); showPalette = !showPalette; }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key === 's')                   { e.preventDefault(); handleSave(); }
     };
     const onToggle = () => toggle();
     window.addEventListener('keydown', keydown);
@@ -163,6 +190,7 @@
     return () => {
       window.removeEventListener('keydown', keydown);
       document.removeEventListener('slashed:toggle-overlay', onToggle);
+      if (saveStateTimer) clearTimeout(saveStateTimer);
     };
   });
 </script>
@@ -236,6 +264,28 @@
     <button onclick={handleResetAll} disabled={overridesCount === 0} title="Reset all overrides"
       class="p-1 rounded text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0">
       <Trash2 class="w-3 h-3" />
+    </button>
+
+    <button
+      onclick={handleSave}
+      disabled={!hasPendingChanges || saveState === 'saving'}
+      title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
+      class={[
+        "p-1 rounded transition-all cursor-pointer shrink-0 disabled:pointer-events-none",
+        saveState === 'saved'
+          ? "text-emerald-300"
+          : hasPendingChanges
+            ? "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+            : "text-slate-500 opacity-40",
+      ].join(' ')}
+    >
+      {#if saveState === 'saving'}
+        <Loader2 class="w-3 h-3 animate-spin" />
+      {:else if saveState === 'saved'}
+        <Check class="w-3 h-3" />
+      {:else}
+        <Save class="w-3 h-3" />
+      {/if}
     </button>
 
     <div class="w-px h-3.5 bg-white/10 mx-0.5 shrink-0"></div>

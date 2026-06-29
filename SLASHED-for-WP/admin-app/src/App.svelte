@@ -7,7 +7,7 @@
   import PreviewPanel from './components/shell/PreviewPanel.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
   import { fa } from './lib/codec';
-  import { loadInitialOverrides, persistOverrides, cancelPendingWpSave } from './lib/persistence';
+  import { loadInitialOverrides, injectLivePreview, saveOverrides } from './lib/persistence';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import CommandPalette from './components/CommandPalette.svelte';
@@ -48,12 +48,14 @@
   let canUndo = $derived(past.length > 0);
   let canRedo = $derived(future.length > 0);
 
-  // Persist + URL sync (standalone) or REST save (WP) + live style injection.
-  // Cancel any pending debounced WP save when the effect re-runs or component unmounts.
-  $effect(() => {
-    persistOverrides(overrides);
-    return cancelPendingWpSave;
-  });
+  // Save state — hasPendingChanges is derived so undo/redo update it automatically.
+  let lastSavedSnapshot = $state(JSON.stringify(overrides));
+  let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
+  let hasPendingChanges = $derived(JSON.stringify(overrides) !== lastSavedSnapshot);
+  let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // Live CSS preview on every change — actual persistence only on explicit save.
+  $effect(() => { injectLivePreview(overrides); });
 
   function setOverrides(updater: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>) {
     const prev = overrides;
@@ -61,8 +63,33 @@
     if (JSON.stringify(prev) !== JSON.stringify(next)) {
       past = [...past.slice(-49), prev];
       future = [];
+      if (saveState === 'saved') saveState = 'idle';
     }
     overrides = next;
+  }
+
+  async function handleSave() {
+    if (!hasPendingChanges || saveState === 'saving') return;
+    const snapshot = JSON.stringify(overrides);
+    saveState = 'saving';
+    try {
+      await saveOverrides(overrides);
+      // Only mark clean if overrides haven't changed since save started.
+      if (JSON.stringify(overrides) === snapshot) {
+        lastSavedSnapshot = snapshot;
+        saveState = 'saved';
+        if (saveStateTimer) clearTimeout(saveStateTimer);
+        saveStateTimer = setTimeout(() => {
+          if (saveState === 'saved') saveState = 'idle';
+          saveStateTimer = null;
+        }, 2000);
+      } else {
+        saveState = 'idle';
+      }
+    } catch (err) {
+      console.warn('slashed: save failed', err);
+      saveState = 'idle';
+    }
   }
 
   function handleSet(name: string, value: string) {
@@ -175,13 +202,20 @@
         e.preventDefault();
         handleRedo();
       }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        handleSave();
+      }
       if ((e.ctrlKey || e.metaKey) && !e.repeat && e.key.toLowerCase() === "k") {
         e.preventDefault();
         showPalette = !showPalette;
       }
     };
     window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    return () => {
+      window.removeEventListener("keydown", handler);
+      if (saveStateTimer) clearTimeout(saveStateTimer);
+    };
   });
 </script>
 
@@ -191,11 +225,14 @@
     {overridesCount}
     {canUndo}
     {canRedo}
+    {hasPendingChanges}
+    {saveState}
     onUndo={handleUndo}
     onRedo={handleRedo}
     onResetAll={handleResetAll}
     onImport={handleImport}
     onExport={handleExport}
+    onSave={handleSave}
   />
 
   <!-- Main body: sidebar + left panel + preview -->
