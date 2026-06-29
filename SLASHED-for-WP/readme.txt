@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.4
+Stable tag: 0.4.5
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -129,6 +129,14 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.5 =
+* Added: Replace auto-save with explicit Save button
+* Fixed: Harden save state with snapshot-based dirty tracking
+* Fixed: Update AppOverlay + syncignore for explicit save
+* Fixed: Set mounted flag after mount() succeeds to allow retries on failure
+* Fixed: Harden overlay mount against stalled CSS and duplicate invocations
+* Fixed: Defer overlay mount until CSS loads; guard against script optimisers
 
 = 0.4.4 =
 * Added a floating frontend overlay to edit tokens on any live page — click "/ Design" in the admin bar to open the panel without leaving the site.

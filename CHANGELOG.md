@@ -9,6 +9,34 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.5] - 2026-06-29
+
+### Added
+
+- Replace auto-save with explicit Save button
+
+### Fixed
+
+- Harden save state with snapshot-based dirty tracking
+- Update AppOverlay + syncignore for explicit save
+- Set mounted flag after mount() succeeds to allow retries on failure
+- Harden overlay mount against stalled CSS and duplicate invocations
+- Defer overlay mount until CSS loads; guard against script optimisers
+
+## [0.4.5] - 2026-06-29
+
+### Added
+
+- Replace auto-save with explicit Save button
+
+### Fixed
+
+- Harden save state with snapshot-based dirty tracking
+- Update AppOverlay + syncignore for explicit save
+- Set mounted flag after mount() succeeds to allow retries on failure
+- Harden overlay mount against stalled CSS and duplicate invocations
+- Defer overlay mount until CSS loads; guard against script optimisers
+
 ## [0.4.4] - 2026-06-29
 
 ### Added
