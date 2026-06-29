@@ -158,7 +158,7 @@ class Slashed_Token_Page {
 				'versions'           => array(
 					'plugin'     => defined( 'SLASHED_VERSION' ) ? SLASHED_VERSION : ( defined( 'SLASHED_BRICKS_VERSION' ) ? SLASHED_BRICKS_VERSION : '' ),
 					'framework'  => self::get_loaded_framework_version(),
-					'css_source' => class_exists( 'Slashed_Settings' ) ? Slashed_Settings::get_css_source() : 'local',
+					'css_source' => 'local',
 				),
 				'activeIntegrations' => array(
 					'bricks'    => class_exists( 'Slashed_Settings' ) ? Slashed_Settings::is_enabled( 'bricks' ) : true,
@@ -173,29 +173,22 @@ class Slashed_Token_Page {
 	}
 
 	/**
-	 * Resolve the framework CSS version that is actually being loaded.
+	 * Resolve the framework CSS version bundled with the plugin.
 	 *
-	 * When the site is configured to load from CDN, returns the CDN version
-	 * (which may be 'latest' or a pinned tag). When loading the local bundle,
-	 * returns the compile-time SLASHED_CSS_REF constant. This is what the admin
-	 * header should display — not the compile-time default.
+	 * The framework CSS ships in dist/ and is identified by the compile-time
+	 * SLASHED_CSS_REF constant. This is what the admin header displays.
 	 *
-	 * @return string e.g. 'v0.5.23', 'latest', or ''.
+	 * @return string e.g. 'v0.6.23', or ''.
 	 */
 	private static function get_loaded_framework_version() {
-		if ( class_exists( 'Slashed_Settings' ) && 'cdn' === Slashed_Settings::get_css_source() ) {
-			return Slashed_Settings::get_cdn_version();
-		}
-		// Local: use the actually-installed version stored by the updater.
-		// Falls back to compile-time SLASHED_CSS_REF if never explicitly updated.
-		if ( class_exists( 'Slashed_Framework_Updater' ) ) {
-			return Slashed_Framework_Updater::get_local_version();
-		}
 		if ( defined( 'SLASHED_CSS_REF' ) ) {
 			return SLASHED_CSS_REF;
 		}
 		if ( defined( 'SLASHED_BRICKS_CSS_REF' ) ) {
 			return SLASHED_BRICKS_CSS_REF;
+		}
+		if ( defined( 'SLASHED_GUTENBERG_CSS_REF' ) ) {
+			return SLASHED_GUTENBERG_CSS_REF;
 		}
 		return '';
 	}

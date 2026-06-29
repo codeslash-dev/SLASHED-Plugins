@@ -39,8 +39,8 @@ CSS framework with [Bricks Builder](https://bricksbuilder.io/).
 ## Installation
 
 Copy `integrations/bricks/` into `wp-content/plugins/slashed-bricks`, or symlink
-it for development, then activate in **Admin → Plugins**. CSS loads from jsDelivr
-by default; copy a `dist/` folder into the plugin directory for offline use.
+it for development, then activate in **Admin → Plugins**. The framework CSS ships
+with the plugin and loads locally from its bundled `dist/` folder.
 
 ## Filter hooks
 
@@ -111,7 +111,7 @@ add_filter( 'slashed_bricks/inventory', function( $inventory ) {
 #### `slashed_bricks/inventory_local_path`
 
 Override the local CSS path the inventory parses: return a string for a specific
-path, `false` to force a CDN fetch, `null` (default) for the bundled candidates.
+path, `false` to skip local resolution, `null` (default) for the bundled candidates.
 
 ```php
 add_filter( 'slashed_bricks/inventory_local_path', fn() =>
@@ -143,9 +143,9 @@ integrations/bricks/
 2. **Enqueue** — loads the bundle on `wp_enqueue_scripts` for the frontend and
    builder canvas; bails when `bricks_is_builder_main()` is true so the bundle
    never overrides Bricks' own chrome.
-3. **Inventory** — resolves the active bundle (local file → CDN → fallback),
-   parses it once, and caches via WordPress transients keyed by file mtime or
-   URL. All registration classes share one process-local cache.
+3. **Inventory** — resolves the active bundle (bundled local file → built-in
+   fallback), parses it once, and caches via WordPress transients keyed by file
+   mtime. All registration classes share one process-local cache.
 4. **Variables** — injects into the Global Variable Manager (Bricks 1.9.8+) by
    filtering `bricks_global_variables`(`_categories`) on read and stripping on
    save. Names use a `slashed-` prefix that chains back to `var(--sf-*)`.
@@ -155,9 +155,8 @@ integrations/bricks/
 
 ### Inventory resolution order
 
-1. Local file `dist/slashed.optimal.css` (transient keyed by mtime).
-2. CDN URL from `slashed_bricks_get_css_url()` (transient, one day).
-3. Built-in `data/inventory.json` (for hosts blocking outbound HTTP).
+1. Bundled local file `dist/slashed.optimal.css` (transient keyed by mtime).
+2. Built-in `data/inventory.json` (used if the bundle file can't be read).
 
 Short-circuit step 1 with `slashed_bricks/inventory_local_path`, or replace the
 result with `slashed_bricks/inventory`.

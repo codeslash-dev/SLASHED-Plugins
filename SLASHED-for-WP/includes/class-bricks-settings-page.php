@@ -102,10 +102,19 @@ class Slashed_Bricks_Settings_Page {
 		'template'         => 'item',
 	);
 
+	/**
+	 * Admin menu hook suffix for this page, captured at registration so the
+	 * stylesheet is only enqueued on this screen.
+	 *
+	 * @var string
+	 */
+	private $hook_suffix = '';
+
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_post_slashed_save_bricks_rebemer', array( $this, 'handle_save_rebemer' ) );
 		add_action( 'admin_post_slashed_save_bricks_options', array( $this, 'handle_save_options' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
 	public function register_menu() {
@@ -115,13 +124,36 @@ class Slashed_Bricks_Settings_Page {
 			return;
 		}
 
-		add_submenu_page(
+		$this->hook_suffix = (string) add_submenu_page(
 			\Slashed_Admin::PAGE_SLUG,
 			__( 'Bricks settings', 'slashed' ),
 			__( 'Bricks settings', 'slashed' ),
 			'manage_options',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
+		);
+	}
+
+	/**
+	 * Enqueue the Bricks settings-page stylesheet, scoped to this screen.
+	 *
+	 * @param string $hook_suffix Current admin page hook suffix.
+	 */
+	public function enqueue_assets( $hook_suffix ) {
+		if ( '' === $this->hook_suffix || $hook_suffix !== $this->hook_suffix ) {
+			return;
+		}
+
+		$base    = defined( 'SLASHED_PATH' ) ? SLASHED_PATH : plugin_dir_path( __DIR__ );
+		$baseurl = defined( 'SLASHED_URL' ) ? SLASHED_URL : plugin_dir_url( __DIR__ );
+		$rel     = 'assets/admin/bricks-settings.css';
+		$ver     = defined( 'SLASHED_VERSION' ) ? SLASHED_VERSION : false;
+
+		wp_enqueue_style(
+			'slashed-bricks-settings',
+			$baseurl . $rel,
+			array(),
+			file_exists( $base . $rel ) ? (string) filemtime( $base . $rel ) : $ver
 		);
 	}
 
@@ -551,56 +583,6 @@ class Slashed_Bricks_Settings_Page {
 	private function render_hooks_tab() {
 		$hooks = self::get_hooks();
 		?>
-		<style>
-		.slashed-hook {
-			border: 1px solid #f0f0f1;
-			border-radius: 4px;
-			padding: 14px 16px;
-			margin-bottom: 10px;
-			background: #fcfcfd;
-			max-width: 860px;
-		}
-		.slashed-hook:last-child { margin-bottom: 0; }
-		.slashed-hook__name {
-			margin: 0 0 6px;
-			font-size: 13px;
-			font-weight: 600;
-		}
-		.slashed-hook__name code {
-			background: #e7e8ea;
-			padding: 3px 8px;
-			border-radius: 3px;
-			font-size: 12.5px;
-			font-weight: 600;
-		}
-		.slashed-hook__desc {
-			margin: 0 0 6px;
-			font-size: 13px;
-			color: #1d2327;
-		}
-		.slashed-hook__params {
-			margin: 0 0 10px;
-			font-size: 12px;
-			color: #50575e;
-		}
-		.slashed-hook__params code {
-			background: #f0f0f1;
-			padding: 1px 4px;
-			border-radius: 2px;
-			font-size: 11.5px;
-		}
-		.slashed-hook__example {
-			margin: 0;
-			padding: 12px 14px;
-			background: #1d2327;
-			color: #e4e6e8;
-			border-radius: 4px;
-			overflow-x: auto;
-			font-size: 12px;
-			line-height: 1.55;
-			font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-		}
-		</style>
 
 		<p class="description" style="max-width:720px;margin:16px 0;">
 			<?php esc_html_e( 'These WordPress filter hooks let you customise the Bricks integration from your theme or an mu-plugin. They only fire while the Bricks integration is active.', 'slashed' ); ?>

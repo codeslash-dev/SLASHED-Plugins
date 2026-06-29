@@ -38,12 +38,10 @@ class Slashed_CSS_Loader {
 	/**
 	 * Get the URL for the SLASHED CSS bundle.
 	 *
-	 * When source is 'local' (default) the plugin's own dist/ directory is used.
-	 * When source is 'cdn' the URL points at the framework's published artifacts:
-	 *   - version "latest" → the always-current jsDelivr `dist` branch mirror;
-	 *   - a pinned version tag → that release's GitHub Release asset (immutable).
-	 * No silent CDN fallback — if the local file is missing the URL is empty so
-	 * the admin notice in class-admin.php can surface the problem clearly.
+	 * The framework CSS ships with the plugin in its own dist/ directory and is
+	 * always served locally. If the requested bundle file is missing the URL is
+	 * empty so the admin notice in class-admin.php can surface the problem
+	 * clearly.
 	 *
 	 * Applies the 'slashed/css_bundle_url' filter so site owners can override
 	 * the URL globally. Integrations apply their own filter on top of this
@@ -52,32 +50,12 @@ class Slashed_CSS_Loader {
 	 * @return string
 	 */
 	public static function get_url() {
-		$source   = Slashed_Settings::get_css_source();
 		$bundle   = self::get_bundle();
 		$flat     = Slashed_Settings::get_css_flat();
 		$filename = 'slashed.' . $bundle . ( $flat ? '.flat' : '' ) . '.css';
 
-		if ( 'cdn' === $source ) {
-			$version = Slashed_Settings::get_cdn_version();
-			if ( 'latest' === $version ) {
-				// Always-current: the framework force-pushes built bundles to the
-				// `dist` branch on every release; jsDelivr mirrors it.
-				$url = sprintf(
-					'https://cdn.jsdelivr.net/gh/codeslash-dev/SLASHED@dist/%s',
-					$filename
-				);
-			} else {
-				// Pinned: load the exact version's GitHub Release asset (immutable).
-				$url = sprintf(
-					'https://github.com/codeslash-dev/SLASHED/releases/download/%s/%s',
-					rawurlencode( $version ),
-					$filename
-				);
-			}
-		} else {
-			$local = SLASHED_PATH . 'dist/' . $filename;
-			$url   = file_exists( $local ) ? SLASHED_URL . 'dist/' . $filename : '';
-		}
+		$local = SLASHED_PATH . 'dist/' . $filename;
+		$url   = file_exists( $local ) ? SLASHED_URL . 'dist/' . $filename : '';
 
 		/**
 		 * Filter the SLASHED CSS bundle URL (all integrations).
@@ -94,7 +72,7 @@ class Slashed_CSS_Loader {
 	 * Derive a cache-busting version string for a resolved CSS URL.
 	 *
 	 * Returns the file's mtime when the URL maps to a local file under
-	 * SLASHED_PATH; falls back to SLASHED_VERSION for CDN or unknown URLs.
+	 * SLASHED_PATH; falls back to the bundled framework reference otherwise.
 	 *
 	 * @param string $url Resolved CSS bundle URL.
 	 * @return string
@@ -108,10 +86,9 @@ class Slashed_CSS_Loader {
 				return (string) filemtime( $path );
 			}
 		}
-		// For CDN or any other URL: use the configured CDN version tag, or fall
-		// back to the framework reference this plugin ships with. Never use
-		// SLASHED_VERSION here — that is the plugin version, not the framework.
-		$cdn_version = Slashed_Settings::get_cdn_version();
-		return ( $cdn_version && 'latest' !== $cdn_version ) ? $cdn_version : SLASHED_CSS_REF;
+		// For any URL set by a filter override, fall back to the framework
+		// reference this plugin ships with. Never use SLASHED_VERSION here —
+		// that is the plugin version, not the framework.
+		return SLASHED_CSS_REF;
 	}
 }

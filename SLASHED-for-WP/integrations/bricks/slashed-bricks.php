@@ -3,7 +3,7 @@
  * Plugin Name: SLASHED for Bricks
  * Plugin URI: https://github.com/codeslash-dev/SLASHED
  * Description: Integrates the SLASHED cascade-layer CSS framework with Bricks Builder - providing CSS variables, utility classes, and color palette synchronization.
- * Version: 0.4.3
+ * Version: 0.4.4
  * Author: Jack Granatowski
  * Author URI: https://codeslash.net
  * License: GPL-2.0-or-later
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the standalone Bricks plugin and the unified SLASHED plugin are active.
  */
 if ( ! defined( 'SLASHED_BRICKS_VERSION' ) ) {
-	define( 'SLASHED_BRICKS_VERSION', '0.4.3' );
+	define( 'SLASHED_BRICKS_VERSION', '0.4.4' );
 	define( 'SLASHED_BRICKS_PATH', plugin_dir_path( __FILE__ ) );
 	define( 'SLASHED_BRICKS_URL', plugin_dir_url( __FILE__ ) );
 	define( 'SLASHED_BRICKS_CSS_REF', 'v0.6.23' );
@@ -79,31 +79,25 @@ function slashed_bricks_get_css_bundle() {
  * Get the URL for the SLASHED CSS bundle.
  *
  * Delegates to the shared Slashed_CSS_Loader when running under the unified
- * plugin, then applies the per-integration filter. In standalone mode, builds
- * the URL from the framework's GitHub Release asset for SLASHED_BRICKS_CSS_REF,
- * with a local-file fallback.
+ * plugin, then applies the per-integration filter. In standalone mode, serves
+ * the CSS bundle that ships with the plugin from its local dist/ directory.
  *
  * Use the 'slashed_bricks/css_bundle_url' filter to override.
  *
- * @return string URL to the CSS bundle.
+ * @return string URL to the CSS bundle, or '' when the bundle file is missing.
  */
 function slashed_bricks_get_css_url() {
 	if ( class_exists( 'Slashed_CSS_Loader' ) ) {
 		return apply_filters( 'slashed_bricks/css_bundle_url', Slashed_CSS_Loader::get_url() );
 	}
 
-	// Standalone fallback.
+	// Standalone fallback: serve the locally bundled CSS only.
 	$bundle      = slashed_bricks_get_css_bundle();
 	$filename    = 'slashed.' . $bundle . '.css';
-	$default_url = sprintf(
-		'https://github.com/codeslash-dev/SLASHED/releases/download/%s/%s',
-		rawurlencode( SLASHED_BRICKS_CSS_REF ),
-		$filename
-	);
+	$default_url = '';
 
 	// Check plugin root dist/ first (two levels up: integrations/bricks/ → plugin root).
-	$plugin_dist = SLASHED_BRICKS_PATH . '../../dist/' . $filename;
-	if ( file_exists( $plugin_dist ) ) {
+	if ( file_exists( SLASHED_BRICKS_PATH . '../../dist/' . $filename ) ) {
 		$default_url = SLASHED_BRICKS_URL . '../../dist/' . $filename;
 	} elseif ( file_exists( SLASHED_BRICKS_PATH . 'dist/' . $filename ) ) {
 		$default_url = SLASHED_BRICKS_URL . 'dist/' . $filename;
@@ -170,15 +164,22 @@ function slashed_bricks_is_bricks_active() {
 // This hook lives here, not inside Slashed_Bricks_Enqueue, so it fires whenever
 // the Bricks integration is active (in unified mode: when the integration toggle
 // is on; in standalone mode: always) without requiring Bricks to be the active
-// theme. Emitting @layer bricks; on a site where Bricks is not active is
-// harmless — it declares an empty layer that is never populated.
+// theme. Declaring an empty @layer bricks on a site where Bricks is not active is
+// harmless — the layer is simply never populated.
+//
+// The preamble is attached to a registered (src-less) style handle and emitted
+// via wp_add_inline_style at wp_enqueue_scripts priority 1, so it prints before
+// the SLASHED framework bundle (enqueued at the default priority) and locks
+// `bricks` in as the lowest-priority cascade layer.
 add_action(
-	'wp_head',
+	'wp_enqueue_scripts',
 	function () {
 		if ( function_exists( 'bricks_is_builder_main' ) && bricks_is_builder_main() ) {
 			return;
 		}
-		echo "<style>@layer bricks;</style>\n";
+		wp_register_style( 'slashed-bricks-layer-order', false, array(), SLASHED_BRICKS_VERSION );
+		wp_enqueue_style( 'slashed-bricks-layer-order' );
+		wp_add_inline_style( 'slashed-bricks-layer-order', '@layer bricks;' );
 	},
 	1
 );
@@ -353,113 +354,23 @@ function slashed_bricks_missing_bricks_notice() {
 	<?php
 }
 
-// ─── Stale inventory / version detection ────────────────────────────────────
+// ─── Legacy cron cleanup ─────────────────────────────────────────────────────
 
 /**
- * Register a daily cron event to check for a newer framework release.
- * Fires once on plugin load; wp_schedule_event is a no-op if already scheduled.
- */
-function slashed_bricks_schedule_version_check() {
-	if ( ! wp_next_scheduled( 'slashed_bricks_version_check' ) ) {
-		wp_schedule_event( time(), 'daily', 'slashed_bricks_version_check' );
-	}
-}
-add_action( 'wp_loaded', 'slashed_bricks_schedule_version_check' );
-
-/**
- * Cron callback: fetch the latest GitHub release tag and cache it.
- * Uses the jsDelivr package metadata API (no auth, generous rate limit).
- */
-function slashed_bricks_run_version_check() {
-	$url      = 'https://data.jsdelivr.com/v1/packages/gh/codeslash-dev/SLASHED';
-	$response = wp_remote_get(
-		$url,
-		array(
-			'timeout'    => 10,
-			'user-agent' => 'SLASHED-Bricks/' . SLASHED_BRICKS_VERSION . '; WordPress/' . get_bloginfo( 'version' ),
-		)
-	);
-
-	if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
-		return;
-	}
-
-	$body = json_decode( wp_remote_retrieve_body( $response ), true );
-	if ( ! is_array( $body ) || empty( $body['versions'] ) || ! is_array( $body['versions'] ) ) {
-		return;
-	}
-
-	// Versions are returned newest-first. Find the latest semver entry (X.Y.Z or vX.Y.Z).
-	// Anchored stable-only match — kept identical to
-	// Slashed_Framework_Updater::get_latest_version() so both update detectors agree.
-	$latest = null;
-	foreach ( $body['versions'] as $entry ) {
-		$ver = isset( $entry['version'] ) ? ltrim( (string) $entry['version'], 'v' ) : '';
-		if ( preg_match( '/^\d+\.\d+\.\d+$/', $ver ) ) {
-			$latest = 'v' . $ver;
-			break;
-		}
-	}
-
-	if ( ! $latest ) {
-		return;
-	}
-
-	set_transient( 'slashed_bricks_latest_version', $latest, DAY_IN_SECONDS * 2 );
-}
-add_action( 'slashed_bricks_version_check', 'slashed_bricks_run_version_check' );
-
-/**
- * Add a SLASHED widget to the WP Dashboard when the installed framework
- * version is behind the latest released tag.
- */
-function slashed_bricks_dashboard_setup() {
-	$latest  = get_transient( 'slashed_bricks_latest_version' );
-	$current = ltrim( SLASHED_BRICKS_CSS_REF, 'v' );
-
-	if ( ! $latest || ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-
-	// Trim leading 'v' for version_compare.
-	$latest_clean = ltrim( $latest, 'v' );
-
-	if ( version_compare( $latest_clean, $current, '<=' ) ) {
-		return; // Up to date — no widget needed.
-	}
-
-	wp_add_dashboard_widget(
-		'slashed_bricks_update_notice',
-		'SLASHED Framework Update Available',
-		'slashed_bricks_dashboard_widget_cb'
-	);
-}
-add_action( 'wp_dashboard_setup', 'slashed_bricks_dashboard_setup' );
-
-/**
- * Unschedule the version-check cron on plugin deactivation so no orphaned
- * scheduled tasks remain after the plugin is turned off.
+ * Remove the daily version-check cron scheduled by older releases.
+ *
+ * The plugin no longer phones home to check for framework releases — the CSS
+ * ships bundled and updates through normal plugin releases — so this clears any
+ * orphaned event left behind by an upgrade, both on deactivation and on load.
  */
 function slashed_bricks_deactivation_cleanup() {
-	$timestamp = wp_next_scheduled( 'slashed_bricks_version_check' );
-	if ( $timestamp ) {
-		wp_unschedule_event( $timestamp, 'slashed_bricks_version_check' );
+	if ( wp_next_scheduled( 'slashed_bricks_version_check' ) ) {
+		// Clear every scheduled instance, matching the unified plugin's cleanup.
+		wp_clear_scheduled_hook( 'slashed_bricks_version_check' );
+		delete_transient( 'slashed_bricks_latest_version' );
 	}
 }
+add_action( 'wp_loaded', 'slashed_bricks_deactivation_cleanup' );
 if ( ! defined( 'SLASHED_VERSION' ) ) {
 	register_deactivation_hook( __FILE__, 'slashed_bricks_deactivation_cleanup' );
-}
-
-/**
- * Dashboard widget content: informs the user a newer framework version exists.
- */
-function slashed_bricks_dashboard_widget_cb() {
-	$latest  = get_transient( 'slashed_bricks_latest_version' );
-	$current = SLASHED_BRICKS_CSS_REF;
-	printf(
-		'<p>A newer SLASHED framework release is available: <strong>%s</strong> (you are on %s).</p>
-		<p>Update the plugin to load the latest CSS bundle and token inventory.</p>',
-		esc_html( $latest ),
-		esc_html( $current )
-	);
 }

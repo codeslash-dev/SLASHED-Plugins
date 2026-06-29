@@ -3,7 +3,7 @@
  * Plugin Name: SLASHED
  * Plugin URI: https://github.com/codeslash-dev/SLASHED
  * Description: SLASHED cascade-layer CSS framework for WordPress. Activate integrations per builder from the settings page (Bricks, Gutenberg — more coming).
- * Version: 0.4.3
+ * Version: 0.4.4
  * Author: Jack Granatowski
  * Author URI: https://codeslash.net
  * License: GPL-2.0-or-later
@@ -19,16 +19,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // ─── Canonical constants ────────────────────────────────────────────
 
-define( 'SLASHED_VERSION', '0.4.3' );
+define( 'SLASHED_VERSION', '0.4.4' );
 define( 'SLASHED_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SLASHED_URL', plugin_dir_url( __FILE__ ) );
 
 /**
- * Framework version this plugin ships with / tracks by default.
- * Used as the default CSS version and for update-available comparisons.
- * The framework CSS is loaded from the SLASHED framework's published
- * artifacts (GitHub Release assets per version; the `dist` branch for
- * "latest") — see Slashed_CSS_Loader and Slashed_Framework_Updater.
+ * Framework version the bundled CSS ships with.
+ * Used as the cache-busting version string and as the framework version shown
+ * in the admin UI. The framework CSS is bundled with the plugin in dist/ and
+ * updated through normal plugin releases — see Slashed_CSS_Loader.
  */
 define( 'SLASHED_CSS_REF', 'v0.6.23' );
 
@@ -36,7 +35,6 @@ define( 'SLASHED_CSS_REF', 'v0.6.23' );
 
 require_once SLASHED_PATH . 'includes/class-settings.php';
 require_once SLASHED_PATH . 'includes/class-css-loader.php';
-require_once SLASHED_PATH . 'includes/class-framework-updater.php';
 
 // ─── Core CSS delivery (builder-agnostic) ────────────────────────────────────
 //
@@ -102,7 +100,6 @@ if ( is_admin() ) {
 		function () {
 			new Slashed_Admin();
 			new Slashed_Token_Page();
-			new Slashed_Framework_Updater();
 			new Slashed_Bricks_Settings_Page();
 		}
 	);
@@ -128,24 +125,9 @@ if ( Slashed_Settings::is_enabled( 'gutenberg' ) ) {
 register_deactivation_hook(
 	__FILE__,
 	function () {
-		// Clear every scheduled instance of the Bricks version-check cron, not just
-		// the next one — guards against an orphaned event being left behind if the
-		// Bricks integration was toggled off while an instance was still scheduled.
+		// Clean up the daily version-check cron scheduled by older releases. The
+		// plugin no longer schedules this event, but clearing it on deactivation
+		// removes any orphaned instance left over from an upgrade.
 		wp_clear_scheduled_hook( 'slashed_bricks_version_check' );
 	}
-);
-
-// When the Bricks integration is toggled OFF via settings (not just deactivation),
-// clear the cron immediately so it does not remain scheduled with no handler.
-add_action(
-	'update_option_slashed_settings',
-	function ( $old_value, $new_value ) {
-		$was_on = ! empty( $old_value['integrations']['bricks'] );
-		$is_on  = ! empty( $new_value['integrations']['bricks'] );
-		if ( $was_on && ! $is_on ) {
-			wp_clear_scheduled_hook( 'slashed_bricks_version_check' );
-		}
-	},
-	10,
-	2
 );
