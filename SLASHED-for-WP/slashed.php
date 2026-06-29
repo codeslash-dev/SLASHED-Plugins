@@ -82,6 +82,18 @@ add_action( 'enqueue_block_editor_assets', 'slashed_inject_token_overrides', 20 
 
 require_once SLASHED_PATH . 'includes/class-token-page.php';     // also used on frontend (Bricks editor)
 
+// ─── Frontend overlay configurator ───────────────────────────────────────────
+// Injects the token editor as a floating panel on any public frontend page for
+// admin users; the page itself acts as the live preview.
+
+require_once SLASHED_PATH . 'includes/class-frontend-configurator.php';
+add_action(
+	'plugins_loaded',
+	function () {
+		new Slashed_Frontend_Configurator();
+	}
+);
+
 if ( is_admin() ) {
 	require_once SLASHED_PATH . 'includes/class-admin.php';
 	require_once SLASHED_PATH . 'includes/class-bricks-settings-page.php';

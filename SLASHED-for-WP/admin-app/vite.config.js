@@ -38,7 +38,7 @@ export default defineConfig({
     target: 'es2022',
     cssCodeSplit: false,
     rollupOptions: {
-      input: resolve(import.meta.dirname, 'src/main.ts'),
+      input: resolve(import.meta.dirname, 'src/plugin-main.ts'),
       output: {
         entryFileNames: 'app.js',
         chunkFileNames: 'app-[name].js',
