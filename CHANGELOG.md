@@ -9,6 +9,36 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.8] - 2026-06-29
+
+### Fixed
+
+- Address all unresolved CodeRabbit PR review comments
+- Address Qodo PR review bugs in css-generator, persistence, and SliderRow
+- Eliminate TOCTOU race with fd-based stat+read; revert paths-ignore
+- Rewrite preserved array to use inline resolve+startsWith; exclude compiled assets
+- Add same-origin check to compiled wpSave to resolve CodeQL CWE-918
+- Inline resolve+startsWith guard for CodeQL path-injection
+- Validate REST URL is same-origin before fetch
+- Guard preserved syncignore paths against path traversal
+- Move Save button before Undo/Redo in plugin StudioHeader; fix PHPCS array formatting
+- Frontend panel layout push + modular scale live preview
+
+## [0.4.8] - 2026-06-29
+
+### Fixed
+
+- Address all unresolved CodeRabbit PR review comments
+- Address Qodo PR review bugs in css-generator, persistence, and SliderRow
+- Eliminate TOCTOU race with fd-based stat+read; revert paths-ignore
+- Rewrite preserved array to use inline resolve+startsWith; exclude compiled assets
+- Add same-origin check to compiled wpSave to resolve CodeQL CWE-918
+- Inline resolve+startsWith guard for CodeQL path-injection
+- Validate REST URL is same-origin before fetch
+- Guard preserved syncignore paths against path traversal
+- Move Save button before Undo/Redo in plugin StudioHeader; fix PHPCS array formatting
+- Frontend panel layout push + modular scale live preview
+
 ## [0.4.7] - 2026-06-29
 
 ### Fixed

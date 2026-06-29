@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.7
+Stable tag: 0.4.8
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -129,6 +129,18 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.8 =
+* Fixed: Address all unresolved CodeRabbit PR review comments
+* Fixed: Address Qodo PR review bugs in css-generator, persistence, and SliderRow
+* Fixed: Eliminate TOCTOU race with fd-based stat+read; revert paths-ignore
+* Fixed: Rewrite preserved array to use inline resolve+startsWith; exclude compiled assets
+* Fixed: Add same-origin check to compiled wpSave to resolve CodeQL CWE-918
+* Fixed: Inline resolve+startsWith guard for CodeQL path-injection
+* Fixed: Validate REST URL is same-origin before fetch
+* Fixed: Guard preserved syncignore paths against path traversal
+* Fixed: Move Save button before Undo/Redo in plugin StudioHeader; fix PHPCS array formatting
+* Fixed: Frontend panel layout push + modular scale live preview
 
 = 0.4.7 =
 * Fixed: Gate toggle event on mount readiness; keep nav fallback
