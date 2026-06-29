@@ -1,0 +1,108 @@
+/* SLASHED settings page (SLASHED → Plugin Settings). */
+
+.slashed-bundle-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+	max-width: 920px;
+	margin: 12px 0 24px;
+}
+.slashed-bundle-card {
+	display: block;
+	border: 2px solid #c3c4c7;
+	border-radius: 6px;
+	padding: 16px;
+	cursor: pointer;
+	position: relative;
+	background: #fff;
+}
+.slashed-bundle-card:hover { border-color: #2271b1; }
+/* Highlight the card whose radio is checked — replaces the former inline JS. */
+.slashed-bundle-card:has( input[type="radio"]:checked ) {
+	border-color: #2271b1;
+	background: #f0f6fc;
+}
+.slashed-bundle-card input[type="radio"] {
+	position: absolute;
+	top: 16px;
+	right: 14px;
+	margin: 0;
+}
+.slashed-bundle-card__name {
+	font-size: 14px;
+	font-weight: 600;
+	display: block;
+	margin-bottom: 3px;
+	padding-right: 22px;
+	color: #1e1e1e;
+}
+.slashed-bundle-card__tagline {
+	font-size: 12px;
+	color: #50575e;
+	display: block;
+	margin-bottom: 10px;
+}
+.slashed-bundle-card__badge {
+	display: inline-block;
+	background: #00a32a;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 600;
+	padding: 1px 7px;
+	border-radius: 10px;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	margin-left: 5px;
+	vertical-align: middle;
+}
+.slashed-bundle-card hr {
+	border: none;
+	border-top: 1px solid #e2e4e7;
+	margin: 10px 0 8px;
+}
+.slashed-bundle-card__list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	font-size: 12px;
+	color: #3c434a;
+	line-height: 1.6;
+}
+.slashed-bundle-card__list li {
+	padding-left: 16px;
+	position: relative;
+}
+.slashed-bundle-card__list li::before {
+	content: '\2713';
+	position: absolute;
+	left: 0;
+	color: #00a32a;
+	font-size: 11px;
+	line-height: 1.6;
+}
+.slashed-bundle-card__list li.added::before {
+	content: '+';
+	color: #2271b1;
+	font-weight: 700;
+}
+.slashed-flat-row {
+	max-width: 920px;
+	margin: 0 0 8px;
+	padding: 12px 16px;
+	border: 1px solid #c3c4c7;
+	border-radius: 6px;
+	background: #fff;
+}
+.slashed-flat-row label {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	font-size: 13px;
+	color: #1e1e1e;
+	cursor: pointer;
+}
+.slashed-flat-row label input { margin-top: 2px; flex-shrink: 0; }
+.slashed-flat-row p.description { margin: 4px 0 0 22px; }
+@media (width <= 900px) {
+	.slashed-bundle-grid { grid-template-columns: 1fr; }
+}

@@ -20,11 +20,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * release version is active.
  *
  * Resolution order:
- *   1. Local CSS file (repo symlink mode or copy-installed mode) -
- *      cheapest, parsed and cached by file mtime.
- *   2. Remote CSS URL (CDN) - fetched via wp_remote_get, cached for a day.
- *   3. Built-in hardcoded fallback - keeps the plugin functional offline
- *      and on hosts that block outbound HTTP.
+ *   1. Local CSS file bundled with the plugin (repo symlink mode or
+ *      copy-installed mode) - parsed and cached by file mtime.
+ *   2. Built-in hardcoded fallback - keeps the plugin functional even when
+ *      the bundle file cannot be read from disk.
  *
  * Public API:
  *   - get_variables()        sorted unique --sf-* names
@@ -36,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Slashed_Inventory {
 
 	/**
-	 * Transient TTL for remote-fetched bundles.
+	 * Transient TTL for parsed bundle inventories.
 	 */
 	const TRANSIENT_TTL = DAY_IN_SECONDS;
 
@@ -634,7 +633,7 @@ class Slashed_Inventory {
 	 * @return array{variables: string[], sf_classes: string[], is_classes: string[]}
 	 */
 	private static function resolve() {
-		// 1. Local file - cheapest, also handles offline development.
+		// 1. Local file - the framework CSS bundled with the plugin.
 		$local_path = self::find_local_bundle_path();
 		if ( '' !== $local_path ) {
 			$inventory = self::parse_path_with_cache( $local_path );
@@ -643,18 +642,8 @@ class Slashed_Inventory {
 			}
 		}
 
-		// 2. Remote URL (CDN). Cached as a transient.
-		$url = static::resolve_css_url();
-
-		if ( '' !== $url && self::is_remote_url( $url ) ) {
-			$inventory = self::parse_url_with_cache( $url );
-			if ( ! empty( $inventory['variables'] ) ) {
-				return $inventory;
-			}
-		}
-
-		// 3. Built-in fallback - keeps the plugin functional even when
-		//    no CSS is reachable (hosts blocking outbound HTTP, etc).
+		// 2. Built-in fallback - keeps the plugin functional even when the
+		//    bundle file can't be read from disk.
 		return self::fallback_inventory();
 	}
 
@@ -703,9 +692,7 @@ class Slashed_Inventory {
 	 * Returns a path only when the URL clearly maps to a file inside the
 	 * plugin's URL space (covers both copy-install mode where dist/ lives
 	 * under the plugin and symlink-in-repo mode where dist/ lives at
-	 * SLASHED_BRICKS_PATH . '../../dist/'). For any other URL (CDN,
-	 * third-party host) returns '' so the caller can fall through to
-	 * remote fetching.
+	 * SLASHED_BRICKS_PATH . '../../dist/'). For any other URL returns ''.
 	 *
 	 * @param string $url Active CSS bundle URL.
 	 * @return string Absolute filesystem path candidate, or '' when not a local URL.
@@ -757,63 +744,10 @@ class Slashed_Inventory {
 	}
 
 	/**
-	 * Parse a CSS file fetched from a URL, with a transient cache keyed by URL.
-	 *
-	 * @param string $url HTTPS URL to a CSS file.
-	 * @return array Inventory shape (may be empty on network failure).
-	 */
-	private static function parse_url_with_cache( $url ) {
-		$key    = static::transient_prefix() . md5( 'url:' . $url . ':' . static::inv_version() );
-		$cached = get_transient( $key );
-		if ( is_array( $cached ) && isset( $cached['variables'] ) ) {
-			return $cached;
-		}
-
-		if ( ! function_exists( 'wp_remote_get' ) ) {
-			return Slashed_CSS_Parser::empty_inventory();
-		}
-
-		$response = wp_remote_get(
-			$url,
-			array(
-				'timeout'    => 10,
-				'user-agent' => 'SLASHED/' . static::inv_version(),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			return Slashed_CSS_Parser::empty_inventory();
-		}
-
-		if ( 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
-			return Slashed_CSS_Parser::empty_inventory();
-		}
-
-		$css = wp_remote_retrieve_body( $response );
-		if ( ! is_string( $css ) || '' === $css ) {
-			return Slashed_CSS_Parser::empty_inventory();
-		}
-
-		$inventory = Slashed_CSS_Parser::parse( $css );
-		set_transient( $key, $inventory, self::TRANSIENT_TTL );
-		return $inventory;
-	}
-
-	/**
-	 * Whether a URL points to a remote (http/https) resource.
-	 *
-	 * @param string $url URL to check.
-	 * @return bool
-	 */
-	private static function is_remote_url( $url ) {
-		return 0 === strpos( $url, 'http://' ) || 0 === strpos( $url, 'https://' );
-	}
-
-	/**
-	 * Hardcoded fallback inventory used when neither a local file nor a
-	 * remote fetch succeed. Pulled from the shipped optimal bundle of the
-	 * release that this plugin version targets, so coverage is still
-	 * complete even with no network or filesystem access.
+	 * Hardcoded fallback inventory used when the bundled CSS file cannot be
+	 * read from disk. Pulled from the shipped optimal bundle of the release
+	 * that this plugin version targets, so coverage is still complete even
+	 * with no filesystem access.
 	 *
 	 * The list is generated from dist/slashed.optimal.css and bumped
 	 * alongside the release tag.

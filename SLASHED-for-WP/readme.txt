@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.3
+Stable tag: 0.4.4
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -65,7 +65,7 @@ Pick the bundle that fits the project on the settings page:
 * **Optimal + Utilities** — adds utility classes: object-fit, a z-index scale, text balancing, and animation helpers (spin, ping, blink, shimmer, float).
 * **Full** — everything above.
 
-Bundles ship with the plugin and update from the settings page with one click. You can also load them from a CDN and pin any published release tag.
+All bundles ship with the plugin and load locally from the plugin's own folder — no external requests are made to render your site. New framework CSS arrives through normal plugin updates.
 
 = Predictable overrides =
 
@@ -78,6 +78,17 @@ SLASHED targets Chrome 125+, Safari 18.0+, and Firefox 129+. It uses `light-dark
 = Open source =
 
 The framework is developed at https://github.com/codeslash-dev/SLASHED.
+
+== External services ==
+
+The plugin works entirely on your own server: the framework CSS is bundled with the plugin and served locally, and the plugin makes no automatic or background calls to any external service. It does not phone home, and it does not collect, send, or track any data.
+
+The plugin does link to one optional external tool, which is only ever opened when **you** explicitly choose to use it:
+
+The SLASHED Configurator (https://slashed.codeslash.dev/configurator/)
+
+* What it is and what it's for: a hosted web app, run by the plugin author, for designing your SLASHED token set outside of WordPress. It is entirely optional — the same editor is built into the plugin at SLASHED → Design Settings, so you never need to leave your site.
+* What data is sent and when: nothing is sent automatically, and the plugin never contacts it in the background. Clicking **"Open in configurator"** opens the tool in a new browser tab with your current design tokens (color, spacing, typography and similar non-personal style values) encoded in the URL fragment — the part after "#", which browsers keep on your device and do not transmit to the server. **"Import shared config"** simply loads a design code that you paste in. No personal data, site content, or credentials are sent, and no account is required. As with visiting any website, the host may record standard web-server access logs (such as IP address and request time) when the page loads.
 
 == Installation ==
 
@@ -109,15 +120,21 @@ It loads the CSS, registers color, gradient, font-size, and spacing presets, bri
 
 No. Dark mode, fluid scales, and color derivation all run in CSS. JavaScript loads only in the WordPress admin and the builders.
 
-= Can I pin a framework version? =
+= Where does the framework CSS come from? =
 
-Yes. Switch CSS delivery to CDN and enter a release tag. Local mode serves the bundled CSS with a one-click updater.
+It ships inside the plugin and is served locally from the plugin's own folder. The plugin makes no external requests to render your site, and new framework CSS arrives through normal plugin updates from WordPress.org.
 
 = What's the minimum browser? =
 
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.4 =
+* Changed: The framework CSS now always loads locally from the bundled files. Removed the CDN delivery option and the in-plugin framework updater; new CSS ships through normal plugin updates.
+* Removed: The daily background version-check that contacted an external service. The plugin no longer makes any automatic external requests.
+* Fixed: All admin CSS and JavaScript is now enqueued via the WordPress enqueue APIs instead of inline `<style>`/`<script>` tags.
+* Added: An "External services" section in the readme documenting the optional standalone configurator.
 
 = 0.4.3 =
 * Fixed: Rewrite SEMVER regex to eliminate ReDoS (CodeQL)
