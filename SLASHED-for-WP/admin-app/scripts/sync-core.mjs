@@ -24,7 +24,7 @@
 import {
   readFileSync, writeFileSync, mkdirSync, existsSync,
   readdirSync, statSync, copyFileSync, rmSync,
-  openSync, fstatSync, closeSync,
+  openSync, fstatSync, closeSync, constants,
 } from 'node:fs';
 import { resolve, dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -268,9 +268,9 @@ async function main() {
         const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
         const srcPath = resolve(join(SRC, rel));
         if (!srcPath.startsWith(SRC_ROOT)) continue;
-        // Open the fd first so stat + read operate on the same inode (no TOCTOU).
+        // O_NOFOLLOW rejects symlinks at open time without a TOCTOU-prone pre-check.
         let fd;
-        try { fd = openSync(srcPath, 'r'); } catch { continue; }
+        try { fd = openSync(srcPath, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0)); } catch { continue; }
         try {
           if (!fstatSync(fd).isFile()) continue;
           preserved.push({ rel, content: readFileSync(fd) });

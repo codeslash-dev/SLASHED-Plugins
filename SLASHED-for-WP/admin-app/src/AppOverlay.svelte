@@ -210,7 +210,7 @@
     pushStyle.id = 'sf-panel-push';
     pushStyle.textContent = [
       'html { transition: padding-right 200ms ease-in-out; }',
-      'html.sf-panel-active { padding-right: 420px !important; box-sizing: border-box !important; }',
+      'html.sf-panel-active { padding-right: 420px !important; overflow-x: clip; }',
     ].join('\n');
     document.head.appendChild(pushStyle);
 

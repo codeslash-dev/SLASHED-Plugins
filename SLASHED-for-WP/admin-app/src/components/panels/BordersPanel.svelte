@@ -72,14 +72,16 @@
     const raw = overrides[r.name];
     if (!raw) return r.default;
     if (/^(var|calc|clamp)\(/.test(raw.trim())) return r.default;
-    return parseFloat(raw) || r.default;
+    const parsed = parseFloat(raw);
+    return isNaN(parsed) ? r.default : parsed;
   }
 
   function getComponentVal(t: typeof COMPONENT_TOKENS[0]): number {
     const raw = overrides[t.token];
     if (!raw) return t.default;
     if (/^(var|calc|clamp)\(/.test(raw.trim())) return t.default;
-    return parseFloat(raw) || t.default;
+    const parsed = parseFloat(raw);
+    return isNaN(parsed) ? t.default : parsed;
   }
 </script>
 

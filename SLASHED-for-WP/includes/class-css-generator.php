@@ -100,8 +100,10 @@ class Slashed_CSS_Generator {
 				'--sf-text-base-max',
 				'--sf-text-ratio-min',
 				'--sf-text-ratio-max',
+				'--sf-text-scale',
 				'--sf-text-display-base-min',
 				'--sf-text-display-base-max',
+				'--sf-text-display-scale',
 				'--sf-fluid-min-vw',
 				'--sf-fluid-max-vw',
 			);
@@ -110,6 +112,7 @@ class Slashed_CSS_Generator {
 				'--sf-space-base-max',
 				'--sf-space-ratio-min',
 				'--sf-space-ratio-max',
+				'--sf-space-scale',
 				'--sf-fluid-min-vw',
 				'--sf-fluid-max-vw',
 			);
