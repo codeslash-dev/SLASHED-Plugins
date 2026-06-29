@@ -131,46 +131,41 @@ Chrome 125+, Safari 18.0+, Firefox 129+.
 == Changelog ==
 
 = 0.4.4 =
-* Changed: The framework CSS now always loads locally from the bundled files. Removed the CDN delivery option and the in-plugin framework updater; new CSS ships through normal plugin updates.
-* Removed: The daily background version-check that contacted an external service. The plugin no longer makes any automatic external requests.
-* Fixed: All admin CSS and JavaScript is now enqueued via the WordPress enqueue APIs instead of inline `<style>`/`<script>` tags.
-* Added: An "External services" section in the readme documenting the optional standalone configurator.
+* Added a floating frontend overlay to edit tokens on any live page — click "/ Design" in the admin bar to open the panel without leaving the site.
+* Framework CSS is now always bundled locally with the plugin; CDN delivery and the automatic background version-check were removed.
+* Bug fixes.
 
 = 0.4.3 =
-* Fixed: Rewrite SEMVER regex to eliminate ReDoS (CodeQL)
-* Fixed: Validate semver after tag strip in changelog-release resolveVersion
-* Fixed: Deduplicate CHANGELOG.md version sections
-* Fixed: Apply brand color overrides on frontend; repair v0.4.2 release
+* Bug fixes.
 
 = 0.4.2 =
-* Fixed: Brand and status color overrides set in Design Settings now recolor the live site.
-* Fixed: Hardened token-override validation and sanitization.
+* Brand and status color overrides set in Design Settings now recolor the live site.
+* Bug fixes.
 
 = 0.4.1 =
-* Hardened validation and frontend rendering of token overrides.
+* Bug fixes.
 
 = 0.4.0 =
-* Replaced the old fork with the SLASHED design-system configurator, built into the plugin.
+* Replaced the admin interface with the SLASHED design-system configurator, now built into the plugin at SLASHED → Design Settings.
 
 = 0.3.15 =
 * Added a flat CSS bundle option to the settings page.
 
 = 0.3.14 =
-* Switched to the four-bundle set: Optimal, Optimal + Components, Optimal + Utilities, and Full.
+* Switched to four CSS bundle options: Optimal, Optimal + Components, Optimal + Utilities, and Full.
 
 = 0.3.8 =
-* Added "Import shared config" — paste a config code or configurator link to load a shared design.
-* Made design tokens the single styling path; removed the manual-CSS page.
+* Added "Import shared config" — paste a code or configurator link to load a shared design.
+* Removed the manual-CSS page; design tokens are now the only styling path.
 
 = 0.3.7 =
-* Added "Open in configurator", preloaded with your current tokens.
+* Added "Open in configurator", launching the hosted editor preloaded with your current tokens.
 
 = 0.3.6 =
-* Added the reBEMer settings tab and the in-builder Colors launcher.
-* Layout containers can be given default BEM names.
+* Added reBEMer to the Bricks structure panel and a Colors launcher panel to the builder.
 
 = 0.3.5 =
-* Consolidated all Bricks options into one tabbed settings page.
+* Consolidated all Bricks options into a single tabbed settings page.
 
 = 0.3.0 =
-* Initial public release.
+* Initial release.
