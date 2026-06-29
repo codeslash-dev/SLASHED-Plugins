@@ -53,9 +53,15 @@
   let canUndo        = $derived(past.length > 0);
   let canRedo        = $derived(future.length > 0);
 
-  let lastSavedSnapshot = $state(JSON.stringify(overrides));
+  function shallowEq(a: Record<string, string>, b: Record<string, string>): boolean {
+    const ak = Object.keys(a);
+    if (ak.length !== Object.keys(b).length) return false;
+    return ak.every((k) => a[k] === b[k]);
+  }
+
+  let lastSavedOverrides = $state<Record<string, string>>({ ...overrides });
   let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
-  let hasPendingChanges = $derived(JSON.stringify(overrides) !== lastSavedSnapshot);
+  let hasPendingChanges = $derived(!shallowEq(overrides, lastSavedOverrides));
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
   $effect(() => { injectLivePreview(overrides); });
@@ -73,7 +79,7 @@
   function setOverrides(updater: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>) {
     const prev = overrides;
     const next = typeof updater === 'function' ? updater(prev) : updater;
-    if (JSON.stringify(prev) !== JSON.stringify(next)) {
+    if (!shallowEq(prev, next)) {
       past = [...past.slice(-49), prev];
       future = [];
       if (saveState === 'saved') saveState = 'idle';
@@ -83,12 +89,12 @@
 
   async function handleSave() {
     if (!hasPendingChanges || saveState === 'saving') return;
-    const snapshot = JSON.stringify(overrides);
+    const snapshot = { ...overrides };
     saveState = 'saving';
     try {
       await saveOverrides(overrides);
-      if (JSON.stringify(overrides) === snapshot) {
-        lastSavedSnapshot = snapshot;
+      if (shallowEq(overrides, snapshot)) {
+        lastSavedOverrides = snapshot;
         saveState = 'saved';
         if (saveStateTimer) clearTimeout(saveStateTimer);
         saveStateTimer = setTimeout(() => {
@@ -250,7 +256,7 @@
       disabled={!hasPendingChanges || saveState === 'saving'}
       title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
       class={[
-        "p-1 rounded transition-all cursor-pointer shrink-0 disabled:pointer-events-none",
+        "p-1 rounded transition-colors cursor-pointer shrink-0 disabled:pointer-events-none",
         saveState === 'saved'
           ? "text-emerald-300"
           : hasPendingChanges
