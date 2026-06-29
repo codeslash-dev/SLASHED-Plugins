@@ -9,6 +9,16 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.9] - 2026-06-29
+
+### Fixed
+
+- Address PR #95 review findings (Qodo + CodeRabbit)
+- Remove blank line before class brace in rest-controller (PHPCS)
+- Restore configurator interactivity, redesign modular scale, drop legacy token system
+
+## [0.4.9] - 2026-06-29
+
 ### Fixed
 
 - Stop standalone Bricks/Gutenberg bootstraps from `require_once`-ing the deleted `class-token-sanitizer.php` and `class-tab-registry.php` (fatal error on standalone activation)

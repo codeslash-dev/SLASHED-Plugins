@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.8
+Stable tag: 0.4.9
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -129,6 +129,12 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.9 =
+* Fixed: Stop standalone Bricks/Gutenberg bootstraps from `require_once`-ing the deleted `class-token-sanitizer.php` and `class-tab-registry.php` (fatal error on standalone activation)
+* Fixed: Accept easing (`cubic-bezier()`, `linear()`, `steps()`) and scroll-timeline range (`entry 0%`, `cover 30%`) values in `Slashed_CSS_Generator::validate_override_value()` so motion-panel overrides are no longer silently dropped
+* Fixed: Align `Slashed_CSS_Generator::has_overrides()` with the emitter by validating values, so a stored invalid value no longer reports overrides while emitting no CSS
+* Fixed: Add accessible `aria-label`s to the modular-scale ratio preset select and custom ratio input in `ClampField.svelte`
 
 = 0.4.8 =
 * Fixed: Address all unresolved CodeRabbit PR review comments
