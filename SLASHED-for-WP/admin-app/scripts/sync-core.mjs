@@ -265,19 +265,19 @@ async function main() {
     if (existsSync(SRC)) {
       for (const entry of syncIgnore) {
         const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
-        const p = join(SRC, rel);
-        assertWithinSrc(p);
-        if (!existsSync(p)) continue;
-        const st = statSync(p);
+        const resolved = resolve(join(SRC, rel));
+        if (!resolved.startsWith(SRC_ROOT)) continue;
+        if (!existsSync(resolved)) continue;
+        const st = statSync(resolved);
         if (!st.isFile()) continue;
-        preserved.set(p, readFileSync(p));
+        preserved.set(resolved, readFileSync(resolved));
         process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
       }
       rmSync(SRC, { recursive: true, force: true });
     }
     mkdirSync(SRC, { recursive: true });
     for (const [p, content] of preserved) {
-      assertWithinSrc(p);
+      if (!p.startsWith(SRC_ROOT)) continue;
       mkdirSync(dirname(p), { recursive: true });
       writeFileSync(p, content);
     }
@@ -295,19 +295,19 @@ async function main() {
   if (existsSync(SRC)) {
     for (const entry of syncIgnore) {
       const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
-      const p = join(SRC, rel);
-      assertWithinSrc(p);
-      if (!existsSync(p)) continue;
-      const st = statSync(p);
+      const resolved = resolve(join(SRC, rel));
+      if (!resolved.startsWith(SRC_ROOT)) continue;
+      if (!existsSync(resolved)) continue;
+      const st = statSync(resolved);
       if (!st.isFile()) continue;
-      preserved.set(p, readFileSync(p));
+      preserved.set(resolved, readFileSync(resolved));
       process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
     }
     rmSync(SRC, { recursive: true, force: true });
   }
   mkdirSync(SRC, { recursive: true });
   for (const [p, content] of preserved) {
-    assertWithinSrc(p);
+    if (!p.startsWith(SRC_ROOT)) continue;
     mkdirSync(dirname(p), { recursive: true });
     writeFileSync(p, content);
   }
