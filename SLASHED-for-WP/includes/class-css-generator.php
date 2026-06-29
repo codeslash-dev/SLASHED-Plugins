@@ -36,6 +36,8 @@ class Slashed_CSS_Generator {
 			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/', $name ) ) {
 				continue;
 			}
+			// Only count values the emitter would actually keep, so has_overrides()
+			// can't claim true for a stored value validate_override_value() drops.
 			if ( false !== self::validate_override_value( $value ) ) {
 				return true;
 			}
@@ -184,40 +186,40 @@ class Slashed_CSS_Generator {
 	}
 
 	/**
-	 * Validate a CSS easing / timing-function value.
-	 *
-	 * Accepts named keywords (ease, linear, ease-in, ease-out, ease-in-out,
-	 * step-start, step-end) and functional forms cubic-bezier(), linear(), and
-	 * steps() whose bodies are restricted to digits, letters, spaces, and the
-	 * punctuation that appears in valid timing-function syntax.
+	 * Validate a CSS easing / timing function: a keyword (linear, ease-in-out,
+	 * step-start, …) or a cubic-bezier()/linear()/steps() function. These back
+	 * the motion panel's --sf-ease-* tokens, which the flat override map saves
+	 * as values such as `cubic-bezier(0.25, 0, 0.15, 1)` or `linear(0, 0.5, 1)`.
 	 *
 	 * @param mixed $value Raw timing-function input.
-	 * @return string|false Trimmed value when valid, false otherwise.
+	 * @return string|false
 	 */
 	private static function valid_timing_function( $value ) {
 		$v = trim( (string) $value );
 		if ( ! self::is_css_safe( $v ) ) {
 			return false;
 		}
+		// Keyword easings.
 		if ( preg_match( '/^(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end)$/i', $v ) ) {
 			return $v;
 		}
+		// Functional easings with a restricted charset (digits, units, the
+		// punctuation cubic-bezier()/linear()/steps() use).
 		if ( preg_match( '/^(cubic-bezier|linear|steps)\s*\(/i', $v )
-			&& preg_match( '/^[a-z0-9\s.,%()\-+]+$/i', $v ) ) {
+			&& preg_match( '#^[a-z0-9\s.,%()+-]+$#i', $v ) ) {
 			return $v;
 		}
 		return false;
 	}
 
 	/**
-	 * Validate a CSS scroll-timeline range value.
-	 *
-	 * Accepts the named range keywords (normal, entry, exit, cover, contain)
-	 * with an optional numeric offset (number + optional CSS unit), matching
-	 * the syntax the Motion panel writes for --sf-ease-* timeline ranges.
+	 * Validate a scroll-timeline animation-range value: a named range phase
+	 * (entry, exit, cover, contain, normal) with an optional offset such as
+	 * `entry 0%` or `cover 30%`. Backs the motion panel's
+	 * --sf-scroll-timeline-range-* tokens.
 	 *
 	 * @param mixed $value Raw timeline-range input.
-	 * @return string|false Trimmed value when valid, false otherwise.
+	 * @return string|false
 	 */
 	private static function valid_timeline_range( $value ) {
 		$v = trim( (string) $value );
