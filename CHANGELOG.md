@@ -9,6 +9,30 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.4] - 2026-06-29
+
+### Added
+
+- Frontend overlay configurator — edit tokens on any page
+
+### Fixed
+
+- Comply with WordPress.org guidelines (local-only CSS, enqueued assets)
+- Isolate overlay CSS, keyboard a11y, and shortcut normalization
+- Correct PHPCS whitespace errors in frontend configurator
+
+## [0.4.4] - 2026-06-29
+
+### Added
+
+- Frontend overlay configurator — edit tokens on any page
+
+### Fixed
+
+- Comply with WordPress.org guidelines (local-only CSS, enqueued assets)
+- Isolate overlay CSS, keyboard a11y, and shortcut normalization
+- Correct PHPCS whitespace errors in frontend configurator
+
 ## [0.4.3] - 2026-06-28
 
 ### Fixed
