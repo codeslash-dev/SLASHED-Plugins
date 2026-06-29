@@ -98,7 +98,11 @@ class Slashed_Frontend_Configurator {
 
 	/**
 	 * Add a "/ Design" node to the admin bar that toggles the overlay.
-	 * Uses a custom DOM event so the button works without a page reload.
+	 *
+	 * When the panel assets are already loaded (query param present) the button
+	 * toggles via a custom DOM event so no page reload is required. When the
+	 * assets have not been loaded yet the button navigates to the same URL with
+	 * ?slashed-frontend-panel appended, which triggers asset injection on load.
 	 *
 	 * @param WP_Admin_Bar $wp_admin_bar Admin bar instance.
 	 */
@@ -107,13 +111,24 @@ class Slashed_Frontend_Configurator {
 			return;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$panel_active = isset( $_GET['slashed-frontend-panel'] );
+
+		if ( $panel_active ) {
+			$href    = '#';
+			$onclick = 'document.dispatchEvent(new CustomEvent("slashed:toggle-overlay")); return false;';
+		} else {
+			$href    = esc_url( add_query_arg( 'slashed-frontend-panel', '' ) );
+			$onclick = '';
+		}
+
 		$wp_admin_bar->add_node(
 			array(
 				'id'    => 'slashed-frontend-editor',
 				'title' => '<span aria-hidden="true" style="font-weight:900;margin-right:3px;">/</span> Design',
-				'href'  => '#',
+				'href'  => $href,
 				'meta'  => array(
-					'onclick' => 'document.dispatchEvent(new CustomEvent("slashed:toggle-overlay")); return false;',
+					'onclick' => $onclick,
 					'title'   => 'Toggle SLASHED token editor overlay',
 				),
 			)
