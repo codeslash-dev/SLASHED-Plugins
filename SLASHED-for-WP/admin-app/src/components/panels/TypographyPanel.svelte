@@ -161,10 +161,6 @@
   let vwMin     = $derived(num("--sf-fluid-min-vw", 22.5));
   let vwMax     = $derived(num("--sf-fluid-max-vw", 90));
 
-  let activeRatio = $derived(RATIO_PRESETS.find(
-    (p) => Math.abs(p.value - ratioMin) < 0.0015 && Math.abs(p.value - ratioMax) < 0.0015
-  ));
-
   let showFontFamilies  = $state(false);
   let showPerType       = $state(false);
   let showBodyText      = $state(false);
@@ -757,10 +753,8 @@
       onMinChange={(v) => onSet("--sf-text-base-min", String(v))}
       onMaxChange={(v) => onSet("--sf-text-base-max", String(v))}
       ratioPresets={RATIO_PRESETS}
-      activeRatioValue={activeRatio?.value}
       ratioMin={ratioMin} ratioMax={ratioMax}
       ratioMin_bound={1.05} ratioMax_bound={1.8}
-      onRatioPreset={(v) => onBulkChange({ "--sf-text-ratio-min": String(v), "--sf-text-ratio-max": String(v) })}
       onRatioMinChange={(v) => onSet("--sf-text-ratio-min", String(v))}
       onRatioMaxChange={(v) => onSet("--sf-text-ratio-max", String(v))}
     />

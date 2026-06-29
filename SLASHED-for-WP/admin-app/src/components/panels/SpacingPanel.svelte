@@ -48,10 +48,6 @@
   let vwMin      = $derived(num("--sf-fluid-min-vw", 22.5));
   let vwMax      = $derived(num("--sf-fluid-max-vw", 90));
 
-  let activeRatio = $derived(RATIO_PRESETS.find(
-    (p) => Math.abs(p.value - ratioMin) < 0.0015 && Math.abs(p.value - ratioMax) < 0.0015
-  ));
-
   let activeDensity = $derived(DENSITY_PRESETS.find((d) =>
     Object.entries(d.patch).every(([k, v]) =>
       v === null ? !(k in overrides) : overrides[k] === v
@@ -184,10 +180,8 @@
         onMinChange={(v) => onSet("--sf-space-base-min", String(v))}
         onMaxChange={(v) => onSet("--sf-space-base-max", String(v))}
         ratioPresets={RATIO_PRESETS}
-        activeRatioValue={activeRatio?.value}
         ratioMin={ratioMin} ratioMax={ratioMax}
         ratioMin_bound={1.1} ratioMax_bound={1.8}
-        onRatioPreset={(v) => onBulkChange({ "--sf-space-ratio-min": String(v), "--sf-space-ratio-max": String(v) })}
         onRatioMinChange={(v) => onSet("--sf-space-ratio-min", String(v))}
         onRatioMaxChange={(v) => onSet("--sf-space-ratio-max", String(v))}
       />

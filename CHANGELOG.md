@@ -9,6 +9,13 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+### Fixed
+
+- Stop standalone Bricks/Gutenberg bootstraps from `require_once`-ing the deleted `class-token-sanitizer.php` and `class-tab-registry.php` (fatal error on standalone activation)
+- Accept easing (`cubic-bezier()`, `linear()`, `steps()`) and scroll-timeline range (`entry 0%`, `cover 30%`) values in `Slashed_CSS_Generator::validate_override_value()` so motion-panel overrides are no longer silently dropped
+- Align `Slashed_CSS_Generator::has_overrides()` with the emitter by validating values, so a stored invalid value no longer reports overrides while emitting no CSS
+- Add accessible `aria-label`s to the modular-scale ratio preset select and custom ratio input in `ClampField.svelte`
+
 ## [0.4.8] - 2026-06-29
 
 ### Fixed

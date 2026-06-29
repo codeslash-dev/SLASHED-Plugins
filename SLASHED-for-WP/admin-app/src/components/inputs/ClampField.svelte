@@ -22,14 +22,14 @@
     onMaxChange,
     overridden = false,
     onReset,
-    // Optional ratio block
+    // Optional ratio block — independent mobile (ratioMin) / desktop (ratioMax)
+    // modular-scale ratios. Each breakpoint gets its own preset selector and an
+    // always-visible custom number input.
     ratioPresets,
-    activeRatioValue,
     ratioMin,
     ratioMax,
     ratioMin_bound = 1.05,
     ratioMax_bound = 1.8,
-    onRatioPreset,
     onRatioMinChange,
     onRatioMaxChange,
     // Optional preview renderer (e.g. type sample / spacing block)
@@ -49,12 +49,10 @@
     overridden?: boolean;
     onReset?: () => void;
     ratioPresets?: RatioPreset[];
-    activeRatioValue?: number | undefined;
     ratioMin?: number;
     ratioMax?: number;
     ratioMin_bound?: number;
     ratioMax_bound?: number;
-    onRatioPreset?: (v: number) => void;
     onRatioMinChange?: (v: number) => void;
     onRatioMaxChange?: (v: number) => void;
     previewKind?: "none" | "type" | "space";
@@ -65,7 +63,18 @@
   }
   let minPct = $derived(((minValue - min) / (max - min)) * 100);
   let maxPct = $derived(((maxValue - min) / (max - min)) * 100);
-  let customRatioOpen = $derived(!!ratioPresets && activeRatioValue === undefined);
+
+  function clampRatio(v: number) {
+    return Math.min(ratioMax_bound, Math.max(ratioMin_bound, v));
+  }
+  // Which preset (if any) each breakpoint currently matches, computed per side
+  // so mobile and desktop highlight independently.
+  let activeRatioMin = $derived(
+    ratioPresets?.find((p) => ratioMin !== undefined && Math.abs(p.value - ratioMin) < 0.0015)?.value
+  );
+  let activeRatioMax = $derived(
+    ratioPresets?.find((p) => ratioMax !== undefined && Math.abs(p.value - ratioMax) < 0.0015)?.value
+  );
 </script>
 
 <div class={`rounded-xl border p-3 ${overridden ? "bg-indigo-500/8 border-indigo-500/25" : "bg-white/4 border-white/8"}`}>
@@ -128,38 +137,44 @@
     </div>
   {/if}
 
-  <!-- Ratio presets (optional) -->
+  <!-- Modular-scale ratio (optional) — independent mobile & desktop ratios.
+       Each breakpoint has its own preset dropdown plus an always-visible custom
+       number input, so a preset can be picked and then fine-tuned per side. -->
   {#if ratioPresets}
     <div class="mt-3 pt-3 border-t border-white/6">
-      <div class="text-[9px] font-semibold text-slate-500 mb-1.5">Modular scale ratio</div>
-      <div class="grid grid-cols-2 gap-1">
-        {#each ratioPresets as p (p.value)}
-          <button
-            onclick={() => onRatioPreset?.(p.value)}
-            class={`px-2 py-1 rounded-md text-[10px] border transition-all cursor-pointer text-left ${
-              activeRatioValue === p.value
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
-            }`}
-          >{p.label}</button>
+      <div class="text-[9px] font-semibold text-slate-500 mb-2">Modular scale ratio</div>
+      <div class="space-y-2">
+        {#each [
+          { side: minLabel, value: ratioMin, active: activeRatioMin, onChange: onRatioMinChange },
+          { side: maxLabel, value: ratioMax, active: activeRatioMax, onChange: onRatioMaxChange },
+        ] as row (row.side)}
+          <div class="flex items-center gap-2">
+            <span class="text-[9px] text-slate-500 w-14 shrink-0">{row.side}</span>
+            <select
+              aria-label={`${row.side} modular scale ratio preset`}
+              value={row.active !== undefined ? String(row.active) : ""}
+              onchange={(e) => {
+                const v = parseFloat((e.target as HTMLSelectElement).value);
+                if (Number.isFinite(v)) row.onChange?.(clampRatio(v));
+              }}
+              class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded text-[10px] text-slate-200 px-1.5 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer"
+            >
+              {#if row.active === undefined}
+                <option value="" style="background:#16161e;">Custom</option>
+              {/if}
+              {#each ratioPresets as p (p.value)}
+                <option value={String(p.value)} style="background:#16161e;">{p.label}</option>
+              {/each}
+            </select>
+            <input
+              aria-label={`${row.side} modular scale custom ratio`}
+              type="number" min={ratioMin_bound} max={ratioMax_bound} step={0.001} value={row.value}
+              onchange={(e) => { const n = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(n)) row.onChange?.(clampRatio(n)); }}
+              class="w-16 shrink-0 bg-white/5 border border-white/10 rounded text-[11px] font-mono text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500"
+            />
+          </div>
         {/each}
       </div>
-      {#if customRatioOpen}
-        <div class="grid grid-cols-2 gap-2 mt-2 pl-2 border-l border-amber-500/25">
-          <label class="flex items-center gap-1.5">
-            <span class="text-[9px] text-slate-500 shrink-0">{minLabel.toLowerCase()}</span>
-            <input type="number" min={ratioMin_bound} max={ratioMax_bound} step={0.001} value={ratioMin}
-              onchange={(e) => { const n = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(n)) onRatioMinChange?.(Math.min(ratioMax_bound, Math.max(ratioMin_bound, n))); }}
-              class="w-full bg-white/5 border border-white/10 rounded text-[11px] font-mono text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500" />
-          </label>
-          <label class="flex items-center gap-1.5">
-            <span class="text-[9px] text-slate-500 shrink-0">{maxLabel.toLowerCase()}</span>
-            <input type="number" min={ratioMin_bound} max={ratioMax_bound} step={0.001} value={ratioMax}
-              onchange={(e) => { const n = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(n)) onRatioMaxChange?.(Math.min(ratioMax_bound, Math.max(ratioMin_bound, n))); }}
-              class="w-full bg-white/5 border border-white/10 rounded text-[11px] font-mono text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500" />
-          </label>
-        </div>
-      {/if}
     </div>
   {/if}
 

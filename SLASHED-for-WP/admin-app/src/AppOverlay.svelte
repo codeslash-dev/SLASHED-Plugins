@@ -267,7 +267,7 @@
   class:translate-x-0={isOpen}
   style="top: var(--wp-admin--admin-bar--height, 32px); width: {isMobile ? '100vw' : '420px'}; height: calc(100vh - var(--wp-admin--admin-bar--height, 32px));"
   aria-hidden={!isOpen}
-  inert={!isOpen}
+  inert={!isOpen || undefined}
   class:pointer-events-none={!isOpen}
 >
   <!-- Compact header (40px) -->
