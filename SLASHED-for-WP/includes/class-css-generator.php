@@ -96,15 +96,22 @@ class Slashed_CSS_Generator {
 			// the hardcoded per-size values would otherwise shadow them inside
 			// @layer slashed.overrides.
 			$text_scale_keys  = array(
-				'--sf-text-base-min', '--sf-text-base-max',
-				'--sf-text-ratio-min', '--sf-text-ratio-max',
-				'--sf-text-display-base-min', '--sf-text-display-base-max',
-				'--sf-fluid-min-vw', '--sf-fluid-max-vw',
+				'--sf-text-base-min',
+				'--sf-text-base-max',
+				'--sf-text-ratio-min',
+				'--sf-text-ratio-max',
+				'--sf-text-display-base-min',
+				'--sf-text-display-base-max',
+				'--sf-fluid-min-vw',
+				'--sf-fluid-max-vw',
 			);
 			$space_scale_keys = array(
-				'--sf-space-base-min', '--sf-space-base-max',
-				'--sf-space-ratio-min', '--sf-space-ratio-max',
-				'--sf-fluid-min-vw', '--sf-fluid-max-vw',
+				'--sf-space-base-min',
+				'--sf-space-base-max',
+				'--sf-space-ratio-min',
+				'--sf-space-ratio-max',
+				'--sf-fluid-min-vw',
+				'--sf-fluid-max-vw',
 			);
 			$skip_text_sizes  = self::flat_has_any( $text_scale_keys );
 			$skip_space_sizes = self::flat_has_any( $space_scale_keys );
