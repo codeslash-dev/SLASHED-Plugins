@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.7] - 2026-06-29
+
+### Fixed
+
+- Gate toggle event on mount readiness; keep nav fallback
+- Admin bar button navigates to activate panel when assets not loaded
+
+## [0.4.7] - 2026-06-29
+
+### Fixed
+
+- Gate toggle event on mount readiness; keep nav fallback
+- Admin bar button navigates to activate panel when assets not loaded
+
 ## [0.4.6] - 2026-06-29
 
 ### Added

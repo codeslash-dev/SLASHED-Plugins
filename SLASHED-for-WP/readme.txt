@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.6
+Stable tag: 0.4.7
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -129,6 +129,10 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.7 =
+* Fixed: Gate toggle event on mount readiness; keep nav fallback
+* Fixed: Admin bar button navigates to activate panel when assets not loaded
 
 = 0.4.6 =
 * Added: Reset-all confirmation; save button left; panel gated on query param
