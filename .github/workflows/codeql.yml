@@ -27,6 +27,10 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           queries: security-extended
+          config: |
+            paths-ignore:
+              - 'SLASHED-for-WP/assets/**'
+              - 'SLASHED-for-WP/integrations/bricks/assets/**'
 
       - uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e  # v4
         with:

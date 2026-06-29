@@ -261,25 +261,26 @@ async function main() {
     // Fresh tree: drop any stale files from the previous fork before copying,
     // but preserve syncignored plugin-specific files across the wipe (mirrors
     // the same logic used in GitHub API mode).
-    const preserved = new Map();
+    const preserved = [];
     if (existsSync(SRC)) {
       for (const entry of syncIgnore) {
         const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
-        const resolved = resolve(join(SRC, rel));
-        if (!resolved.startsWith(SRC_ROOT)) continue;
-        if (!existsSync(resolved)) continue;
-        const st = statSync(resolved);
+        const srcPath = resolve(join(SRC, rel));
+        if (!srcPath.startsWith(SRC_ROOT)) continue;
+        if (!existsSync(srcPath)) continue;
+        const st = statSync(srcPath);
         if (!st.isFile()) continue;
-        preserved.set(resolved, readFileSync(resolved));
+        preserved.push({ rel, content: readFileSync(srcPath) });
         process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
       }
       rmSync(SRC, { recursive: true, force: true });
     }
     mkdirSync(SRC, { recursive: true });
-    for (const [p, content] of preserved) {
-      if (!p.startsWith(SRC_ROOT)) continue;
-      mkdirSync(dirname(p), { recursive: true });
-      writeFileSync(p, content);
+    for (const { rel, content } of preserved) {
+      const destPath = resolve(join(SRC, rel));
+      if (!destPath.startsWith(SRC_ROOT)) continue;
+      mkdirSync(dirname(destPath), { recursive: true });
+      writeFileSync(destPath, content);
     }
     copyLocalDir(local, local);
     vendorChromeLocal(resolve(local, '../..')); // configurator/src -> repo root
@@ -291,25 +292,26 @@ async function main() {
   console.log(`  source: GitHub ${SLASHED_REPO}@${REF}`);
   // Fresh tree: drop stale files before fetching, but preserve any syncignored
   // files so plugin-specific overrides survive the wipe.
-  const preserved = new Map();
+  const preserved = [];
   if (existsSync(SRC)) {
     for (const entry of syncIgnore) {
       const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
-      const resolved = resolve(join(SRC, rel));
-      if (!resolved.startsWith(SRC_ROOT)) continue;
-      if (!existsSync(resolved)) continue;
-      const st = statSync(resolved);
+      const srcPath = resolve(join(SRC, rel));
+      if (!srcPath.startsWith(SRC_ROOT)) continue;
+      if (!existsSync(srcPath)) continue;
+      const st = statSync(srcPath);
       if (!st.isFile()) continue;
-      preserved.set(resolved, readFileSync(resolved));
+      preserved.push({ rel, content: readFileSync(srcPath) });
       process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
     }
     rmSync(SRC, { recursive: true, force: true });
   }
   mkdirSync(SRC, { recursive: true });
-  for (const [p, content] of preserved) {
-    if (!p.startsWith(SRC_ROOT)) continue;
-    mkdirSync(dirname(p), { recursive: true });
-    writeFileSync(p, content);
+  for (const { rel, content } of preserved) {
+    const destPath = resolve(join(SRC, rel));
+    if (!destPath.startsWith(SRC_ROOT)) continue;
+    mkdirSync(dirname(destPath), { recursive: true });
+    writeFileSync(destPath, content);
   }
   // Recursively vendor the entire configurator/src tree (components, lib, data,
   // and root files: App.svelte, main.ts, types.ts, app.css, vite-env.d.ts).
