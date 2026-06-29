@@ -56,9 +56,7 @@ if ( ! class_exists( 'Slashed_Token_Store' ) ) {
 	require_once $slashed_shared . 'class-settings.php';
 	require_once $slashed_shared . 'class-css-loader.php';
 	require_once $slashed_shared . 'class-token-store.php';
-	require_once $slashed_shared . 'class-token-sanitizer.php';
 	require_once $slashed_shared . 'class-token-defaults.php';
-	require_once $slashed_shared . 'class-tab-registry.php';
 	require_once $slashed_shared . 'class-css-generator.php';
 	require_once $slashed_shared . 'class-rest-controller.php';
 	require_once $slashed_shared . 'class-token-page.php';

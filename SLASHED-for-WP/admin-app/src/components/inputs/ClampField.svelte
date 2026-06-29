@@ -151,6 +151,7 @@
           <div class="flex items-center gap-2">
             <span class="text-[9px] text-slate-500 w-14 shrink-0">{row.side}</span>
             <select
+              aria-label={`${row.side} modular scale ratio preset`}
               value={row.active !== undefined ? String(row.active) : ""}
               onchange={(e) => {
                 const v = parseFloat((e.target as HTMLSelectElement).value);
@@ -166,6 +167,7 @@
               {/each}
             </select>
             <input
+              aria-label={`${row.side} modular scale custom ratio`}
               type="number" min={ratioMin_bound} max={ratioMax_bound} step={0.001} value={row.value}
               onchange={(e) => { const n = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(n)) row.onChange?.(clampRatio(n)); }}
               class="w-16 shrink-0 bg-white/5 border border-white/10 rounded text-[11px] font-mono text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500"
