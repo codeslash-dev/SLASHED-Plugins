@@ -11,6 +11,11 @@ function mountOverlay() {
   const overlayTarget = document.getElementById('slashed-frontend-overlay');
   if (!overlayTarget) return;
 
+  // Guard against duplicate invocations (e.g. script loaded twice by an
+  // optimiser): attachShadow() throws if called a second time on the same
+  // element, so bail out early when a shadow root already exists.
+  if (overlayTarget.shadowRoot) return;
+
   // Mount into a shadow root so Tailwind's global reset/base styles don't
   // bleed into the live-preview page. CSS custom properties (--sf-*) still
   // inherit through the shadow boundary as normal inherited properties.
@@ -19,7 +24,12 @@ function mountOverlay() {
   const mountPoint = document.createElement('div');
   shadow.appendChild(mountPoint);
 
-  const doMount = () => mount(AppOverlay, { target: mountPoint });
+  let mounted = false;
+  const doMount = () => {
+    if (mounted) return;
+    mounted = true;
+    mount(AppOverlay, { target: mountPoint });
+  };
 
   const cssUrl = (window as any).slashedApp?.cssUrl as string | undefined;
   if (cssUrl) {
@@ -28,8 +38,11 @@ function mountOverlay() {
     link.href = cssUrl;
     // Defer component mount until CSS is ready so the panel never renders
     // unstyled (without position:fixed / background it would be invisible).
-    link.addEventListener('load', doMount);
-    link.addEventListener('error', doMount);
+    // Fall back after 5 s if load/error never fires (stalled request, etc.).
+    const timer = setTimeout(doMount, 5000);
+    const settle = () => { clearTimeout(timer); doMount(); };
+    link.addEventListener('load', settle);
+    link.addEventListener('error', settle);
     shadow.appendChild(link);
   } else {
     doMount();
