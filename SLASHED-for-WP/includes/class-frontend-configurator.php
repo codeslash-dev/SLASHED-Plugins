@@ -103,7 +103,7 @@ class Slashed_Frontend_Configurator {
 	 * @param WP_Admin_Bar $wp_admin_bar Admin bar instance.
 	 */
 	public function add_admin_bar_node( $wp_admin_bar ) {
-		if ( ! $this->should_load() ) {
+		if ( ! $this->can_access_frontend_panel() ) {
 			return;
 		}
 
@@ -148,16 +148,26 @@ class Slashed_Frontend_Configurator {
 	}
 
 	/**
-	 * Whether the overlay should load on this request.
-	 * Only on the public frontend, with the admin bar visible, for admins,
-	 * and only when the ?slashed-frontend-panel query parameter is present.
+	 * Whether the current user can access the frontend panel at all.
+	 * Used for the admin-bar node — shows the entry point on every frontend page.
+	 *
+	 * @return bool
+	 */
+	private function can_access_frontend_panel() {
+		return ! is_admin()
+			&& is_admin_bar_showing()
+			&& current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Whether the overlay assets and mount container should be injected.
+	 * Requires ?slashed-frontend-panel in the URL in addition to capability checks,
+	 * so the panel only activates on pages where it is explicitly requested.
 	 *
 	 * @return bool
 	 */
 	private function should_load() {
-		return ! is_admin()
-			&& is_admin_bar_showing()
-			&& current_user_can( 'manage_options' )
+		return $this->can_access_frontend_panel()
 			&& isset( $_GET['slashed-frontend-panel'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 }

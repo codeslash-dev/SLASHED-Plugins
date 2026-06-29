@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import type { PresetTheme, SlashedToken } from './types';
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
@@ -47,6 +47,14 @@
   let domain    = $state(readStr(LS_DOMAIN_KEY, 'home'));
   let showPalette = $state(false);
   let showResetConfirm = $state(false);
+  let resetCancelBtn = $state<HTMLButtonElement | null>(null);
+  let resetConfirmBtn = $state<HTMLButtonElement | null>(null);
+
+  $effect(() => {
+    if (showResetConfirm) {
+      tick().then(() => resetCancelBtn?.focus());
+    }
+  });
 
   let overridesCount = $derived(Object.keys(overrides).length);
   let domainBadges   = $derived(overridesByDomain(overrides));
@@ -65,6 +73,12 @@
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
   $effect(() => { injectLivePreview(overrides); });
+
+  // Push page content left instead of covering it when the panel is open.
+  $effect(() => {
+    document.body.style.marginRight = isOpen ? '420px' : '';
+    document.body.style.transition = 'margin-right 200ms ease-in-out';
+  });
 
   $effect(() => {
     try { localStorage.setItem(LS_OPEN_KEY,   String(isOpen)); } catch {}
@@ -255,6 +269,7 @@
       onclick={handleSave}
       disabled={!hasPendingChanges || saveState === 'saving'}
       title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
+      aria-label={saveState === 'saving' ? 'Saving changes' : hasPendingChanges ? 'Save changes' : 'No unsaved changes'}
       class={[
         "p-1 rounded transition-colors cursor-pointer shrink-0 disabled:pointer-events-none",
         saveState === 'saved'
@@ -331,7 +346,7 @@
           onBulkChange={handleBulkChange}
           onApplyTheme={handleApplyTheme}
           onSelectDomain={(d) => { domain = d; }}
-          onResetAll={confirmResetAll}
+          onResetAll={handleResetAll}
         />
       </div>
     </div>
@@ -354,6 +369,15 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="reset-confirm-title"
+      onkeydown={(e) => {
+        if (e.key === 'Escape') { e.stopPropagation(); cancelResetAll(); }
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const focused = document.activeElement;
+          if (focused === resetCancelBtn) resetConfirmBtn?.focus();
+          else resetCancelBtn?.focus();
+        }
+      }}
     >
       <div class="bg-[#1a1a2e] border border-white/10 rounded-xl p-5 mx-4 shadow-2xl w-full max-w-[320px]">
         <h3 id="reset-confirm-title" class="text-white font-bold text-sm mb-2">Reset all overrides?</h3>
@@ -363,12 +387,14 @@
         </p>
         <div class="flex gap-2 justify-end">
           <button
+            bind:this={resetCancelBtn}
             onclick={cancelResetAll}
             class="px-3 py-1.5 text-xs rounded-lg bg-white/8 text-slate-300 hover:bg-white/12 transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
+            bind:this={resetConfirmBtn}
             onclick={confirmResetAll}
             class="px-3 py-1.5 text-xs rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold transition-colors cursor-pointer"
           >
