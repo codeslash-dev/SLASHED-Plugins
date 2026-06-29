@@ -5,10 +5,16 @@ cascade-layer CSS framework. Ships two integrations that load from the unified
 `slashed.php` bootstrap:
 
 - **Bricks Builder** — CSS loading, `--sf-*` variable pickers, `.sf-*`/`.is-*`
-  class autocomplete, a Color System panel, and reBEMer (subtree-scoped BEM
-  class manager in the structure panel).
-- **Gutenberg** — CSS loading in the block editor and frontend, color palette
-  sync, and a dark-mode bridge.
+  class autocomplete, color swatches, a Color System panel, class hints, and
+  reBEMer (subtree-scoped BEM class manager in the structure panel).
+- **Gutenberg** — CSS loading in the block editor and frontend, color palette /
+  gradient / font-size / spacing presets, a token panel, and a dark-mode bridge.
+
+A **Design Settings** admin page (SLASHED → Design Settings) lets you set every
+design token visually — colors, typography, spacing, layouts, borders, shadows,
+motion, z-index — with a live light/dark preview. The same editor runs as a
+floating overlay on any frontend page: click **/ Design** in the WordPress admin
+bar to open it without leaving the site.
 
 ## Layout
 
@@ -44,9 +50,9 @@ downloads its CSS bundles into `SLASHED-for-WP/dist/`, regenerates
 `SLASHED_*_CSS_REF` constants. Build scripts resolve the framework from
 `SLASHED_FRAMEWORK_DIR`, then `./.framework`, then a sibling `../SLASHED`.
 
-Runtime CSS source is chosen on the plugin settings page: **Local** serves the
-bundled `dist/` CSS; **CDN** serves jsDelivr (`latest`) or a pinned release
-asset.
+The framework CSS always loads locally from the plugin's bundled `dist/` folder
+— no external CDN requests are made. New framework CSS arrives through plugin
+updates or `npm run update-framework`.
 
 ## Build
 

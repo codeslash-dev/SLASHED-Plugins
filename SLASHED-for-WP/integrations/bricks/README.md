@@ -8,8 +8,9 @@ CSS framework with [Bricks Builder](https://bricksbuilder.io/).
 - **CSS loading** — enqueues the SLASHED bundle on the frontend and in the
   Bricks editor canvas iframe (not the builder chrome).
 - **Variable pickers** — registers every `--sf-*` custom property in the active
-  bundle (572 in `essential`, 812 in `optimal`/`full`) with the Bricks variable
-  pickers and code-editor autocomplete, grouped by category.
+  bundle (691+ variables, dynamically parsed from whichever bundle is active)
+  with the Bricks variable pickers and code-editor autocomplete, grouped by
+  category.
 - **Class autocomplete** — registers every `.sf-*` and `.is-*` class with the
   Bricks class input under "SLASHED Layout" and "SLASHED State".
 - **Variable-picker swatches** — paints a colour square next to each
@@ -38,9 +39,14 @@ CSS framework with [Bricks Builder](https://bricksbuilder.io/).
 
 ## Installation
 
-Copy `integrations/bricks/` into `wp-content/plugins/slashed-bricks`, or symlink
-it for development, then activate in **Admin → Plugins**. The framework CSS ships
-with the plugin and loads locally from its bundled `dist/` folder.
+**Recommended:** Install the unified `slashed.zip` from **Plugins → Add New →
+Upload Plugin** — this ships both the Bricks and Gutenberg integrations, the
+Design Settings admin SPA, and the frontend overlay together.
+
+**Standalone (development only):** Copy `integrations/bricks/` into
+`wp-content/plugins/slashed-bricks`, or symlink it, then activate in
+**Admin → Plugins**. The framework CSS ships with the plugin and loads locally
+from its bundled `dist/` folder.
 
 ## Filter hooks
 
@@ -131,10 +137,11 @@ integrations/bricks/
     class-variables.php          Variable registration for pickers
     class-classes.php            Class registration for autocomplete
     class-color-resolver.php     Server-side light/dark hex resolution
+    class-editor-data.php        Localizes reBEMer + color panel data
     class-rebemer-enqueue.php    reBEMer editor-app enqueue
     class-rebemer-rest.php       reBEMer REST (GET /rebemer/unused)
+    class-fonts-rest.php         Font discovery endpoint
   editor-app/                    Svelte editor app (reBEMer + Color panel)
-  admin-app/                     Svelte admin SPA
 ```
 
 ### How it works
@@ -170,11 +177,11 @@ npm run inventory    # regenerate inventory.json only
 
 ## CSS bundle
 
-Defaults to `dist/slashed.optimal.css` from jsDelivr, pinned to an immutable
-ref. Standalone mode builds the URL from `SLASHED_BRICKS_DIST_SHA`; under the
-unified plugin the shared loader pins to `SLASHED_CSS_REF`. A detected local
-bundle takes precedence. Switch bundles or override the ref with
-`slashed_bricks/css_bundle_url`.
+The framework CSS ships locally inside the plugin and is always served from
+`dist/slashed.optimal.css` (or whichever bundle is selected in settings). No
+CDN requests are made. Under the unified plugin the shared loader uses
+`SLASHED_CSS_REF`; standalone mode uses `SLASHED_BRICKS_DIST_SHA`. Override
+the URL entirely with `slashed_bricks/css_bundle_url`.
 
 ## License
 
