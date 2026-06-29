@@ -179,7 +179,12 @@ export function injectLivePreview(ov: Record<string, string>): void {
 }
 
 async function wpSave(rest: { url?: string; nonce?: string }, ov: Record<string, string>): Promise<void> {
-  const url = (rest.url ?? "").replace(/\/$/, "") + "/tokens/overrides";
+  const base = (rest.url ?? "").replace(/\/$/, "");
+  const parsed = new URL(base + "/tokens/overrides", window.location.href);
+  if (parsed.origin !== window.location.origin) {
+    throw new Error("slashed: REST URL must be same-origin");
+  }
+  const url = parsed.href;
   const res = await fetch(url, {
     method: "POST",
     credentials: "same-origin",
