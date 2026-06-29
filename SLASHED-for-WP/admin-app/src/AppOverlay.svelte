@@ -41,6 +41,7 @@
   }
 
   let isOpen    = $state(readBool(LS_OPEN_KEY, true));
+  let isMobile  = $state(typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false);
   let overrides = $state<Record<string, string>>(loadInitialOverrides());
   let past      = $state<Record<string, string>[]>([]);
   let future    = $state<Record<string, string>[]>([]);
@@ -74,10 +75,13 @@
 
   $effect(() => { injectLivePreview(overrides); });
 
-  // Push page content left instead of covering it when the panel is open.
+  // On desktop push page content left; on mobile the panel is a full overlay.
   $effect(() => {
-    document.body.style.marginRight = isOpen ? '420px' : '';
-    document.body.style.transition = 'margin-right 200ms ease-in-out';
+    if (!isMobile && isOpen) {
+      document.documentElement.classList.add('sf-panel-active');
+    } else {
+      document.documentElement.classList.remove('sf-panel-active');
+    }
   });
 
   $effect(() => {
@@ -199,6 +203,21 @@
   }
 
   onMount(() => {
+    // Inject a stylesheet that pushes page content left on desktop.
+    // Using padding-right + box-sizing on <html> is reliable across WP themes
+    // even when body/html have overflow-x: hidden or other overflow settings.
+    const pushStyle = document.createElement('style');
+    pushStyle.id = 'sf-panel-push';
+    pushStyle.textContent = [
+      'html { transition: padding-right 200ms ease-in-out; }',
+      'html.sf-panel-active { padding-right: 420px !important; overflow-x: clip; }',
+    ].join('\n');
+    document.head.appendChild(pushStyle);
+
+    const mql = window.matchMedia('(max-width: 768px)');
+    const onMql = (e: MediaQueryListEvent) => { isMobile = e.matches; };
+    mql.addEventListener('change', onMql);
+
     const keydown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
       if (!isOpen) return;
@@ -211,6 +230,9 @@
     window.addEventListener('keydown', keydown);
     document.addEventListener('slashed:toggle-overlay', onToggle);
     return () => {
+      pushStyle.remove();
+      document.documentElement.classList.remove('sf-panel-active');
+      mql.removeEventListener('change', onMql);
       window.removeEventListener('keydown', keydown);
       document.removeEventListener('slashed:toggle-overlay', onToggle);
       if (saveStateTimer) clearTimeout(saveStateTimer);
@@ -227,7 +249,7 @@
     onclick={toggle}
     aria-label="Open SLASHED token editor"
     class="fixed right-0 z-[100000] bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl flex flex-col items-center justify-center gap-1 px-1.5 py-3 rounded-l-xl transition-colors cursor-pointer"
-    style="top: calc(32px + 16px);"
+    style="top: calc(var(--wp-admin--admin-bar--height, 32px) + 16px);"
   >
     <span class="text-sm font-black leading-none select-none">/</span>
     <ChevronRight class="w-3 h-3 opacity-70 rotate-180" />
@@ -243,7 +265,7 @@
   class="fixed right-0 z-[100000] flex flex-col bg-[#0a0a0f] text-slate-200 font-sans shadow-2xl shadow-black/60 border-l border-white/8 transition-transform duration-200 ease-in-out"
   class:translate-x-full={!isOpen}
   class:translate-x-0={isOpen}
-  style="top: 32px; width: 420px; height: calc(100vh - 32px);"
+  style="top: var(--wp-admin--admin-bar--height, 32px); width: {isMobile ? '100vw' : '420px'}; height: calc(100vh - var(--wp-admin--admin-bar--height, 32px));"
   aria-hidden={!isOpen}
   inert={!isOpen}
   class:pointer-events-none={!isOpen}

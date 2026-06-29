@@ -89,14 +89,44 @@ class Slashed_CSS_Generator {
 			$vp_min = self::resolve_viewport_min( $settings['spacing']['viewport_min'] ?? '' );
 			$vp_max = self::resolve_viewport_max( $settings['spacing']['viewport_max'] ?? '' );
 
+			// When the in-WordPress configurator has saved source tokens for the
+			// modular scale, skip the legacy per-size hardcoded clamp declarations
+			// from the old settings system. The framework's own computed tokens (in
+			// @layer slashed.tokens) will use the new source values correctly, and
+			// the hardcoded per-size values would otherwise shadow them inside
+			// @layer slashed.overrides.
+			$text_scale_keys  = array(
+				'--sf-text-base-min',
+				'--sf-text-base-max',
+				'--sf-text-ratio-min',
+				'--sf-text-ratio-max',
+				'--sf-text-scale',
+				'--sf-text-display-base-min',
+				'--sf-text-display-base-max',
+				'--sf-text-display-scale',
+				'--sf-fluid-min-vw',
+				'--sf-fluid-max-vw',
+			);
+			$space_scale_keys = array(
+				'--sf-space-base-min',
+				'--sf-space-base-max',
+				'--sf-space-ratio-min',
+				'--sf-space-ratio-max',
+				'--sf-space-scale',
+				'--sf-fluid-min-vw',
+				'--sf-fluid-max-vw',
+			);
+			$skip_text_sizes  = self::flat_has_any( $text_scale_keys );
+			$skip_space_sizes = self::flat_has_any( $space_scale_keys );
+
 			if ( ! empty( $settings['colors'] ) && is_array( $settings['colors'] ) ) {
 				$declarations = array_merge( $declarations, self::generate_color_declarations( $settings['colors'] ) );
 			}
 			if ( ! empty( $settings['typography'] ) && is_array( $settings['typography'] ) ) {
-				$declarations = array_merge( $declarations, self::generate_typography_declarations( $settings['typography'], $vp_min, $vp_max ) );
+				$declarations = array_merge( $declarations, self::generate_typography_declarations( $settings['typography'], $vp_min, $vp_max, $skip_text_sizes ) );
 			}
 			if ( ! empty( $settings['spacing'] ) && is_array( $settings['spacing'] ) ) {
-				$declarations = array_merge( $declarations, self::generate_spacing_declarations( $settings['spacing'], $vp_min, $vp_max ) );
+				$declarations = array_merge( $declarations, self::generate_spacing_declarations( $settings['spacing'], $vp_min, $vp_max, $skip_space_sizes ) );
 			}
 			if ( ! empty( $settings['radius'] ) && is_array( $settings['radius'] ) ) {
 				$declarations = array_merge( $declarations, self::generate_radius_declarations( $settings['radius'] ) );
@@ -168,6 +198,25 @@ class Slashed_CSS_Generator {
 		return $declarations;
 	}
 
+	/**
+	 * Return true if the flat override map contains a non-empty value for any of
+	 * the given token names. Used to detect when source tokens have been set via
+	 * the in-WordPress configurator so conflicting legacy declarations can be
+	 * suppressed.
+	 *
+	 * @param string[] $keys CSS custom property names to check.
+	 * @return bool
+	 */
+	private static function flat_has_any( $keys ) {
+		$overrides = Slashed_Token_Store::get_overrides();
+		foreach ( $keys as $key ) {
+			if ( isset( $overrides[ $key ] ) && false !== self::validate_override_value( $overrides[ $key ] ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private static function generate_color_declarations( $settings ) {
 		$declarations  = array();
 		$brand_colors  = array( 'primary', 'secondary', 'tertiary', 'action', 'neutral', 'base' );
@@ -207,7 +256,7 @@ class Slashed_CSS_Generator {
 		return $declarations;
 	}
 
-	private static function generate_typography_declarations( $settings, $vp_min = self::VIEWPORT_MIN, $vp_max = self::VIEWPORT_MAX ) {
+	private static function generate_typography_declarations( $settings, $vp_min = self::VIEWPORT_MIN, $vp_max = self::VIEWPORT_MAX, $skip_sizes = false ) {
 		$declarations = array();
 		$font_stacks  = array( 'body', 'heading', 'mono', 'display', 'humanist', 'geometric', 'slab' );
 
@@ -225,14 +274,19 @@ class Slashed_CSS_Generator {
 			$declarations[] = '--sf-text-display-scale: ' . self::format_float( $settings['text_display_scale'] ) . ';';
 		}
 
-		$sizes = array( '2xs', 'xs', 's', 'm', 'l', 'xl', '2xl', '3xl', '4xl', 'display-s', 'display-m', 'display-l' );
-		foreach ( $sizes as $size ) {
-			$min_val = $settings[ 'size_' . $size . '_min' ] ?? '';
-			$max_val = $settings[ 'size_' . $size . '_max' ] ?? '';
-			if ( '' !== $min_val && '' !== $max_val ) {
-				$clamp = self::build_clamp( (float) $min_val, (float) $max_val, $vp_min, $vp_max );
-				if ( $clamp ) {
-					$declarations[] = '--sf-text-' . $size . ': ' . $clamp . ';';
+		// Skip per-size hardcoded clamp values when the configurator has set
+		// modular-scale source tokens; those source tokens drive the framework's
+		// own computed output tokens and the hardcoded values would shadow them.
+		if ( ! $skip_sizes ) {
+			$sizes = array( '2xs', 'xs', 's', 'm', 'l', 'xl', '2xl', '3xl', '4xl', 'display-s', 'display-m', 'display-l' );
+			foreach ( $sizes as $size ) {
+				$min_val = $settings[ 'size_' . $size . '_min' ] ?? '';
+				$max_val = $settings[ 'size_' . $size . '_max' ] ?? '';
+				if ( '' !== $min_val && '' !== $max_val ) {
+					$clamp = self::build_clamp( (float) $min_val, (float) $max_val, $vp_min, $vp_max );
+					if ( $clamp ) {
+						$declarations[] = '--sf-text-' . $size . ': ' . $clamp . ';';
+					}
 				}
 			}
 		}
@@ -262,21 +316,25 @@ class Slashed_CSS_Generator {
 		return (float) max( self::VIEWPORT_MAX_FLOOR, min( self::VIEWPORT_MAX_CAP, $raw ) );
 	}
 
-	private static function generate_spacing_declarations( $settings, $vp_min = self::VIEWPORT_MIN, $vp_max = self::VIEWPORT_MAX ) {
+	private static function generate_spacing_declarations( $settings, $vp_min = self::VIEWPORT_MIN, $vp_max = self::VIEWPORT_MAX, $skip_sizes = false ) {
 		$declarations = array();
 
 		if ( isset( $settings['space_scale'] ) && is_numeric( $settings['space_scale'] ) ) {
 			$declarations[] = '--sf-space-scale: ' . self::format_float( $settings['space_scale'] ) . ';';
 		}
 
-		$steps = array( '2xs', 'xs', 's', 'm', 'l', 'xl', '2xl', '3xl', '4xl' );
-		foreach ( $steps as $step ) {
-			$min_val = $settings[ 'space_' . $step . '_min' ] ?? '';
-			$max_val = $settings[ 'space_' . $step . '_max' ] ?? '';
-			if ( '' !== $min_val && '' !== $max_val ) {
-				$clamp = self::build_clamp( (float) $min_val, (float) $max_val, $vp_min, $vp_max );
-				if ( $clamp ) {
-					$declarations[] = '--sf-space-' . $step . ': calc(' . $clamp . ' * var(--sf-space-scale));';
+		// Skip per-step hardcoded clamp values when the configurator has set
+		// modular-scale source tokens that drive the framework's own computed steps.
+		if ( ! $skip_sizes ) {
+			$steps = array( '2xs', 'xs', 's', 'm', 'l', 'xl', '2xl', '3xl', '4xl' );
+			foreach ( $steps as $step ) {
+				$min_val = $settings[ 'space_' . $step . '_min' ] ?? '';
+				$max_val = $settings[ 'space_' . $step . '_max' ] ?? '';
+				if ( '' !== $min_val && '' !== $max_val ) {
+					$clamp = self::build_clamp( (float) $min_val, (float) $max_val, $vp_min, $vp_max );
+					if ( $clamp ) {
+						$declarations[] = '--sf-space-' . $step . ': calc(' . $clamp . ' * var(--sf-space-scale));';
+					}
 				}
 			}
 		}

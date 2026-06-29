@@ -169,6 +169,9 @@
         overridden={"--sf-center-max" in overrides}
         onChange={(v) => onSet("--sf-center-max", `${v}rem`)}
         onReset={() => onReset("--sf-center-max")}
+        rawDefault="var(--sf-container-default)"
+        currentRaw={overrides["--sf-center-max"]}
+        onRawSet={(v) => onSet("--sf-center-max", v)}
       />
       <SliderRow
         label="Gutter" value={centerGutter} min={0} max={4} step={0.125} unit="rem"
@@ -176,6 +179,9 @@
         overridden={"--sf-center-gutter" in overrides}
         onChange={(v) => onSet("--sf-center-gutter", `${v}rem`)}
         onReset={() => onReset("--sf-center-gutter")}
+        rawDefault="var(--sf-gutter)"
+        currentRaw={overrides["--sf-center-gutter"]}
+        onRawSet={(v) => onSet("--sf-center-gutter", v)}
       />
     {/if}
   </section>
@@ -307,6 +313,9 @@
             overridden={"--sf-sticky-offset-mobile" in overrides}
             onChange={(v) => onSet("--sf-sticky-offset-mobile", `${v}rem`)}
             onReset={() => onReset("--sf-sticky-offset-mobile")}
+            rawDefault="var(--sf-header-height-mobile)"
+            currentRaw={overrides["--sf-sticky-offset-mobile"]}
+            onRawSet={(v) => onSet("--sf-sticky-offset-mobile", v)}
           />
         </div>
         <div>
@@ -316,6 +325,9 @@
             overridden={"--sf-sticky-offset-desktop" in overrides}
             onChange={(v) => onSet("--sf-sticky-offset-desktop", `${v}rem`)}
             onReset={() => onReset("--sf-sticky-offset-desktop")}
+            rawDefault="var(--sf-header-height-desktop)"
+            currentRaw={overrides["--sf-sticky-offset-desktop"]}
+            onRawSet={(v) => onSet("--sf-sticky-offset-desktop", v)}
           />
         </div>
       </div>
@@ -552,6 +564,9 @@
             overridden={"--sf-imposter-margin" in overrides}
             onChange={(v) => onSet("--sf-imposter-margin", `${v}rem`)}
             onReset={() => onReset("--sf-imposter-margin")}
+            rawDefault="var(--sf-space-m)"
+            currentRaw={overrides["--sf-imposter-margin"]}
+            onRawSet={(v) => onSet("--sf-imposter-margin", v)}
           />
         </section>
 
@@ -564,6 +579,9 @@
             overridden={"--sf-content-width" in overrides}
             onChange={(v) => onSet("--sf-content-width", `${v}rem`)}
             onReset={() => onReset("--sf-content-width")}
+            rawDefault="var(--sf-container-default)"
+            currentRaw={overrides["--sf-content-width"]}
+            onRawSet={(v) => onSet("--sf-content-width", v)}
           />
           <SliderRow
             label="Breakout width" value={breakoutWidth} min={50} max={160} step={1} unit="rem"
@@ -571,6 +589,9 @@
             overridden={"--sf-breakout-width" in overrides}
             onChange={(v) => onSet("--sf-breakout-width", `${v}rem`)}
             onReset={() => onReset("--sf-breakout-width")}
+            rawDefault="var(--sf-container-wide)"
+            currentRaw={overrides["--sf-breakout-width"]}
+            onRawSet={(v) => onSet("--sf-breakout-width", v)}
           />
         </section>
 
@@ -583,6 +604,9 @@
             overridden={"--sf-alternate-inner-gap" in overrides}
             onChange={(v) => onSet("--sf-alternate-inner-gap", `${v}rem`)}
             onReset={() => onReset("--sf-alternate-inner-gap")}
+            rawDefault="var(--sf-gap)"
+            currentRaw={overrides["--sf-alternate-inner-gap"]}
+            onRawSet={(v) => onSet("--sf-alternate-inner-gap", v)}
           />
         </section>
       </div>

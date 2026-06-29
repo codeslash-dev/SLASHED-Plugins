@@ -24,6 +24,7 @@
 import {
   readFileSync, writeFileSync, mkdirSync, existsSync,
   readdirSync, statSync, copyFileSync, rmSync,
+  openSync, fstatSync, closeSync, constants,
 } from 'node:fs';
 import { resolve, dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -258,9 +259,33 @@ async function main() {
   const local = findLocalCfgSrc();
   if (local) {
     console.log(`  source: local ${local}`);
-    // Fresh tree: drop any stale files from the previous fork before copying.
-    if (existsSync(SRC)) rmSync(SRC, { recursive: true, force: true });
+    // Fresh tree: drop any stale files from the previous fork before copying,
+    // but preserve syncignored plugin-specific files across the wipe (mirrors
+    // the same logic used in GitHub API mode).
+    const preserved = [];
+    if (existsSync(SRC)) {
+      for (const entry of syncIgnore) {
+        const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
+        const srcPath = resolve(join(SRC, rel));
+        if (!srcPath.startsWith(SRC_ROOT)) continue;
+        // O_NOFOLLOW rejects symlinks at open time without a TOCTOU-prone pre-check.
+        let fd;
+        try { fd = openSync(srcPath, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0)); } catch { continue; }
+        try {
+          if (!fstatSync(fd).isFile()) continue;
+          preserved.push({ rel, content: readFileSync(fd) });
+          process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
+        } finally { closeSync(fd); }
+      }
+      rmSync(SRC, { recursive: true, force: true });
+    }
     mkdirSync(SRC, { recursive: true });
+    for (const { rel, content } of preserved) {
+      const destPath = resolve(join(SRC, rel));
+      if (!destPath.startsWith(SRC_ROOT)) continue;
+      mkdirSync(dirname(destPath), { recursive: true });
+      writeFileSync(destPath, content);
+    }
     copyLocalDir(local, local);
     vendorChromeLocal(resolve(local, '../..')); // configurator/src -> repo root
     vendorFullBundle();
@@ -271,22 +296,29 @@ async function main() {
   console.log(`  source: GitHub ${SLASHED_REPO}@${REF}`);
   // Fresh tree: drop stale files before fetching, but preserve any syncignored
   // files so plugin-specific overrides survive the wipe.
-  const preserved = new Map();
+  const preserved = [];
   if (existsSync(SRC)) {
     for (const entry of syncIgnore) {
       const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
-      const p = join(SRC, rel);
-      if (existsSync(p)) {
-        preserved.set(p, readFileSync(p));
+      const srcPath = resolve(join(SRC, rel));
+      if (!srcPath.startsWith(SRC_ROOT)) continue;
+      // Open the fd first so stat + read operate on the same inode (no TOCTOU).
+      let fd;
+      try { fd = openSync(srcPath, 'r'); } catch { continue; }
+      try {
+        if (!fstatSync(fd).isFile()) continue;
+        preserved.push({ rel, content: readFileSync(fd) });
         process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
-      }
+      } finally { closeSync(fd); }
     }
     rmSync(SRC, { recursive: true, force: true });
   }
   mkdirSync(SRC, { recursive: true });
-  for (const [p, content] of preserved) {
-    mkdirSync(dirname(p), { recursive: true });
-    writeFileSync(p, content);
+  for (const { rel, content } of preserved) {
+    const destPath = resolve(join(SRC, rel));
+    if (!destPath.startsWith(SRC_ROOT)) continue;
+    mkdirSync(dirname(destPath), { recursive: true });
+    writeFileSync(destPath, content);
   }
   // Recursively vendor the entire configurator/src tree (components, lib, data,
   // and root files: App.svelte, main.ts, types.ts, app.css, vite-env.d.ts).

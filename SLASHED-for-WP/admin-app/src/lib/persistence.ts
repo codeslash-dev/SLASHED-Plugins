@@ -17,6 +17,109 @@ import { Ja, Ga, fa } from "./codec";
 
 const LS_KEY = "slashed-studio/overrides/v2";
 
+// ---------------------------------------------------------------------------
+// Modular-scale derived-token computation
+//
+// When source tokens (--sf-text-base-min etc.) are in the overrides map, we
+// pre-compute all derived output tokens in JS using the same formula the CSS
+// framework uses, then inject them as *unlayered* :root CSS alongside the
+// source tokens. Unlayered CSS beats any @layer, so these computed values
+// override hardcoded clamp declarations a legacy WP settings page may have
+// emitted inside @layer slashed.overrides, giving accurate live preview.
+// ---------------------------------------------------------------------------
+
+const TEXT_SCALE_SRC = new Set([
+  '--sf-text-base-min', '--sf-text-base-max',
+  '--sf-text-ratio-min', '--sf-text-ratio-max',
+  '--sf-text-scale', '--sf-text-display-base-min',
+  '--sf-text-display-base-max', '--sf-text-display-scale',
+  '--sf-fluid-min-vw', '--sf-fluid-max-vw',
+]);
+const SPACE_SCALE_SRC = new Set([
+  '--sf-space-base-min', '--sf-space-base-max',
+  '--sf-space-ratio-min', '--sf-space-ratio-max',
+  '--sf-space-scale', '--sf-fluid-min-vw', '--sf-fluid-max-vw',
+]);
+
+const TEXT_STEPS: [string, number][] = [
+  ['2xs', -3], ['xs', -2], ['s', -1], ['m', 0],
+  ['l', 1], ['xl', 2], ['2xl', 3], ['3xl', 4], ['4xl', 5],
+];
+const DISPLAY_STEPS: [string, number][] = [
+  ['display-s', 0], ['display-m', 1], ['display-l', 2],
+];
+const SPACE_STEPS: [string, number][] = [
+  ['2xs', -3], ['xs', -2], ['s', -1], ['m', 0],
+  ['l', 1], ['xl', 2], ['2xl', 3], ['3xl', 4], ['4xl', 5],
+];
+
+function getNum(ov: Record<string, string>, key: string, def: number): number {
+  const v = ov[key];
+  if (v === undefined) return def;
+  const n = parseFloat(v);
+  return isNaN(n) ? def : n;
+}
+
+function fmt(n: number): string {
+  const s = n.toFixed(6);
+  const trimmed = s.replace(/\.?0+$/, '');
+  return trimmed === '' || trimmed === '-' ? '0' : trimmed;
+}
+
+// Mirrors the framework CSS formula: scale distributes linearly so
+// calc(clamp(sMin rem, ..., sMax rem) * scale) == clamp(sMin*scale rem, ..., sMax*scale rem).
+function fluidClamp(
+  baseMin: number, baseMax: number, ratioMin: number, ratioMax: number,
+  vwMin: number, vwMax: number, step: number, scale: number,
+): string {
+  const sMin = baseMin * Math.pow(ratioMin, step) * scale;
+  const sMax = baseMax * Math.pow(ratioMax, step) * scale;
+  if (vwMax <= vwMin || Math.abs(sMin - sMax) < 1e-9) return `${fmt(sMin)}rem`;
+  const slope = (sMax - sMin) / (vwMax - vwMin);
+  return `clamp(${fmt(sMin)}rem, calc(${fmt(slope)} * (100vw - ${fmt(vwMin)}rem) + ${fmt(sMin)}rem), ${fmt(sMax)}rem)`;
+}
+
+function computeScaleTokens(ov: Record<string, string>): Record<string, string> {
+  const derived: Record<string, string> = {};
+  const keys = Object.keys(ov);
+  const hasText  = keys.some((k) => TEXT_SCALE_SRC.has(k));
+  const hasSpace = keys.some((k) => SPACE_SCALE_SRC.has(k));
+  if (!hasText && !hasSpace) return derived;
+
+  const vwMin = getNum(ov, '--sf-fluid-min-vw', 22.5);
+  const vwMax = getNum(ov, '--sf-fluid-max-vw', 90);
+
+  if (hasText) {
+    const baseMin   = getNum(ov, '--sf-text-base-min', 1);
+    const baseMax   = getNum(ov, '--sf-text-base-max', 1.25);
+    const ratioMin  = getNum(ov, '--sf-text-ratio-min', 1.25);
+    const ratioMax  = getNum(ov, '--sf-text-ratio-max', 1.333);
+    const scale     = getNum(ov, '--sf-text-scale', 1);
+    for (const [name, step] of TEXT_STEPS) {
+      derived[`--sf-text-${name}`] = fluidClamp(baseMin, baseMax, ratioMin, ratioMax, vwMin, vwMax, step, scale);
+    }
+    const dispMin   = getNum(ov, '--sf-text-display-base-min', 2.4);
+    const dispMax   = getNum(ov, '--sf-text-display-base-max', 3);
+    const dispScale = getNum(ov, '--sf-text-display-scale', 1);
+    for (const [name, step] of DISPLAY_STEPS) {
+      derived[`--sf-text-${name}`] = fluidClamp(dispMin, dispMax, ratioMin, ratioMax, vwMin, vwMax, step, dispScale);
+    }
+  }
+
+  if (hasSpace) {
+    const baseMin  = getNum(ov, '--sf-space-base-min', 1);
+    const baseMax  = getNum(ov, '--sf-space-base-max', 2);
+    const ratioMin = getNum(ov, '--sf-space-ratio-min', 1.25);
+    const ratioMax = getNum(ov, '--sf-space-ratio-max', 1.333);
+    const scale    = getNum(ov, '--sf-space-scale', 1);
+    for (const [name, step] of SPACE_STEPS) {
+      derived[`--sf-space-${name}`] = fluidClamp(baseMin, baseMax, ratioMin, ratioMax, vwMin, vwMax, step, scale);
+    }
+  }
+
+  return derived;
+}
+
 interface SlashedAppBoot {
   rest?: { url?: string; nonce?: string };
   overrides?: Record<string, string>;
@@ -68,11 +171,20 @@ export function injectLivePreview(ov: Record<string, string>): void {
     styleEl.id = "sf-parent-overrides";
     document.head.appendChild(styleEl);
   }
-  styleEl.textContent = fa(ov, { mode: "root", banner: false });
+  // Include pre-computed derived tokens alongside source tokens so they win
+  // as unlayered CSS over any hardcoded clamp values in @layer slashed.overrides.
+  const derived = computeScaleTokens(ov);
+  const preview = Object.keys(derived).length > 0 ? { ...derived, ...ov } : ov;
+  styleEl.textContent = fa(preview, { mode: "root", banner: false });
 }
 
 async function wpSave(rest: { url?: string; nonce?: string }, ov: Record<string, string>): Promise<void> {
-  const url = (rest.url ?? "").replace(/\/$/, "") + "/tokens/overrides";
+  const base = (rest.url ?? "").replace(/\/$/, "");
+  const parsed = new URL(base + "/tokens/overrides", window.location.href);
+  if (parsed.origin !== window.location.origin) {
+    throw new Error("slashed: REST URL must be same-origin");
+  }
+  const url = parsed.href;
   const res = await fetch(url, {
     method: "POST",
     credentials: "same-origin",
