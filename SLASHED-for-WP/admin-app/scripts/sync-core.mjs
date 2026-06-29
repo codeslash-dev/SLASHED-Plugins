@@ -24,6 +24,7 @@
 import {
   readFileSync, writeFileSync, mkdirSync, existsSync,
   readdirSync, statSync, copyFileSync, rmSync,
+  openSync, fstatSync, closeSync,
 } from 'node:fs';
 import { resolve, dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -267,11 +268,14 @@ async function main() {
         const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
         const srcPath = resolve(join(SRC, rel));
         if (!srcPath.startsWith(SRC_ROOT)) continue;
-        if (!existsSync(srcPath)) continue;
-        const st = statSync(srcPath);
-        if (!st.isFile()) continue;
-        preserved.push({ rel, content: readFileSync(srcPath) });
-        process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
+        // Open the fd first so stat + read operate on the same inode (no TOCTOU).
+        let fd;
+        try { fd = openSync(srcPath, 'r'); } catch { continue; }
+        try {
+          if (!fstatSync(fd).isFile()) continue;
+          preserved.push({ rel, content: readFileSync(fd) });
+          process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
+        } finally { closeSync(fd); }
       }
       rmSync(SRC, { recursive: true, force: true });
     }
@@ -298,11 +302,14 @@ async function main() {
       const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
       const srcPath = resolve(join(SRC, rel));
       if (!srcPath.startsWith(SRC_ROOT)) continue;
-      if (!existsSync(srcPath)) continue;
-      const st = statSync(srcPath);
-      if (!st.isFile()) continue;
-      preserved.push({ rel, content: readFileSync(srcPath) });
-      process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
+      // Open the fd first so stat + read operate on the same inode (no TOCTOU).
+      let fd;
+      try { fd = openSync(srcPath, 'r'); } catch { continue; }
+      try {
+        if (!fstatSync(fd).isFile()) continue;
+        preserved.push({ rel, content: readFileSync(fd) });
+        process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
+      } finally { closeSync(fd); }
     }
     rmSync(SRC, { recursive: true, force: true });
   }
