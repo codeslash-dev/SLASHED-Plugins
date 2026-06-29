@@ -301,5 +301,4 @@ class Slashed_REST_Controller {
 		}
 		return $out;
 	}
-
 }
