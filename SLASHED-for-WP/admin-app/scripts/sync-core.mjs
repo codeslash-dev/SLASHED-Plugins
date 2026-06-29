@@ -266,15 +266,18 @@ async function main() {
       for (const entry of syncIgnore) {
         const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
         const p = join(SRC, rel);
-        if (existsSync(p)) {
-          preserved.set(p, readFileSync(p));
-          process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
-        }
+        assertWithinSrc(p);
+        if (!existsSync(p)) continue;
+        const st = statSync(p);
+        if (!st.isFile()) continue;
+        preserved.set(p, readFileSync(p));
+        process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
       }
       rmSync(SRC, { recursive: true, force: true });
     }
     mkdirSync(SRC, { recursive: true });
     for (const [p, content] of preserved) {
+      assertWithinSrc(p);
       mkdirSync(dirname(p), { recursive: true });
       writeFileSync(p, content);
     }
@@ -293,15 +296,18 @@ async function main() {
     for (const entry of syncIgnore) {
       const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
       const p = join(SRC, rel);
-      if (existsSync(p)) {
-        preserved.set(p, readFileSync(p));
-        process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
-      }
+      assertWithinSrc(p);
+      if (!existsSync(p)) continue;
+      const st = statSync(p);
+      if (!st.isFile()) continue;
+      preserved.set(p, readFileSync(p));
+      process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
     }
     rmSync(SRC, { recursive: true, force: true });
   }
   mkdirSync(SRC, { recursive: true });
   for (const [p, content] of preserved) {
+    assertWithinSrc(p);
     mkdirSync(dirname(p), { recursive: true });
     writeFileSync(p, content);
   }
