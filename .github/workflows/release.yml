@@ -107,6 +107,8 @@ jobs:
           mkdir -p SLASHED-for-WP/admin-app/src
           cp -a /tmp/fw-admin-app-src/. SLASHED-for-WP/admin-app/src/
           cp /tmp/fw-admin-app-manifest.json SLASHED-for-WP/admin-app/.vendored-manifest.json
+          rm -rf SLASHED-for-WP/admin-app/framework-css SLASHED-for-WP/assets/admin-app
+          mkdir -p SLASHED-for-WP/admin-app/framework-css SLASHED-for-WP/assets/admin-app
           cp -a /tmp/fw-admin-app-framework-css/. SLASHED-for-WP/admin-app/framework-css/
           cp -a /tmp/fw-assets-admin-app/. SLASHED-for-WP/assets/admin-app/
 
