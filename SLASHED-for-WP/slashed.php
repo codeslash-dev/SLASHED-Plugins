@@ -17,20 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// WordPress 6.7 requires textdomains to be loaded at init or later.
-// All __() calls in this plugin that need translations are inside hooks that
-// fire at or after init (admin_menu, wp_enqueue_scripts, etc.). The one
-// exception — build_categories() in class-classes.php — runs during theme
-// load (before init) but those strings are internal Bricks category labels
-// that do not need translation, so their __() wrappers were removed.
-add_action(
-	'init',
-	function () {
-		load_plugin_textdomain( 'slashed', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-	},
-	1
-);
-
 // ─── Canonical constants ────────────────────────────────────────────
 
 define( 'SLASHED_VERSION', '0.4.13' );
