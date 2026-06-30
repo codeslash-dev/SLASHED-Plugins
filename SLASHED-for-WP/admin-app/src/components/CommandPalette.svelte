@@ -72,6 +72,7 @@
   role="dialog"
   aria-modal="true"
   aria-label="Token search"
+  tabindex="-1"
   onmousedown={(e) => { if (e.target === e.currentTarget) onClose(); }}
 >
   <!-- Panel -->

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount, tick, untrack } from 'svelte';
   import type { PresetTheme, SlashedToken } from './types';
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
@@ -68,7 +68,7 @@
     return ak.every((k) => a[k] === b[k]);
   }
 
-  let lastSavedOverrides = $state<Record<string, string>>({ ...overrides });
+  let lastSavedOverrides = $state<Record<string, string>>(untrack(() => ({ ...overrides })));
   let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
   let hasPendingChanges = $derived(!shallowEq(overrides, lastSavedOverrides));
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
@@ -413,6 +413,7 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="reset-confirm-title"
+      tabindex="-1"
       onkeydown={(e) => {
         if (e.key === 'Escape') { e.stopPropagation(); cancelResetAll(); }
         if (e.key === 'Tab') {
