@@ -222,14 +222,17 @@ class Slashed_Bricks_Classes {
 	 * @return array<int, array<string,string>>
 	 */
 	public function build_categories() {
+		// Plain strings intentionally — these are internal Bricks category labels
+		// (framework brand names) injected before init fires (during theme load),
+		// so they must not go through __() which would trigger JIT translation loading.
 		return array(
 			array(
 				'id'   => self::CATEGORY_LAYOUT,
-				'name' => __( 'SLASHED Layout', 'slashed' ),
+				'name' => 'SLASHED Layout',
 			),
 			array(
 				'id'   => self::CATEGORY_STATE,
-				'name' => __( 'SLASHED State', 'slashed' ),
+				'name' => 'SLASHED State',
 			),
 		);
 	}

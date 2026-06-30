@@ -17,12 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Load translations before any integration code runs so __() calls in option
-// filters (e.g. Bricks reads bricks_global_classes_categories during theme load,
-// before init) find the domain already registered and never trigger the
-// just-in-time loader that WP 6.7 deprecated.
+// WordPress 6.7 requires textdomains to be loaded at init or later.
+// All __() calls in this plugin that need translations are inside hooks that
+// fire at or after init (admin_menu, wp_enqueue_scripts, etc.). The one
+// exception — build_categories() in class-classes.php — runs during theme
+// load (before init) but those strings are internal Bricks category labels
+// that do not need translation, so their __() wrappers were removed.
 add_action(
-	'plugins_loaded',
+	'init',
 	function () {
 		load_plugin_textdomain( 'slashed', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	},
