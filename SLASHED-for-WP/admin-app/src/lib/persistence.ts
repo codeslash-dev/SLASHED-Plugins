@@ -67,10 +67,15 @@ function getNum(ov: Record<string, string>, key: string, def: number): number {
   const v = ov[key];
   if (v === undefined) return def;
   const n = parseFloat(v);
-  return isNaN(n) ? def : n;
+  return Number.isFinite(n) ? n : def;
+}
+
+function isNumericLiteral(v: string): boolean {
+  return /^-?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(v.trim()) && Number.isFinite(parseFloat(v));
 }
 
 function fmt(n: number): string {
+  if (!Number.isFinite(n)) return '0';
   const s = n.toFixed(6);
   const trimmed = s.replace(/\.?0+$/, '');
   return trimmed === '' || trimmed === '-' ? '0' : trimmed;
@@ -130,25 +135,25 @@ export function computeDerivedOverrides(ov: Record<string, string>): Record<stri
     }
   }
 
-  if (hasRadius) {
+  if (hasRadius && isNumericLiteral(ov['--sf-radius-scale'] ?? '')) {
     const scale = getNum(ov, '--sf-radius-scale', 1);
     for (const [name, base] of RADIUS_STEPS) {
       derived[`--sf-radius-${name}`] = `${fmt(base * scale)}px`;
     }
     derived['--sf-radius-none'] = '0';
     derived['--sf-radius-full'] = '9999px';
-    derived['--sf-radius-pill'] = '9999px';
-    derived['--sf-radius-outer'] = `calc(${fmt(8 * scale)}px + var(--sf-component-pad))`;
+    derived['--sf-radius-pill'] = 'var(--sf-radius-full)';
+    derived['--sf-radius-outer'] = 'calc(var(--sf-radius-m) + var(--sf-component-pad))';
   }
 
-  if (hasBorder) {
+  if (hasBorder && isNumericLiteral(ov['--sf-border-scale'] ?? '')) {
     const scale = getNum(ov, '--sf-border-scale', 1);
     for (const [name, base] of BORDER_WIDTH_STEPS) {
       derived[`--sf-border-width-${name}`] = `${fmt(base * scale)}px`;
     }
   }
 
-  if (hasMotion) {
+  if (hasMotion && isNumericLiteral(ov['--sf-motion-scale'] ?? '')) {
     const scale = getNum(ov, '--sf-motion-scale', 1);
     for (const [name, base] of DURATION_STEPS) {
       derived[`--sf-duration-${name}`] = `${fmt(base * scale)}ms`;

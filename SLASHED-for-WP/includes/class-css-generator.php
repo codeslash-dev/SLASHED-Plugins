@@ -87,9 +87,9 @@ class Slashed_CSS_Generator {
 	 * @return string[] CSS declaration strings ("--name: value;").
 	 */
 	private static function generate_flat_override_declarations() {
-		$overrides     = Slashed_Token_Store::get_overrides();
-		$derived       = self::compute_derived_overrides( $overrides );
-		$merged        = array_merge( $derived, $overrides );
+		$overrides    = Slashed_Token_Store::get_overrides();
+		$derived      = self::compute_derived_overrides( $overrides );
+		$merged       = array_merge( $derived, $overrides );
 		$declarations = array();
 		foreach ( $merged as $name => $value ) {
 			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/', $name ) ) {
@@ -119,30 +119,54 @@ class Slashed_CSS_Generator {
 	private static function compute_derived_overrides( $overrides ) {
 		$derived = array();
 
-		if ( array_key_exists( '--sf-radius-scale', $overrides ) ) {
-			$scale = self::num_or_default( $overrides['--sf-radius-scale'], 1 );
-			foreach ( array( '2xs' => 1, 'xs' => 2, 's' => 4, 'm' => 8, 'l' => 12, 'xl' => 16, '2xl' => 24, '3xl' => 32, '4xl' => 48 ) as $step => $base ) {
+		if ( array_key_exists( '--sf-radius-scale', $overrides ) && is_numeric( $overrides['--sf-radius-scale'] ) ) {
+			$scale    = (float) $overrides['--sf-radius-scale'];
+			$r_steps  = array(
+				'2xs' => 1,
+				'xs'  => 2,
+				's'   => 4,
+				'm'   => 8,
+				'l'   => 12,
+				'xl'  => 16,
+				'2xl' => 24,
+				'3xl' => 32,
+				'4xl' => 48,
+			);
+			foreach ( $r_steps as $step => $base ) {
 				$derived[ '--sf-radius-' . $step ] = self::fmt_num( $base * $scale ) . 'px';
 			}
 			$derived['--sf-radius-none']  = '0';
 			$derived['--sf-radius-full']  = '9999px';
-			$derived['--sf-radius-pill']  = '9999px';
-			$derived['--sf-radius-outer'] = 'calc(' . self::fmt_num( 8 * $scale ) . 'px + var(--sf-component-pad))';
+			$derived['--sf-radius-pill']  = 'var(--sf-radius-full)';
+			$derived['--sf-radius-outer'] = 'calc(var(--sf-radius-m) + var(--sf-component-pad))';
 		}
 
-		if ( array_key_exists( '--sf-border-scale', $overrides ) ) {
-			$scale = self::num_or_default( $overrides['--sf-border-scale'], 1 );
-			foreach ( array( '1' => 1, '2' => 2, '3' => 3, '4' => 4 ) as $step => $base ) {
+		if ( array_key_exists( '--sf-border-scale', $overrides ) && is_numeric( $overrides['--sf-border-scale'] ) ) {
+			$scale   = (float) $overrides['--sf-border-scale'];
+			$b_steps = array(
+				'1' => 1,
+				'2' => 2,
+				'3' => 3,
+				'4' => 4,
+			);
+			foreach ( $b_steps as $step => $base ) {
 				$derived[ '--sf-border-width-' . $step ] = self::fmt_num( $base * $scale ) . 'px';
 			}
 		}
 
-		if ( array_key_exists( '--sf-motion-scale', $overrides ) ) {
-			$scale = self::num_or_default( $overrides['--sf-motion-scale'], 1 );
-			foreach ( array( 'instant' => 100, 'fast' => 150, 'normal' => 250, 'slow' => 400, 'slower' => 600 ) as $step => $base ) {
+		if ( array_key_exists( '--sf-motion-scale', $overrides ) && is_numeric( $overrides['--sf-motion-scale'] ) ) {
+			$scale   = (float) $overrides['--sf-motion-scale'];
+			$m_steps = array(
+				'instant' => 100,
+				'fast'    => 150,
+				'normal'  => 250,
+				'slow'    => 400,
+				'slower'  => 600,
+			);
+			foreach ( $m_steps as $step => $base ) {
 				$derived[ '--sf-duration-' . $step ] = self::fmt_num( $base * $scale ) . 'ms';
 			}
-			$derived['--sf-duration-none']              = '0ms';
+			$derived['--sf-duration-none']             = '0ms';
 			$derived['--sf-theme-transition-duration'] = self::fmt_num( 300 * $scale ) . 'ms';
 			for ( $i = 1; $i <= 5; $i++ ) {
 				$derived[ '--sf-animation-delay-' . $i ] = self::fmt_num( 75 * $i * $scale ) . 'ms';
