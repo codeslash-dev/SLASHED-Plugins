@@ -171,7 +171,7 @@
               const safe = Object.fromEntries(
                 Object.entries(data as Record<string, unknown>).filter(([, v]) => typeof v === "string")
               ) as Record<string, string>;
-              setOverrides(safe);
+              if (Object.keys(safe).length > 0) setOverrides(safe);
             }
           } catch {}
         } else {

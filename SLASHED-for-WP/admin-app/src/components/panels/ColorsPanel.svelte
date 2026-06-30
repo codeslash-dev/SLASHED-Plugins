@@ -351,8 +351,9 @@
   }
 
   function getDarkSurface(): string {
-    const custom = overrides["--sf-color-base-source-dark"];
-    if (custom) return custom;
+    const darkSource = sourceByName("--sf-color-base-source-dark");
+    const hasExplicitDark = darkSource && (overrides[darkSource.name] ?? sourceTokenMap[darkSource.name]?.value) !== undefined;
+    if (hasExplicitDark) return sourceValue(darkSource);
     return deriveDarkFromLight(sourceValue(sourceByName("--sf-color-base-source-light")), "base");
   }
 
