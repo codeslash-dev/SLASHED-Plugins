@@ -73,6 +73,26 @@
   let hasPendingChanges = $derived(!shallowEq(overrides, lastSavedOverrides));
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
+  function syncHostBounds() {
+    const host = document.getElementById('slashed-frontend-overlay');
+    if (!host) return;
+
+    const adminBarHeight = 'var(--wp-admin--admin-bar--height, 32px)';
+    host.style.position = 'fixed';
+    host.style.right = '0';
+    host.style.zIndex = '100000';
+
+    if (isOpen) {
+      host.style.top = adminBarHeight;
+      host.style.width = isMobile ? '100vw' : '420px';
+      host.style.height = `calc(100vh - ${adminBarHeight})`;
+    } else {
+      host.style.top = `calc(${adminBarHeight} + 16px)`;
+      host.style.width = '40px';
+      host.style.height = '64px';
+    }
+  }
+
   $effect(() => { injectLivePreview(overrides); });
 
   // On desktop push page content left; on mobile the panel is a full overlay.
@@ -83,6 +103,8 @@
       document.documentElement.classList.remove('sf-panel-active');
     }
   });
+
+  $effect(() => { syncHostBounds(); });
 
   $effect(() => {
     try { localStorage.setItem(LS_OPEN_KEY,   String(isOpen)); } catch {}
@@ -248,7 +270,7 @@
   <button
     onclick={toggle}
     aria-label="Open SLASHED token editor"
-    class="fixed right-0 z-[100000] bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl flex flex-col items-center justify-center gap-1 px-1.5 py-3 rounded-l-xl transition-colors cursor-pointer"
+    class="fixed right-0 z-[100000] pointer-events-auto bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl flex flex-col items-center justify-center gap-1 px-1.5 py-3 rounded-l-xl transition-colors cursor-pointer"
     style="top: calc(var(--wp-admin--admin-bar--height, 32px) + 16px);"
   >
     <span class="text-sm font-black leading-none select-none">/</span>
@@ -262,7 +284,7 @@
   z-index 100000 puts it above the WP admin bar (z-index 99999).
 -->
 <div
-  class="fixed right-0 z-[100000] flex flex-col bg-[#0a0a0f] text-slate-200 font-sans shadow-2xl shadow-black/60 border-l border-white/8 transition-transform duration-200 ease-in-out"
+  class="fixed right-0 z-[100000] pointer-events-auto flex flex-col bg-[#0a0a0f] text-slate-200 font-sans shadow-2xl shadow-black/60 border-l border-white/8 transition-transform duration-200 ease-in-out"
   class:translate-x-full={!isOpen}
   class:translate-x-0={isOpen}
   style="top: var(--wp-admin--admin-bar--height, 32px); width: {isMobile ? '100vw' : '420px'}; height: calc(100vh - var(--wp-admin--admin-bar--height, 32px));"
