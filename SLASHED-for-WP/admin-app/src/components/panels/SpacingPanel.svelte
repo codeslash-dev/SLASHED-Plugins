@@ -55,7 +55,7 @@
       {#each SPACE_STEPS as step, i (step)}
         {@const midBase = (baseMin + baseMax) / 2}
         {@const ratio = (ratioMin + ratioMax) / 2}
-        {@const offset = i - 4}
+        {@const offset = i - 3}
         {@const rawRem = offset >= 0 ? midBase * Math.pow(ratio, offset) : midBase / Math.pow(ratio, -offset)}
         {@const scaled = rawRem * spaceScale}
         {@const barWidth = Math.min(scaled * 28, 240)}

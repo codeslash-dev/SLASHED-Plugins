@@ -57,7 +57,7 @@
   >
     <div
       class="w-8 h-8 rounded-lg border border-white/10 shrink-0 shadow-lg"
-      style={`background: ${swatchColor}`}
+      style:background={swatchColor}
     ></div>
     <div class="flex-1 text-left min-w-0">
       <div class="text-[11px] font-semibold text-slate-200">{label}</div>

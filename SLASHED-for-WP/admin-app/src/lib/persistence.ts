@@ -67,10 +67,11 @@ function getNum(ov: Record<string, string>, key: string, def: number): number {
   const v = ov[key];
   if (v === undefined) return def;
   const n = parseFloat(v);
-  return isNaN(n) ? def : n;
+  return Number.isFinite(n) ? n : def;
 }
 
 function fmt(n: number): string {
+  if (!Number.isFinite(n)) return '0';
   const s = n.toFixed(6);
   const trimmed = s.replace(/\.?0+$/, '');
   return trimmed === '' || trimmed === '-' ? '0' : trimmed;

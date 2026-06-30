@@ -62,7 +62,7 @@
 <div class="flex items-center gap-2">
   <!-- Swatch / native picker trigger -->
   <div class="relative shrink-0 w-7 h-7 rounded border border-white/10 overflow-hidden cursor-pointer">
-    <div class="absolute inset-0" style={`background: ${swatchColor}`}></div>
+    <div class="absolute inset-0" style:background={swatchColor}></div>
     {#if !isVar}
       <input
         type="color"

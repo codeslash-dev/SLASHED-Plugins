@@ -114,7 +114,7 @@
               {#each Object.entries(theme.overrides).slice(0, 5) as [k, v] (k)}
                 <div class="flex items-center gap-1 bg-white/4 rounded px-1.5 py-0.5">
                   {#if k.includes("color") || k.includes("source")}
-                    <div class="w-2.5 h-2.5 rounded-full border border-white/10 shrink-0" style={`background: ${v}`}></div>
+                    <div class="w-2.5 h-2.5 rounded-full border border-white/10 shrink-0" style:background={v}></div>
                   {/if}
                   <span class="text-[8px] font-mono text-slate-600">{k.replace("--sf-", "")}</span>
                 </div>

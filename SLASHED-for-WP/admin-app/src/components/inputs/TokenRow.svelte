@@ -39,7 +39,7 @@
   {#if type === "color"}
     <div
       class="w-4 h-4 rounded-sm border border-white/10 shrink-0"
-      style={`background: ${swatchColor}`}
+      style:background={swatchColor}
     ></div>
   {:else}
     <div class="w-4 h-4 shrink-0"></div>

@@ -36,7 +36,7 @@
   let scale = $derived((() => { const v = parseFloat(overrides["--sf-motion-scale"] ?? "1"); return isFinite(v) ? v : 1; })());
   let motionDisabled = $derived(overrides["--sf-motion-scale"] === "0");
   let themeTransition = $derived((() => { const v = parseFloat(overrides["--sf-theme-transition-duration"]?.replace("ms","") ?? String(300 * scale)); return isFinite(v) ? v : Math.round(300 * scale); })());
-  let staggerBase = $derived(() => {
+  let staggerBase = $derived.by(() => {
     const raw = overrides[STAGGER_TOKENS[0]];
     if (raw) return parseFloat(raw.replace("ms",""));
     return 75 * scale;
@@ -292,7 +292,7 @@
           {/if}
         </div>
         <SliderRow
-          label="" value={Math.round(staggerBase())} min={0} max={200} step={5} unit="ms"
+          label="" value={Math.round(staggerBase)} min={0} max={200} step={5} unit="ms"
           help="Base unit for --sf-animation-delay-1 through -5"
           overridden={STAGGER_TOKENS.some(t => t in overrides)}
           onChange={(v) => setStaggerBase(v)}
@@ -301,7 +301,7 @@
       </div>
       <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-1">
         {#each [1,2,3,4,5] as n (n)}
-          {@const delayMs = Math.round(staggerBase() * n)}
+          {@const delayMs = Math.round(staggerBase * n)}
           <div class="flex items-center gap-2">
             <span class="text-[9px] font-mono text-slate-600 w-6">–{n}</span>
             <div class="flex-1 h-1.5 bg-white/8 rounded-full">

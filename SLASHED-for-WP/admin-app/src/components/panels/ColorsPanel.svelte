@@ -304,6 +304,10 @@
     return overrides[source.name] ?? sourceTokenMap[source.name]?.value ?? source.default;
   }
 
+  function sourceByName(name: string): ColorSource | undefined {
+    return ALL_SOURCES.find((s) => s.name === name);
+  }
+
   let activeCurvePreset = $derived(CURVE_PRESETS.find((p) =>
     Object.entries(p.patch).every(([k, v]) =>
       v === null ? !(k in overrides) : overrides[k] === v
@@ -343,24 +347,24 @@
   // Endpoint colors for palette step computation — approximated from source tokens so we
   // can build concrete color-mix() expressions without relying on the themed probe.
   function getLightSurface(): string {
-    return overrides["--sf-color-base-source-light"] ?? "oklch(0.96 0.006 250)";
+    return sourceValue(sourceByName("--sf-color-base-source-light"));
   }
 
   function getDarkSurface(): string {
     const custom = overrides["--sf-color-base-source-dark"];
     if (custom) return custom;
-    return deriveDarkFromLight(overrides["--sf-color-base-source-light"] ?? "oklch(0.96 0.006 250)", "base");
+    return deriveDarkFromLight(sourceValue(sourceByName("--sf-color-base-source-light")), "base");
   }
 
   function getLightText(): string {
-    const n = overrides["--sf-color-neutral-source-light"] ?? "oklch(0.52 0.025 260)";
+    const n = sourceValue(sourceByName("--sf-color-neutral-source-light"));
     const { l, c, h, valid } = parseOklch(n);
     if (!valid) return "oklch(0.12 0.02 260)";
     return stringifyOklch(Math.max(0.05, Math.min(l - 0.38, 0.3)), c * 0.8, h);
   }
 
   function getDarkText(): string {
-    const n = overrides["--sf-color-neutral-source-dark"] ?? "oklch(0.69 0.0225 260)";
+    const n = sourceValue(sourceByName("--sf-color-neutral-source-dark"));
     const { l, c, h, valid } = parseOklch(n);
     if (!valid) return "oklch(0.92 0.02 260)";
     return stringifyOklch(Math.min(1.0, Math.max(l + 0.22, 0.88)), c * 0.8, h);
@@ -530,7 +534,7 @@
                     {@const resolved = paletteSwatch(light.colorKey, lightSrcVal, step, lSurface, lText)}
                     <div
                       class="w-5 h-3 rounded-t border-x border-t border-white/10"
-                      style={`background: ${resolved}`}
+                      style:background={resolved}
                       title={`${light.colorKey}-${step} (light) — ${resolved}`}
                     ></div>
                   {/each}
@@ -543,7 +547,7 @@
                     {@const resolved = paletteSwatch(light.colorKey, darkSrcVal, step, dSurface, dText)}
                     <div
                       class="w-5 h-3 rounded-b border-x border-b border-white/10"
-                      style={`background: ${resolved}`}
+                      style:background={resolved}
                       title={`${light.colorKey}-${step} (dark) — ${resolved}`}
                     ></div>
                   {/each}
@@ -570,7 +574,7 @@
             <div class="flex items-center gap-1.5 text-[9px] text-slate-600 pl-1">
               <span
                 class="w-3.5 h-3.5 rounded border border-white/10 shrink-0"
-                style={`background: ${paint(derivedDark, derivedDark)}`}
+                style:background={paint(derivedDark, derivedDark)}
                 title={derivedDark}
               ></span>
               Dark: auto-derived ({derivedDark})
@@ -697,7 +701,7 @@
               <div class="flex items-center gap-1.5 text-[9px] text-slate-600 pl-1">
                 <span
                   class="w-3.5 h-3.5 rounded border border-white/10 shrink-0"
-                  style={`background: ${paint(derivedDark, derivedDark)}`}
+                  style:background={paint(derivedDark, derivedDark)}
                   title={derivedDark}
                 ></span>
                 Dark: auto-derived ({derivedDark})
@@ -718,7 +722,7 @@
                       {@const resolved = computePaletteSwatch(srcVal as string, step, sfc as string, txt as string)}
                       <div
                         class="w-5 h-3 rounded-sm border border-white/10"
-                        style={`background: ${resolved}`}
+                        style:background={resolved}
                         title={`${light.colorKey}-${step} (${side}) — ${resolved}`}
                       ></div>
                     {/each}

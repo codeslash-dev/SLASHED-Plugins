@@ -167,7 +167,12 @@
         if (file.name.endsWith(".json")) {
           try {
             const data = JSON.parse(text);
-            if (typeof data === "object") setOverrides(data);
+            if (data !== null && typeof data === "object" && !Array.isArray(data)) {
+              const safe = Object.fromEntries(
+                Object.entries(data as Record<string, unknown>).filter(([, v]) => typeof v === "string")
+              ) as Record<string, string>;
+              setOverrides(safe);
+            }
           } catch {}
         } else {
           const parsed: Record<string, string> = {};

@@ -228,8 +228,8 @@
       {/each}
       <!-- Scrollbar strip preview -->
       <div class="flex items-center gap-2 p-2 rounded-lg bg-white/4 border border-white/8">
-        <div class="w-16 h-3 rounded-full" style={`background: ${scrollbarTrack || "rgba(255,255,255,0.08)"}`}>
-          <div class="w-6 h-3 rounded-full" style={`background: ${scrollbarThumb || "oklch(0.52 0.025 260)"}`}></div>
+        <div class="w-16 h-3 rounded-full" style:background={scrollbarTrack || "rgba(255,255,255,0.08)"}>
+          <div class="w-6 h-3 rounded-full" style:background={scrollbarThumb || "oklch(0.52 0.025 260)"}></div>
         </div>
         <span class="text-[9px] text-slate-600">Scrollbar preview</span>
       </div>
@@ -286,7 +286,8 @@
               placeholder={t.default}
               oninput={(e) => {
                 const v = (e.target as HTMLInputElement).value;
-                v.trim() ? onSet(t.token, v) : onReset(t.token);
+                const trimmed = v.trim();
+                trimmed ? onSet(t.token, trimmed) : onReset(t.token);
               }}
               class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
             />
