@@ -29,6 +29,33 @@ import {
 import { resolve, dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// ── Vendored manifest ─────────────────────────────────────────────────────────
+// Written after every sync so editors / AI tools can tell at a glance which
+// files in src/ originate from the framework and must NOT be edited here.
+// Edit those files in codeslash-dev/SLASHED → configurator/src/ instead.
+
+const MANIFEST_PATH = resolve(resolve(dirname(fileURLToPath(import.meta.url)), '..'), '.vendored-manifest.json');
+const _vendoredFiles = [];
+
+function trackVendored(relFromSrc, source) {
+  _vendoredFiles.push({ file: `src/${relFromSrc}`, source });
+}
+
+function writeManifest(sourceLabel) {
+  const manifest = {
+    _info: {
+      description: 'Files vendored from the SLASHED framework configurator. DO NOT edit directly — make changes in codeslash-dev/SLASHED → configurator/src/ and re-run npm run sync.',
+      frameworkRepo: 'https://github.com/codeslash-dev/SLASHED',
+      configuratorSrc: 'configurator/src/',
+      source: sourceLabel,
+      syncedAt: new Date().toISOString(),
+    },
+    vendoredFiles: _vendoredFiles.slice().sort((a, b) => a.file.localeCompare(b.file)),
+  };
+  writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+  process.stdout.write(`  wrote .vendored-manifest.json (${_vendoredFiles.length} files)\n`);
+}
+
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ADMIN_APP = resolve(__dir, '..');
 const SRC = resolve(ADMIN_APP, 'src');
@@ -146,6 +173,7 @@ function copyLocalDir(srcDir, srcBase) {
       assertWithinSrc(destPath);
       mkdirSync(dirname(destPath), { recursive: true });
       copyFileSync(srcPath, destPath);
+      trackVendored(rel, `local:configurator/src/${rel}`);
       process.stdout.write(`  copy  src/${rel}\n`);
     }
   }
@@ -211,6 +239,7 @@ async function syncGhFile(ghPath, destPath) {
   }
   mkdirSync(dirname(destPath), { recursive: true });
   writeFileSync(destPath, content, { encoding: 'utf8' });
+  trackVendored(rel, `github:${SLASHED_REPO}/${ghPath}@${REF}`);
   process.stdout.write(`  fetch src/${rel}\n`);
 }
 
@@ -289,6 +318,7 @@ async function main() {
     copyLocalDir(local, local);
     vendorChromeLocal(resolve(local, '../..')); // configurator/src -> repo root
     vendorFullBundle();
+    writeManifest(`local:${local}`);
     console.log('Done (local).');
     return;
   }
@@ -325,6 +355,7 @@ async function main() {
   await syncGhDir(CFG_SRC, SRC);
   await vendorChromeRemote();
   vendorFullBundle();
+  writeManifest(`github:${SLASHED_REPO}@${REF}`);
   console.log('Done (remote).');
 }
 
