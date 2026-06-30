@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import type { PreviewTemplate, PresetTheme, SlashedToken } from './types';
   import StudioHeader from './components/shell/StudioHeader.svelte';
   import SidebarNav from './components/shell/SidebarNav.svelte';
@@ -49,7 +49,7 @@
   let canRedo = $derived(future.length > 0);
 
   // Save state — hasPendingChanges is derived so undo/redo update it automatically.
-  let lastSavedSnapshot = $state(JSON.stringify(overrides));
+  let lastSavedSnapshot = $state(untrack(() => JSON.stringify(overrides)));
   let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
   let hasPendingChanges = $derived(JSON.stringify(overrides) !== lastSavedSnapshot);
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
