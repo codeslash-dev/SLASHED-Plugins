@@ -27,6 +27,18 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           queries: security-extended
+          # Compiled/minified bundles committed for distribution, not hand-written
+          # source. Scanning them is both unhelpful (GitHub can't even render a
+          # code preview for minified JS) and unstable: their line numbers shift
+          # on every rebuild, so CodeQL's alert fingerprinting can't match an
+          # alert here across commits — every push reports the same handful of
+          # flagged patterns as "new", even after the underlying source (already
+          # scanned separately, since these directories are 100% build output) is
+          # fixed. The real source lives in admin-app/src/ and
+          # integrations/bricks/editor-app/src/, both still fully scanned.
+          paths-ignore: |
+            SLASHED-for-WP/assets/admin-app/**
+            SLASHED-for-WP/integrations/bricks/assets/editor-app/**
 
       - uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e  # v4
         with:
