@@ -9,6 +9,12 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+### Fixed
+
+- Sync vendored configurator (`admin-app/src/`) with framework PRs #460/#461 — saved themes, motion panel overhaul, base color palette and live semantic preview — which had silently failed to land.
+- `release.yml` now commits the configurator sync (`admin-app/src/`, `.vendored-manifest.json`, `framework-css/`, `assets/admin-app/`) back to the default branch instead of discarding it after each release build.
+- Remove `.syncignore` entries for files no longer divergent from upstream `SLASHED#443`.
+
 ## [0.4.16] - 2026-06-30
 ## [0.4.16] - 2026-06-30
 ## [0.4.16] - 2026-06-30
