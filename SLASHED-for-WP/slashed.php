@@ -17,6 +17,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Load translations before any integration code runs so __() calls in option
+// filters (e.g. Bricks reads bricks_global_classes_categories during theme load,
+// before init) find the domain already registered and never trigger the
+// just-in-time loader that WP 6.7 deprecated.
+add_action(
+	'plugins_loaded',
+	function () {
+		load_plugin_textdomain( 'slashed', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	},
+	1
+);
+
 // ─── Canonical constants ────────────────────────────────────────────
 
 define( 'SLASHED_VERSION', '0.4.11' );
