@@ -149,7 +149,7 @@ class Slashed_Frontend_Configurator {
 		if ( ! $this->should_load() ) {
 			return;
 		}
-		echo '<div id="slashed-frontend-overlay"></div>';
+		echo '<div id="slashed-frontend-overlay" style="position:fixed;inset:0;z-index:100000;pointer-events:none;"></div>';
 	}
 
 	/**
