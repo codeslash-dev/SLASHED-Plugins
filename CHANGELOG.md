@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.13] - 2026-06-30
+
+### Fixed
+
+- Defer textdomain loading to init for WP 6.7 compatibility
+
+## [0.4.13] - 2026-06-30
+
+### Fixed
+
+- Defer textdomain loading to init for WP 6.7 compatibility
+
 ## [0.4.12] - 2026-06-30
 
 ### Fixed
