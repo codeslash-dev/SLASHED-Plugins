@@ -449,7 +449,8 @@
     },
     {
       "id": 110,
-      "name": "--sf-color-base-darker"
+      "name": "--sf-color-base-darker",
+      "removed": true
     },
     {
       "id": 111,
@@ -461,7 +462,8 @@
     },
     {
       "id": 113,
-      "name": "--sf-color-base-lighter"
+      "name": "--sf-color-base-lighter",
+      "removed": true
     },
     {
       "id": 114,
@@ -473,19 +475,23 @@
     },
     {
       "id": 116,
-      "name": "--sf-color-base-superdark"
+      "name": "--sf-color-base-superdark",
+      "removed": true
     },
     {
       "id": 117,
-      "name": "--sf-color-base-superlight"
+      "name": "--sf-color-base-superlight",
+      "removed": true
     },
     {
       "id": 118,
-      "name": "--sf-color-base-xdark"
+      "name": "--sf-color-base-xdark",
+      "removed": true
     },
     {
       "id": 119,
-      "name": "--sf-color-base-xlight"
+      "name": "--sf-color-base-xlight",
+      "removed": true
     },
     {
       "id": 120,

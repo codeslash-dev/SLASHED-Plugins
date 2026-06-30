@@ -28,8 +28,7 @@
 <div class="group">
   <div class="flex items-center justify-between mb-1.5">
     <div class="flex items-center gap-2">
-      <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-bold font-mono">⚡</span>
-      <span class="text-[11px] font-semibold text-slate-200">{knob.label}</span>
+      <span class="text-[11px] font-semibold text-slate-300">{knob.label}</span>
       {#if knob.driving !== undefined}
         <span class="text-[9px] text-slate-600 font-mono">→ {knob.driving} tokens</span>
       {/if}

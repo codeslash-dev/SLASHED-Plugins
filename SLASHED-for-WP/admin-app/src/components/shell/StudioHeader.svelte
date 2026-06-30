@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import { Undo2, Redo2, Trash2, Share2, FolderOpen, Check, Save, Loader2 } from 'lucide-svelte';
 
   const version = typeof __SLASHED_VERSION__ !== "undefined" ? __SLASHED_VERSION__ : "";
@@ -18,6 +19,15 @@
   } = $props();
 
   let shareFeedback = $state(false);
+  let showResetConfirm = $state(false);
+  let resetCancelBtn = $state<HTMLButtonElement | null>(null);
+  let resetConfirmBtn = $state<HTMLButtonElement | null>(null);
+
+  $effect(() => {
+    if (showResetConfirm) {
+      tick().then(() => resetCancelBtn?.focus());
+    }
+  });
 
   async function handleShare() {
     try {
@@ -28,14 +38,27 @@
       // ignore
     }
   }
+
+  function handleResetAllClick() {
+    showResetConfirm = true;
+  }
+
+  function confirmReset() {
+    showResetConfirm = false;
+    onResetAll();
+  }
+
+  function cancelReset() {
+    showResetConfirm = false;
+  }
 </script>
 
-<header class="h-[52px] bg-[#0d0d14] border-b border-white/8 flex items-center px-3 gap-3 shrink-0 z-20">
+<header class="h-[52px] bg-[#0d0d14] border-b border-white/8 flex items-center px-3 gap-2 sm:gap-3 shrink-0 z-20">
   <div class="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-lg leading-none select-none shadow-lg shadow-indigo-600/30 shrink-0">
     /
   </div>
 
-  <div class="shrink-0">
+  <div class="hidden sm:block shrink-0">
     <div class="text-[11px] font-bold text-white tracking-tight leading-none flex items-center gap-1.5">
       SLASHED Studio
       <span class="text-[9px] bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-bold px-1.5 py-0.5 rounded-full font-mono">
@@ -53,7 +76,7 @@
       class="flex items-center gap-1.5 px-2.5 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-300 text-[10px] font-bold font-mono hover:bg-indigo-500/20 transition-colors cursor-pointer shrink-0"
     >
       <span class="w-4 h-4 bg-indigo-600 text-white rounded-full flex items-center justify-center text-[9px] font-black">{overridesCount}</span>
-      customised · Export →
+      <span class="hidden sm:inline">customised · </span>Export →
     </button>
   {/if}
 
@@ -65,7 +88,7 @@
       disabled={!hasPendingChanges || saveState === 'saving'}
       title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
       class={[
-        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer",
+        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors cursor-pointer",
         saveState === 'saved'
           ? "bg-emerald-900/40 border border-emerald-500/30 text-emerald-300"
           : hasPendingChanges
@@ -125,7 +148,7 @@
     </button>
 
     <button
-      onclick={onResetAll}
+      onclick={handleResetAllClick}
       disabled={overridesCount === 0}
       title="Reset all overrides"
       class="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
@@ -134,3 +157,47 @@
     </button>
   </div>
 </header>
+
+{#if showResetConfirm}
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="reset-confirm-title"
+    tabindex="-1"
+    onclick={(e) => { if (e.target === e.currentTarget) cancelReset(); }}
+    onkeydown={(e) => {
+      if (e.key === 'Escape') { e.stopPropagation(); cancelReset(); }
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const focused = document.activeElement;
+        if (focused === resetCancelBtn) resetConfirmBtn?.focus();
+        else resetCancelBtn?.focus();
+      }
+    }}
+  >
+    <div class="bg-[#1a1a2e] border border-white/10 rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+      <h3 id="reset-confirm-title" class="text-white font-bold text-sm mb-2">Reset all overrides?</h3>
+      <p class="text-slate-400 text-xs mb-5">
+        This will clear all {overridesCount} customisation{overridesCount !== 1 ? 's' : ''}.
+        You can still undo this before saving.
+      </p>
+      <div class="flex gap-2 justify-end">
+        <button
+          bind:this={resetCancelBtn}
+          onclick={cancelReset}
+          class="px-3 py-1.5 text-xs rounded-lg bg-white/8 text-slate-300 hover:bg-white/12 transition-colors cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          bind:this={resetConfirmBtn}
+          onclick={confirmReset}
+          class="px-3 py-1.5 text-xs rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold transition-colors cursor-pointer"
+        >
+          Reset all
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}

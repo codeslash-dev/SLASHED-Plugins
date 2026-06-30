@@ -66,7 +66,7 @@
     { label: "normal",  value: "normal" },
   ];
 
-  const WEIGHT_OPTIONS = ["300","400","500","600","700","800"];
+  const WEIGHT_OPTIONS = ["100","200","300","400","500","600","700","800","900"];
   const WEIGHT_DEFAULTS: Record<string, string> = {
     "--sf-font-weight-body": "400",
     "--sf-font-weight-heading": "600",
@@ -166,6 +166,7 @@
   let showBodyText      = $state(false);
   let showDisplayType   = $state(false);
   let showModularScale  = $state(false);
+  let showScaleAdvanced = $state(false);
   let showScalePreview  = $state(false);
   let showAdvancedType  = $state(false);
   let showLineLengths   = $state(false);
@@ -195,7 +196,7 @@
       const link = document.createElement("link");
       link.id = id;
       link.rel = "stylesheet";
-      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@300;400;500;600;700&display=swap`;
+      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@100;200;300;400;500;600;700;800;900&display=swap`;
       document.head.appendChild(link);
     }
   }
@@ -759,17 +760,6 @@
       onRatioMaxChange={(v) => onSet("--sf-text-ratio-max", String(v))}
     />
 
-    <!-- Power knobs -->
-    <div class="space-y-4">
-      {#each knobs as k (k.name)}
-        <PowerKnobRow
-          knob={k}
-          {overrides}
-          onChange={(name, val) => val === null ? onReset(name) : onSet(name, val)}
-        />
-      {/each}
-    </div>
-
     <!-- Line height scale -->
     <div>
       <div class="text-[10px] font-semibold text-slate-400 mb-2">Line height scale</div>
@@ -817,6 +807,29 @@
           </div>
         {/each}
       </div>
+    </div>
+
+    <!-- Advanced power knobs — de-emphasised, at end of the scale group -->
+    <div class="pt-1">
+      <button
+        onclick={() => { showScaleAdvanced = !showScaleAdvanced; }}
+        aria-expanded={showScaleAdvanced}
+        class="w-full flex items-center justify-between text-slate-600 hover:text-slate-400 transition-colors cursor-pointer"
+      >
+        <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
+        <span class="text-[10px]">{showScaleAdvanced ? "▲" : "▼"}</span>
+      </button>
+      {#if showScaleAdvanced}
+        <div class="mt-3 space-y-4">
+          {#each knobs as k (k.name)}
+            <PowerKnobRow
+              knob={k}
+              {overrides}
+              onChange={(name, val) => val === null ? onReset(name) : onSet(name, val)}
+            />
+          {/each}
+        </div>
+      {/if}
     </div>
     {/if}
   </section>

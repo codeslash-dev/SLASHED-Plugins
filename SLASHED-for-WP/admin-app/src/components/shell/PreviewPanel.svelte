@@ -22,16 +22,14 @@
     onTemplateChange: (t: PreviewTemplate) => void;
   } = $props();
 
-
   function withDerivedOverrides(ov: Record<string, string>): Record<string, string> {
-    const derived = computeDerivedOverrides(ov);
+    const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const derived = computeDerivedOverrides(ov, { reduceMotion });
     return Object.keys(derived).length > 0 ? { ...derived, ...ov } : ov;
   }
 
   const TEMPLATES: { id: PreviewTemplate; label: string }[] = [
     { id: "marketing", label: "Marketing" },
-    { id: "docs", label: "Docs" },
-    { id: "dashboard", label: "Dashboard" },
     { id: "components", label: "Components" },
     { id: "stylescape", label: "Stylescape" },
   ];
@@ -83,378 +81,336 @@
     }
   }
 
+  // Preview "skin": presentational classes for the demo templates. SLASHED is
+  // BEM-first and ships no utility classes, so the demos lean on real framework
+  // classes (.pv-btn, .pv-card, .sf-container, …) plus this thin skin for the
+  // bits the framework has no class for (token swatch grids, the type-scale
+  // ramp, demo chrome). EVERY value here references a live --sf-* token, so the
+  // configurator panels drive these classes exactly like the framework's own —
+  // and there is not a single inline style left in the template bodies.
+  const RAMP_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+  const RADII = ["xs", "s", "m", "l", "xl", "2xl", "full"];
+  const SHADOWS = ["xs", "s", "m", "l", "xl", "2xl"];
+  const SPACES = ["3xs", "2xs", "xs", "s", "m", "l", "xl", "2xl", "3xl", "4xl"];
+  const TYPE_STEPS = ["display-l", "display-m", "display-s", "2xl", "xl", "l", "m", "s", "xs"];
+
+  function previewSkinCSS(): string {
+    const ramp = (cls: string, token: string, fallback?: string) =>
+      RAMP_STEPS.map(
+        (s) =>
+          `.pv-sw--${cls}-${s}{background:var(--sf-color-${token}-${s}${
+            fallback ? `,var(--sf-color-${fallback}-${s})` : ""
+          });}`
+      ).join("");
+    return `
+    /* Text roles (core ships no utility classes — these mirror semantic tokens) */
+    .pv-eyebrow{font-size:var(--sf-text-xs);font-weight:var(--sf-font-weight-heading);text-transform:uppercase;letter-spacing:0.08em;color:var(--sf-color-text--muted);}
+    .pv-lead{font-size:var(--sf-text-l);color:var(--sf-color-text--secondary);}
+    .pv-muted{color:var(--sf-color-text--muted);}
+    .pv-secondary{color:var(--sf-color-text--secondary);}
+    .pv-accent{color:var(--sf-color-primary-600);}
+    .pv-on-primary{color:var(--sf-color-text--on-primary);}
+    .pv-center-text{text-align:center;}
+    .pv-emoji{font-size:2rem;line-height:1;}
+    .pv-brand{font-weight:700;font-size:var(--sf-text-l);color:var(--sf-color-primary-600);}
+    .pv-measure{max-inline-size:34rem;}
+    /* BEM components — .sf-btn / .sf-card / .sf-tag / .sf-field are staged off in
+       core until v0.8, so the preview ships its own token-driven equivalents.
+       These mirror the framework's reserved definitions one-to-one. */
+    .pv-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sf-space-2xs);padding-block:var(--sf-space-xs);padding-inline:var(--sf-space-m);min-block-size:var(--sf-touch-target);font-family:inherit;font-size:var(--sf-text-m);font-weight:var(--sf-font-weight-interactive);line-height:var(--sf-leading-tight);white-space:nowrap;text-decoration:none;border:var(--sf-border-width-1) solid var(--sf-color-action);border-radius:var(--sf-radius-m);cursor:pointer;background:var(--sf-color-action);color:var(--sf-color-text--on-action);transition:var(--sf-transition-form-field);}
+    .pv-btn--primary{background:var(--sf-color-primary);color:var(--sf-color-text--on-primary);border-color:var(--sf-color-primary);}
+    .pv-btn--secondary{background:transparent;color:var(--sf-color-action);border-color:var(--sf-color-action);}
+    .pv-btn--ghost{background:transparent;color:var(--sf-color-action);border-color:transparent;}
+    .pv-btn--neutral{background:var(--sf-color-neutral);color:var(--sf-color-text--on-neutral);border-color:var(--sf-color-neutral);}
+    .pv-btn--danger{background:var(--sf-color-danger);color:var(--sf-color-text--on-danger);border-color:var(--sf-color-danger);}
+    .pv-btn--block{inline-size:100%;}
+    .pv-btn:disabled{opacity:var(--sf-opacity-disabled);cursor:not-allowed;}
+    /* No 'display' here: .pv-card is unlayered and would beat .sf-stack's
+       layered flex, breaking 'pv-card sf-stack' combos. Default block is fine. */
+    .pv-card{padding:var(--sf-space-l);background:var(--sf-color-surface);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-l);box-shadow:var(--sf-shadow-s);}
+    .pv-tag{display:inline-flex;align-items:center;gap:var(--sf-space-2xs);padding-block:var(--sf-space-3xs,0.125rem);padding-inline:var(--sf-space-xs);font-size:var(--sf-text-xs);line-height:var(--sf-leading-tight);white-space:nowrap;background:var(--sf-color-inset);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-s);color:var(--sf-color-text);}
+    .pv-tag--primary{color:var(--sf-color-action);border-color:var(--sf-color-action);background:color-mix(in oklab,var(--sf-color-action) 8%,var(--sf-color-surface));}
+    .pv-tag--info{color:var(--sf-color-info);border-color:var(--sf-color-info);background:color-mix(in oklab,var(--sf-color-info) 8%,var(--sf-color-surface));}
+    .pv-field{display:grid;gap:var(--sf-space-2xs);align-content:start;}
+    .pv-field__label{font-size:var(--sf-text-s);font-weight:var(--sf-font-weight-interactive);color:var(--sf-color-text);}
+    /* Demo chrome */
+    .pv-header{padding-block:var(--sf-space-s);border-block-end:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);background:var(--sf-color-surface);}
+    .pv-panel{background:var(--sf-color-surface);border-inline-end:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);}
+    .pv-cta{background:var(--sf-gradient-primary);border-radius:var(--sf-radius-xl);}
+    .pv-code-block{font-family:var(--sf-font-mono);font-size:var(--sf-text-s);background:var(--sf-color-inset);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-m);padding:var(--sf-space-m) var(--sf-space-l);color:var(--sf-color-text);}
+    /* Sidebar nav */
+    .pv-nav{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:2px;}
+    .pv-nav__item{padding:var(--sf-space-2xs) var(--sf-space-xs);border-radius:var(--sf-radius-s);font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);cursor:pointer;}
+    .pv-nav__item.is-active{background:var(--sf-color-primary-100);color:var(--sf-color-primary-700);font-weight:600;}
+    /* Stat blocks */
+    .pv-stat{font-size:var(--sf-text-2xl);font-weight:800;line-height:var(--sf-leading-tight);color:var(--sf-color-heading);}
+    .pv-stat-label{font-size:var(--sf-text-xs);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--sf-color-text--muted);}
+    .pv-delta{font-size:var(--sf-text-xs);}
+    .pv-delta--up{color:var(--sf-color-success);}
+    .pv-delta--down{color:var(--sf-color-danger);}
+    .pv-delta--flat{color:var(--sf-color-warning);}
+    /* Type-scale ramp — one class per scale step, all token-driven */
+    ${TYPE_STEPS.map((t) => `.pv-type--${t}{font-size:var(--sf-text-${t});line-height:var(--sf-leading-tight);}`).join("")}
+    /* Colour ramps */
+    .pv-ramp{display:flex;gap:2px;block-size:36px;border-radius:var(--sf-radius-m);overflow:hidden;}
+    .pv-ramp>*{flex:1;}
+    ${ramp("primary", "primary")}
+    ${ramp("base", "base")}
+    ${ramp("action", "action", "primary")}
+    .pv-chip{display:block;inline-size:28px;block-size:28px;border-radius:var(--sf-radius-s);}
+    .pv-chip--success{background:var(--sf-color-success);}
+    .pv-chip--warning{background:var(--sf-color-warning);}
+    .pv-chip--danger{background:var(--sf-color-danger);}
+    .pv-chip--info{background:var(--sf-color-info);}
+    /* Gradients */
+    .pv-grad{block-size:44px;border-radius:var(--sf-radius-m);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);}
+    .pv-grad--primary{background:var(--sf-gradient-primary);}
+    .pv-grad--brand{background:var(--sf-gradient-brand);}
+    .pv-grad--tertiary{background:var(--sf-gradient-tertiary);}
+    .pv-grad--surface{background:var(--sf-gradient-surface);}
+    /* Radius + shadow demo boxes */
+    .pv-demo-box{inline-size:52px;block-size:52px;background:var(--sf-color-primary-100);border:2px solid var(--sf-color-primary-300);}
+    ${RADII.map((r) => `.pv-radius--${r}{border-radius:var(--sf-radius-${r});}`).join("")}
+    .pv-shadow-box{inline-size:52px;block-size:52px;background:var(--sf-color-surface);border-radius:var(--sf-radius-m);}
+    ${SHADOWS.map((s) => `.pv-shadow--${s}{box-shadow:var(--sf-shadow-${s});}`).join("")}
+    /* Spacing scale bars */
+    .pv-space-bar{background:var(--sf-color-primary-400);border-radius:2px;min-inline-size:3px;min-block-size:3px;}
+    ${SPACES.map((s) => {
+      // --sf-space-3xs is not a defined core token (core starts at 2xs); give it
+      // the same fallback the framework uses elsewhere so the bar still renders.
+      const size = s === "3xs" ? "var(--sf-space-3xs,0.125rem)" : `var(--sf-space-${s})`;
+      return `.pv-space--${s}{inline-size:${size};block-size:${size};}`;
+    }).join("")}
+    .pv-swatch-label{font-size:var(--sf-text-2xs);font-family:var(--sf-font-mono);color:var(--sf-color-text--muted);}
+    /* Stylescape demo layout */
+    .pv-heading{font-family:var(--sf-font-heading);color:var(--sf-color-heading);}
+    .pv-strong{font-weight:var(--sf-font-weight-heading);}
+    .pv-ramp-row{display:grid;grid-template-columns:4rem 1fr;gap:var(--sf-space-s);align-items:center;}
+    .pv-spacing-track{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--sf-space-xs);}
+    /* Tinted card variants — unlayered, so they reliably override .pv-card's bg */
+    .pv-card--primary{background:var(--sf-color-primary);color:var(--sf-color-text--on-primary);}
+    .pv-card--soft{background:var(--sf-color-primary-100);color:var(--sf-color-primary-700);}`;
+  }
+
   const MARKETING_BODY = `
-<header class="sf-site-header" style="position:sticky;top:0;z-index:50;background:var(--sf-color-base);border-bottom:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);padding:var(--sf-space-s) var(--sf-space-l);">
-  <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;">
-    <div style="font-weight:700;font-size:var(--sf-text-l);color:var(--sf-color-primary-600);">SlashedUI</div>
-    <nav style="display:flex;gap:var(--sf-space-m);font-size:var(--sf-text-s);">
-      <a href="#" style="color:var(--sf-color-text--secondary);text-decoration:none;">Docs</a>
-      <a href="#" style="color:var(--sf-color-text--secondary);text-decoration:none;">Components</a>
-      <a href="#" style="color:var(--sf-color-text--secondary);text-decoration:none;">Themes</a>
+<header class="pv-header">
+  <div class="sf-container sf-cluster sf-cluster--between">
+    <span class="pv-brand">SlashedUI</span>
+    <nav class="sf-cluster sf-cluster--m">
+      <a class="sf-link--subtle" href="#">Docs</a>
+      <a class="sf-link--subtle" href="#">Components</a>
+      <a class="sf-link--subtle" href="#">Themes</a>
     </nav>
-    <button class="sf-btn sf-btn-primary" style="font-size:var(--sf-text-s);">Get Started</button>
+    <button class="pv-btn pv-btn--primary">Get Started</button>
   </div>
 </header>
-<main style="max-width:1200px;margin:0 auto;padding:var(--sf-space-2xl) var(--sf-space-l);">
-  <section style="text-align:center;margin-bottom:var(--sf-space-2xl);">
-    <div style="display:inline-flex;align-items:center;gap:var(--sf-space-xs);background:var(--sf-color-primary-50);color:var(--sf-color-primary-700);border:var(--sf-border-width-1) solid var(--sf-color-primary-200);border-radius:var(--sf-radius-full);padding:var(--sf-space-2xs) var(--sf-space-s);font-size:var(--sf-text-xs);font-weight:600;margin-bottom:var(--sf-space-l);">
-      ✨ Now in v2 — OKLCH color engine
-    </div>
-    <h1 style="font-size:var(--sf-text-display-l);font-weight:800;color:var(--sf-color-text);margin-bottom:var(--sf-space-l);line-height:1.1;">
-      Design systems,<br/><span style="color:var(--sf-color-primary-600);">perfected.</span>
-    </h1>
-    <p style="font-size:var(--sf-text-l);color:var(--sf-color-text--secondary);max-width:540px;margin:0 auto var(--sf-space-xl);">
-      A CSS framework built on 840 design tokens. One line to install, infinitely customisable.
-    </p>
-    <div style="display:flex;gap:var(--sf-space-s);justify-content:center;flex-wrap:wrap;">
-      <button class="sf-btn sf-btn-primary" style="font-size:var(--sf-text-m);">Start for free</button>
-      <button class="sf-btn sf-btn-ghost" style="font-size:var(--sf-text-m);">View docs →</button>
+<main class="sf-container sf-section">
+  <section class="sf-stack sf-stack--l sf-stack--center pv-center-text sf-section--s">
+    <span class="pv-tag pv-tag--primary">✨ Now in v2 — OKLCH color engine</span>
+    <h1 class="pv-type--display-l">Design systems,<br/><span class="pv-accent">perfected.</span></h1>
+    <p class="pv-lead pv-measure">A CSS framework built on 840 design tokens. One line to install, infinitely customisable.</p>
+    <div class="sf-cluster sf-cluster--center">
+      <button class="pv-btn pv-btn--primary">Start for free</button>
+      <button class="pv-btn pv-btn--ghost">View docs →</button>
     </div>
   </section>
-  <section style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sf-space-l);margin-bottom:var(--sf-space-2xl);">
-    <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);">
-      <div style="font-size:2rem;margin-bottom:var(--sf-space-s);">🎨</div>
-      <h3 style="font-size:var(--sf-text-l);font-weight:700;color:var(--sf-color-text);margin-bottom:var(--sf-space-xs);">OKLCH Colors</h3>
-      <p style="font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);line-height:1.6;">Perceptually uniform color ramps with auto dark-mode derivation.</p>
-    </div>
-    <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);">
-      <div style="font-size:2rem;margin-bottom:var(--sf-space-s);">📐</div>
-      <h3 style="font-size:var(--sf-text-l);font-weight:700;color:var(--sf-color-text);margin-bottom:var(--sf-space-xs);">Fluid Scales</h3>
-      <p style="font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);line-height:1.6;">Type and space that scales smoothly from mobile to 4K.</p>
-    </div>
-    <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);">
-      <div style="font-size:2rem;margin-bottom:var(--sf-space-s);">⚡</div>
-      <h3 style="font-size:var(--sf-text-l);font-weight:700;color:var(--sf-color-text);margin-bottom:var(--sf-space-xs);">Zero JS</h3>
-      <p style="font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);line-height:1.6;">Pure CSS custom properties — works with any framework.</p>
-    </div>
+  <section class="sf-grid sf-grid-cols-3 sf-section--s">
+    <article class="pv-card sf-stack sf-stack--xs">
+      <div class="pv-emoji">🎨</div>
+      <h3>OKLCH Colors</h3>
+      <p class="pv-secondary">Perceptually uniform color ramps with auto dark-mode derivation.</p>
+    </article>
+    <article class="pv-card sf-stack sf-stack--xs">
+      <div class="pv-emoji">📐</div>
+      <h3>Fluid Scales</h3>
+      <p class="pv-secondary">Type and space that scales smoothly from mobile to 4K.</p>
+    </article>
+    <article class="pv-card sf-stack sf-stack--xs">
+      <div class="pv-emoji">⚡</div>
+      <h3>Zero JS</h3>
+      <p class="pv-secondary">Pure CSS custom properties — works with any framework.</p>
+    </article>
   </section>
-  <section style="background:linear-gradient(135deg,var(--sf-color-primary-600),var(--sf-color-action-600,var(--sf-color-primary-700)));border-radius:var(--sf-radius-xl);padding:var(--sf-space-xl) var(--sf-space-xl);text-align:center;color:#fff;">
-    <h2 style="font-size:var(--sf-text-display-s);font-weight:800;margin-bottom:var(--sf-space-s);">Ready to ship faster?</h2>
-    <p style="font-size:var(--sf-text-m);opacity:0.85;margin-bottom:var(--sf-space-l);">Join 12,000+ developers using SLASHED in production.</p>
-    <button style="background:#fff;color:var(--sf-color-primary-700);border:none;border-radius:var(--sf-radius-m);padding:var(--sf-space-s) var(--sf-space-l);font-size:var(--sf-text-m);font-weight:700;cursor:pointer;">Install now — it's free</button>
+  <section class="pv-cta sf-section sf-stack sf-stack--m sf-stack--center pv-center-text pv-on-primary">
+    <h2 class="pv-type--display-s">Ready to ship faster?</h2>
+    <p>Join 12,000+ developers using SLASHED in production.</p>
+    <button class="pv-btn pv-btn--neutral">Install now — it's free</button>
   </section>
 </main>`;
 
-  const DOCS_BODY = `
-<div style="display:grid;grid-template-columns:240px 1fr;height:100%;gap:0;">
-  <aside style="background:var(--sf-color-base);border-right:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);padding:var(--sf-space-l);overflow-y:auto;">
-    <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--sf-space-s);">Getting started</div>
-    <ul style="list-style:none;padding:0;margin:0 0 var(--sf-space-l);">
-      <li style="padding:var(--sf-space-xs) var(--sf-space-xs);border-radius:var(--sf-radius-s);background:var(--sf-color-primary-100);color:var(--sf-color-primary-700);font-size:var(--sf-text-s);font-weight:600;margin-bottom:2px;">Introduction</li>
-      <li style="padding:var(--sf-space-xs) var(--sf-space-xs);font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);margin-bottom:2px;cursor:pointer;">Installation</li>
-      <li style="padding:var(--sf-space-xs) var(--sf-space-xs);font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);margin-bottom:2px;cursor:pointer;">Quick start</li>
-    </ul>
-  </aside>
-  <main style="padding:var(--sf-space-xl) var(--sf-space-xl);overflow-y:auto;max-width:800px;">
-    <h1 style="font-size:var(--sf-text-display-s);font-weight:800;color:var(--sf-color-text);margin-bottom:var(--sf-space-m);">Introduction</h1>
-    <p style="font-size:var(--sf-text-m);color:var(--sf-color-text--secondary);line-height:1.7;margin-bottom:var(--sf-space-l);">SLASHED is a CSS design-token framework built around ~840 custom properties.</p>
-    <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-m);padding:var(--sf-space-m) var(--sf-space-l);font-family:var(--sf-font-mono);font-size:var(--sf-text-s);color:var(--sf-color-text);margin-bottom:var(--sf-space-l);">npm install slashed</div>
-  </main>
-</div>`;
-
-  const DASHBOARD_BODY = `
-<div style="display:grid;grid-template-columns:200px 1fr;height:100%;background:var(--sf-color-base);">
-  <aside style="background:var(--sf-color-base);border-right:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);padding:var(--sf-space-m);">
-    <div style="font-size:var(--sf-text-s);font-weight:700;color:var(--sf-color-text);margin-bottom:var(--sf-space-l);padding:var(--sf-space-xs);">⚡ Dashboard</div>
-    <ul style="list-style:none;padding:0;margin:0;">
-      <li style="padding:var(--sf-space-xs) var(--sf-space-s);border-radius:var(--sf-radius-s);background:var(--sf-color-primary-100);color:var(--sf-color-primary-700);font-size:var(--sf-text-s);font-weight:600;margin-bottom:2px;">Overview</li>
-      <li style="padding:var(--sf-space-xs) var(--sf-space-s);font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);margin-bottom:2px;cursor:pointer;">Analytics</li>
-      <li style="padding:var(--sf-space-xs) var(--sf-space-s);font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);margin-bottom:2px;cursor:pointer;">Users</li>
-    </ul>
-  </aside>
-  <main style="padding:var(--sf-space-l);overflow-y:auto;">
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sf-space-m);margin-bottom:var(--sf-space-l);">
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);">
-        <div style="font-size:var(--sf-text-xs);font-weight:600;color:var(--sf-color-text--muted);text-transform:uppercase;margin-bottom:var(--sf-space-xs);">Revenue</div>
-        <div style="font-size:var(--sf-text-2xl);font-weight:800;color:var(--sf-color-text);">$48.2k</div>
-        <div style="font-size:var(--sf-text-xs);color:var(--sf-color-success);">↑ 12% vs last month</div>
-      </div>
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);">
-        <div style="font-size:var(--sf-text-xs);font-weight:600;color:var(--sf-color-text--muted);text-transform:uppercase;margin-bottom:var(--sf-space-xs);">Users</div>
-        <div style="font-size:var(--sf-text-2xl);font-weight:800;color:var(--sf-color-text);">12,431</div>
-        <div style="font-size:var(--sf-text-xs);color:var(--sf-color-success);">↑ 8% vs last month</div>
-      </div>
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);">
-        <div style="font-size:var(--sf-text-xs);font-weight:600;color:var(--sf-color-text--muted);text-transform:uppercase;margin-bottom:var(--sf-space-xs);">Conversions</div>
-        <div style="font-size:var(--sf-text-2xl);font-weight:800;color:var(--sf-color-text);">3.6%</div>
-        <div style="font-size:var(--sf-text-xs);color:var(--sf-color-warning);">→ Flat</div>
-      </div>
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);">
-        <div style="font-size:var(--sf-text-xs);font-weight:600;color:var(--sf-color-text--muted);text-transform:uppercase;margin-bottom:var(--sf-space-xs);">Tickets open</div>
-        <div style="font-size:var(--sf-text-2xl);font-weight:800;color:var(--sf-color-text);">24</div>
-        <div style="font-size:var(--sf-text-xs);color:var(--sf-color-danger);">↑ 3 since yesterday</div>
-      </div>
-    </div>
-  </main>
-</div>`;
-
   const COMPONENTS_BODY = `
-<div style="padding:var(--sf-space-l);background:var(--sf-color-base);min-height:100%;">
-  <h2 style="font-size:var(--sf-text-xl);font-weight:700;color:var(--sf-color-text);margin-bottom:var(--sf-space-l);">Component showcase</h2>
-  <div style="margin-bottom:var(--sf-space-xl);">
-    <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--sf-space-s);">Buttons</div>
-    <div style="display:flex;gap:var(--sf-space-s);flex-wrap:wrap;align-items:center;">
-      <button class="sf-btn sf-btn-primary">Primary</button>
-      <button class="sf-btn sf-btn-secondary">Secondary</button>
-      <button class="sf-btn sf-btn-ghost">Ghost</button>
-      <button class="sf-btn sf-btn-danger">Danger</button>
-      <button class="sf-btn sf-btn-primary" disabled>Disabled</button>
+<div class="sf-container sf-section sf-stack sf-stack--xl">
+  <h2>Component showcase</h2>
+  <section class="sf-stack sf-stack--s">
+    <div class="pv-eyebrow">Buttons</div>
+    <div class="sf-cluster">
+      <button class="pv-btn pv-btn--primary">Primary</button>
+      <button class="pv-btn pv-btn--secondary">Secondary</button>
+      <button class="pv-btn pv-btn--ghost">Ghost</button>
+      <button class="pv-btn pv-btn--danger">Danger</button>
+      <button class="pv-btn pv-btn--primary" disabled>Disabled</button>
     </div>
-  </div>
-  <div style="margin-bottom:var(--sf-space-xl);">
-    <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--sf-space-s);">Form &amp; links</div>
-    <div style="display:flex;flex-direction:column;gap:var(--sf-space-s);max-width:360px;">
-      <input class="sf-input" type="text" placeholder="Type here — see caret &amp; focus ring" style="width:100%;padding:var(--sf-field-padding-block,0.375rem) var(--sf-field-padding-inline,0.75rem);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-field-radius,var(--sf-radius-m));background:var(--sf-color-base);color:var(--sf-color-text);caret-color:var(--sf-caret-color,var(--sf-color-action));font-size:var(--sf-text-s);" />
-      <p style="font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);">
-        Read the <a href="#" style="color:var(--sf-color-link,var(--sf-color-action));text-decoration:underline;text-underline-offset:var(--sf-link-underline-offset,0.15em);text-decoration-thickness:var(--sf-link-underline-thickness,auto);">documentation link</a> to learn more.
-      </p>
+  </section>
+  <section class="sf-stack sf-stack--s">
+    <div class="pv-eyebrow">Form &amp; links</div>
+    <label class="pv-field pv-measure">
+      <span class="pv-field__label">Your handle</span>
+      <input type="text" placeholder="Type here — see caret &amp; focus ring" />
+    </label>
+    <p class="pv-secondary">Read the <a href="#">documentation link</a> to learn more.</p>
+    <hr class="sf-divider" />
+  </section>
+  <section class="sf-stack sf-stack--s">
+    <div class="pv-eyebrow">Typography ramp</div>
+    <div class="sf-stack sf-stack--xs">
+      <span class="pv-type--display-m">Display M</span>
+      <span class="pv-type--2xl">Heading 2XL</span>
+      <span class="pv-type--xl">Heading XL</span>
+      <span class="pv-type--m pv-secondary">Body text. The quick brown fox jumps over the lazy dog.</span>
+      <span class="pv-type--s pv-muted">Small caption text for metadata and secondary info.</span>
     </div>
-    <!-- Divider -->
-    <hr style="border:none;border-top:var(--sf-divider-width,var(--sf-border-width-1)) var(--sf-divider-style,var(--sf-border-style)) var(--sf-divider-color,var(--sf-color-border));margin:var(--sf-divider-gap,var(--sf-space-m)) 0;" />
-  </div>
-  <div style="margin-bottom:var(--sf-space-xl);">
-    <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--sf-space-s);">Typography ramp</div>
-    <div style="display:flex;flex-direction:column;gap:var(--sf-space-xs);">
-      <div style="font-size:var(--sf-text-display-m);font-weight:800;color:var(--sf-color-text);line-height:1.1;">Display M</div>
-      <div style="font-size:var(--sf-text-2xl);font-weight:700;color:var(--sf-color-text);">Heading 2XL</div>
-      <div style="font-size:var(--sf-text-xl);font-weight:600;color:var(--sf-color-text);">Heading XL</div>
-      <div style="font-size:var(--sf-text-m);color:var(--sf-color-text--secondary);line-height:1.6;">Body text. The quick brown fox jumps over the lazy dog.</div>
-      <div style="font-size:var(--sf-text-s);color:var(--sf-color-text--muted);line-height:1.5;">Small caption text for metadata and secondary info.</div>
-    </div>
-  </div>
+  </section>
 </div>`;
+
+  const swatchRow = (label: string, cls: string) =>
+    `<div class="pv-ramp-row"><span class="pv-swatch-label">${label}</span><div class="pv-ramp">${RAMP_STEPS.map((s) => `<i class="pv-sw--${cls}-${s}"></i>`).join("")}</div></div>`;
 
   const STYLESCAPE_BODY = `
-<div style="padding:var(--sf-space-l) var(--sf-space-xl);background:var(--sf-color-bg,var(--sf-color-base));min-height:100%;font-family:var(--sf-font-body,sans-serif);color:var(--sf-color-text);">
+<div class="sf-container sf-section sf-stack sf-stack--2xl">
 
-  <!-- Header -->
-  <div style="display:flex;align-items:baseline;gap:var(--sf-space-m);margin-bottom:var(--sf-space-2xl);padding-bottom:var(--sf-space-l);border-bottom:var(--sf-border-width-1,1px) var(--sf-border-style,solid) var(--sf-color-border);">
-    <span style="font-size:var(--sf-text-display-s);font-weight:800;font-family:var(--sf-font-heading,inherit);line-height:1;color:var(--sf-color-text);">Design System</span>
-    <span style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-primary-500);text-transform:uppercase;letter-spacing:0.12em;align-self:flex-end;padding:2px 8px;background:var(--sf-color-primary-50);border:1px solid var(--sf-color-primary-200);border-radius:var(--sf-radius-full);">Stylescape</span>
-  </div>
-
-  <!-- COLORS -->
-  <section style="margin-bottom:var(--sf-space-2xl);">
-    <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--sf-space-m);">Color palette</div>
-
-    <div style="display:grid;grid-template-columns:40px 1fr;gap:4px var(--sf-space-s);align-items:center;margin-bottom:var(--sf-space-m);">
-      <span style="font-size:9px;color:var(--sf-color-text--muted);font-family:monospace;">Primary</span>
-      <div style="display:flex;gap:2px;height:36px;border-radius:var(--sf-radius-m);overflow:hidden;">
-        <div style="flex:1;background:var(--sf-color-primary-50);" title="50"></div>
-        <div style="flex:1;background:var(--sf-color-primary-100);" title="100"></div>
-        <div style="flex:1;background:var(--sf-color-primary-200);" title="200"></div>
-        <div style="flex:1;background:var(--sf-color-primary-300);" title="300"></div>
-        <div style="flex:1;background:var(--sf-color-primary-400);" title="400"></div>
-        <div style="flex:1;background:var(--sf-color-primary-500);" title="500"></div>
-        <div style="flex:1;background:var(--sf-color-primary-600);" title="600"></div>
-        <div style="flex:1;background:var(--sf-color-primary-700);" title="700"></div>
-        <div style="flex:1;background:var(--sf-color-primary-800);" title="800"></div>
-        <div style="flex:1;background:var(--sf-color-primary-900);" title="900"></div>
-        <div style="flex:1;background:var(--sf-color-primary-950);" title="950"></div>
-      </div>
-      <span style="font-size:9px;color:var(--sf-color-text--muted);font-family:monospace;">Action</span>
-      <div style="display:flex;gap:2px;height:36px;border-radius:var(--sf-radius-m);overflow:hidden;">
-        <div style="flex:1;background:var(--sf-color-action-50,var(--sf-color-primary-50));"></div>
-        <div style="flex:1;background:var(--sf-color-action-100,var(--sf-color-primary-100));"></div>
-        <div style="flex:1;background:var(--sf-color-action-200,var(--sf-color-primary-200));"></div>
-        <div style="flex:1;background:var(--sf-color-action-300,var(--sf-color-primary-300));"></div>
-        <div style="flex:1;background:var(--sf-color-action-400,var(--sf-color-primary-400));"></div>
-        <div style="flex:1;background:var(--sf-color-action-500,var(--sf-color-primary-500));"></div>
-        <div style="flex:1;background:var(--sf-color-action-600,var(--sf-color-primary-600));"></div>
-        <div style="flex:1;background:var(--sf-color-action-700,var(--sf-color-primary-700));"></div>
-        <div style="flex:1;background:var(--sf-color-action-800,var(--sf-color-primary-800));"></div>
-        <div style="flex:1;background:var(--sf-color-action-900,var(--sf-color-primary-900));"></div>
-        <div style="flex:1;background:var(--sf-color-action-950,var(--sf-color-primary-950));"></div>
-      </div>
-      <span style="font-size:9px;color:var(--sf-color-text--muted);font-family:monospace;">Neutral</span>
-      <div style="display:flex;gap:2px;height:36px;border-radius:var(--sf-radius-m);overflow:hidden;">
-        <div style="flex:1;background:var(--sf-color-base-50);"></div>
-        <div style="flex:1;background:var(--sf-color-base-100);"></div>
-        <div style="flex:1;background:var(--sf-color-base-200);"></div>
-        <div style="flex:1;background:var(--sf-color-base-300);"></div>
-        <div style="flex:1;background:var(--sf-color-base-400);"></div>
-        <div style="flex:1;background:var(--sf-color-base-500);"></div>
-        <div style="flex:1;background:var(--sf-color-base-600);"></div>
-        <div style="flex:1;background:var(--sf-color-base-700);"></div>
-        <div style="flex:1;background:var(--sf-color-base-800);"></div>
-        <div style="flex:1;background:var(--sf-color-base-900);"></div>
-        <div style="flex:1;background:var(--sf-color-base-950);"></div>
-      </div>
+  <header class="sf-stack sf-stack--s">
+    <div class="sf-cluster sf-cluster--s">
+      <span class="pv-type--display-s pv-heading pv-strong">Design System</span>
+      <span class="pv-tag pv-tag--primary">Stylescape</span>
     </div>
+    <hr class="sf-divider" />
+  </header>
 
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sf-space-s);">
-      <div style="background:var(--sf-color-success-50,oklch(96% 0.06 145));border:1px solid var(--sf-color-success-200,oklch(85% 0.1 145));border-radius:var(--sf-radius-m);padding:var(--sf-space-s);">
-        <div style="width:28px;height:28px;background:var(--sf-color-success);border-radius:var(--sf-radius-s);margin-bottom:6px;"></div>
-        <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-success-700,var(--sf-color-success));">Success</div>
-      </div>
-      <div style="background:var(--sf-color-warning-50,oklch(96% 0.06 85));border:1px solid var(--sf-color-warning-200,oklch(85% 0.1 85));border-radius:var(--sf-radius-m);padding:var(--sf-space-s);">
-        <div style="width:28px;height:28px;background:var(--sf-color-warning);border-radius:var(--sf-radius-s);margin-bottom:6px;"></div>
-        <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-warning-700,var(--sf-color-warning));">Warning</div>
-      </div>
-      <div style="background:var(--sf-color-danger-50,oklch(96% 0.06 25));border:1px solid var(--sf-color-danger-200,oklch(85% 0.1 25));border-radius:var(--sf-radius-m);padding:var(--sf-space-s);">
-        <div style="width:28px;height:28px;background:var(--sf-color-danger);border-radius:var(--sf-radius-s);margin-bottom:6px;"></div>
-        <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-danger-700,var(--sf-color-danger));">Danger</div>
-      </div>
-      <div style="background:var(--sf-color-info-50,var(--sf-color-primary-50));border:1px solid var(--sf-color-info-200,var(--sf-color-primary-200));border-radius:var(--sf-radius-m);padding:var(--sf-space-s);">
-        <div style="width:28px;height:28px;background:var(--sf-color-info,var(--sf-color-primary-500));border-radius:var(--sf-radius-s);margin-bottom:6px;"></div>
-        <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-info-700,var(--sf-color-primary-700));">Info</div>
-      </div>
+  <section class="sf-stack sf-stack--m">
+    <div class="pv-eyebrow">Color palette</div>
+    ${swatchRow("Primary", "primary")}
+    ${swatchRow("Action", "action")}
+    ${swatchRow("Neutral", "base")}
+    <div class="sf-grid sf-grid-cols-4">
+      ${[["success", "Success"], ["warning", "Warning"], ["danger", "Danger"], ["info", "Info"]]
+        .map(([cls, label]) => `<article class="pv-card sf-stack sf-stack--xs"><span class="pv-chip pv-chip--${cls}"></span><span class="pv-swatch-label">${label}</span></article>`)
+        .join("")}
     </div>
-
-    <!-- Gradients -->
-    <div style="font-size:9px;color:var(--sf-color-text--muted);font-family:monospace;margin:var(--sf-space-m) 0 var(--sf-space-xs);">Gradients</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sf-space-s);">
-      <div><div style="height:44px;border-radius:var(--sf-radius-m);background:var(--sf-gradient-primary);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);"></div><div style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;margin-top:3px;">primary</div></div>
-      <div><div style="height:44px;border-radius:var(--sf-radius-m);background:var(--sf-gradient-brand);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);"></div><div style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;margin-top:3px;">brand</div></div>
-      <div><div style="height:44px;border-radius:var(--sf-radius-m);background:var(--sf-gradient-tertiary);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);"></div><div style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;margin-top:3px;">tertiary</div></div>
-      <div><div style="height:44px;border-radius:var(--sf-radius-m);background:var(--sf-gradient-surface);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);"></div><div style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;margin-top:3px;">surface</div></div>
+    <div class="pv-swatch-label">Gradients</div>
+    <div class="sf-grid sf-grid-cols-4">
+      ${["primary", "brand", "tertiary", "surface"]
+        .map((g) => `<div class="sf-stack sf-stack--xs"><div class="pv-grad pv-grad--${g}"></div><span class="pv-swatch-label">${g}</span></div>`)
+        .join("")}
     </div>
   </section>
 
-  <!-- TYPOGRAPHY -->
-  <section style="margin-bottom:var(--sf-space-2xl);">
-    <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--sf-space-m);">Typography</div>
-
-    <div style="margin-bottom:var(--sf-space-l);padding:var(--sf-space-l);background:var(--sf-color-base-50);border:var(--sf-border-width-1,1px) var(--sf-border-style,solid) var(--sf-color-border);border-radius:var(--sf-radius-l);">
-      <div style="font-size:var(--sf-text-display-l);font-weight:800;font-family:var(--sf-font-heading,inherit);line-height:1.0;color:var(--sf-color-text);margin-bottom:2px;">The quick brown fox</div>
-      <div style="font-size:var(--sf-text-display-m);font-weight:700;font-family:var(--sf-font-heading,inherit);line-height:1.05;color:var(--sf-color-text);margin-bottom:2px;">jumps over the lazy dog</div>
-      <div style="font-size:var(--sf-text-display-s);font-weight:600;font-family:var(--sf-font-heading,inherit);line-height:1.1;color:var(--sf-color-text--secondary);">Display S — heading family</div>
+  <section class="sf-stack sf-stack--m">
+    <div class="pv-eyebrow">Typography</div>
+    <div class="pv-card sf-stack sf-stack--xs">
+      <span class="pv-type--display-l pv-heading pv-strong">The quick brown fox</span>
+      <span class="pv-type--display-m pv-heading pv-strong">jumps over the lazy dog</span>
+      <span class="pv-type--display-s pv-heading pv-secondary">Display S — heading family</span>
     </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sf-space-l);">
-      <div>
-        <div style="font-size:var(--sf-text-2xl);font-weight:700;color:var(--sf-color-text);margin-bottom:5px;line-height:1.2;">Heading 2XL / 700</div>
-        <div style="font-size:var(--sf-text-xl);font-weight:600;color:var(--sf-color-text);margin-bottom:5px;line-height:1.25;">Heading XL / 600</div>
-        <div style="font-size:var(--sf-text-l);font-weight:600;color:var(--sf-color-text);margin-bottom:5px;line-height:1.3;">Heading L / 600</div>
-        <div style="font-size:var(--sf-text-m);font-weight:600;color:var(--sf-color-text);margin-bottom:5px;">Heading M / 600</div>
-        <div style="font-size:var(--sf-text-s);font-weight:600;color:var(--sf-color-text--secondary);margin-bottom:5px;">Heading S / 600</div>
-        <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.08em;">LABEL / OVERLINE</div>
+    <div class="sf-grid sf-grid-cols-2">
+      <div class="sf-stack sf-stack--xs">
+        <span class="pv-type--2xl pv-heading pv-strong">Heading 2XL</span>
+        <span class="pv-type--xl pv-heading pv-strong">Heading XL</span>
+        <span class="pv-type--l pv-heading pv-strong">Heading L</span>
+        <span class="pv-type--m pv-heading pv-strong">Heading M</span>
+        <span class="pv-type--s pv-heading pv-strong pv-secondary">Heading S</span>
+        <span class="pv-eyebrow">Label / overline</span>
       </div>
-      <div>
-        <p style="font-size:var(--sf-text-m);color:var(--sf-color-text);line-height:1.65;margin:0 0 var(--sf-space-m);">Body — The quick brown fox jumps over the lazy dog. Good typography establishes hierarchy and builds trust with readers.</p>
-        <p style="font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);line-height:1.6;margin:0 0 var(--sf-space-s);">Secondary — supporting text, descriptions, and metadata that help without competing with the primary content.</p>
-        <p style="font-size:var(--sf-text-xs);color:var(--sf-color-text--muted);margin:0 0 var(--sf-space-s);">Micro / caption text for timestamps, tags, and helper copy.</p>
-        <code style="font-family:var(--sf-font-mono);font-size:var(--sf-code-font-size,0.875em);background:var(--sf-color-base-100);padding:3px 7px;border-radius:var(--sf-radius-xs);color:var(--sf-color-text);">const tokens = design()</code>
-        <div style="margin-top:var(--sf-space-s);font-size:var(--sf-text-s);"><strong>Bold</strong> — <em>italic</em> — <u style="text-underline-offset:3px;">underline</u> — <s>strikethrough</s></div>
+      <div class="sf-prose sf-stack sf-stack--s">
+        <p>Body — The quick brown fox jumps over the lazy dog. Good typography establishes hierarchy and builds trust with readers.</p>
+        <p class="pv-secondary">Secondary — supporting text, descriptions, and metadata that help without competing with the primary content.</p>
+        <p class="pv-muted">Micro / caption text for timestamps, tags, and helper copy.</p>
+        <p><code>const tokens = design()</code></p>
+        <p><strong>Bold</strong> — <em>italic</em> — <u>underline</u> — <s>strikethrough</s></p>
       </div>
     </div>
   </section>
 
-  <!-- BORDERS + SHADOWS -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sf-space-xl);margin-bottom:var(--sf-space-2xl);">
-    <section>
-      <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--sf-space-m);">Border radius</div>
-      <div style="display:flex;gap:var(--sf-space-m);align-items:flex-end;flex-wrap:wrap;">
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-primary-100);border:2px solid var(--sf-color-primary-300);border-radius:var(--sf-radius-xs);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:4px;font-family:monospace;">xs</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-primary-100);border:2px solid var(--sf-color-primary-300);border-radius:var(--sf-radius-s);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:4px;font-family:monospace;">s</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-primary-100);border:2px solid var(--sf-color-primary-300);border-radius:var(--sf-radius-m);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:4px;font-family:monospace;">m</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-primary-100);border:2px solid var(--sf-color-primary-300);border-radius:var(--sf-radius-l);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:4px;font-family:monospace;">l</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-primary-100);border:2px solid var(--sf-color-primary-300);border-radius:var(--sf-radius-xl);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:4px;font-family:monospace;">xl</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-primary-100);border:2px solid var(--sf-color-primary-300);border-radius:var(--sf-radius-2xl);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:4px;font-family:monospace;">2xl</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-primary-100);border:2px solid var(--sf-color-primary-300);border-radius:var(--sf-radius-full);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:4px;font-family:monospace;">full</div></div>
+  <div class="sf-grid sf-grid-cols-2">
+    <section class="sf-stack sf-stack--m">
+      <div class="pv-eyebrow">Border radius</div>
+      <div class="sf-cluster">
+        ${RADII.map((r) => `<div class="sf-stack sf-stack--xs sf-stack--center pv-center-text"><div class="pv-demo-box pv-radius--${r}"></div><span class="pv-swatch-label">${r}</span></div>`).join("")}
       </div>
     </section>
-
-    <section>
-      <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--sf-space-m);">Shadows</div>
-      <div style="display:flex;gap:var(--sf-space-m);align-items:flex-end;flex-wrap:wrap;">
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-base);box-shadow:var(--sf-shadow-xs);border-radius:var(--sf-radius-m);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:8px;font-family:monospace;">xs</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-base);box-shadow:var(--sf-shadow-s);border-radius:var(--sf-radius-m);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:8px;font-family:monospace;">s</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-base);box-shadow:var(--sf-shadow-m);border-radius:var(--sf-radius-m);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:8px;font-family:monospace;">m</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-base);box-shadow:var(--sf-shadow-l);border-radius:var(--sf-radius-m);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:8px;font-family:monospace;">l</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-base);box-shadow:var(--sf-shadow-xl);border-radius:var(--sf-radius-m);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:8px;font-family:monospace;">xl</div></div>
-        <div style="text-align:center;"><div style="width:52px;height:52px;background:var(--sf-color-base);box-shadow:var(--sf-shadow-2xl);border-radius:var(--sf-radius-m);"></div><div style="font-size:9px;color:var(--sf-color-text--muted);margin-top:8px;font-family:monospace;">2xl</div></div>
+    <section class="sf-stack sf-stack--m">
+      <div class="pv-eyebrow">Shadows</div>
+      <div class="sf-cluster">
+        ${SHADOWS.map((s) => `<div class="sf-stack sf-stack--xs sf-stack--center pv-center-text"><div class="pv-shadow-box pv-shadow--${s}"></div><span class="pv-swatch-label">${s}</span></div>`).join("")}
       </div>
     </section>
   </div>
 
-  <!-- COMPONENTS -->
-  <section style="margin-bottom:var(--sf-space-2xl);">
-    <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--sf-space-m);">Components</div>
-
-    <div style="display:flex;gap:var(--sf-space-s);flex-wrap:wrap;align-items:center;margin-bottom:var(--sf-space-l);">
-      <button class="sf-btn sf-btn-primary">Primary</button>
-      <button class="sf-btn sf-btn-secondary">Secondary</button>
-      <button class="sf-btn sf-btn-ghost">Ghost</button>
-      <button class="sf-btn sf-btn-danger">Danger</button>
-      <button class="sf-btn sf-btn-primary" disabled>Disabled</button>
+  <section class="sf-stack sf-stack--m">
+    <div class="pv-eyebrow">Components</div>
+    <div class="sf-cluster">
+      <button class="pv-btn pv-btn--primary">Primary</button>
+      <button class="pv-btn pv-btn--secondary">Secondary</button>
+      <button class="pv-btn pv-btn--ghost">Ghost</button>
+      <button class="pv-btn pv-btn--danger">Danger</button>
+      <button class="pv-btn pv-btn--primary" disabled>Disabled</button>
     </div>
-
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sf-space-m);">
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1,1px) var(--sf-border-style,solid) var(--sf-color-border);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);box-shadow:var(--sf-shadow-s);">
-        <div style="width:40px;height:40px;background:var(--sf-color-primary-100);border-radius:var(--sf-radius-m);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:var(--sf-space-s);">🎨</div>
-        <div style="font-size:var(--sf-text-m);font-weight:700;color:var(--sf-color-text);margin-bottom:var(--sf-space-xs);">Feature card</div>
-        <div style="font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);line-height:1.5;">Design tokens that adapt to your brand and context automatically.</div>
-      </div>
-      <div style="background:var(--sf-color-primary-600);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);box-shadow:var(--sf-shadow-m);color:#fff;">
-        <div style="font-size:var(--sf-text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;opacity:0.7;margin-bottom:var(--sf-space-s);">Active users</div>
-        <div style="font-size:var(--sf-text-display-s);font-weight:800;line-height:1;margin-bottom:var(--sf-space-s);">12,431</div>
-        <div style="font-size:var(--sf-text-xs);opacity:0.75;margin-bottom:var(--sf-space-m);">↑ 8.4% this week</div>
-        <button style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:var(--sf-radius-m);padding:var(--sf-space-xs) var(--sf-space-s);font-size:var(--sf-text-xs);font-weight:600;cursor:pointer;font-family:inherit;">View report →</button>
-      </div>
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1,1px) var(--sf-border-style,solid) var(--sf-color-border);border-radius:var(--sf-radius-l);padding:var(--sf-space-l);box-shadow:var(--sf-shadow-s);">
-        <label style="display:block;font-size:var(--sf-text-xs);font-weight:600;color:var(--sf-color-text--secondary);margin-bottom:var(--sf-space-xs);">Email address</label>
-        <input type="email" placeholder="you@example.com" style="width:100%;box-sizing:border-box;background:var(--sf-color-base);border:var(--sf-border-width-1,1px) var(--sf-border-style,solid) var(--sf-color-border);border-radius:var(--sf-radius-m);padding:var(--sf-space-xs) var(--sf-space-s);font-size:var(--sf-text-s);color:var(--sf-color-text);font-family:inherit;outline:none;margin-bottom:var(--sf-space-s);" />
-        <button class="sf-btn sf-btn-primary" style="width:100%;justify-content:center;">Subscribe</button>
-      </div>
+    <div class="sf-grid sf-grid-cols-3">
+      <article class="pv-card sf-stack sf-stack--xs">
+        <div class="sf-icon sf-icon--boxed">🎨</div>
+        <span class="pv-heading pv-strong">Feature card</span>
+        <p class="pv-secondary">Design tokens that adapt to your brand and context automatically.</p>
+      </article>
+      <article class="pv-card pv-card--primary sf-stack sf-stack--xs">
+        <span class="pv-eyebrow pv-on-primary">Active users</span>
+        <span class="pv-type--display-s pv-strong">12,431</span>
+        <span class="pv-delta">↑ 8.4% this week</span>
+        <button class="pv-btn pv-btn--neutral">View report →</button>
+      </article>
+      <article class="pv-card sf-stack sf-stack--s">
+        <label class="pv-field">
+          <span class="pv-field__label">Email address</span>
+          <input type="email" placeholder="you@example.com" />
+        </label>
+        <button class="pv-btn pv-btn--primary pv-btn--block">Subscribe</button>
+      </article>
     </div>
   </section>
 
-  <!-- LAYOUTS & MACROS -->
-  <section style="margin-bottom:var(--sf-space-2xl);">
-    <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--sf-space-m);">Layouts &amp; macros</div>
+  <section class="sf-stack sf-stack--m">
+    <div class="pv-eyebrow">Layouts &amp; macros</div>
+    <h3 class="sf-text-gradient pv-type--2xl pv-strong">.sf-text-gradient heading</h3>
+    <div class="sf-divider sf-divider--gradient"></div>
 
-    <!-- Text gradient + gradient divider -->
-    <h3 class="sf-text-gradient" style="font-size:var(--sf-text-2xl);font-weight:800;font-family:var(--sf-font-heading,inherit);margin:0 0 var(--sf-space-s);">.sf-text-gradient heading</h3>
-    <div class="sf-divider sf-divider--gradient" style="margin-bottom:var(--sf-space-l);"></div>
-
-    <!-- Cluster -->
-    <div style="font-size:9px;color:var(--sf-color-text--muted);font-family:monospace;margin-bottom:4px;">.sf-cluster</div>
-    <div class="sf-cluster" style="margin-bottom:var(--sf-space-l);">
-      <span class="sf-btn sf-btn-primary">Tag</span>
-      <span class="sf-btn sf-btn-secondary">Another</span>
-      <span class="sf-btn sf-btn-ghost">Ghost</span>
-      <span class="sf-btn sf-btn-secondary">Wraps nicely</span>
+    <span class="pv-swatch-label">.sf-cluster</span>
+    <div class="sf-cluster">
+      <span class="pv-tag">Tag</span>
+      <span class="pv-tag pv-tag--primary">Another</span>
+      <span class="pv-tag pv-tag--info">Ghost</span>
+      <span class="pv-tag">Wraps nicely</span>
     </div>
 
-    <!-- Grid -->
-    <div style="font-size:9px;color:var(--sf-color-text--muted);font-family:monospace;margin-bottom:4px;">.sf-grid</div>
-    <div class="sf-grid sf-grid--m" style="margin-bottom:var(--sf-space-l);">
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-m);padding:var(--sf-space-m);font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);">Grid item 1</div>
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-m);padding:var(--sf-space-m);font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);">Grid item 2</div>
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-m);padding:var(--sf-space-m);font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);">Grid item 3</div>
+    <span class="pv-swatch-label">.sf-grid</span>
+    <div class="sf-grid sf-grid--m">
+      <div class="pv-card pv-secondary">Grid item 1</div>
+      <div class="pv-card pv-secondary">Grid item 2</div>
+      <div class="pv-card pv-secondary">Grid item 3</div>
     </div>
 
-    <!-- Sidebar + Stack -->
-    <div style="font-size:9px;color:var(--sf-color-text--muted);font-family:monospace;margin-bottom:4px;">.sf-sidebar + .sf-stack</div>
+    <span class="pv-swatch-label">.sf-sidebar + .sf-stack</span>
     <div class="sf-sidebar sf-sidebar--narrow">
-      <div style="background:var(--sf-color-primary-100);border-radius:var(--sf-radius-m);padding:var(--sf-space-m);">
-        <div class="sf-stack sf-stack--s">
-          <span style="font-size:var(--sf-text-s);font-weight:700;color:var(--sf-color-primary-700);">Sidebar</span>
-          <span style="font-size:var(--sf-text-xs);color:var(--sf-color-primary-700);">Stacked</span>
-          <span style="font-size:var(--sf-text-xs);color:var(--sf-color-primary-700);">items</span>
-        </div>
+      <div class="pv-card pv-card--soft sf-stack sf-stack--xs">
+        <span class="pv-strong">Sidebar</span>
+        <span>Stacked</span>
+        <span>items</span>
       </div>
-      <div style="background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-m);padding:var(--sf-space-m);font-size:var(--sf-text-s);color:var(--sf-color-text--secondary);">
-        Main content area — the sidebar holds its width while this region fills the rest, collapsing to a single column when space runs out.
-      </div>
+      <div class="pv-card pv-secondary">Main content area — the sidebar holds its width while this region fills the rest, collapsing to a single column when space runs out.</div>
     </div>
   </section>
 
-  <!-- SPACING -->
-  <section style="margin-bottom:var(--sf-space-xl);">
-    <div style="font-size:var(--sf-text-xs);font-weight:700;color:var(--sf-color-text--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--sf-space-m);">Spacing scale</div>
-    <div style="display:flex;align-items:flex-end;gap:4px;padding:var(--sf-space-m);background:var(--sf-color-base-50);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);border-radius:var(--sf-radius-l);">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-3xs,2px);min-width:3px;height:var(--sf-space-3xs,2px);min-height:3px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">3xs</span></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-2xs,4px);min-width:4px;height:var(--sf-space-2xs,4px);min-height:4px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">2xs</span></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-xs,6px);min-width:6px;height:var(--sf-space-xs,6px);min-height:6px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">xs</span></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-s,8px);min-width:8px;height:var(--sf-space-s,8px);min-height:8px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">s</span></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-m,12px);min-width:12px;height:var(--sf-space-m,12px);min-height:12px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">m</span></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-l,16px);min-width:16px;height:var(--sf-space-l,16px);min-height:16px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">l</span></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-xl,24px);min-width:24px;height:var(--sf-space-xl,24px);min-height:24px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">xl</span></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-2xl,32px);min-width:32px;height:var(--sf-space-2xl,32px);min-height:32px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">2xl</span></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-3xl,48px);min-width:48px;height:var(--sf-space-3xl,48px);min-height:48px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">3xl</span></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:var(--sf-space-4xl,64px);min-width:64px;height:var(--sf-space-4xl,64px);min-height:64px;background:var(--sf-color-primary-400);border-radius:2px;"></div><span style="font-size:8px;color:var(--sf-color-text--muted);font-family:monospace;white-space:nowrap;">4xl</span></div>
+  <section class="sf-stack sf-stack--m">
+    <div class="pv-eyebrow">Spacing scale</div>
+    <div class="pv-card pv-spacing-track">
+      ${SPACES.map((s) => `<div class="sf-stack sf-stack--xs sf-stack--center pv-center-text"><div class="pv-space-bar pv-space--${s}"></div><span class="pv-swatch-label">${s}</span></div>`).join("")}
     </div>
   </section>
 
@@ -462,8 +418,6 @@
 
   const BODIES: Record<PreviewTemplate, string> = {
     marketing: MARKETING_BODY,
-    docs: DOCS_BODY,
-    dashboard: DASHBOARD_BODY,
     components: COMPONENTS_BODY,
     stylescape: STYLESCAPE_BODY,
   };
@@ -475,7 +429,7 @@
     template: PreviewTemplate,
     frameworkCSS: string,
   ): string {
-    const css = fa(ov, { mode: "root", banner: false });
+    const css = fa(withDerivedOverrides(ov), { mode: "root", banner: false });
     const motionCSS =
       motion === "slow"
         ? "*, *::before, *::after { transition-duration: 200% !important; animation-duration: 200% !important; }"
@@ -488,35 +442,19 @@
       .join("\n");
 
     return `<!DOCTYPE html>
-<html lang="en" data-theme="${theme}" style="height:100%;margin:0;padding:0;">
+<html lang="en" data-theme="${theme}">
 <head>
   <meta charset="UTF-8">
   <title>SLASHED Preview</title>
 ${fontLinks ? fontLinks + "\n" : ""}  <style id="slashed-framework">${frameworkCSS}</style>
   <style id="slashed-overrides">${css}</style>
-  <style>
+  <!-- Preview skin: presentational classes for the demo templates, every value
+       token-driven. Buttons, cards, inputs etc. come from the real framework
+       bundle above — nothing here re-implements them. -->
+  <style id="slashed-preview-skin">
     html, body { height: 100%; margin: 0; padding: 0; }
-    body {
-      font-family: var(--sf-font-body, "Inter", sans-serif);
-      background: var(--sf-color-bg, var(--sf-color-base, #fff));
-      color: var(--sf-color-text, #111);
-      box-sizing: border-box;
-    }
-    .sf-btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: var(--sf-space-xs) var(--sf-space-m);
-      border-radius: var(--sf-radius-m);
-      font-size: var(--sf-text-s); font-weight: 600;
-      border: var(--sf-border-width-1) solid transparent;
-      cursor: pointer; transition: all 0.15s ease;
-    }
-    .sf-btn-primary { background: var(--sf-color-primary-600); color: #fff; border-color: var(--sf-color-primary-600); }
-    .sf-btn-primary:hover { background: var(--sf-color-primary-700); }
-    .sf-btn-secondary { background: var(--sf-color-base-50); color: var(--sf-color-text); border-color: var(--sf-color-border); }
-    .sf-btn-ghost { background: transparent; color: var(--sf-color-text--secondary); border-color: transparent; }
-    .sf-btn-ghost:hover { background: var(--sf-color-base-50); }
-    .sf-btn-danger { background: var(--sf-color-danger); color: #fff; }
-    .sf-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    body { box-sizing: border-box; }
+    ${previewSkinCSS()}
     ${motionCSS}
   </style>
 </head>
@@ -621,13 +559,13 @@ ${BODIES[template]}
 
 <div class="flex flex-col flex-1 min-h-0 bg-[#09090e]">
   <!-- Preview toolbar -->
-  <div class="h-10 bg-[#0d0d14] border-b border-white/8 flex items-center px-3 gap-2 shrink-0">
+  <div class="min-h-10 bg-[#0d0d14] border-b border-white/8 flex flex-wrap md:flex-nowrap items-center px-3 gap-2 py-1.5 md:py-0 shrink-0">
     <!-- Template tabs -->
-    <div class="flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5">
+    <div class="flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5 max-w-full overflow-x-auto">
       {#each TEMPLATES as t (t.id)}
         <button
           onclick={() => onTemplateChange(t.id)}
-          class={`px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+          class={`shrink-0 px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
             previewTemplate === t.id ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"
           }`}
         >
@@ -682,7 +620,7 @@ ${BODIES[template]}
       </button>
     </div>
 
-    <div class="flex-1"></div>
+    <div class="hidden md:block md:flex-1"></div>
 
     <!-- Motion -->
     <select

@@ -1,16 +1,13 @@
 <script lang="ts">
   import { KNOBS_BY_DOMAIN } from '../../lib/powerKnobs';
-  import { CORNER_PRESETS } from '../../lib/stylePresets';
   import PowerKnobRow from '../inputs/PowerKnobRow.svelte';
-  import StylePresetCards from '../inputs/StylePresetCards.svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
 
-  let { overrides, onSet, onReset, onBulkChange }: {
+  let { overrides, onSet, onReset }: {
     overrides: Record<string, string>;
     onSet: (name: string, value: string) => void;
     onReset: (name: string) => void;
-    onBulkChange: (patch: Record<string, string | null>) => void;
   } = $props();
 
   const BORDER_STYLES = ["solid", "dashed", "dotted"];
@@ -86,16 +83,6 @@
 </script>
 
 <div class="p-4 space-y-5">
-
-  <!-- Corner style presets -->
-  <StylePresetCards
-    label="Corner style"
-    presets={CORNER_PRESETS}
-    {overrides}
-    onApply={onBulkChange}
-  />
-
-  <div class="h-px bg-white/6"></div>
 
   <!-- BORDER COLOR -->
   <section class="space-y-3">
@@ -327,28 +314,8 @@
 
   <div class="h-px bg-white/6"></div>
 
-  <!-- RADIUS SCALE KNOB -->
-  <div>
-    <button
-      onclick={() => { showRadiusScale = !showRadiusScale; }}
-      aria-expanded={showRadiusScale}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Radius scale</div>
-      <span class="text-[10px] text-slate-500">{showRadiusScale ? "▲" : "▼"}</span>
-    </button>
-    {#if showRadiusScale}
-      <div class="mt-3 space-y-4">
-        {#each knobs as k (k.name)}
-          <PowerKnobRow
-            knob={k}
-            {overrides}
-            onChange={(name, val) => val === null ? onReset(name) : onSet(name, val)}
-          />
-        {/each}
-      </div>
-    {/if}
-  </div>
+  <!-- RADIUS -->
+  <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Radius</div>
 
   <!-- Fine-tune radius steps collapsible -->
   <div>
@@ -435,6 +402,31 @@
             rawDefault={t.rawDefault}
             currentRaw={overrides[t.token]}
             onRawSet={(v) => onSet(t.token, v)}
+          />
+        {/each}
+      </div>
+    {/if}
+  </div>
+
+  <div class="h-px bg-white/6"></div>
+
+  <!-- ADVANCED (power knob, de-emphasised, at end) -->
+  <div>
+    <button
+      onclick={() => { showRadiusScale = !showRadiusScale; }}
+      aria-expanded={showRadiusScale}
+      class="w-full flex items-center justify-between text-slate-600 hover:text-slate-400 transition-colors cursor-pointer"
+    >
+      <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
+      <span class="text-[10px]">{showRadiusScale ? "▲" : "▼"}</span>
+    </button>
+    {#if showRadiusScale}
+      <div class="mt-3 space-y-4">
+        {#each knobs as k (k.name)}
+          <PowerKnobRow
+            knob={k}
+            {overrides}
+            onChange={(name, val) => val === null ? onReset(name) : onSet(name, val)}
           />
         {/each}
       </div>

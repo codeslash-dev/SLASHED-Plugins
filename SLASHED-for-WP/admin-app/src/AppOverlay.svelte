@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, tick, untrack } from 'svelte';
-  import type { PresetTheme, SlashedToken } from './types';
+  import type { SlashedToken } from './types';
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
   import CommandPalette from './components/CommandPalette.svelte';
@@ -160,9 +160,9 @@
       return n;
     });
   }
-  function handleApplyTheme(theme: PresetTheme) {
-    if (theme.id === 'default') setOverrides({});
-    else handleBulkChange(theme.overrides as Record<string, string | null>);
+  // Applying a saved theme replaces the entire override set with the snapshot.
+  function handleApplyTheme(themeOverrides: Record<string, string>) {
+    setOverrides({ ...themeOverrides });
   }
   function handleResetAll() { showResetConfirm = true; }
   function confirmResetAll() { showResetConfirm = false; setOverrides({}); }
@@ -206,8 +206,13 @@
           try {
             const data = JSON.parse(text);
             if (data !== null && typeof data === 'object' && !Array.isArray(data)) {
+              // Restrict to real token-name keys too, not just string values — an
+              // imported JSON file is untrusted input and its keys end up as
+              // object property names downstream (CodeQL: remote-property-injection).
               const safe = Object.fromEntries(
-                Object.entries(data as Record<string, unknown>).filter(([, v]) => typeof v === 'string')
+                Object.entries(data as Record<string, unknown>).filter(
+                  ([k, v]) => typeof v === 'string' && /^--sf-[\w-]+$/.test(k)
+                )
               ) as Record<string, string>;
               setOverrides(safe);
             }

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, untrack } from 'svelte';
-  import type { PreviewTemplate, PresetTheme, SlashedToken } from './types';
+  import { SlidersHorizontal, Eye } from 'lucide-svelte';
+  import type { PreviewTemplate, SlashedToken } from './types';
   import StudioHeader from './components/shell/StudioHeader.svelte';
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import StatusBar from './components/shell/StatusBar.svelte';
@@ -37,6 +38,9 @@
 
   let domain = $state("home");
   let showPalette = $state(false);
+  // On narrow screens the controls panel and the live preview can't both fit, so
+  // we show one at a time and let the user fold between them (desktop shows both).
+  let mobileView = $state<"controls" | "preview">("controls");
   let previewTheme = $state<"light" | "dark">("light");
   let previewWidth = $state<"fluid" | "mobile" | "tablet" | "desktop">("fluid");
   let previewMotion = $state<"normal" | "slow" | "none">("normal");
@@ -48,10 +52,17 @@
   let canUndo = $derived(past.length > 0);
   let canRedo = $derived(future.length > 0);
 
+  // Shallow equality for flat string records — much cheaper than JSON.stringify on every tick.
+  function shallowEq(a: Record<string, string>, b: Record<string, string>): boolean {
+    const ak = Object.keys(a);
+    if (ak.length !== Object.keys(b).length) return false;
+    return ak.every((k) => a[k] === b[k]);
+  }
+
   // Save state — hasPendingChanges is derived so undo/redo update it automatically.
-  let lastSavedSnapshot = $state(untrack(() => JSON.stringify(overrides)));
+  let lastSavedOverrides = $state<Record<string, string>>(untrack(() => ({ ...overrides })));
   let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
-  let hasPendingChanges = $derived(JSON.stringify(overrides) !== lastSavedSnapshot);
+  let hasPendingChanges = $derived(!shallowEq(overrides, lastSavedOverrides));
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Live CSS preview on every change — actual persistence only on explicit save.
@@ -60,7 +71,7 @@
   function setOverrides(updater: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>) {
     const prev = overrides;
     const next = typeof updater === "function" ? updater(prev) : updater;
-    if (JSON.stringify(prev) !== JSON.stringify(next)) {
+    if (!shallowEq(prev, next)) {
       past = [...past.slice(-49), prev];
       future = [];
       if (saveState === 'saved') saveState = 'idle';
@@ -70,13 +81,13 @@
 
   async function handleSave() {
     if (!hasPendingChanges || saveState === 'saving') return;
-    const snapshot = JSON.stringify(overrides);
+    const snapshot = { ...overrides };
     saveState = 'saving';
     try {
       await saveOverrides(overrides);
       // Only mark clean if overrides haven't changed since save started.
-      if (JSON.stringify(overrides) === snapshot) {
-        lastSavedSnapshot = snapshot;
+      if (shallowEq(overrides, snapshot)) {
+        lastSavedOverrides = snapshot;
         saveState = 'saved';
         if (saveStateTimer) clearTimeout(saveStateTimer);
         saveStateTimer = setTimeout(() => {
@@ -115,12 +126,9 @@
     });
   }
 
-  function handleApplyTheme(theme: PresetTheme) {
-    if (theme.id === "default") {
-      setOverrides({});
-    } else {
-      handleBulkChange(theme.overrides as Record<string, string | null>);
-    }
+  // Applying a saved theme replaces the entire override set with the snapshot.
+  function handleApplyTheme(themeOverrides: Record<string, string>) {
+    setOverrides({ ...themeOverrides });
   }
 
   function handleResetAll() {
@@ -160,10 +168,15 @@
           try {
             const data = JSON.parse(text);
             if (data !== null && typeof data === "object" && !Array.isArray(data)) {
+              // Restrict to real token-name keys too, not just string values — an
+              // imported JSON file is untrusted input and its keys end up as
+              // object property names downstream (CodeQL: remote-property-injection).
               const safe = Object.fromEntries(
-                Object.entries(data as Record<string, unknown>).filter(([, v]) => typeof v === "string")
+                Object.entries(data as Record<string, unknown>).filter(
+                  ([k, v]) => typeof v === "string" && /^--sf-[\w-]+$/.test(k)
+                )
               ) as Record<string, string>;
-              setOverrides(safe);
+              if (Object.keys(safe).length > 0) setOverrides(safe);
             }
           } catch {}
         } else {
@@ -237,15 +250,17 @@
 
   <!-- Main body: sidebar + left panel + preview -->
   <div class="flex flex-1 min-h-0">
-    <!-- Icon nav rail -->
-    <SidebarNav
-      activeId={domain}
-      onSelect={(d) => { domain = d; }}
-      overridesByDomain={domainBadges}
-    />
+    <!-- Icon nav rail — hidden on mobile while the preview is folded open -->
+    <div class={`shrink-0 ${mobileView === "preview" ? "hidden md:flex" : "flex"}`}>
+      <SidebarNav
+        activeId={domain}
+        onSelect={(d) => { domain = d; }}
+        overridesByDomain={domainBadges}
+      />
+    </div>
 
-    <!-- Left domain panel — fixed 360px -->
-    <div class="w-[360px] shrink-0 bg-[#0c0c15] border-r border-white/8 flex flex-col min-h-0">
+    <!-- Left domain panel — full width on mobile, fixed 360px on desktop -->
+    <div class={`w-full md:w-[360px] shrink-0 bg-[#0c0c15] border-r border-white/8 flex-col min-h-0 ${mobileView === "preview" ? "hidden md:flex" : "flex"}`}>
       <!-- Panel heading -->
       <div class="h-9 flex items-center px-4 border-b border-white/6 shrink-0">
         <span data-testid="panel-heading" class="text-[11px] font-bold text-slate-300 uppercase tracking-widest flex-1">
@@ -268,8 +283,8 @@
       </div>
     </div>
 
-    <!-- Right: live preview -->
-    <div class="flex-1 flex flex-col min-h-0 min-w-0">
+    <!-- Right: live preview — full screen on mobile when folded open -->
+    <div class={`flex-1 flex-col min-h-0 min-w-0 ${mobileView === "controls" ? "hidden md:flex" : "flex"}`}>
       <PreviewPanel
         {overrides}
         {previewTheme}
@@ -282,6 +297,31 @@
         onTemplateChange={(t) => { previewTemplate = t; }}
       />
     </div>
+  </div>
+
+  <!-- Mobile fold toggle: switch between the controls panel and the live preview -->
+  <div class="md:hidden flex items-stretch border-t border-white/8 bg-[#0d0d14] shrink-0">
+    <button
+      onclick={() => { mobileView = "controls"; }}
+      aria-pressed={mobileView === "controls"}
+      class={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-bold transition-colors cursor-pointer ${
+        mobileView === "controls" ? "text-indigo-300 bg-indigo-500/10" : "text-slate-500 hover:text-slate-300"
+      }`}
+    >
+      <SlidersHorizontal class="w-3.5 h-3.5" /> Controls
+    </button>
+    <button
+      onclick={() => { mobileView = "preview"; }}
+      aria-pressed={mobileView === "preview"}
+      class={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-bold transition-colors cursor-pointer ${
+        mobileView === "preview" ? "text-indigo-300 bg-indigo-500/10" : "text-slate-500 hover:text-slate-300"
+      }`}
+    >
+      <Eye class="w-3.5 h-3.5" /> Preview
+      {#if overridesCount > 0}
+        <span class="w-4 h-4 bg-indigo-600 text-white rounded-full flex items-center justify-center text-[8px] font-black">{overridesCount > 9 ? "9+" : overridesCount}</span>
+      {/if}
+    </button>
   </div>
 
   <!-- Status bar -->
