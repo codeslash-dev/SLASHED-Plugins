@@ -2717,12 +2717,8 @@
      (background → scrim gradient → content). Works as a bare <img class="sf-bg">
      or as a wrapper with a nested > img / > video. */
   :where(:has(> .sf-bg)) {
+    position:  relative;
     isolation: isolate;
-  }
-
-  /* opt-in helper for static wrappers that need a containing block */
-  .sf-bg-parent {
-    position: relative;
   }
 
   .sf-bg {

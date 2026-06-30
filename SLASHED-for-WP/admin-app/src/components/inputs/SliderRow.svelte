@@ -24,7 +24,7 @@
 
   // Local draft so typing is never interrupted by re-renders. Declared before
   // the derived below so `isEditing` is in scope where `showRaw` reads it.
-  let rawDraft = $state(currentRaw ?? '');
+  let rawDraft = $state('');
   let isEditing = $state(false);
 
   // Auto raw mode when override value is a CSS expression

@@ -119,6 +119,7 @@
           <div class="text-[9px] text-slate-500 mt-0.5">Ambient glow on elevated surfaces</div>
         </div>
         <button
+          aria-label={glowDisabled ? "Enable shadow glow" : "Disable shadow glow"}
           onclick={() => {
             if (glowDisabled) onReset("--sf-shadow-glow");
             else onSet("--sf-shadow-glow", "none");

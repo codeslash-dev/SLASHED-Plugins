@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import { resolveColor, previewVersion } from '../../lib/previewResolver.svelte';
 
   let {
@@ -19,6 +20,13 @@
 
   let editing = $state(false);
   let cancelBlur = $state(false);
+  let editInput = $state<HTMLInputElement | null>(null);
+
+  $effect(() => {
+    if (editing) {
+      tick().then(() => editInput?.focus());
+    }
+  });
 
   // Bare "--token" is a UI shorthand; normalize to "var(--token)" before resolving or storing.
   function normalize(v: string): string {
@@ -69,8 +77,8 @@
   <!-- Text display / editable input -->
   {#if editing}
     <input
+      bind:this={editInput}
       value={value}
-      autofocus
       onblur={(e) => {
         if (cancelBlur) { cancelBlur = false; editing = false; return; }
         const v = normalize((e.target as HTMLInputElement).value);

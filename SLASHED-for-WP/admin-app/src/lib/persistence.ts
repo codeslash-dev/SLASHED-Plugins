@@ -52,6 +52,16 @@ const SPACE_STEPS: [string, number][] = [
   ['2xs', -3], ['xs', -2], ['s', -1], ['m', 0],
   ['l', 1], ['xl', 2], ['2xl', 3], ['3xl', 4], ['4xl', 5],
 ];
+const RADIUS_STEPS: [string, number][] = [
+  ['2xs', 1], ['xs', 2], ['s', 4], ['m', 8],
+  ['l', 12], ['xl', 16], ['2xl', 24], ['3xl', 32], ['4xl', 48],
+];
+const BORDER_WIDTH_STEPS: [string, number][] = [
+  ['1', 1], ['2', 2], ['3', 3], ['4', 4],
+];
+const DURATION_STEPS: [string, number][] = [
+  ['instant', 100], ['fast', 150], ['normal', 250], ['slow', 400], ['slower', 600],
+];
 
 function getNum(ov: Record<string, string>, key: string, def: number): number {
   const v = ov[key];
@@ -79,12 +89,15 @@ function fluidClamp(
   return `clamp(${fmt(sMin)}rem, calc(${fmt(slope)} * (100vw - ${fmt(vwMin)}rem) + ${fmt(sMin)}rem), ${fmt(sMax)}rem)`;
 }
 
-function computeScaleTokens(ov: Record<string, string>): Record<string, string> {
+export function computeDerivedOverrides(ov: Record<string, string>, { reduceMotion = false } = {}): Record<string, string> {
   const derived: Record<string, string> = {};
   const keys = Object.keys(ov);
-  const hasText  = keys.some((k) => TEXT_SCALE_SRC.has(k));
-  const hasSpace = keys.some((k) => SPACE_SCALE_SRC.has(k));
-  if (!hasText && !hasSpace) return derived;
+  const hasText   = keys.some((k) => TEXT_SCALE_SRC.has(k));
+  const hasSpace  = keys.some((k) => SPACE_SCALE_SRC.has(k));
+  const hasRadius = '--sf-radius-scale' in ov;
+  const hasBorder = '--sf-border-scale' in ov;
+  const hasMotion = '--sf-motion-scale' in ov;
+  if (!hasText && !hasSpace && !hasRadius && !hasBorder && !hasMotion) return derived;
 
   const vwMin = getNum(ov, '--sf-fluid-min-vw', 22.5);
   const vwMax = getNum(ov, '--sf-fluid-max-vw', 90);
@@ -114,6 +127,41 @@ function computeScaleTokens(ov: Record<string, string>): Record<string, string> 
     const scale    = getNum(ov, '--sf-space-scale', 1);
     for (const [name, step] of SPACE_STEPS) {
       derived[`--sf-space-${name}`] = fluidClamp(baseMin, baseMax, ratioMin, ratioMax, vwMin, vwMax, step, scale);
+    }
+  }
+
+  if (hasRadius) {
+    const scale = getNum(ov, '--sf-radius-scale', 1);
+    for (const [name, base] of RADIUS_STEPS) {
+      derived[`--sf-radius-${name}`] = `${fmt(base * scale)}px`;
+    }
+    derived['--sf-radius-none']  = '0';
+    derived['--sf-radius-full']  = '9999px';
+    // Keep relationship-based — mirrors framework token graph so fine-tune
+    // overrides on --sf-radius-full / --sf-radius-m still win.
+    derived['--sf-radius-pill']  = 'var(--sf-radius-full)';
+    derived['--sf-radius-outer'] = 'calc(var(--sf-radius-m) + var(--sf-component-pad))';
+  }
+
+  if (hasBorder) {
+    const scale = getNum(ov, '--sf-border-scale', 1);
+    for (const [name, base] of BORDER_WIDTH_STEPS) {
+      derived[`--sf-border-width-${name}`] = `${fmt(base * scale)}px`;
+    }
+  }
+
+  // Skip motion tokens when the OS prefers reduced motion — emitting them as
+  // unlayered :root CSS would override the framework's @media
+  // (prefers-reduced-motion: reduce) duration clamps that live inside @layer.
+  if (hasMotion && !reduceMotion) {
+    const scale = getNum(ov, '--sf-motion-scale', 1);
+    for (const [name, base] of DURATION_STEPS) {
+      derived[`--sf-duration-${name}`] = `${fmt(base * scale)}ms`;
+    }
+    derived['--sf-duration-none']             = '0ms';
+    derived['--sf-theme-transition-duration'] = `${fmt(300 * scale)}ms`;
+    for (let i = 1; i <= 5; i += 1) {
+      derived[`--sf-animation-delay-${i}`] = `${fmt(75 * i * scale)}ms`;
     }
   }
 
@@ -173,7 +221,8 @@ export function injectLivePreview(ov: Record<string, string>): void {
   }
   // Include pre-computed derived tokens alongside source tokens so they win
   // as unlayered CSS over any hardcoded clamp values in @layer slashed.overrides.
-  const derived = computeScaleTokens(ov);
+  const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const derived = computeDerivedOverrides(ov, { reduceMotion });
   const preview = Object.keys(derived).length > 0 ? { ...derived, ...ov } : ov;
   styleEl.textContent = fa(preview, { mode: "root", banner: false });
 }

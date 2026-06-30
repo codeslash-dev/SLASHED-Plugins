@@ -1,0 +1,191 @@
+{
+  "_info": {
+    "description": "Files vendored from the SLASHED framework configurator. DO NOT edit directly — make changes in codeslash-dev/SLASHED → configurator/src/ and re-run npm run sync.",
+    "frameworkRepo": "https://github.com/codeslash-dev/SLASHED",
+    "configuratorSrc": "configurator/src/",
+    "source": "local:/home/user/SLASHED/configurator/src",
+    "syncedAt": "2026-06-30T09:21:41.107Z"
+  },
+  "vendoredFiles": [
+    {
+      "file": "src/app.css",
+      "source": "local:configurator/src/app.css"
+    },
+    {
+      "file": "src/components/CommandPalette.svelte",
+      "source": "local:configurator/src/components/CommandPalette.svelte"
+    },
+    {
+      "file": "src/components/DomainPanel.svelte",
+      "source": "local:configurator/src/components/DomainPanel.svelte"
+    },
+    {
+      "file": "src/components/inputs/ClampField.svelte",
+      "source": "local:configurator/src/components/inputs/ClampField.svelte"
+    },
+    {
+      "file": "src/components/inputs/ColorInput.svelte",
+      "source": "local:configurator/src/components/inputs/ColorInput.svelte"
+    },
+    {
+      "file": "src/components/inputs/OklchColorDesk.svelte",
+      "source": "local:configurator/src/components/inputs/OklchColorDesk.svelte"
+    },
+    {
+      "file": "src/components/inputs/PowerKnobRow.svelte",
+      "source": "local:configurator/src/components/inputs/PowerKnobRow.svelte"
+    },
+    {
+      "file": "src/components/inputs/RangeWithNumber.svelte",
+      "source": "local:configurator/src/components/inputs/RangeWithNumber.svelte"
+    },
+    {
+      "file": "src/components/inputs/SliderRow.svelte",
+      "source": "local:configurator/src/components/inputs/SliderRow.svelte"
+    },
+    {
+      "file": "src/components/inputs/StylePresetCards.svelte",
+      "source": "local:configurator/src/components/inputs/StylePresetCards.svelte"
+    },
+    {
+      "file": "src/components/inputs/TokenRow.svelte",
+      "source": "local:configurator/src/components/inputs/TokenRow.svelte"
+    },
+    {
+      "file": "src/components/panels/AllTokensTab.svelte",
+      "source": "local:configurator/src/components/panels/AllTokensTab.svelte"
+    },
+    {
+      "file": "src/components/panels/BordersPanel.svelte",
+      "source": "local:configurator/src/components/panels/BordersPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/CheatsheetPanel.svelte",
+      "source": "local:configurator/src/components/panels/CheatsheetPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/ColorsPanel.svelte",
+      "source": "local:configurator/src/components/panels/ColorsPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/EffectsPanel.svelte",
+      "source": "local:configurator/src/components/panels/EffectsPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/ExportPanel.svelte",
+      "source": "local:configurator/src/components/panels/ExportPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/GenericTokenPanel.svelte",
+      "source": "local:configurator/src/components/panels/GenericTokenPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/HomePanel.svelte",
+      "source": "local:configurator/src/components/panels/HomePanel.svelte"
+    },
+    {
+      "file": "src/components/panels/LayoutPanel.svelte",
+      "source": "local:configurator/src/components/panels/LayoutPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/MacrosPanel.svelte",
+      "source": "local:configurator/src/components/panels/MacrosPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/MiscPanel.svelte",
+      "source": "local:configurator/src/components/panels/MiscPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/MotionPanel.svelte",
+      "source": "local:configurator/src/components/panels/MotionPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/ShadowsPanel.svelte",
+      "source": "local:configurator/src/components/panels/ShadowsPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/SpacingPanel.svelte",
+      "source": "local:configurator/src/components/panels/SpacingPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/ThemesPanel.svelte",
+      "source": "local:configurator/src/components/panels/ThemesPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/TypographyPanel.svelte",
+      "source": "local:configurator/src/components/panels/TypographyPanel.svelte"
+    },
+    {
+      "file": "src/components/panels/WcagPanel.svelte",
+      "source": "local:configurator/src/components/panels/WcagPanel.svelte"
+    },
+    {
+      "file": "src/components/shell/SidebarNav.svelte",
+      "source": "local:configurator/src/components/shell/SidebarNav.svelte"
+    },
+    {
+      "file": "src/components/shell/StatusBar.svelte",
+      "source": "local:configurator/src/components/shell/StatusBar.svelte"
+    },
+    {
+      "file": "src/data/api-index.generated.json",
+      "source": "local:configurator/src/data/api-index.generated.json"
+    },
+    {
+      "file": "src/data/bundles.generated.json",
+      "source": "local:configurator/src/data/bundles.generated.json"
+    },
+    {
+      "file": "src/data/classes.generated.json",
+      "source": "local:configurator/src/data/classes.generated.json"
+    },
+    {
+      "file": "src/data/domain-patterns.json",
+      "source": "local:configurator/src/data/domain-patterns.json"
+    },
+    {
+      "file": "src/data/token-registry.generated.json",
+      "source": "local:configurator/src/data/token-registry.generated.json"
+    },
+    {
+      "file": "src/lib/basics.ts",
+      "source": "local:configurator/src/lib/basics.ts"
+    },
+    {
+      "file": "src/lib/codec.ts",
+      "source": "local:configurator/src/lib/codec.ts"
+    },
+    {
+      "file": "src/lib/colorUtils.ts",
+      "source": "local:configurator/src/lib/colorUtils.ts"
+    },
+    {
+      "file": "src/lib/domains.ts",
+      "source": "local:configurator/src/lib/domains.ts"
+    },
+    {
+      "file": "src/lib/lumlockerPreview.svelte.ts",
+      "source": "local:configurator/src/lib/lumlockerPreview.svelte.ts"
+    },
+    {
+      "file": "src/lib/powerKnobs.ts",
+      "source": "local:configurator/src/lib/powerKnobs.ts"
+    },
+    {
+      "file": "src/lib/previewResolver.svelte.ts",
+      "source": "local:configurator/src/lib/previewResolver.svelte.ts"
+    },
+    {
+      "file": "src/lib/stylePresets.ts",
+      "source": "local:configurator/src/lib/stylePresets.ts"
+    },
+    {
+      "file": "src/lib/themes.ts",
+      "source": "local:configurator/src/lib/themes.ts"
+    },
+    {
+      "file": "src/types.ts",
+      "source": "local:configurator/src/types.ts"
+    }
+  ]
+}
