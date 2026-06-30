@@ -43,8 +43,14 @@ if ( ! class_exists( 'Slashed_Bricks_Inventory' ) ) {
 			return SLASHED_BRICKS_VERSION;
 		}
 
-		protected static function filter_slug() {
-			return 'slashed_bricks';
+		protected static function apply_inventory_filter( $inventory ) {
+			/** Documented in includes/class-inventory.php. */
+			return apply_filters( 'slashed_bricks/inventory', $inventory );
+		}
+
+		protected static function apply_inventory_local_path_filter() {
+			/** Documented in includes/class-inventory.php. */
+			return apply_filters( 'slashed_bricks/inventory_local_path', null );
 		}
 
 		protected static function resolve_css_url() {

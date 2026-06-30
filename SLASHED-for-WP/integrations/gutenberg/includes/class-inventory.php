@@ -39,8 +39,14 @@ if ( ! class_exists( 'Slashed_Gutenberg_Inventory' ) ) {
 			return defined( 'SLASHED_GUTENBERG_VERSION' ) ? SLASHED_GUTENBERG_VERSION : '0';
 		}
 
-		protected static function filter_slug() {
-			return 'slashed_gutenberg';
+		protected static function apply_inventory_filter( $inventory ) {
+			/** Documented in includes/class-inventory.php. */
+			return apply_filters( 'slashed_gutenberg/inventory', $inventory );
+		}
+
+		protected static function apply_inventory_local_path_filter() {
+			/** Documented in includes/class-inventory.php. */
+			return apply_filters( 'slashed_gutenberg/inventory_local_path', null );
 		}
 
 		protected static function resolve_css_url() {
