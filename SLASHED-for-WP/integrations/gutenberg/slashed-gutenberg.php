@@ -29,7 +29,7 @@ if ( ! defined( 'SLASHED_GUTENBERG_VERSION' ) ) {
 	define( 'SLASHED_GUTENBERG_VERSION', '0.4.16' );
 	define( 'SLASHED_GUTENBERG_PATH', plugin_dir_path( __FILE__ ) );
 	define( 'SLASHED_GUTENBERG_URL', plugin_dir_url( __FILE__ ) );
-	define( 'SLASHED_GUTENBERG_CSS_REF', 'v0.6.28' );
+	define( 'SLASHED_GUTENBERG_CSS_REF', 'v0.6.29' );
 }
 
 define( 'SLASHED_GUTENBERG_ALLOWED_BUNDLES', array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' ) );
