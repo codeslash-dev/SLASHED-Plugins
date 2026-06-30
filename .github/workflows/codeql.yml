@@ -36,9 +36,12 @@ jobs:
           # scanned separately, since these directories are 100% build output) is
           # fixed. The real source lives in admin-app/src/ and
           # integrations/bricks/editor-app/src/, both still fully scanned.
-          paths-ignore: |
-            SLASHED-for-WP/assets/admin-app/**
-            SLASHED-for-WP/integrations/bricks/assets/editor-app/**
+          # `paths-ignore` is not a direct action input on this codeql-action
+          # version — it must go inside the inline `config` YAML.
+          config: |
+            paths-ignore:
+              - SLASHED-for-WP/assets/admin-app/**
+              - SLASHED-for-WP/integrations/bricks/assets/editor-app/**
 
       - uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e  # v4
         with:
