@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.16
+Stable tag: 0.4.17
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -129,6 +129,11 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.17 =
+* Fixed: Sync vendored configurator (`admin-app/src/`) with framework PRs #460/#461 — saved themes, motion panel overhaul, base color palette and live semantic preview — which had silently failed to land.
+* Fixed: `release.yml` now commits the configurator sync (`admin-app/src/`, `.vendored-manifest.json`, `framework-css/`, `assets/admin-app/`) back to the default branch instead of discarding it after each release build.
+* Fixed: Remove `.syncignore` entries for files no longer divergent from upstream `SLASHED#443`.
 
 = 0.4.16 =
 * Maintenance release.

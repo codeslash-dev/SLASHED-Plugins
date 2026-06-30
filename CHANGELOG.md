@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.17] - 2026-06-30
+
+### Fixed
+
+- Move CodeQL paths-ignore into the inline config input
+- Validate JSON-import keys (App.svelte sync + AppOverlay.svelte)
+- Sync JSON-import guard and dark-surface precedence fix from SLASHED#462
+- Sync codec.ts key-sanitization fix from SLASHED#462
+- Sync vendored bug fixes from SLASHED#462
+- Clear framework-css/ and assets/admin-app/ before restoring in release.yml
+- Sync configurator from PR 460/461 and close the release-sync gap
+
+## [0.4.17] - 2026-06-30
+
 ### Fixed
 
 - Sync vendored configurator (`admin-app/src/`) with framework PRs #460/#461 — saved themes, motion panel overhaul, base color palette and live semantic preview — which had silently failed to land.
