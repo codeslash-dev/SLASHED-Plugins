@@ -3,7 +3,7 @@
  * Plugin Name: SLASHED
  * Plugin URI: https://github.com/codeslash-dev/SLASHED
  * Description: SLASHED cascade-layer CSS framework for WordPress. Activate integrations per builder from the settings page (Bricks, Gutenberg — more coming).
- * Version: 0.4.11
+ * Version: 0.4.12
  * Author: Jack Granatowski
  * Author URI: https://codeslash.net
  * License: GPL-2.0-or-later
@@ -31,7 +31,7 @@ add_action(
 
 // ─── Canonical constants ────────────────────────────────────────────
 
-define( 'SLASHED_VERSION', '0.4.11' );
+define( 'SLASHED_VERSION', '0.4.12' );
 define( 'SLASHED_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SLASHED_URL', plugin_dir_url( __FILE__ ) );
 
@@ -41,7 +41,7 @@ define( 'SLASHED_URL', plugin_dir_url( __FILE__ ) );
  * in the admin UI. The framework CSS is bundled with the plugin in dist/ and
  * updated through normal plugin releases — see Slashed_CSS_Loader.
  */
-define( 'SLASHED_CSS_REF', 'v0.6.26' );
+define( 'SLASHED_CSS_REF', 'v0.6.27' );
 
 // ─── Shared infrastructure ────────────────────────────────────────────
 
