@@ -8,7 +8,7 @@
   import PreviewPanel from './components/shell/PreviewPanel.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
   import { fa } from './lib/codec';
-  import { loadInitialOverrides, injectLivePreview, saveOverrides, isEmbedded } from './lib/persistence';
+  import { loadInitialOverrides, injectLivePreview, saveOverrides, hasWpBoot } from './lib/persistence';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import CommandPalette from './components/CommandPalette.svelte';
@@ -35,8 +35,10 @@
   // normal document flow, not the document body — w-screen/h-screen would then
   // size to the viewport while still being offset by the host's own layout
   // chrome, overflowing past its right edge. Standalone keeps viewport units
-  // since it owns the whole page.
-  const embedded = isEmbedded();
+  // since it owns the whole page. Uses hasWpBoot() (any host), not
+  // isEmbedded() (REST persistence specifically) — a host can mount us
+  // without configuring REST.
+  const embedded = hasWpBoot();
 
   // Core state
   let overrides = $state<Record<string, string>>(loadInitialOverrides());
