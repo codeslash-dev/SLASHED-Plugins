@@ -2,7 +2,7 @@
   "_meta": {
     "source": "source (core/ + optional/ token and class files)",
     "counts": {
-      "variables": 691,
+      "variables": 685,
       "sf_classes": 190,
       "is_classes": 40
     }
@@ -122,17 +122,11 @@
     "--sf-color-base-a30",
     "--sf-color-base-a50",
     "--sf-color-base-a80",
-    "--sf-color-base-darker",
     "--sf-color-base-ghost",
-    "--sf-color-base-lighter",
     "--sf-color-base-muted",
     "--sf-color-base-source-dark",
     "--sf-color-base-source-light",
     "--sf-color-base-subtle",
-    "--sf-color-base-superdark",
-    "--sf-color-base-superlight",
-    "--sf-color-base-xdark",
-    "--sf-color-base-xlight",
     "--sf-color-bg",
     "--sf-color-bg--active",
     "--sf-color-bg--disabled",

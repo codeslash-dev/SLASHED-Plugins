@@ -9,6 +9,34 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.11] - 2026-06-30
+
+### Added
+
+- Generate .vendored-manifest.json on sync + add CLAUDE.md
+
+### Fixed
+
+- Remove unused num_or_default() and align equals in css-generator
+- Correct radius aliases, guard non-numeric scales, fix phpcs formatting
+- Clear configurator diagnostics
+- Reliably hide frontend overlay when collapsed in shadow DOM
+- Derive scale token overrides
+
+## [0.4.11] - 2026-06-30
+
+### Added
+
+- Generate .vendored-manifest.json on sync + add CLAUDE.md
+
+### Fixed
+
+- Remove unused num_or_default() and align equals in css-generator
+- Correct radius aliases, guard non-numeric scales, fix phpcs formatting
+- Clear configurator diagnostics
+- Reliably hide frontend overlay when collapsed in shadow DOM
+- Derive scale token overrides
+
 ## [0.4.10] - 2026-06-30
 
 ### Fixed

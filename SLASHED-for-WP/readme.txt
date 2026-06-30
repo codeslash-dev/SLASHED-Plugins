@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.10
+Stable tag: 0.4.11
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -129,6 +129,14 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.11 =
+* Added: Generate .vendored-manifest.json on sync + add CLAUDE.md
+* Fixed: Remove unused num_or_default() and align equals in css-generator
+* Fixed: Correct radius aliases, guard non-numeric scales, fix phpcs formatting
+* Fixed: Clear configurator diagnostics
+* Fixed: Reliably hide frontend overlay when collapsed in shadow DOM
+* Fixed: Derive scale token overrides
 
 = 0.4.10 =
 * Fixed: Restore frontend overlay pointer events
