@@ -2,6 +2,7 @@
   import { Sun, Moon, Smartphone, Tablet, Monitor, RefreshCw, ExternalLink, Columns2 } from 'lucide-svelte';
   import type { PreviewTemplate } from '../../types';
   import { fa } from '../../lib/codec';
+  import { computeDerivedOverrides } from '../../lib/persistence';
   import { registerPreviewDoc, bumpPreviewVersion } from '../../lib/previewResolver.svelte';
   import { lumlockerPreview } from '../../lib/lumlockerPreview.svelte';
   // Import the built framework CSS at Vite compile time — always in sync with badges/.
@@ -20,6 +21,12 @@
     onMotionChange: (m: "normal" | "slow" | "none") => void;
     onTemplateChange: (t: PreviewTemplate) => void;
   } = $props();
+
+
+  function withDerivedOverrides(ov: Record<string, string>): Record<string, string> {
+    const derived = computeDerivedOverrides(ov);
+    return Object.keys(derived).length > 0 ? { ...derived, ...ov } : ov;
+  }
 
   const TEMPLATES: { id: PreviewTemplate; label: string }[] = [
     { id: "marketing", label: "Marketing" },
@@ -549,7 +556,7 @@ ${BODIES[template]}
 
     const styleEl = doc.getElementById("slashed-overrides");
     if (styleEl) {
-      styleEl.textContent = fa(_ov, { mode: "root", banner: false });
+      styleEl.textContent = fa(withDerivedOverrides(_ov), { mode: "root", banner: false });
     }
 
     injectFontsIntoDoc(doc, _ov);
@@ -572,7 +579,7 @@ ${BODIES[template]}
     const _lightCount = splitLightLoadCount;
     const _darkCount = splitDarkLoadCount;
     const _lock = lumlockerPreview.value;
-    const css = fa(_ov, { mode: "root", banner: false });
+    const css = fa(withDerivedOverrides(_ov), { mode: "root", banner: false });
 
     const applyLock = (doc: Document) => {
       if (_lock) doc.documentElement.setAttribute("data-lumlocker", "");

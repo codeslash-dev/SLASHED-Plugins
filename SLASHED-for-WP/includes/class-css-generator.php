@@ -87,8 +87,11 @@ class Slashed_CSS_Generator {
 	 * @return string[] CSS declaration strings ("--name: value;").
 	 */
 	private static function generate_flat_override_declarations() {
+		$overrides     = Slashed_Token_Store::get_overrides();
+		$derived       = self::compute_derived_overrides( $overrides );
+		$merged        = array_merge( $derived, $overrides );
 		$declarations = array();
-		foreach ( Slashed_Token_Store::get_overrides() as $name => $value ) {
+		foreach ( $merged as $name => $value ) {
 			if ( ! is_string( $name ) || ! preg_match( '/^--sf-[a-z0-9-]+$/', $name ) ) {
 				continue;
 			}
@@ -99,6 +102,64 @@ class Slashed_CSS_Generator {
 			$declarations[] = $name . ': ' . $clean . ';';
 		}
 		return $declarations;
+	}
+
+
+	/**
+	 * Compute concrete output tokens for high-level scale knobs.
+	 *
+	 * These declarations are emitted before the user's explicit overrides so a
+	 * fine-tuned token such as --sf-radius-m still wins over --sf-radius-scale.
+	 * They make scale knobs robust when older saved CSS, builder CSS, or inline
+	 * declarations already contain concrete output-token values.
+	 *
+	 * @param array $overrides Stored override map.
+	 * @return array Derived override map.
+	 */
+	private static function compute_derived_overrides( $overrides ) {
+		$derived = array();
+
+		if ( array_key_exists( '--sf-radius-scale', $overrides ) ) {
+			$scale = self::num_or_default( $overrides['--sf-radius-scale'], 1 );
+			foreach ( array( '2xs' => 1, 'xs' => 2, 's' => 4, 'm' => 8, 'l' => 12, 'xl' => 16, '2xl' => 24, '3xl' => 32, '4xl' => 48 ) as $step => $base ) {
+				$derived[ '--sf-radius-' . $step ] = self::fmt_num( $base * $scale ) . 'px';
+			}
+			$derived['--sf-radius-none']  = '0';
+			$derived['--sf-radius-full']  = '9999px';
+			$derived['--sf-radius-pill']  = '9999px';
+			$derived['--sf-radius-outer'] = 'calc(' . self::fmt_num( 8 * $scale ) . 'px + var(--sf-component-pad))';
+		}
+
+		if ( array_key_exists( '--sf-border-scale', $overrides ) ) {
+			$scale = self::num_or_default( $overrides['--sf-border-scale'], 1 );
+			foreach ( array( '1' => 1, '2' => 2, '3' => 3, '4' => 4 ) as $step => $base ) {
+				$derived[ '--sf-border-width-' . $step ] = self::fmt_num( $base * $scale ) . 'px';
+			}
+		}
+
+		if ( array_key_exists( '--sf-motion-scale', $overrides ) ) {
+			$scale = self::num_or_default( $overrides['--sf-motion-scale'], 1 );
+			foreach ( array( 'instant' => 100, 'fast' => 150, 'normal' => 250, 'slow' => 400, 'slower' => 600 ) as $step => $base ) {
+				$derived[ '--sf-duration-' . $step ] = self::fmt_num( $base * $scale ) . 'ms';
+			}
+			$derived['--sf-duration-none']              = '0ms';
+			$derived['--sf-theme-transition-duration'] = self::fmt_num( 300 * $scale ) . 'ms';
+			for ( $i = 1; $i <= 5; $i++ ) {
+				$derived[ '--sf-animation-delay-' . $i ] = self::fmt_num( 75 * $i * $scale ) . 'ms';
+			}
+		}
+
+		return $derived;
+	}
+
+	/** @param mixed $value Raw number-ish value. */
+	private static function num_or_default( $value, $default ) {
+		return is_numeric( $value ) ? (float) $value : $default;
+	}
+
+	private static function fmt_num( $num ) {
+		$out = rtrim( rtrim( sprintf( '%.6F', $num ), '0' ), '.' );
+		return '' === $out || '-' === $out ? '0' : $out;
 	}
 
 	/**
