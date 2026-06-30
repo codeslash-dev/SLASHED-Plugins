@@ -530,7 +530,7 @@ class Slashed_Bricks_Settings_Page {
 				'name'        => 'slashed_bricks/css_bundle_url',
 				'description' => 'Override which CSS bundle URL is loaded on the frontend.',
 				'params'      => '$url (string) — The current CSS bundle URL.',
-				'example'     => "add_filter( 'slashed_bricks/css_bundle_url', function( \$url ) {\n    // Load from a CDN instead.\n    return 'https://cdn.example.com/slashed/slashed.optimal.css';\n} );",
+				'example'     => "add_filter( 'slashed_bricks/css_bundle_url', function( \$url ) {\n    // Serve a customized copy bundled in your child theme.\n    return get_stylesheet_directory_uri() . '/assets/slashed.optimal.css';\n} );",
 			),
 			array(
 				'name'        => 'slashed_bricks/registered_classes',

@@ -67,13 +67,6 @@
     </properties>
   </rule>
 
-  <!-- Dynamic hook names are composed from the static::filter_slug() helper,
-       which already supplies the plugin prefix; the sniff can't see through
-       the method call, so this is a false positive. -->
-  <rule ref="WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound">
-    <severity>0</severity>
-  </rule>
-
   <!-- `$var` is used pervasively as an idiomatic loop/parameter name. The
        "reserved keyword" here is the obsolete `var` property keyword, not a
        real conflict, so this advisory naming sniff is disabled. -->

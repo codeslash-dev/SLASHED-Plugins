@@ -77,12 +77,40 @@ class Slashed_Inventory {
 	}
 
 	/**
-	 * Filter namespace, e.g. "slashed" => the slashed/inventory filter.
+	 * Apply this integration's `inventory` filter to the resolved inventory.
 	 *
-	 * @return string
+	 * Each integration declares the hook with a static, literal name so the
+	 * `slashed`-family prefix is plainly visible to static analysis rather
+	 * than being assembled from a runtime value.
+	 *
+	 * @param array $inventory Resolved inventory to filter.
+	 * @return mixed Filtered inventory (callbacks may legitimately reshape it).
 	 */
-	protected static function filter_slug() {
-		return 'slashed';
+	protected static function apply_inventory_filter( $inventory ) {
+		/**
+		 * Filter the resolved inventory before it's used to register
+		 * variables, classes, and colors.
+		 *
+		 * @param array $inventory ['variables', 'sf_classes', 'is_classes'].
+		 */
+		return apply_filters( 'slashed/inventory', $inventory );
+	}
+
+	/**
+	 * Apply this integration's `inventory_local_path` filter.
+	 *
+	 * Declared per integration with a static, literal hook name for the same
+	 * reason as apply_inventory_filter().
+	 *
+	 * @return mixed string path, false to skip local resolution, or null to derive.
+	 */
+	protected static function apply_inventory_local_path_filter() {
+		/**
+		 * Filter the local bundle path used to build the inventory.
+		 *
+		 * @param string|false|null $path Override path, false to skip, null to derive.
+		 */
+		return apply_filters( 'slashed/inventory_local_path', null );
 	}
 
 	/**
@@ -152,19 +180,12 @@ class Slashed_Inventory {
 		// short-circuit on the first line above.
 		self::$cache[ static::class ] = self::sanitize_inventory( self::resolve() );
 
-		/**
-		 * Filter the resolved inventory before it's used to register
-		 * variables, classes, and colors with Bricks.
-		 *
-		 * Filter callbacks may safely call Slashed_Inventory::get_*()
-		 * - the cache is primed before this filter fires, so re-entrant
-		 * calls are bounded by the per-request cache instead of re-running
-		 * resolve().
-		 *
-		 * @param array $inventory ['variables', 'sf_classes', 'is_classes'].
-		 */
+		// Apply the integration's `inventory` filter. The cache is primed
+		// (above) before the filter fires, so a callback that re-enters via
+		// Slashed_Inventory::get_*() is bounded by the per-request cache
+		// instead of recursing back into resolve().
 		self::$cache[ static::class ] = self::sanitize_inventory(
-			apply_filters( static::filter_slug() . '/inventory', self::$cache[ static::class ] ) // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- hook name is prefixed via filter_slug() which returns the integration-specific prefix (e.g. slashed_bricks).
+			static::apply_inventory_filter( self::$cache[ static::class ] )
 		);
 
 		return self::$cache[ static::class ];
@@ -630,7 +651,7 @@ class Slashed_Inventory {
 	 * @return string Absolute path, or '' when no local copy is available.
 	 */
 	private static function find_local_bundle_path() {
-		$override = apply_filters( static::filter_slug() . '/inventory_local_path', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- hook name is prefixed via filter_slug().
+		$override = static::apply_inventory_local_path_filter();
 
 		if ( false === $override ) {
 			return '';
