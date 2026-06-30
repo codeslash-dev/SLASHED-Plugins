@@ -186,7 +186,12 @@ export function da(e: string | null | undefined): string {
 
 export function fa(e: Record<string, string>, t: { mode?: "layer" | "root"; banner?: boolean } = {}): string {
   const { mode = "layer", banner = true } = t;
-  const i = Object.keys(e).sort((a, b) => a.localeCompare(b));
+  // Keys land here from several untrusted-ish entry points (imported JSON,
+  // shared URL hash, localStorage, WP hydration) — unlike values, they were
+  // never sanitized before being interpolated into the emitted CSS, so a
+  // crafted key could break out of its declaration. Every real token name
+  // (source or derived) is --sf-<word-chars/hyphens>; anything else is dropped.
+  const i = Object.keys(e).filter((key) => /^--sf-[\w-]+$/.test(key)).sort((a, b) => a.localeCompare(b));
   if (i.length === 0) return "";
   
   const a = i.map((key) => `${key}: ${da(e[key])};`);
