@@ -17,12 +17,14 @@ scripts/                 Plugin-level build/sync scripts
 
 ## ⚠️  Vendored files — DO NOT edit in this repo
 
-`SLASHED-for-WP/admin-app/src/` is **entirely vendored** from the SLASHED
-framework configurator (`codeslash-dev/SLASHED → configurator/src/`). It is
-overwritten on every `npm run sync` (which also runs automatically as `predev`
-and `prebuild`).
+`SLASHED-for-WP/admin-app/src/` is **vendored** from the SLASHED framework
+configurator (`codeslash-dev/SLASHED → configurator/src/`), except for files
+protected by `.syncignore` (e.g. `AppOverlay.svelte`, `plugin-main.ts`). All
+other files are overwritten on every `npm run sync` (which also runs
+automatically as `predev` and `prebuild`).
 
-**Any edit you make directly in `admin-app/src/` will be lost on the next sync.**
+**Any edit you make directly in `admin-app/src/` — unless the file is listed in
+`.syncignore` — will be lost on the next sync.**
 
 ### How to find which files are vendored
 

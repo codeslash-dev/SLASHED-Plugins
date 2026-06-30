@@ -37,8 +37,12 @@ import { fileURLToPath } from 'node:url';
 const MANIFEST_PATH = resolve(resolve(dirname(fileURLToPath(import.meta.url)), '..'), '.vendored-manifest.json');
 const _vendoredFiles = [];
 
+function toPosix(p) {
+  return sep === '/' ? p : p.split(sep).join('/');
+}
+
 function trackVendored(relFromSrc, source) {
-  _vendoredFiles.push({ file: `src/${relFromSrc}`, source });
+  _vendoredFiles.push({ file: `src/${toPosix(relFromSrc)}`, source });
 }
 
 function writeManifest(sourceLabel) {
@@ -117,7 +121,8 @@ const syncIgnore = new Set(
 );
 
 function isIgnored(relFromSrc) {
-  return syncIgnore.has(relFromSrc) || syncIgnore.has('src/' + relFromSrc);
+  const posix = toPosix(relFromSrc);
+  return syncIgnore.has(posix) || syncIgnore.has('src/' + posix);
 }
 
 // ── Framework CSS vendoring (shared) ───────────────────────────────────────────
@@ -318,7 +323,7 @@ async function main() {
     copyLocalDir(local, local);
     vendorChromeLocal(resolve(local, '../..')); // configurator/src -> repo root
     vendorFullBundle();
-    writeManifest(`local:${local}`);
+    writeManifest(process.env.SLASHED_CONFIGURATOR_SRC ? 'local:SLASHED_CONFIGURATOR_SRC' : 'local');
     console.log('Done (local).');
     return;
   }

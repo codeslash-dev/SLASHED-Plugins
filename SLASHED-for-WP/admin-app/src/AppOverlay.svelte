@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount, tick, untrack } from 'svelte';
   import type { PresetTheme, SlashedToken } from './types';
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
@@ -68,7 +68,7 @@
     return ak.every((k) => a[k] === b[k]);
   }
 
-  let lastSavedOverrides = $state<Record<string, string>>({ ...overrides });
+  let lastSavedOverrides = $state<Record<string, string>>(untrack(() => ({ ...overrides })));
   let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
   let hasPendingChanges = $derived(!shallowEq(overrides, lastSavedOverrides));
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
@@ -81,6 +81,7 @@
     host.style.position = 'fixed';
     host.style.right = '0';
     host.style.zIndex = '100000';
+    host.style.pointerEvents = 'auto';
 
     if (isOpen) {
       host.style.top = adminBarHeight;
@@ -287,6 +288,7 @@
   class="fixed right-0 z-[100000] pointer-events-auto flex flex-col bg-[#0a0a0f] text-slate-200 font-sans shadow-2xl shadow-black/60 border-l border-white/8 transition-transform duration-200 ease-in-out"
   class:translate-x-full={!isOpen}
   class:translate-x-0={isOpen}
+  style:visibility={isOpen ? undefined : 'hidden'}
   style="top: var(--wp-admin--admin-bar--height, 32px); width: {isMobile ? '100vw' : '420px'}; height: calc(100vh - var(--wp-admin--admin-bar--height, 32px));"
   aria-hidden={!isOpen}
   inert={!isOpen || undefined}
@@ -413,6 +415,7 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="reset-confirm-title"
+      tabindex="-1"
       onkeydown={(e) => {
         if (e.key === 'Escape') { e.stopPropagation(); cancelResetAll(); }
         if (e.key === 'Tab') {

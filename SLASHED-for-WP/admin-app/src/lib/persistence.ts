@@ -67,10 +67,15 @@ function getNum(ov: Record<string, string>, key: string, def: number): number {
   const v = ov[key];
   if (v === undefined) return def;
   const n = parseFloat(v);
-  return isNaN(n) ? def : n;
+  return Number.isFinite(n) ? n : def;
+}
+
+function isNumericLiteral(v: string): boolean {
+  return /^-?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(v.trim()) && Number.isFinite(parseFloat(v));
 }
 
 function fmt(n: number): string {
+  if (!Number.isFinite(n)) return '0';
   const s = n.toFixed(6);
   const trimmed = s.replace(/\.?0+$/, '');
   return trimmed === '' || trimmed === '-' ? '0' : trimmed;
@@ -130,7 +135,7 @@ export function computeDerivedOverrides(ov: Record<string, string>, { reduceMoti
     }
   }
 
-  if (hasRadius) {
+  if (hasRadius && isNumericLiteral(ov['--sf-radius-scale'] ?? '')) {
     const scale = getNum(ov, '--sf-radius-scale', 1);
     for (const [name, base] of RADIUS_STEPS) {
       derived[`--sf-radius-${name}`] = `${fmt(base * scale)}px`;
@@ -143,7 +148,7 @@ export function computeDerivedOverrides(ov: Record<string, string>, { reduceMoti
     derived['--sf-radius-outer'] = 'calc(var(--sf-radius-m) + var(--sf-component-pad))';
   }
 
-  if (hasBorder) {
+  if (hasBorder && isNumericLiteral(ov['--sf-border-scale'] ?? '')) {
     const scale = getNum(ov, '--sf-border-scale', 1);
     for (const [name, base] of BORDER_WIDTH_STEPS) {
       derived[`--sf-border-width-${name}`] = `${fmt(base * scale)}px`;
@@ -153,12 +158,12 @@ export function computeDerivedOverrides(ov: Record<string, string>, { reduceMoti
   // Skip motion tokens when the OS prefers reduced motion — emitting them as
   // unlayered :root CSS would override the framework's @media
   // (prefers-reduced-motion: reduce) duration clamps that live inside @layer.
-  if (hasMotion && !reduceMotion) {
+  if (hasMotion && !reduceMotion && isNumericLiteral(ov['--sf-motion-scale'] ?? '')) {
     const scale = getNum(ov, '--sf-motion-scale', 1);
     for (const [name, base] of DURATION_STEPS) {
       derived[`--sf-duration-${name}`] = `${fmt(base * scale)}ms`;
     }
-    derived['--sf-duration-none']             = '0ms';
+    derived['--sf-duration-none'] = '0ms';
     derived['--sf-theme-transition-duration'] = `${fmt(300 * scale)}ms`;
     for (let i = 1; i <= 5; i += 1) {
       derived[`--sf-animation-delay-${i}`] = `${fmt(75 * i * scale)}ms`;
