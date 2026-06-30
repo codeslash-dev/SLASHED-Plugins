@@ -56,7 +56,7 @@ Override the CSS bundle URL.
 
 ```php
 add_filter( 'slashed_bricks/css_bundle_url', fn( $url ) =>
-    'https://cdn.example.com/slashed/slashed.optimal.css' );
+    get_stylesheet_directory_uri() . '/assets/slashed.optimal.css' );
 ```
 
 #### `slashed_bricks/registered_classes`
