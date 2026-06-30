@@ -34,6 +34,25 @@ class Slashed_Token_Page {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_filter( 'admin_body_class', array( $this, 'add_body_class' ) );
+	}
+
+	/**
+	 * Tag <body> with a page-specific class on the Tokens page only, so the
+	 * layout CSS in enqueue_assets() can't leak onto other admin screens.
+	 *
+	 * @param string $classes Space-separated body classes.
+	 * @return string
+	 */
+	public function add_body_class( $classes ) {
+		if ( '' === $this->hook_suffix ) {
+			return $classes;
+		}
+		$screen = get_current_screen();
+		if ( $screen && $screen->id === $this->hook_suffix ) {
+			$classes .= ' slashed-tokens-page';
+		}
+		return $classes;
 	}
 
 	/**
@@ -111,6 +130,20 @@ class Slashed_Token_Page {
 			$plugin_url . 'assets/admin-app/app.css',
 			array(),
 			$css_version
+		);
+
+		// The app shell fills its mount point edge-to-edge (it owns its own
+		// header/sidebar/scroll regions). Strip the WP admin page chrome's
+		// margin/padding around it and give its ancestor chain an explicit
+		// height, so the app's `w-full h-full` root actually has real
+		// dimensions to fill instead of overflowing past the right edge of
+		// the content area like raw viewport units would.
+		wp_add_inline_style(
+			'slashed-admin-app',
+			'body.slashed-tokens-page #wpcontent { padding-left: 0; }' .
+			'body.slashed-tokens-page .wrap { margin: 0; }' .
+			'body.slashed-tokens-page #wpbody-content { padding-bottom: 0; }' .
+			'body.slashed-tokens-page #wpcontent, body.slashed-tokens-page #wpbody, body.slashed-tokens-page #wpbody-content, body.slashed-tokens-page .wrap, body.slashed-tokens-page #slashed-admin-app { height: calc(100vh - var(--wp-admin--admin-bar--height, 32px)); overflow: hidden; }'
 		);
 
 		wp_enqueue_script(

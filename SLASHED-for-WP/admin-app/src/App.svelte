@@ -8,7 +8,7 @@
   import PreviewPanel from './components/shell/PreviewPanel.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
   import { fa } from './lib/codec';
-  import { loadInitialOverrides, injectLivePreview, saveOverrides } from './lib/persistence';
+  import { loadInitialOverrides, injectLivePreview, saveOverrides, isEmbedded } from './lib/persistence';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import CommandPalette from './components/CommandPalette.svelte';
@@ -30,6 +30,13 @@
     }
     return map;
   }
+
+  // Embedded hosts (e.g. the WP admin page) mount us into a sized container in
+  // normal document flow, not the document body — w-screen/h-screen would then
+  // size to the viewport while still being offset by the host's own layout
+  // chrome, overflowing past its right edge. Standalone keeps viewport units
+  // since it owns the whole page.
+  const embedded = isEmbedded();
 
   // Core state
   let overrides = $state<Record<string, string>>(loadInitialOverrides());
@@ -232,7 +239,7 @@
   });
 </script>
 
-<div class="w-screen h-screen flex flex-col overflow-hidden bg-[#0a0a0f] text-slate-200 font-sans">
+<div class="{embedded ? 'w-full h-full' : 'w-screen h-screen'} flex flex-col overflow-hidden bg-[#0a0a0f] text-slate-200 font-sans">
   <!-- Top header bar -->
   <StudioHeader
     {overridesCount}
