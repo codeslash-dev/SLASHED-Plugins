@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SlidersHorizontal, List } from 'lucide-svelte';
-  import type { SlashedToken, PresetTheme } from '../types';
+  import type { SlashedToken } from '../types';
   import { DOMAIN_PATTERNS } from '../lib/domains';
   import HomePanel from './panels/HomePanel.svelte';
   import ColorsPanel from './panels/ColorsPanel.svelte';
@@ -27,7 +27,7 @@
     onSet: (name: string, value: string) => void;
     onReset: (name: string) => void;
     onBulkChange: (patch: Record<string, string | null>) => void;
-    onApplyTheme: (theme: PresetTheme) => void;
+    onApplyTheme: (overrides: Record<string, string>) => void;
     onSelectDomain: (d: string) => void;
     onResetAll: () => void;
   } = $props();
@@ -91,13 +91,13 @@
           {:else if domain === "typography"}
             <TypographyPanel {tokens} {overrides} {onSet} {onReset} {onBulkChange} />
           {:else if domain === "spacing"}
-            <SpacingPanel {tokens} {overrides} {onSet} {onReset} {onBulkChange} />
+            <SpacingPanel {tokens} {overrides} {onSet} {onReset} />
           {:else if domain === "layout"}
             <LayoutPanel {overrides} {onSet} {onReset} {onBulkChange} />
           {:else if domain === "borders"}
-            <BordersPanel {overrides} {onSet} {onReset} {onBulkChange} />
+            <BordersPanel {overrides} {onSet} {onReset} />
           {:else if domain === "shadows"}
-            <ShadowsPanel {overrides} {onSet} {onReset} {onBulkChange} />
+            <ShadowsPanel {overrides} {onSet} {onReset} />
           {:else if domain === "motion"}
             <MotionPanel {overrides} {onSet} {onReset} {onBulkChange} />
           {:else if domain === "effects"}

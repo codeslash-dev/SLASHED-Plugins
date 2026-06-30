@@ -3,13 +3,17 @@
     "description": "Files vendored from the SLASHED framework configurator. DO NOT edit directly — make changes in codeslash-dev/SLASHED → configurator/src/ and re-run npm run sync.",
     "frameworkRepo": "https://github.com/codeslash-dev/SLASHED",
     "configuratorSrc": "configurator/src/",
-    "source": "local:/home/user/SLASHED/configurator/src",
-    "syncedAt": "2026-06-30T09:21:41.107Z"
+    "source": "local",
+    "syncedAt": "2026-06-30T19:32:40.541Z"
   },
   "vendoredFiles": [
     {
       "file": "src/app.css",
       "source": "local:configurator/src/app.css"
+    },
+    {
+      "file": "src/App.svelte",
+      "source": "local:configurator/src/App.svelte"
     },
     {
       "file": "src/components/CommandPalette.svelte",
@@ -42,10 +46,6 @@
     {
       "file": "src/components/inputs/SliderRow.svelte",
       "source": "local:configurator/src/components/inputs/SliderRow.svelte"
-    },
-    {
-      "file": "src/components/inputs/StylePresetCards.svelte",
-      "source": "local:configurator/src/components/inputs/StylePresetCards.svelte"
     },
     {
       "file": "src/components/inputs/TokenRow.svelte",
@@ -120,12 +120,20 @@
       "source": "local:configurator/src/components/panels/WcagPanel.svelte"
     },
     {
+      "file": "src/components/shell/PreviewPanel.svelte",
+      "source": "local:configurator/src/components/shell/PreviewPanel.svelte"
+    },
+    {
       "file": "src/components/shell/SidebarNav.svelte",
       "source": "local:configurator/src/components/shell/SidebarNav.svelte"
     },
     {
       "file": "src/components/shell/StatusBar.svelte",
       "source": "local:configurator/src/components/shell/StatusBar.svelte"
+    },
+    {
+      "file": "src/components/shell/StudioHeader.svelte",
+      "source": "local:configurator/src/components/shell/StudioHeader.svelte"
     },
     {
       "file": "src/data/api-index.generated.json",
@@ -168,6 +176,10 @@
       "source": "local:configurator/src/lib/lumlockerPreview.svelte.ts"
     },
     {
+      "file": "src/lib/persistence.ts",
+      "source": "local:configurator/src/lib/persistence.ts"
+    },
+    {
       "file": "src/lib/powerKnobs.ts",
       "source": "local:configurator/src/lib/powerKnobs.ts"
     },
@@ -176,16 +188,20 @@
       "source": "local:configurator/src/lib/previewResolver.svelte.ts"
     },
     {
-      "file": "src/lib/stylePresets.ts",
-      "source": "local:configurator/src/lib/stylePresets.ts"
+      "file": "src/lib/savedThemes.ts",
+      "source": "local:configurator/src/lib/savedThemes.ts"
     },
     {
-      "file": "src/lib/themes.ts",
-      "source": "local:configurator/src/lib/themes.ts"
+      "file": "src/main.ts",
+      "source": "local:configurator/src/main.ts"
     },
     {
       "file": "src/types.ts",
       "source": "local:configurator/src/types.ts"
+    },
+    {
+      "file": "src/vite-env.d.ts",
+      "source": "local:configurator/src/vite-env.d.ts"
     }
   ]
 }

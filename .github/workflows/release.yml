@@ -68,9 +68,15 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git fetch origin "$DEFAULT_BRANCH"
 
-          # Preserve the files updated by update-framework before we switch
-          # branches -- git checkout resets tracked files to the branch state.
-          mkdir -p /tmp/fw-dist /tmp/fw-data /tmp/fw-bricks-data
+          # Preserve the files updated by update-framework and build:admin-app
+          # before we switch branches -- git checkout resets tracked files to
+          # the branch state. This must include everything npm run sync (run
+          # as build:admin-app's prebuild hook) vendors from the configurator
+          # -- admin-app/src/, its manifest, and framework-css/ -- otherwise
+          # the configurator changes synced for this release are built into
+          # the zip but never committed back to the default branch.
+          mkdir -p /tmp/fw-dist /tmp/fw-data /tmp/fw-bricks-data \
+            /tmp/fw-admin-app-src /tmp/fw-admin-app-framework-css /tmp/fw-assets-admin-app
           cp -a SLASHED-for-WP/dist/. /tmp/fw-dist/
           cp -a SLASHED-for-WP/data/. /tmp/fw-data/
           cp -a SLASHED-for-WP/integrations/bricks/data/. /tmp/fw-bricks-data/
@@ -80,6 +86,10 @@ jobs:
           cp scripts/registry-sources.js /tmp/fw-registry-sources.js
           cp package.json /tmp/fw-package.json
           cp package-lock.json /tmp/fw-package-lock.json
+          cp -a SLASHED-for-WP/admin-app/src/. /tmp/fw-admin-app-src/
+          cp SLASHED-for-WP/admin-app/.vendored-manifest.json /tmp/fw-admin-app-manifest.json
+          cp -a SLASHED-for-WP/admin-app/framework-css/. /tmp/fw-admin-app-framework-css/
+          cp -a SLASHED-for-WP/assets/admin-app/. /tmp/fw-assets-admin-app/
 
           git checkout "$DEFAULT_BRANCH"
 
@@ -93,6 +103,12 @@ jobs:
           cp /tmp/fw-registry-sources.js scripts/registry-sources.js
           cp /tmp/fw-package.json package.json
           cp /tmp/fw-package-lock.json package-lock.json
+          rm -rf SLASHED-for-WP/admin-app/src
+          mkdir -p SLASHED-for-WP/admin-app/src
+          cp -a /tmp/fw-admin-app-src/. SLASHED-for-WP/admin-app/src/
+          cp /tmp/fw-admin-app-manifest.json SLASHED-for-WP/admin-app/.vendored-manifest.json
+          cp -a /tmp/fw-admin-app-framework-css/. SLASHED-for-WP/admin-app/framework-css/
+          cp -a /tmp/fw-assets-admin-app/. SLASHED-for-WP/assets/admin-app/
 
           # Re-run changelog-release on the default branch so it picks up the
           # committed tag (the release workflow checks out the tag ref above).
@@ -107,7 +123,11 @@ jobs:
             SLASHED-for-WP/integrations/gutenberg/slashed-gutenberg.php \
             scripts/registry-sources.js \
             package.json \
-            package-lock.json
+            package-lock.json \
+            SLASHED-for-WP/admin-app/src/ \
+            SLASHED-for-WP/admin-app/.vendored-manifest.json \
+            SLASHED-for-WP/admin-app/framework-css/ \
+            SLASHED-for-WP/assets/admin-app/
           git diff --staged --quiet && echo "nothing to commit" && exit 0
           git commit -m "chore: sync framework + update docs for $TAG"
           git push origin "$DEFAULT_BRANCH"

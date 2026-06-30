@@ -15,10 +15,10 @@
     { label: "To right",  value: "to right" },
   ];
 
-  const TEXT_SHADOW_PRESETS = [
-    { label: "None",   patch: { "--sf-text-shadow-s": "none", "--sf-text-shadow-m": "none", "--sf-text-shadow-l": "none" } },
-    { label: "Subtle", patch: null },
-    { label: "Strong", patch: { "--sf-shadow-strength": "calc(0.25 + var(--sf-is-dark) * 0.17)" } },
+  const TEXT_SHADOW_TOKENS = [
+    { label: "Small",  token: "--sf-text-shadow-s", default: "0 1px 2px oklch(…)" },
+    { label: "Medium", token: "--sf-text-shadow-m", default: "0 2px 4px oklch(…)" },
+    { label: "Large",  token: "--sf-text-shadow-l", default: "0 4px 8px oklch(…)" },
   ];
 
   function parseNum(val: string | undefined, fallback: number, strip?: string): number {
@@ -274,25 +274,26 @@
     {#if showTextShadow}
       <p class="text-[10px] text-slate-600 leading-relaxed">
         Controls text legibility over images. Applied via <code class="text-slate-400">text-shadow: var(--sf-text-shadow-m)</code>.
+        Edit each token directly — use <code class="text-slate-400">none</code> to disable.
       </p>
-      <div class="flex gap-2">
-        {#each TEXT_SHADOW_PRESETS as p (p.label)}
-          <button
-            onclick={() => {
-              if (p.patch === null) {
-                onReset("--sf-text-shadow-s"); onReset("--sf-text-shadow-m"); onReset("--sf-text-shadow-l");
-              } else {
-                for (const [k, v] of Object.entries(p.patch)) onSet(k, v);
-              }
-            }}
-            class={`flex-1 py-2 rounded-lg text-[10px] border transition-all cursor-pointer ${
-              p.label === "None" && overrides["--sf-text-shadow-s"] === "none"
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                : p.patch === null && !("--sf-text-shadow-s" in overrides)
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
-            }`}
-          >{p.label}</button>
+      <div class="space-y-2">
+        {#each TEXT_SHADOW_TOKENS as t (t.token)}
+          <div class="flex items-center gap-2">
+            <div class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">{t.label}</div>
+            <input
+              type="text"
+              value={overrides[t.token] ?? ""}
+              placeholder={t.default}
+              oninput={(e) => {
+                const v = (e.target as HTMLInputElement).value;
+                v.trim() ? onSet(t.token, v) : onReset(t.token);
+              }}
+              class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+            />
+            {#if t.token in overrides}
+              <button onclick={() => onReset(t.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+            {/if}
+          </div>
         {/each}
       </div>
     {/if}

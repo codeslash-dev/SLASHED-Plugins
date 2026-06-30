@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, tick, untrack } from 'svelte';
-  import type { PresetTheme, SlashedToken } from './types';
+  import type { SlashedToken } from './types';
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
   import CommandPalette from './components/CommandPalette.svelte';
@@ -160,9 +160,9 @@
       return n;
     });
   }
-  function handleApplyTheme(theme: PresetTheme) {
-    if (theme.id === 'default') setOverrides({});
-    else handleBulkChange(theme.overrides as Record<string, string | null>);
+  // Applying a saved theme replaces the entire override set with the snapshot.
+  function handleApplyTheme(themeOverrides: Record<string, string>) {
+    setOverrides({ ...themeOverrides });
   }
   function handleResetAll() { showResetConfirm = true; }
   function confirmResetAll() { showResetConfirm = false; setOverrides({}); }

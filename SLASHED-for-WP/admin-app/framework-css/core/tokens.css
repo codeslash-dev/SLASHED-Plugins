@@ -834,56 +834,43 @@
 
 
     /* ----------------------------------------------------------
-       base — V-shaped ramp (inverted tint direction)
+       base — fixed-lightness ramp (mode-independent, monotonic)
        ────────────────────────────────────────────────────────
-       Unlike every other family, base is a near-white (light mode)
-       or near-black (dark mode) surface token, not a mid-lightness
-       brand colour. There is nowhere "lighter" to go from near-white,
-       so the tint direction is inverted: steps 50-400 mix --sf-color-text
-       INTO base (progressively darker in light mode, progressively
-       lighter in dark mode). Steps 600-950 mix base INTO text in both
-       modes (the same direction as other families' shades).
+       base is a surface-elevation family, not a mid-lightness brand
+       colour. The ramp uses oklch() relative syntax with fixed L steps
+       spanning 0.97 → 0.06, preserving the base source's hue and chroma.
+       50 is always near-white; 950 is always near-black regardless of
+       light/dark mode or the source colour's position.
 
-       Approximate OKLCH L values — default palette, light mode:
-         base-50  ≈ 0.946   barely off-surface (dividers, zebra rows)
-         base-100 ≈ 0.931   subtle surface variant
-         base-200 ≈ 0.900   light gray (well / inset areas)
-         base-300 ≈ 0.840   medium-light gray
-         base-400 ≈ 0.748   medium gray (secondary UI elements)
-         base-500 ≈ 0.960   base itself (source token)
-         base-600 ≈ 0.850   medium-light (toward text, from 500)
-         base-700 ≈ 0.762
-         base-800 ≈ 0.630
-         base-900 ≈ 0.337
-         base-950 ≈ 0.170   near-black
+       OKLCH L values (fixed, mode-independent):
+         base-50  = 0.97   near-white
+         base-100 = 0.94   very light gray
+         base-200 = 0.88   light gray
+         base-300 = 0.78   medium-light gray
+         base-400 = 0.65   medium gray
+         base-500 = 0.50   mid gray
+         base-600 = 0.37   medium-dark gray
+         base-700 = 0.27   dark gray
+         base-800 = 0.17   very dark gray
+         base-900 = 0.11   near-black
+         base-950 = 0.06   near-black
 
-       Dark mode reverses the visual: base-50 becomes near-white-ish,
-       base-950 becomes near-black-ish, base-500 is the dark surface.
-
-       SEMANTIC ALIAS MAPPING (consistent position in ramp, not absolute L):
-         superlight = base-50   (closest to surface — barely distinguishable)
-         xlight     = base-200  (light gray)
-         lighter    = base-400  (medium gray — "lighter contrast" toward text)
-         darker     = base-600  (one step past base toward text from shade side)
-         xdark      = base-800
-         superdark  = base-950  (near ink color)
-
-       When you need surface-level differentiation, prefer
-       --sf-color-inset / --sf-color-raised / --sf-color-bg over the
-       numbered scale. For overlays, prefer the alpha variants (-a10…-a80)
-       which are mode-safe by transparency and compose cleanly on any bg.
+       For mode-adaptive surface differentiation use the surface tokens
+       (--sf-color-inset / --sf-color-raised / --sf-color-bg) which derive
+       from --sf-color-base via relative oklch and adapt to light/dark mode.
+       For overlays use alpha variants (-a10…-a80).
        ---------------------------------------------------------- */
-    --sf-color-base-50:  color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-50),  var(--sf-color-base));
-    --sf-color-base-100: color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-100), var(--sf-color-base));
-    --sf-color-base-200: color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-200), var(--sf-color-base));
-    --sf-color-base-300: color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-300), var(--sf-color-base));
-    --sf-color-base-400: color-mix(in oklab, var(--sf-color-text) var(--sf-palette-mix-400), var(--sf-color-base));
-    --sf-color-base-500: var(--sf-color-base);
-    --sf-color-base-600: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-base-700: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-base-800: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-base-900: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-base-950: color-mix(in oklab, var(--sf-color-base) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-base-50:  oklch(from var(--sf-color-base) 0.97 c h);
+    --sf-color-base-100: oklch(from var(--sf-color-base) 0.94 c h);
+    --sf-color-base-200: oklch(from var(--sf-color-base) 0.88 c h);
+    --sf-color-base-300: oklch(from var(--sf-color-base) 0.78 c h);
+    --sf-color-base-400: oklch(from var(--sf-color-base) 0.65 c h);
+    --sf-color-base-500: oklch(from var(--sf-color-base) 0.50 c h);
+    --sf-color-base-600: oklch(from var(--sf-color-base) 0.37 c h);
+    --sf-color-base-700: oklch(from var(--sf-color-base) 0.27 c h);
+    --sf-color-base-800: oklch(from var(--sf-color-base) 0.17 c h);
+    --sf-color-base-900: oklch(from var(--sf-color-base) 0.11 c h);
+    --sf-color-base-950: oklch(from var(--sf-color-base) 0.06 c h);
 
     --sf-color-base-a5:  oklch(from var(--sf-color-base) l c h / 0.05);
     --sf-color-base-a10: oklch(from var(--sf-color-base) l c h / 0.10);
@@ -891,14 +878,13 @@
     --sf-color-base-a50: oklch(from var(--sf-color-base) l c h / 0.50);
     --sf-color-base-a80: oklch(from var(--sf-color-base) l c h / 0.80);
 
-    --sf-color-base-superlight: var(--sf-color-base-50);
-    --sf-color-base-xlight:     var(--sf-color-base-200);
-    --sf-color-base-lighter:    var(--sf-color-base-400);
-    --sf-color-base-darker:     var(--sf-color-base-600);
-    --sf-color-base-xdark:      var(--sf-color-base-800);
-    --sf-color-base-superdark:  var(--sf-color-base-950);
-    --sf-color-base--hover:     var(--sf-color-base-darker);
-    --sf-color-base--active:    var(--sf-color-base-xdark);
+    /* No relative aliases (lighter/darker/xlight/…) on base: it is an
+       absolute scale, so a step's name would lie depending on where the
+       source sits (e.g. "lighter" would be darker than a near-white base
+       in light mode). For relative, mode-adaptive surface elevation use
+       --sf-color-bg / --sf-color-inset / --sf-color-raised instead. */
+    --sf-color-base--hover:     oklch(from var(--sf-color-base) clamp(0.01, calc(l - 0.04 + var(--sf-is-dark) * 0.08), 0.99) c h);
+    --sf-color-base--active:    oklch(from var(--sf-color-base) clamp(0.01, calc(l - 0.08 + var(--sf-is-dark) * 0.16), 0.99) c h);
     --sf-color-base-subtle:     var(--sf-color-base-a10);
     --sf-color-base-muted:      var(--sf-color-base-a30);
     --sf-color-base-ghost:      var(--sf-color-base-a5);

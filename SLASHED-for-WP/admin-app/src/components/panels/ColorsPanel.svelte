@@ -162,6 +162,46 @@
 
   const SWATCH_STEPS = ["50","100","200","300","400","500","600","700","800","900","950"];
   const BRAND_COLOR_KEYS = ["primary","secondary","tertiary","action","neutral"];
+  // Base no longer rides the color-mix tint/shade curve like the 5 brand colors.
+  // It is an absolute fixed-lightness OKLCH ramp: each step pins L and inherits
+  // c + h from the source — oklch(from <base> <L> c h). Mirror those exact L
+  // values from core/tokens.css so the panel preview matches the framework.
+  const BASE_RAMP: Record<string, number> = {
+    "50": 0.97, "100": 0.94, "200": 0.88, "300": 0.78, "400": 0.65,
+    "500": 0.50, "600": 0.37, "700": 0.27, "800": 0.17, "900": 0.11, "950": 0.06,
+  };
+  // Keys that render light/dark palette strips. Base is included but routed
+  // through its own ramp (see paletteSwatch); the rest use the mix curve.
+  const PALETTE_COLOR_KEYS = [...BRAND_COLOR_KEYS, "base"];
+
+  const ALL_SOURCES: ColorSource[] = [...BRAND_SOURCES, ...STATUS_SOURCES];
+
+  // Live semantic-color preview shown at the very top of the panel. Each tile
+  // is painted with the resolved semantic background and its paired on-color
+  // text, so it doubles as a real legibility check. Resolved from the live
+  // canvas via paint(), so it tracks both overrides and the active theme.
+  const SEMANTIC_PREVIEW: { heading: string; items: { name: string; label: string; fg: string }[] }[] = [
+    { heading: "Brand", items: [
+      { name: "--sf-color-primary",   label: "Primary",   fg: "--sf-color-text--on-primary" },
+      { name: "--sf-color-secondary", label: "Secondary", fg: "--sf-color-text--on-secondary" },
+      { name: "--sf-color-tertiary",  label: "Tertiary",  fg: "--sf-color-text--on-tertiary" },
+      { name: "--sf-color-action",    label: "Action",    fg: "--sf-color-text--on-action" },
+      { name: "--sf-color-neutral",   label: "Neutral",   fg: "--sf-color-text--on-neutral" },
+    ] },
+    { heading: "Status", items: [
+      { name: "--sf-color-success", label: "Success", fg: "--sf-color-text--on-success" },
+      { name: "--sf-color-warning", label: "Warning", fg: "--sf-color-text--on-warning" },
+      { name: "--sf-color-info",    label: "Info",    fg: "--sf-color-text--on-info" },
+      { name: "--sf-color-danger",  label: "Danger",  fg: "--sf-color-text--on-danger" },
+    ] },
+    { heading: "Surfaces & text", items: [
+      { name: "--sf-color-bg",      label: "Bg",      fg: "--sf-color-text" },
+      { name: "--sf-color-surface", label: "Surface", fg: "--sf-color-text" },
+      { name: "--sf-color-raised",  label: "Raised",  fg: "--sf-color-text" },
+      { name: "--sf-color-inset",   label: "Inset",   fg: "--sf-color-text" },
+      { name: "--sf-color-inverse", label: "Inverse", fg: "--sf-color-text--on-inverse" },
+    ] },
+  ];
 
   // Separate contrast/focus knobs
   const contrastKnobs = (KNOBS_BY_DOMAIN["colors"] ?? []).filter(
@@ -242,19 +282,27 @@
   // A key starts in auto only if its dark token is NOT already in overrides — otherwise the user
   // has an existing dark value (loaded from URL/localStorage) that we must not silently overwrite.
   let autoDarkSet = $state<Set<string>>(new Set(
-    BRAND_SOURCES.filter(s => s.side === "light" && !(
-      (BRAND_SOURCES.find(d => d.colorKey === s.colorKey && d.side === "dark")?.name ?? "") in overrides
+    ALL_SOURCES.filter(s => s.side === "light" && !(
+      (ALL_SOURCES.find(d => d.colorKey === s.colorKey && d.side === "dark")?.name ?? "") in overrides
     )).map(s => s.colorKey)
   ));
 
   let sourceTokenMap = $derived.by(() => {
     const map: Record<string, SlashedToken> = {};
-    const ALL_SOURCES = [...BRAND_SOURCES, ...STATUS_SOURCES];
     for (const t of tokens) {
       if (ALL_SOURCES.some((s) => s.name === t.name)) map[t.name] = t;
     }
     return map;
   });
+
+  // Resolve a source token's effective value with the panel-wide precedence:
+  // explicit override → loaded token value → hardcoded default. Every place
+  // that reads or derives from a source value must go through this so the
+  // auto-dark seed/preview never disagrees with the swatch strips and inputs.
+  function sourceValue(source: ColorSource | undefined): string {
+    if (!source) return "";
+    return overrides[source.name] ?? sourceTokenMap[source.name]?.value ?? source.default;
+  }
 
   let activeCurvePreset = $derived(CURVE_PRESETS.find((p) =>
     Object.entries(p.patch).every(([k, v]) =>
@@ -332,6 +380,25 @@
     return resolveColor(expr) || expr;
   }
 
+  // Base palette swatch — mirrors the framework's absolute ramp
+  // oklch(from <source> <fixed-L> c h). Independent of surface/text, unlike
+  // the brand-color mix curve, because base does not mix toward anything.
+  function computeBasePaletteSwatch(sourceColor: string, step: string): string {
+    void previewVersion.value;
+    const L = BASE_RAMP[step];
+    if (L === undefined) return sourceColor;
+    const expr = `oklch(from ${sourceColor} ${L} c h)`;
+    return resolveColor(expr) || expr;
+  }
+
+  // Route each color to the correct palette system: base uses the fixed-L ramp,
+  // every other key uses the color-mix tint/shade curve toward surface/text.
+  function paletteSwatch(colorKey: string, sourceColor: string, step: string, surface: string, text: string): string {
+    return colorKey === "base"
+      ? computeBasePaletteSwatch(sourceColor, step)
+      : computePaletteSwatch(sourceColor, step, surface, text);
+  }
+
   function handleLightChange(light: ColorSource, dark: ColorSource | undefined, newVal: string) {
     onSet(light.name, newVal);
   }
@@ -341,7 +408,7 @@
     const effectivelyAuto = autoDarkSet.has(colorKey) && !darkOverridden;
     if (effectivelyAuto) {
       // Switch to manual — populate dark with the derived value as a starting point
-      const lightVal = overrides[lightName] ?? BRAND_SOURCES.find(s => s.name === lightName)?.default ?? "";
+      const lightVal = sourceValue(ALL_SOURCES.find(s => s.name === lightName));
       if (dark) onSet(dark.name, deriveDarkFromLight(lightVal, colorKey));
       autoDarkSet = new Set([...autoDarkSet].filter(k => k !== colorKey));
     } else {
@@ -368,6 +435,42 @@
 </script>
 
 <div class="p-4 space-y-6">
+
+  <!-- LIVE SEMANTIC PREVIEW -->
+  <section class="space-y-2">
+    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Semantic colors</div>
+    <p class="text-[9px] text-slate-600 leading-relaxed">
+      Live preview — every semantic role on its on-color text, shown in light and dark. Resolved from the canvas, updates as you edit.
+    </p>
+    <div class="space-y-2.5">
+      {#each SEMANTIC_PREVIEW as grp (grp.heading)}
+        <div class="space-y-1">
+          <div class="text-[8px] font-semibold text-slate-600 uppercase tracking-widest">{grp.heading}</div>
+          {#each ["light", "dark"] as side (side)}
+            <div class="flex items-center gap-1">
+              <span class="text-[7px] text-slate-600 w-2.5 shrink-0 text-right select-none uppercase">{side === "light" ? "L" : "D"}</span>
+              <div class="grid grid-cols-5 gap-1 flex-1">
+                {#each grp.items as it (it.name)}
+                  {@const bg = paintTheme(`var(${it.name})`, side as "light" | "dark", "transparent")}
+                  {@const fg = paintTheme(`var(${it.fg})`, side as "light" | "dark", "currentColor")}
+                  <div
+                    class="rounded-md border border-white/10 px-1 py-1.5 flex flex-col items-center justify-center gap-0.5 min-h-[34px]"
+                    style={`background:${bg}; color:${fg}`}
+                    title={`${it.name} (${side}) — ${bg}`}
+                  >
+                    <span class="text-[11px] font-bold leading-none">Aa</span>
+                    <span class="text-[7px] leading-none opacity-90">{it.label}</span>
+                  </div>
+                {/each}
+              </div>
+            </div>
+          {/each}
+        </div>
+      {/each}
+    </div>
+  </section>
+
+  <div class="h-px bg-white/6"></div>
 
   <!-- BRAND SOURCES -->
   <section class="space-y-3">
@@ -404,17 +507,17 @@
           <OklchColorDesk
             label={`${light.label} (light)`}
             tokenName={light.name}
-            value={overrides[light.name] ?? sourceTokenMap[light.name]?.value ?? light.default}
+            value={sourceValue(light)}
             overridden={light.name in overrides}
             onChange={(v) => handleLightChange(light, dark, v)}
             onReset={() => onReset(light.name)}
           />
           <!-- Palette swatch strips — light row then dark row, computed from concrete values -->
-          {#if BRAND_COLOR_KEYS.includes(light.colorKey)}
-            {@const lightSrcVal = overrides[light.name] ?? sourceTokenMap[light.name]?.value ?? light.default}
+          {#if PALETTE_COLOR_KEYS.includes(light.colorKey)}
+            {@const lightSrcVal = sourceValue(light)}
             {@const darkSrcVal = isAutoMode
               ? deriveDarkFromLight(lightSrcVal, light.colorKey)
-              : (dark ? (overrides[dark.name] ?? sourceTokenMap[dark.name]?.value ?? dark.default) : lightSrcVal)}
+              : (dark ? (sourceValue(dark)) : lightSrcVal)}
             {@const lSurface = getLightSurface()}
             {@const dSurface = getDarkSurface()}
             {@const lText = getLightText()}
@@ -424,7 +527,7 @@
                 <span class="text-[7px] text-slate-600 w-2.5 shrink-0 text-right select-none">L</span>
                 <div class="flex gap-0.5">
                   {#each SWATCH_STEPS as step (step)}
-                    {@const resolved = computePaletteSwatch(lightSrcVal, step, lSurface, lText)}
+                    {@const resolved = paletteSwatch(light.colorKey, lightSrcVal, step, lSurface, lText)}
                     <div
                       class="w-5 h-3 rounded-t border-x border-t border-white/10"
                       style={`background: ${resolved}`}
@@ -437,7 +540,7 @@
                 <span class="text-[7px] text-slate-600 w-2.5 shrink-0 text-right select-none">D</span>
                 <div class="flex gap-0.5">
                   {#each SWATCH_STEPS as step (step)}
-                    {@const resolved = computePaletteSwatch(darkSrcVal, step, dSurface, dText)}
+                    {@const resolved = paletteSwatch(light.colorKey, darkSrcVal, step, dSurface, dText)}
                     <div
                       class="w-5 h-3 rounded-b border-x border-b border-white/10"
                       style={`background: ${resolved}`}
@@ -447,18 +550,23 @@
                 </div>
               </div>
             </div>
+            {#if light.colorKey === "base"}
+              <p class="text-[8px] text-slate-600 leading-snug pl-1">
+                Absolute lightness ramp — each step pins L and inherits chroma + hue from the source. Not the brand mix curve.
+              </p>
+            {/if}
           {/if}
           {#if dark && !isAutoMode}
             <OklchColorDesk
               label={`${dark.label} (dark mode)`}
               tokenName={dark.name}
-              value={overrides[dark.name] ?? sourceTokenMap[dark.name]?.value ?? dark.default}
+              value={sourceValue(dark)}
               overridden={dark.name in overrides}
               onChange={(v) => onSet(dark.name, v)}
               onReset={() => onReset(dark.name)}
             />
           {:else if dark && isAutoMode}
-            {@const derivedDark = deriveDarkFromLight(overrides[light.name] ?? light.default, light.colorKey)}
+            {@const derivedDark = deriveDarkFromLight(sourceValue(light), light.colorKey)}
             <div class="flex items-center gap-1.5 text-[9px] text-slate-600 pl-1">
               <span
                 class="w-3.5 h-3.5 rounded border border-white/10 shrink-0"
@@ -545,33 +653,63 @@
       <span class="text-[10px] text-slate-500">{showStatus ? "▲" : "▼"}</span>
     </button>
     {#if showStatus}
+      <p class="text-[10px] text-slate-600 leading-relaxed">
+        Dark mode is auto-derived from each light source by default. Switch to
+        Manual dark to set a bespoke dark value.
+      </p>
       <div class="space-y-3">
         {#each STATUS_PAIRS as [light, dark] (light.name)}
+          {@const darkOverridden = !!(dark && (dark.name in overrides))}
+          {@const isAutoMode = autoDarkSet.has(light.colorKey) && !darkOverridden}
           <div class="space-y-1">
-            <div class="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">{light.label}</div>
+            <div class="flex items-center justify-between">
+              <div class="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">{light.label}</div>
+              {#if dark}
+                <button
+                  onclick={() => toggleDarkMode(light.colorKey, dark, light.name)}
+                  class={`text-[8px] px-1.5 py-0.5 rounded border transition-all cursor-pointer ${
+                    isAutoMode
+                      ? "border-indigo-500/40 bg-indigo-500/15 text-indigo-300"
+                      : "border-white/10 text-slate-500 hover:text-slate-300"
+                  }`}
+                >{isAutoMode ? "Auto dark" : "Manual dark"}</button>
+              {/if}
+            </div>
             <OklchColorDesk
               label={`${light.label} light`}
               tokenName={light.name}
-              value={overrides[light.name] ?? sourceTokenMap[light.name]?.value ?? light.default}
+              value={sourceValue(light)}
               overridden={light.name in overrides}
               onChange={(v) => onSet(light.name, v)}
               onReset={() => onReset(light.name)}
             />
-            {#if dark}
+            {#if dark && !isAutoMode}
               <OklchColorDesk
                 label={`${dark.label} dark`}
                 tokenName={dark.name}
-                value={overrides[dark.name] ?? sourceTokenMap[dark.name]?.value ?? dark.default}
+                value={sourceValue(dark)}
                 overridden={dark.name in overrides}
                 onChange={(v) => onSet(dark.name, v)}
                 onReset={() => onReset(dark.name)}
               />
+            {:else if dark && isAutoMode}
+              {@const derivedDark = deriveDarkFromLight(sourceValue(light), light.colorKey)}
+              <div class="flex items-center gap-1.5 text-[9px] text-slate-600 pl-1">
+                <span
+                  class="w-3.5 h-3.5 rounded border border-white/10 shrink-0"
+                  style={`background: ${paint(derivedDark, derivedDark)}`}
+                  title={derivedDark}
+                ></span>
+                Dark: auto-derived ({derivedDark})
+              </div>
             {/if}
             <!-- Constrained light + dark palette strips, computed from concrete values -->
             <div class="mt-1 pl-1 space-y-px">
               {#each [
-                ["L", "light", overrides[light.name] ?? light.default, getLightSurface(), getLightText()],
-                ["D", "dark", dark ? (overrides[dark.name] ?? dark.default) : (overrides[light.name] ?? light.default), getDarkSurface(), getDarkText()]
+                ["L", "light", sourceValue(light), getLightSurface(), getLightText()],
+                ["D", "dark", isAutoMode
+                  ? deriveDarkFromLight(sourceValue(light), light.colorKey)
+                  : (dark ? (sourceValue(dark)) : (sourceValue(light))), getDarkSurface(), getDarkText()]
               ] as [tag, side, srcVal, sfc, txt] (tag)}
                 <div class="flex items-center gap-1">
                   <span class="text-[7px] text-slate-600 w-2.5 shrink-0 text-right select-none">{tag}</span>

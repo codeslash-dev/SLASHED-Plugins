@@ -35,13 +35,13 @@
   // Prose spacing knobs. Defaults reference space tokens — the numbers below are
   // the approximate resolved rem values, used only as the slider's idle position.
   const PROSE_SPACE = [
-    { label: "Heading gap",       token: "--sf-prose-heading-gap",       def: 0.75, max: 3 },
-    { label: "List gap",          token: "--sf-prose-list-gap",          def: 0.5,  max: 2 },
-    { label: "Block margin",      token: "--sf-prose-block-margin",      def: 1,    max: 4 },
-    { label: "Media margin",      token: "--sf-prose-media-margin",      def: 1,    max: 4 },
-    { label: "Figure margin",     token: "--sf-prose-figure-margin",     def: 1.5,  max: 4 },
-    { label: "Blockquote padding",token: "--sf-prose-blockquote-padding",def: 1,    max: 3 },
-    { label: "HR margin",         token: "--sf-prose-hr-margin",         def: 1.5,  max: 4 },
+    { label: "Heading gap",       token: "--sf-prose-heading-gap",       def: 0.75, max: 3, raw: "var(--sf-space-s)" },
+    { label: "List gap",          token: "--sf-prose-list-gap",          def: 0.5,  max: 2, raw: "var(--sf-space-xs)" },
+    { label: "Block margin",      token: "--sf-prose-block-margin",      def: 1,    max: 4, raw: "var(--sf-space-m)" },
+    { label: "Media margin",      token: "--sf-prose-media-margin",      def: 1,    max: 4, raw: "var(--sf-space-m)" },
+    { label: "Figure margin",     token: "--sf-prose-figure-margin",     def: 1.5,  max: 4, raw: "var(--sf-space-l)" },
+    { label: "Blockquote padding",token: "--sf-prose-blockquote-padding",def: 1,    max: 3, raw: "var(--sf-space-m)" },
+    { label: "HR margin",         token: "--sf-prose-hr-margin",         def: 1.5,  max: 4, raw: "var(--sf-space-l)" },
   ];
 
   let showFlow = $state(false);
@@ -94,6 +94,9 @@
         overridden={"--sf-flow-space" in overrides}
         onChange={(v) => onSet("--sf-flow-space", `${v}rem`)}
         onReset={() => onReset("--sf-flow-space")}
+        rawDefault="var(--sf-content-gap)"
+        currentRaw={overrides["--sf-flow-space"]}
+        onRawSet={(v) => onSet("--sf-flow-space", v)}
       />
       <div class="bg-white/4 rounded-xl border border-white/8 p-3" style={`display:flex;flex-direction:column;gap:${flowSpace}rem`}>
         {#each [0, 1, 2] as i (i)}
@@ -191,6 +194,9 @@
         overridden={"--sf-scroll-shadow-size" in overrides}
         onChange={(v) => onSet("--sf-scroll-shadow-size", `${v}rem`)}
         onReset={() => onReset("--sf-scroll-shadow-size")}
+        rawDefault="2rem"
+        currentRaw={overrides["--sf-scroll-shadow-size"]}
+        onRawSet={(v) => onSet("--sf-scroll-shadow-size", v)}
       />
       <div class="bg-white/4 rounded-xl border border-white/8 p-3">
         <div
@@ -292,6 +298,9 @@
             overridden={t.token in overrides}
             onChange={(v) => onSet(t.token, `${v}rem`)}
             onReset={() => onReset(t.token)}
+            rawDefault={t.raw}
+            currentRaw={overrides[t.token]}
+            onRawSet={(v) => onSet(t.token, v)}
           />
         {/each}
         <SliderRow
@@ -300,6 +309,9 @@
           overridden={"--sf-prose-media-radius" in overrides}
           onChange={(v) => onSet("--sf-prose-media-radius", `${v}px`)}
           onReset={() => onReset("--sf-prose-media-radius")}
+          rawDefault="var(--sf-radius-m)"
+          currentRaw={overrides["--sf-prose-media-radius"]}
+          onRawSet={(v) => onSet("--sf-prose-media-radius", v)}
         />
         <div class="flex items-center gap-2 pt-1">
           <div class="text-[10px] font-semibold text-slate-400 w-20 shrink-0">Marker color</div>

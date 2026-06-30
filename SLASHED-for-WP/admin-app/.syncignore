@@ -3,25 +3,11 @@
 # Plugin-specific build wiring lives OUTSIDE src/ (vite.config.js, package.json,
 # svelte.config.js, tsconfig.json) and is never touched by the sync.
 
-# The following files are part of codeslash-dev/slashed#443 (the companion
-# upstream PR that adds @framework-css aliases + the WP persistence seam).
-# Those changes live on the feature branch and have not yet merged to main.
-#
-# Modified files: the CI prebuild sync fetches from main and would overwrite
-# these with pre-alias / pre-persistence versions, breaking the build and runtime.
-# New files: the sync now wipes src/ before fetching, so any file that doesn't
-# exist on main would be deleted unless listed here.
-# Remove all five lines once slashed#443 merges to main.
-src/main.ts
-src/App.svelte
-src/components/shell/PreviewPanel.svelte
-src/vite-env.d.ts
-src/lib/persistence.ts
+# codeslash-dev/slashed#443 (the companion upstream PR that added @framework-css
+# aliases + the WP persistence seam) merged to main on 2026-06-28. main.ts,
+# App.svelte, PreviewPanel.svelte, vite-env.d.ts, lib/persistence.ts, and
+# StudioHeader.svelte are no longer plugin-divergent — they sync normally now.
 
 # Plugin-specific: frontend overlay (not in upstream configurator).
 src/plugin-main.ts
 src/AppOverlay.svelte
-
-# StudioHeader has WP-specific Save button additions (hasPendingChanges/saveState/onSave)
-# that live on the feature branch in upstream; keep until the companion PR merges to main.
-src/components/shell/StudioHeader.svelte
