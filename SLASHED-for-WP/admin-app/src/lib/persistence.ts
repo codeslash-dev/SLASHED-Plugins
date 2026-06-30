@@ -94,11 +94,11 @@ function fluidClamp(
   return `clamp(${fmt(sMin)}rem, calc(${fmt(slope)} * (100vw - ${fmt(vwMin)}rem) + ${fmt(sMin)}rem), ${fmt(sMax)}rem)`;
 }
 
-export function computeDerivedOverrides(ov: Record<string, string>): Record<string, string> {
+export function computeDerivedOverrides(ov: Record<string, string>, { reduceMotion = false } = {}): Record<string, string> {
   const derived: Record<string, string> = {};
   const keys = Object.keys(ov);
-  const hasText  = keys.some((k) => TEXT_SCALE_SRC.has(k));
-  const hasSpace = keys.some((k) => SPACE_SCALE_SRC.has(k));
+  const hasText   = keys.some((k) => TEXT_SCALE_SRC.has(k));
+  const hasSpace  = keys.some((k) => SPACE_SCALE_SRC.has(k));
   const hasRadius = '--sf-radius-scale' in ov;
   const hasBorder = '--sf-border-scale' in ov;
   const hasMotion = '--sf-motion-scale' in ov;
@@ -140,9 +140,11 @@ export function computeDerivedOverrides(ov: Record<string, string>): Record<stri
     for (const [name, base] of RADIUS_STEPS) {
       derived[`--sf-radius-${name}`] = `${fmt(base * scale)}px`;
     }
-    derived['--sf-radius-none'] = '0';
-    derived['--sf-radius-full'] = '9999px';
-    derived['--sf-radius-pill'] = 'var(--sf-radius-full)';
+    derived['--sf-radius-none']  = '0';
+    derived['--sf-radius-full']  = '9999px';
+    // Keep relationship-based — mirrors framework token graph so fine-tune
+    // overrides on --sf-radius-full / --sf-radius-m still win.
+    derived['--sf-radius-pill']  = 'var(--sf-radius-full)';
     derived['--sf-radius-outer'] = 'calc(var(--sf-radius-m) + var(--sf-component-pad))';
   }
 
@@ -153,7 +155,10 @@ export function computeDerivedOverrides(ov: Record<string, string>): Record<stri
     }
   }
 
-  if (hasMotion && isNumericLiteral(ov['--sf-motion-scale'] ?? '')) {
+  // Skip motion tokens when the OS prefers reduced motion — emitting them as
+  // unlayered :root CSS would override the framework's @media
+  // (prefers-reduced-motion: reduce) duration clamps that live inside @layer.
+  if (hasMotion && !reduceMotion && isNumericLiteral(ov['--sf-motion-scale'] ?? '')) {
     const scale = getNum(ov, '--sf-motion-scale', 1);
     for (const [name, base] of DURATION_STEPS) {
       derived[`--sf-duration-${name}`] = `${fmt(base * scale)}ms`;
@@ -221,7 +226,8 @@ export function injectLivePreview(ov: Record<string, string>): void {
   }
   // Include pre-computed derived tokens alongside source tokens so they win
   // as unlayered CSS over any hardcoded clamp values in @layer slashed.overrides.
-  const derived = computeDerivedOverrides(ov);
+  const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const derived = computeDerivedOverrides(ov, { reduceMotion });
   const preview = Object.keys(derived).length > 0 ? { ...derived, ...ov } : ov;
   styleEl.textContent = fa(preview, { mode: "root", banner: false });
 }
