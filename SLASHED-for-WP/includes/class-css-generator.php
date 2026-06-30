@@ -120,8 +120,8 @@ class Slashed_CSS_Generator {
 		$derived = array();
 
 		if ( array_key_exists( '--sf-radius-scale', $overrides ) && is_numeric( $overrides['--sf-radius-scale'] ) ) {
-			$scale    = (float) $overrides['--sf-radius-scale'];
-			$r_steps  = array(
+			$scale   = (float) $overrides['--sf-radius-scale'];
+			$r_steps = array(
 				'2xs' => 1,
 				'xs'  => 2,
 				's'   => 4,
@@ -174,11 +174,6 @@ class Slashed_CSS_Generator {
 		}
 
 		return $derived;
-	}
-
-	/** @param mixed $value Raw number-ish value. */
-	private static function num_or_default( $value, $default ) {
-		return is_numeric( $value ) ? (float) $value : $default;
 	}
 
 	private static function fmt_num( $num ) {
