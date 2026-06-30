@@ -9,6 +9,22 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.10] - 2026-06-30
+
+### Fixed
+
+- Restore frontend overlay pointer events
+- Restore frontend overlay pointer events
+- Address WordPress.org plugin review (prefixes + remote files)
+
+## [0.4.10] - 2026-06-30
+
+### Fixed
+
+- Restore frontend overlay pointer events
+- Restore frontend overlay pointer events
+- Address WordPress.org plugin review (prefixes + remote files)
+
 ## [0.4.9] - 2026-06-29
 
 ### Fixed
