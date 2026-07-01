@@ -174,6 +174,17 @@
   // through its own ramp (see paletteSwatch); the rest use the mix curve.
   const PALETTE_COLOR_KEYS = [...BRAND_COLOR_KEYS, "base"];
 
+  // Status families (success/warning/info/danger) have NO numeric 50-950
+  // ramp in the framework — only these four derived values actually exist
+  // (core/tokens.css: resolved color + -subtle/-muted alpha washes + a
+  // light-dark() -strong shift). Mirror that here instead of faking a ramp.
+  const STATUS_VARIANTS: { label: string; expr: (key: string) => string }[] = [
+    { label: "Base",   expr: (k) => `var(--sf-color-${k})` },
+    { label: "Subtle", expr: (k) => `var(--sf-color-${k}-subtle)` },
+    { label: "Muted",  expr: (k) => `var(--sf-color-${k}-muted)` },
+    { label: "Strong", expr: (k) => `var(--sf-color-${k}-strong)` },
+  ];
+
   const ALL_SOURCES: ColorSource[] = [...BRAND_SOURCES, ...STATUS_SOURCES];
 
   // Live semantic-color preview shown at the very top of the panel. Each tile
@@ -439,6 +450,16 @@
   }
 </script>
 
+{#snippet swatchTip(name: string)}
+  <!-- Visible hover label — the native `title` attribute alone is slow to
+       appear and easy to miss on these small swatches, so pair it with an
+       instant floating label. -->
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-20 whitespace-nowrap rounded bg-slate-900 border border-white/10 px-1.5 py-0.5 text-[8px] font-mono text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity"
+  >{name}</span>
+{/snippet}
+
 <div class="p-4 space-y-6">
 
   <!-- LIVE SEMANTIC PREVIEW -->
@@ -489,7 +510,9 @@
     </button>
     {#if showBrandSources}
     <p class="text-[10px] text-slate-600 leading-relaxed">
-      OKLCH source values — all 200+ derived color steps are computed automatically.
+      OKLCH source values — all 200+ derived color steps are computed automatically. Tints (50–400) mix toward Base
+      (the "Surface" color) and shades (600–950) mix toward Text (driven by Neutral) — so editing Base or Neutral below
+      will shift every family's tints/shades too. That's expected, not a bug.
     </p>
     <div class="space-y-3">
       {#each BRAND_PAIRS as [light, dark] (light.name)}
@@ -534,10 +557,10 @@
                   {#each SWATCH_STEPS as step (step)}
                     {@const resolved = paletteSwatch(light.colorKey, lightSrcVal, step, lSurface, lText)}
                     <div
-                      class="w-5 h-3 rounded-t border-x border-t border-white/10"
+                      class="group relative w-5 h-3 rounded-t border-x border-t border-white/10"
                       style:background={resolved}
                       title={`${light.colorKey}-${step} (light) — ${resolved}`}
-                    ></div>
+                    >{@render swatchTip(`${light.colorKey}-${step}`)}</div>
                   {/each}
                 </div>
               </div>
@@ -547,10 +570,10 @@
                   {#each SWATCH_STEPS as step (step)}
                     {@const resolved = paletteSwatch(light.colorKey, darkSrcVal, step, dSurface, dText)}
                     <div
-                      class="w-5 h-3 rounded-b border-x border-b border-white/10"
+                      class="group relative w-5 h-3 rounded-b border-x border-b border-white/10"
                       style:background={resolved}
                       title={`${light.colorKey}-${step} (dark) — ${resolved}`}
-                    ></div>
+                    >{@render swatchTip(`${light.colorKey}-${step}`)}</div>
                   {/each}
                 </div>
               </div>
@@ -558,6 +581,8 @@
             {#if light.colorKey === "base"}
               <p class="text-[8px] text-slate-600 leading-snug pl-1">
                 Absolute lightness ramp — each step pins L and inherits chroma + hue from the source. Not the brand mix curve.
+                Light and dark use the <em>same</em> L per step, so at the default near-zero chroma the two rows look almost
+                identical — add chroma above to see them diverge by hue.
               </p>
             {/if}
           {/if}
@@ -708,29 +733,37 @@
                 Dark: auto-derived ({derivedDark})
               </div>
             {/if}
-            <!-- Constrained light + dark palette strips, computed from concrete values -->
+            <!-- Real derived variants — status colors have no numeric 50-950
+                 ramp like brand; these four are the only values that exist. -->
             <div class="mt-1 pl-1 space-y-px">
-              {#each [
-                ["L", "light", sourceValue(light), getLightSurface(), getLightText()],
-                ["D", "dark", isAutoMode
-                  ? deriveDarkFromLight(sourceValue(light), light.colorKey)
-                  : (dark ? (sourceValue(dark)) : (sourceValue(light))), getDarkSurface(), getDarkText()]
-              ] as [tag, side, srcVal, sfc, txt] (tag)}
+              <div class="flex items-center gap-1">
+                <span class="w-2.5 shrink-0"></span>
+                <div class="flex gap-0.5">
+                  {#each STATUS_VARIANTS as v (v.label)}
+                    <span class="w-9 text-center text-[6px] font-mono text-slate-600 uppercase tracking-wide">{v.label}</span>
+                  {/each}
+                </div>
+              </div>
+              {#each [["L", "light"], ["D", "dark"]] as [tag, side] (tag)}
                 <div class="flex items-center gap-1">
                   <span class="text-[7px] text-slate-600 w-2.5 shrink-0 text-right select-none">{tag}</span>
                   <div class="flex gap-0.5">
-                    {#each SWATCH_STEPS as step (step)}
-                      {@const resolved = computePaletteSwatch(srcVal as string, step, sfc as string, txt as string)}
+                    {#each STATUS_VARIANTS as v (v.label)}
+                      {@const resolved = paintTheme(v.expr(light.colorKey), side as "light" | "dark", "")}
                       <div
-                        class="w-5 h-3 rounded-sm border border-white/10"
+                        class="group relative w-9 h-4 rounded-sm border border-white/10"
                         style:background={resolved}
-                        title={`${light.colorKey}-${step} (${side}) — ${resolved}`}
-                      ></div>
+                        title={`${light.colorKey}-${v.label.toLowerCase()} (${side}) — ${resolved}`}
+                      >{@render swatchTip(`${light.colorKey}-${v.label.toLowerCase()}`)}</div>
                     {/each}
                   </div>
                 </div>
               {/each}
             </div>
+            <p class="text-[8px] text-slate-600 leading-snug pl-1">
+              Status colors don't ride the brand mix curve — only the resolved color plus subtle/muted alpha washes and
+              a strong shade are derived. There's no -50…-950 ramp for success/warning/info/danger.
+            </p>
           </div>
         {/each}
       </div>
@@ -899,10 +932,10 @@
           <div class="flex-1 flex flex-col items-center gap-0.5 h-full justify-end">
             <span class="text-[7px] font-mono text-slate-600">{Math.round(val)}</span>
             <div
-              class="w-full rounded-sm border-x border-t border-white/10"
+              class="group relative w-full rounded-sm border-x border-t border-white/10"
               style={`background:${swatch}; height: ${Math.max((val / 100) * 56, 6)}px`}
               title={`primary-${step} (${curvePreviewSide}) · mix ${Math.round(val)}%`}
-            ></div>
+            >{@render swatchTip(`primary-${step}`)}</div>
             <span class="text-[7px] font-mono text-slate-600">{step}</span>
           </div>
         {/each}
@@ -938,10 +971,10 @@
             {#each SWATCH_STEPS as step (step)}
               {@const swatch = computePaletteSwatch(miniSrc, step, _miniSurface, _miniText)}
               <div
-                class="flex-1 h-4 rounded-sm border border-white/10"
+                class="group relative flex-1 h-4 rounded-sm border border-white/10"
                 style={`background:${swatch}`}
                 title={`${colorKey}-${step} (${curvePreviewSide})`}
-              ></div>
+              >{@render swatchTip(`${colorKey}-${step}`)}</div>
             {/each}
           </div>
         </div>

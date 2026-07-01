@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.18] - 2026-07-01
+
+### Fixed
+
+- Re-sync hasWpBoot() layout fix, make app-page CSS notice-safe
+- Stop configurator clipping inside WP admin's layout chrome
+
+## [0.4.18] - 2026-07-01
+
+### Fixed
+
+- Re-sync hasWpBoot() layout fix, make app-page CSS notice-safe
+- Stop configurator clipping inside WP admin's layout chrome
+
 ## [0.4.17] - 2026-06-30
 
 ### Fixed
