@@ -184,6 +184,16 @@ export function isEmbedded(): boolean {
   return Boolean(wpBoot()?.rest?.url);
 }
 
+/**
+ * Whether a host (e.g. the WP admin page) mounted us into its own container,
+ * regardless of whether REST persistence is configured. This is the same
+ * boundary loadInitialOverrides() uses, and the one layout sizing needs —
+ * a host can supply window.slashedApp without `rest` per its typing.
+ */
+export function hasWpBoot(): boolean {
+  return Boolean(wpBoot());
+}
+
 export function loadInitialOverrides(): Record<string, string> {
   if (typeof window === "undefined") return {};
 
