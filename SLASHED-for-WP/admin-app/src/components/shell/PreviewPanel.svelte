@@ -558,10 +558,11 @@ ${BODIES[template]}
 </script>
 
 <div class="flex flex-col flex-1 min-h-0 bg-[#09090e]">
-  <!-- Preview toolbar -->
-  <div class="min-h-10 bg-[#0d0d14] border-b border-white/8 flex flex-wrap md:flex-nowrap items-center px-3 gap-2 py-1.5 md:py-0 shrink-0">
+  <!-- Preview toolbar — always a single row (scrolls horizontally instead of
+       wrapping) so it can't eat a growing chunk of a short mobile viewport. -->
+  <div class="h-10 bg-[#0d0d14] border-b border-white/8 flex flex-nowrap items-center px-3 gap-2 overflow-x-auto shrink-0">
     <!-- Template tabs -->
-    <div class="flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5 max-w-full overflow-x-auto">
+    <div class="shrink-0 flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5 max-w-full overflow-x-auto">
       {#each TEMPLATES as t (t.id)}
         <button
           onclick={() => onTemplateChange(t.id)}
@@ -577,7 +578,7 @@ ${BODIES[template]}
     <div class="w-px h-4 bg-white/10 mx-1"></div>
 
     <!-- Width controls -->
-    <div class="flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5">
+    <div class="shrink-0 flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5">
       {#each (["fluid", "desktop", "tablet", "mobile"] as const) as w (w)}
         <button
           onclick={() => onWidthChange(w)}
@@ -596,7 +597,7 @@ ${BODIES[template]}
     </div>
 
     <!-- Light/dark/split -->
-    <div class="flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5">
+    <div class="shrink-0 flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5">
       <button
         onclick={() => { splitMode = false; onThemeChange("light"); }}
         title="Light mode"
@@ -626,7 +627,7 @@ ${BODIES[template]}
     <select
       value={previewMotion}
       onchange={(e) => onMotionChange((e.target as HTMLSelectElement).value as "normal" | "slow" | "none")}
-      class="bg-white/5 border border-white/8 text-slate-400 rounded-lg px-2 py-0.5 text-[10px] font-bold focus:outline-none cursor-pointer"
+      class="shrink-0 bg-white/5 border border-white/8 text-slate-400 rounded-lg px-2 py-0.5 text-[10px] font-bold focus:outline-none cursor-pointer"
     >
       <option value="normal">Normal motion</option>
       <option value="slow">Slow motion</option>
@@ -637,7 +638,7 @@ ${BODIES[template]}
     <button
       onclick={() => { loadCount = 0; splitLightLoadCount = 0; splitDarkLoadCount = 0; refresh += 1; }}
       title="Reload preview"
-      class="p-1 rounded-md text-slate-500 hover:text-slate-300 hover:bg-white/8 transition-all cursor-pointer"
+      class="shrink-0 p-1 rounded-md text-slate-500 hover:text-slate-300 hover:bg-white/8 transition-all cursor-pointer"
     >
       <RefreshCw class="w-3 h-3" />
     </button>
@@ -650,7 +651,7 @@ ${BODIES[template]}
         window.open(url, "_blank");
       }}
       title="Open in new tab"
-      class="p-1 rounded-md text-slate-500 hover:text-slate-300 hover:bg-white/8 transition-all cursor-pointer"
+      class="shrink-0 p-1 rounded-md text-slate-500 hover:text-slate-300 hover:bg-white/8 transition-all cursor-pointer"
     >
       <ExternalLink class="w-3 h-3" />
     </button>
