@@ -433,7 +433,7 @@
   <!-- Reset-all confirmation dialog -->
   {#if showResetConfirm}
     <div
-      class="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      class="absolute inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="reset-confirm-title"
