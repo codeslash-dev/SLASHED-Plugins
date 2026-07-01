@@ -2,6 +2,8 @@
 
 **Date:** 2026-07-01 · **Version audited:** 0.4.19 · **Scope:** full repo (`SLASHED-for-WP/includes/`, `integrations/bricks/`, `integrations/gutenberg/`, `admin-app/` plugin-specific files, `scripts/`, `tests/`, `docs/`)
 
+See [`technical-debt-remediation-plan.md`](./technical-debt-remediation-plan.md) for the sequenced, multi-PR plan to fix every finding below.
+
 This is a living audit. Re-run it periodically; mark resolved findings `RESOLVED` and tag new ones `NEW` rather than starting over.
 
 Note on scope: `SLASHED-for-WP/admin-app/src/**` is vendored from the sibling SLASHED framework repo's `configurator/src/` (see root `CLAUDE.md`), except for `plugin-main.ts` and `AppOverlay.svelte`. Vendored code is audited at its source of truth in the framework repo's own audit (`SLASHED/docs/technical-debt-audit.md`) and is not re-itemized here, other than the vendoring mechanism itself.
