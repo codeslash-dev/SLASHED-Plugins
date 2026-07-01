@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.19
+Stable tag: 0.4.20
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -129,6 +129,11 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.20 =
+* Fixed: Resolve dependabot lockfile/peer conflicts
+* Fixed: Re-sync min-h toolbar fix from framework
+* Fixed: Re-sync single-row mobile preview toolbar from framework
 
 = 0.4.19 =
 * Changed: Re-sync deduped mobile fold-toggle button from framework

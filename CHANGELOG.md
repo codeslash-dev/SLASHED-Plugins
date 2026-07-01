@@ -9,6 +9,22 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.20] - 2026-07-01
+
+### Fixed
+
+- Resolve dependabot lockfile/peer conflicts
+- Re-sync min-h toolbar fix from framework
+- Re-sync single-row mobile preview toolbar from framework
+
+## [0.4.20] - 2026-07-01
+
+### Fixed
+
+- Resolve dependabot lockfile/peer conflicts
+- Re-sync min-h toolbar fix from framework
+- Re-sync single-row mobile preview toolbar from framework
+
 ## [0.4.19] - 2026-07-01
 
 ### Changed
