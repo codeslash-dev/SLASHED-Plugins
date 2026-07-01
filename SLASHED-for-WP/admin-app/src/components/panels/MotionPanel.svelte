@@ -288,7 +288,7 @@
         <div class="flex items-center justify-between mb-1.5">
           <span class="text-[11px] font-semibold text-slate-200">Stagger base</span>
           {#if STAGGER_TOKENS.some(t => t in overrides)}
-            <button onclick={resetStagger} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-0 group-hover:opacity-100">reset</button>
+            <button onclick={resetStagger} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
           {/if}
         </div>
         <SliderRow

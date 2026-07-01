@@ -149,7 +149,7 @@ class Slashed_Frontend_Configurator {
 		if ( ! $this->should_load() ) {
 			return;
 		}
-		echo '<div id="slashed-frontend-overlay" style="position:fixed;right:0;top:var(--wp-admin--admin-bar--height,32px);width:min(420px,100vw);height:calc(100vh - var(--wp-admin--admin-bar--height,32px));z-index:100000;"></div>';
+		echo '<div id="slashed-frontend-overlay" style="position:fixed;right:0;top:var(--wp-admin--admin-bar--height,32px);width:min(420px,100vw);height:calc(100vh - var(--wp-admin--admin-bar--height,32px));z-index:99998;"></div>';
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, untrack } from 'svelte';
-  import { SlidersHorizontal, Eye } from 'lucide-svelte';
+  import { SlidersHorizontal, Eye, RotateCcw } from 'lucide-svelte';
   import type { PreviewTemplate, SlashedToken } from './types';
   import StudioHeader from './components/shell/StudioHeader.svelte';
   import SidebarNav from './components/shell/SidebarNav.svelte';
@@ -9,7 +9,7 @@
   import DomainPanel from './components/DomainPanel.svelte';
   import { fa } from './lib/codec';
   import { loadInitialOverrides, injectLivePreview, saveOverrides, hasWpBoot } from './lib/persistence';
-  import { domainOf } from './lib/domains';
+  import { domainOf, DOMAIN_PATTERNS } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import CommandPalette from './components/CommandPalette.svelte';
 
@@ -58,6 +58,13 @@
   // Derived
   let overridesCount = $derived(Object.keys(overrides).length);
   let domainBadges = $derived(overridesByDomain(overrides));
+  // Token-name substrings that scope the active category, used to reset just
+  // that category's overrides (falls back to the raw domain key when no
+  // pattern list exists, e.g. for the non-token panels like home/themes).
+  let domainPatterns = $derived(DOMAIN_PATTERNS[domain] ?? [domain]);
+  let domainOverridesCount = $derived(
+    Object.keys(overrides).filter((k) => domainPatterns.some((p) => k.includes(p))).length
+  );
   let canUndo = $derived(past.length > 0);
   let canRedo = $derived(future.length > 0);
 
@@ -142,6 +149,14 @@
 
   function handleResetAll() {
     setOverrides({});
+  }
+
+  function handleResetDomain() {
+    const patch: Record<string, null> = {};
+    for (const k of Object.keys(overrides)) {
+      if (domainPatterns.some((p) => k.includes(p))) patch[k] = null;
+    }
+    handleBulkChange(patch);
   }
 
   function handleUndo() {
@@ -296,10 +311,21 @@
          100% of the whole row and overflow past it), fixed 360px on desktop -->
     <div class={`flex-1 min-w-0 md:flex-none md:w-[360px] bg-[#0c0c15] border-r border-white/8 flex-col min-h-0 ${mobileView === "preview" ? "hidden md:flex" : "flex"}`}>
       <!-- Panel heading -->
-      <div class="h-9 flex items-center px-4 border-b border-white/6 shrink-0">
+      <div class="h-9 flex items-center px-4 border-b border-white/6 shrink-0 gap-2">
         <span data-testid="panel-heading" class="text-[11px] font-bold text-slate-300 uppercase tracking-widest flex-1">
           {DOMAIN_LABELS[domain] ?? domain}
         </span>
+        {#if domainOverridesCount > 0}
+          <button
+            onclick={handleResetDomain}
+            data-testid="reset-category"
+            title={`Reset ${domainOverridesCount} override${domainOverridesCount !== 1 ? "s" : ""} in ${DOMAIN_LABELS[domain] ?? domain}`}
+            class="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer shrink-0"
+          >
+            <RotateCcw class="w-3 h-3" />
+            Reset {domainOverridesCount}
+          </button>
+        {/if}
       </div>
       <!-- Scrollable panel content -->
       <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
