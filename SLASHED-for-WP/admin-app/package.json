@@ -18,13 +18,13 @@
     "motion": "^12.23.24"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^5.1.1",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tailwindcss/vite": "^4.3.2",
     "@types/node": "^26.0.1",
     "svelte": "^5.56.4",
     "svelte-check": "^4.7.1",
     "tailwindcss": "^4.3.2",
     "typescript": "~6.0.3",
-    "vite": "^6.2.3"
+    "vite": "^8.1.1"
   }
 }
