@@ -560,7 +560,7 @@ ${BODIES[template]}
 <div class="flex flex-col flex-1 min-h-0 bg-[#09090e]">
   <!-- Preview toolbar — always a single row (scrolls horizontally instead of
        wrapping) so it can't eat a growing chunk of a short mobile viewport. -->
-  <div class="h-10 bg-[#0d0d14] border-b border-white/8 flex flex-nowrap items-center px-3 gap-2 overflow-x-auto shrink-0">
+  <div class="min-h-10 bg-[#0d0d14] border-b border-white/8 flex flex-nowrap items-center px-3 gap-2 overflow-x-auto shrink-0">
     <!-- Template tabs -->
     <div class="shrink-0 flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5 max-w-full overflow-x-auto">
       {#each TEMPLATES as t (t.id)}
