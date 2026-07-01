@@ -6,6 +6,7 @@
   import CommandPalette from './components/CommandPalette.svelte';
   import { fa } from './lib/codec';
   import { loadInitialOverrides, injectLivePreview, saveOverrides } from './lib/persistence';
+  import { registerPreviewDoc } from './lib/previewResolver.svelte';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import {
@@ -94,7 +95,22 @@
     }
   }
 
-  $effect(() => { injectLivePreview(overrides); });
+  // Panels (e.g. ColorsPanel's semantic preview) resolve real computed colors
+  // via previewResolver, which normally reads them out of the dedicated
+  // preview iframe App.svelte/PreviewPanel renders. The overlay has no such
+  // iframe — the host page itself *is* the live preview, per the class doc
+  // comment in class-frontend-configurator.php — so without registering it
+  // here, resolveColor()/resolveColorForTheme() always return "" and every
+  // swatch that depends on them (the whole Semantic colors grid) renders
+  // blank/transparent instead of the resolved color.
+  $effect(() => {
+    injectLivePreview(overrides);
+    // registerPreviewDoc() bumps previewVersion itself (on both the
+    // first-registration and already-registered paths), so panels reading
+    // previewVersion.value re-resolve on every override change without a
+    // separate explicit bump here.
+    registerPreviewDoc(document);
+  });
 
   // On desktop push page content left; on mobile the panel is a full overlay.
   $effect(() => {
