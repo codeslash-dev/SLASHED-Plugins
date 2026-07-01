@@ -268,8 +268,10 @@
       />
     </div>
 
-    <!-- Left domain panel — full width on mobile, fixed 360px on desktop -->
-    <div class={`w-full md:w-[360px] shrink-0 bg-[#0c0c15] border-r border-white/8 flex-col min-h-0 ${mobileView === "preview" ? "hidden md:flex" : "flex"}`}>
+    <!-- Left domain panel — fills remaining row width on mobile (the icon
+         rail above already claims its own space, so w-full here would mean
+         100% of the whole row and overflow past it), fixed 360px on desktop -->
+    <div class={`flex-1 min-w-0 md:flex-none md:w-[360px] bg-[#0c0c15] border-r border-white/8 flex-col min-h-0 ${mobileView === "preview" ? "hidden md:flex" : "flex"}`}>
       <!-- Panel heading -->
       <div class="h-9 flex items-center px-4 border-b border-white/6 shrink-0">
         <span data-testid="panel-heading" class="text-[11px] font-bold text-slate-300 uppercase tracking-widest flex-1">
