@@ -81,7 +81,7 @@
     const adminBarHeight = 'var(--wp-admin--admin-bar--height, 32px)';
     host.style.position = 'fixed';
     host.style.right = '0';
-    host.style.zIndex = '100000';
+    host.style.zIndex = '99998';
     host.style.pointerEvents = 'auto';
 
     if (isOpen) {
@@ -292,7 +292,7 @@
   <button
     onclick={toggle}
     aria-label="Open SLASHED token editor"
-    class="fixed right-0 z-[100000] pointer-events-auto bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl flex flex-col items-center justify-center gap-1 px-1.5 py-3 rounded-l-xl transition-colors cursor-pointer"
+    class="fixed right-0 z-[99998] pointer-events-auto bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl flex flex-col items-center justify-center gap-1 px-1.5 py-3 rounded-l-xl transition-colors cursor-pointer"
     style="top: calc(var(--wp-admin--admin-bar--height, 32px) + 16px);"
   >
     <span class="text-sm font-black leading-none select-none">/</span>
@@ -303,10 +303,11 @@
 <!--
   Main overlay panel — slides in/out via CSS transform.
   Always rendered so domain-panel state survives collapse/expand cycles.
-  z-index 100000 puts it above the WP admin bar (z-index 99999).
+  z-index 99998 keeps it just below the WP admin bar (z-index 99999) so the
+  bar's own dropdown submenus (also 99999) stay clickable above the panel.
 -->
 <div
-  class="fixed right-0 z-[100000] pointer-events-auto flex flex-col bg-[#0a0a0f] text-slate-200 font-sans shadow-2xl shadow-black/60 border-l border-white/8 transition-transform duration-200 ease-in-out"
+  class="fixed right-0 z-[99998] pointer-events-auto flex flex-col bg-[#0a0a0f] text-slate-200 font-sans shadow-2xl shadow-black/60 border-l border-white/8 transition-transform duration-200 ease-in-out"
   class:translate-x-full={!isOpen}
   class:translate-x-0={isOpen}
   style:visibility={isOpen ? undefined : 'hidden'}
@@ -432,7 +433,7 @@
   <!-- Reset-all confirmation dialog -->
   {#if showResetConfirm}
     <div
-      class="absolute inset-0 z-[100001] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      class="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="reset-confirm-title"
