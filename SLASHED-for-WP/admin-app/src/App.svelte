@@ -9,7 +9,7 @@
   import DomainPanel from './components/DomainPanel.svelte';
   import { fa } from './lib/codec';
   import { loadInitialOverrides, injectLivePreview, saveOverrides, hasWpBoot } from './lib/persistence';
-  import { domainOf, DOMAIN_PATTERNS } from './lib/domains';
+  import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import CommandPalette from './components/CommandPalette.svelte';
 
@@ -58,13 +58,15 @@
   // Derived
   let overridesCount = $derived(Object.keys(overrides).length);
   let domainBadges = $derived(overridesByDomain(overrides));
-  // Token-name substrings that scope the active category, used to reset just
-  // that category's overrides (falls back to the raw domain key when no
-  // pattern list exists, e.g. for the non-token panels like home/themes).
-  let domainPatterns = $derived(DOMAIN_PATTERNS[domain] ?? [domain]);
-  let domainOverridesCount = $derived(
-    Object.keys(overrides).filter((k) => domainPatterns.some((p) => k.includes(p))).length
+  // Scope the active category's reset to exactly the keys domainOf() would
+  // badge under this domain — matching against the domain's own pattern list
+  // directly would over-match, since patterns overlap across domains (e.g.
+  // layout's "-bg-" also appears in color tokens like --sf-color-bg--active,
+  // which domainOf() resolves to "colors" by checking that domain first).
+  let domainOverrideKeys = $derived(
+    Object.keys(overrides).filter((k) => domainOf(k) === domain)
   );
+  let domainOverridesCount = $derived(domainOverrideKeys.length);
   let canUndo = $derived(past.length > 0);
   let canRedo = $derived(future.length > 0);
 
@@ -153,9 +155,7 @@
 
   function handleResetDomain() {
     const patch: Record<string, null> = {};
-    for (const k of Object.keys(overrides)) {
-      if (domainPatterns.some((p) => k.includes(p))) patch[k] = null;
-    }
+    for (const k of domainOverrideKeys) patch[k] = null;
     handleBulkChange(patch);
   }
 
