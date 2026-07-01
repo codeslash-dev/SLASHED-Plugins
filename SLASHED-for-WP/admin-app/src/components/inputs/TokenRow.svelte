@@ -86,7 +86,7 @@
   {#if isOverridden}
     <button
       onclick={onReset}
-      class="text-[9px] text-slate-600 hover:text-rose-400 transition-colors cursor-pointer opacity-0 group-hover:opacity-100 shrink-0"
+      class="text-[9px] text-slate-600 hover:text-rose-400 transition-colors cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 shrink-0"
     >
       ✕
     </button>

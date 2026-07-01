@@ -51,21 +51,6 @@
       patterns.some((p) => t.name.includes(p)) && t.name in overrides
     ).length
   );
-
-  // Count overrides belonging to this domain for the reset button
-  let domainOverridesCount = $derived(
-    Object.keys(overrides).filter((k) =>
-      patterns.some((p) => k.includes(p))
-    ).length
-  );
-
-  function handleDomainReset() {
-    const patch: Record<string, null> = {};
-    for (const k of Object.keys(overrides)) {
-      if (patterns.some((p) => k.includes(p))) patch[k] = null;
-    }
-    onBulkChange(patch);
-  }
 </script>
 
 {#if NO_CONTROLS_TAB.has(domain)}

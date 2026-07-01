@@ -333,7 +333,7 @@
         <div class="flex items-center justify-between mb-1.5">
           <span class="text-[11px] font-semibold text-slate-200">Underline thickness</span>
           {#if "--sf-link-underline-thickness" in overrides}
-            <button onclick={() => onReset("--sf-link-underline-thickness")} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-0 group-hover:opacity-100">reset</button>
+            <button onclick={() => onReset("--sf-link-underline-thickness")} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
           {/if}
         </div>
         <div class="flex gap-1">

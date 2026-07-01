@@ -57,14 +57,14 @@
           class={`text-[9px] font-mono cursor-pointer transition-all px-0.5 ${
             showRaw
               ? 'text-indigo-400'
-              : 'opacity-0 group-hover:opacity-100 text-slate-500 hover:text-indigo-400'
+              : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 text-slate-500 hover:text-indigo-400'
           }`}
         >&lt;/&gt;</button>
       {/if}
       {#if overridden}
         <button
           onclick={onReset}
-          class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-colors"
+          class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 transition-colors"
         >reset</button>
       {/if}
     </div>
