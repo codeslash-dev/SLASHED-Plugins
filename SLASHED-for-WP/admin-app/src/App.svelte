@@ -63,9 +63,10 @@
   // directly would over-match, since patterns overlap across domains (e.g.
   // layout's "-bg-" also appears in color tokens like --sf-color-bg--active,
   // which domainOf() resolves to "colors" by checking that domain first).
-  let domainOverridesCount = $derived(
-    Object.keys(overrides).filter((k) => domainOf(k) === domain).length
+  let domainOverrideKeys = $derived(
+    Object.keys(overrides).filter((k) => domainOf(k) === domain)
   );
+  let domainOverridesCount = $derived(domainOverrideKeys.length);
   let canUndo = $derived(past.length > 0);
   let canRedo = $derived(future.length > 0);
 
@@ -154,9 +155,7 @@
 
   function handleResetDomain() {
     const patch: Record<string, null> = {};
-    for (const k of Object.keys(overrides)) {
-      if (domainOf(k) === domain) patch[k] = null;
-    }
+    for (const k of domainOverrideKeys) patch[k] = null;
     handleBulkChange(patch);
   }
 
