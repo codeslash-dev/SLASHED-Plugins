@@ -3,205 +3,205 @@
     "description": "Files vendored from the SLASHED framework configurator. DO NOT edit directly — make changes in codeslash-dev/SLASHED → configurator/src/ and re-run npm run sync.",
     "frameworkRepo": "https://github.com/codeslash-dev/SLASHED",
     "configuratorSrc": "configurator/src/",
-    "source": "local",
-    "syncedAt": "2026-07-01T06:21:42.649Z"
+    "source": "github:codeslash-dev/slashed@main",
+    "syncedAt": "2026-07-01T06:36:17.233Z"
   },
   "vendoredFiles": [
     {
       "file": "src/app.css",
-      "source": "local:configurator/src/app.css"
+      "source": "github:codeslash-dev/slashed/configurator/src/app.css@main"
     },
     {
       "file": "src/App.svelte",
-      "source": "local:configurator/src/App.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/App.svelte@main"
     },
     {
       "file": "src/components/CommandPalette.svelte",
-      "source": "local:configurator/src/components/CommandPalette.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/CommandPalette.svelte@main"
     },
     {
       "file": "src/components/DomainPanel.svelte",
-      "source": "local:configurator/src/components/DomainPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/DomainPanel.svelte@main"
     },
     {
       "file": "src/components/inputs/ClampField.svelte",
-      "source": "local:configurator/src/components/inputs/ClampField.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/inputs/ClampField.svelte@main"
     },
     {
       "file": "src/components/inputs/ColorInput.svelte",
-      "source": "local:configurator/src/components/inputs/ColorInput.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/inputs/ColorInput.svelte@main"
     },
     {
       "file": "src/components/inputs/OklchColorDesk.svelte",
-      "source": "local:configurator/src/components/inputs/OklchColorDesk.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/inputs/OklchColorDesk.svelte@main"
     },
     {
       "file": "src/components/inputs/PowerKnobRow.svelte",
-      "source": "local:configurator/src/components/inputs/PowerKnobRow.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/inputs/PowerKnobRow.svelte@main"
     },
     {
       "file": "src/components/inputs/RangeWithNumber.svelte",
-      "source": "local:configurator/src/components/inputs/RangeWithNumber.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/inputs/RangeWithNumber.svelte@main"
     },
     {
       "file": "src/components/inputs/SliderRow.svelte",
-      "source": "local:configurator/src/components/inputs/SliderRow.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/inputs/SliderRow.svelte@main"
     },
     {
       "file": "src/components/inputs/TokenRow.svelte",
-      "source": "local:configurator/src/components/inputs/TokenRow.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/inputs/TokenRow.svelte@main"
     },
     {
       "file": "src/components/panels/AllTokensTab.svelte",
-      "source": "local:configurator/src/components/panels/AllTokensTab.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/AllTokensTab.svelte@main"
     },
     {
       "file": "src/components/panels/BordersPanel.svelte",
-      "source": "local:configurator/src/components/panels/BordersPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/BordersPanel.svelte@main"
     },
     {
       "file": "src/components/panels/CheatsheetPanel.svelte",
-      "source": "local:configurator/src/components/panels/CheatsheetPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/CheatsheetPanel.svelte@main"
     },
     {
       "file": "src/components/panels/ColorsPanel.svelte",
-      "source": "local:configurator/src/components/panels/ColorsPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/ColorsPanel.svelte@main"
     },
     {
       "file": "src/components/panels/EffectsPanel.svelte",
-      "source": "local:configurator/src/components/panels/EffectsPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/EffectsPanel.svelte@main"
     },
     {
       "file": "src/components/panels/ExportPanel.svelte",
-      "source": "local:configurator/src/components/panels/ExportPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/ExportPanel.svelte@main"
     },
     {
       "file": "src/components/panels/GenericTokenPanel.svelte",
-      "source": "local:configurator/src/components/panels/GenericTokenPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/GenericTokenPanel.svelte@main"
     },
     {
       "file": "src/components/panels/HomePanel.svelte",
-      "source": "local:configurator/src/components/panels/HomePanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/HomePanel.svelte@main"
     },
     {
       "file": "src/components/panels/LayoutPanel.svelte",
-      "source": "local:configurator/src/components/panels/LayoutPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/LayoutPanel.svelte@main"
     },
     {
       "file": "src/components/panels/MacrosPanel.svelte",
-      "source": "local:configurator/src/components/panels/MacrosPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/MacrosPanel.svelte@main"
     },
     {
       "file": "src/components/panels/MiscPanel.svelte",
-      "source": "local:configurator/src/components/panels/MiscPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/MiscPanel.svelte@main"
     },
     {
       "file": "src/components/panels/MotionPanel.svelte",
-      "source": "local:configurator/src/components/panels/MotionPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/MotionPanel.svelte@main"
     },
     {
       "file": "src/components/panels/ShadowsPanel.svelte",
-      "source": "local:configurator/src/components/panels/ShadowsPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/ShadowsPanel.svelte@main"
     },
     {
       "file": "src/components/panels/SpacingPanel.svelte",
-      "source": "local:configurator/src/components/panels/SpacingPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/SpacingPanel.svelte@main"
     },
     {
       "file": "src/components/panels/ThemesPanel.svelte",
-      "source": "local:configurator/src/components/panels/ThemesPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/ThemesPanel.svelte@main"
     },
     {
       "file": "src/components/panels/TypographyPanel.svelte",
-      "source": "local:configurator/src/components/panels/TypographyPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/TypographyPanel.svelte@main"
     },
     {
       "file": "src/components/panels/WcagPanel.svelte",
-      "source": "local:configurator/src/components/panels/WcagPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/panels/WcagPanel.svelte@main"
     },
     {
       "file": "src/components/shell/PreviewPanel.svelte",
-      "source": "local:configurator/src/components/shell/PreviewPanel.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/shell/PreviewPanel.svelte@main"
     },
     {
       "file": "src/components/shell/SidebarNav.svelte",
-      "source": "local:configurator/src/components/shell/SidebarNav.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/shell/SidebarNav.svelte@main"
     },
     {
       "file": "src/components/shell/StatusBar.svelte",
-      "source": "local:configurator/src/components/shell/StatusBar.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/shell/StatusBar.svelte@main"
     },
     {
       "file": "src/components/shell/StudioHeader.svelte",
-      "source": "local:configurator/src/components/shell/StudioHeader.svelte"
+      "source": "github:codeslash-dev/slashed/configurator/src/components/shell/StudioHeader.svelte@main"
     },
     {
       "file": "src/data/api-index.generated.json",
-      "source": "local:configurator/src/data/api-index.generated.json"
+      "source": "github:codeslash-dev/slashed/configurator/src/data/api-index.generated.json@main"
     },
     {
       "file": "src/data/bundles.generated.json",
-      "source": "local:configurator/src/data/bundles.generated.json"
+      "source": "github:codeslash-dev/slashed/configurator/src/data/bundles.generated.json@main"
     },
     {
       "file": "src/data/classes.generated.json",
-      "source": "local:configurator/src/data/classes.generated.json"
+      "source": "github:codeslash-dev/slashed/configurator/src/data/classes.generated.json@main"
     },
     {
       "file": "src/data/domain-patterns.json",
-      "source": "local:configurator/src/data/domain-patterns.json"
+      "source": "github:codeslash-dev/slashed/configurator/src/data/domain-patterns.json@main"
     },
     {
       "file": "src/data/token-registry.generated.json",
-      "source": "local:configurator/src/data/token-registry.generated.json"
+      "source": "github:codeslash-dev/slashed/configurator/src/data/token-registry.generated.json@main"
     },
     {
       "file": "src/lib/basics.ts",
-      "source": "local:configurator/src/lib/basics.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/lib/basics.ts@main"
     },
     {
       "file": "src/lib/codec.ts",
-      "source": "local:configurator/src/lib/codec.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/lib/codec.ts@main"
     },
     {
       "file": "src/lib/colorUtils.ts",
-      "source": "local:configurator/src/lib/colorUtils.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/lib/colorUtils.ts@main"
     },
     {
       "file": "src/lib/domains.ts",
-      "source": "local:configurator/src/lib/domains.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/lib/domains.ts@main"
     },
     {
       "file": "src/lib/lumlockerPreview.svelte.ts",
-      "source": "local:configurator/src/lib/lumlockerPreview.svelte.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/lib/lumlockerPreview.svelte.ts@main"
     },
     {
       "file": "src/lib/persistence.ts",
-      "source": "local:configurator/src/lib/persistence.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/lib/persistence.ts@main"
     },
     {
       "file": "src/lib/powerKnobs.ts",
-      "source": "local:configurator/src/lib/powerKnobs.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/lib/powerKnobs.ts@main"
     },
     {
       "file": "src/lib/previewResolver.svelte.ts",
-      "source": "local:configurator/src/lib/previewResolver.svelte.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/lib/previewResolver.svelte.ts@main"
     },
     {
       "file": "src/lib/savedThemes.ts",
-      "source": "local:configurator/src/lib/savedThemes.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/lib/savedThemes.ts@main"
     },
     {
       "file": "src/main.ts",
-      "source": "local:configurator/src/main.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/main.ts@main"
     },
     {
       "file": "src/types.ts",
-      "source": "local:configurator/src/types.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/types.ts@main"
     },
     {
       "file": "src/vite-env.d.ts",
-      "source": "local:configurator/src/vite-env.d.ts"
+      "source": "github:codeslash-dev/slashed/configurator/src/vite-env.d.ts@main"
     }
   ]
 }

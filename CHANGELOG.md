@@ -9,6 +9,30 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.19] - 2026-07-01
+
+### Changed
+
+- Re-sync deduped mobile fold-toggle button from framework
+
+### Fixed
+
+- Register the live page as the preview doc in the WP frontend overlay
+- Re-sync mobile Controls/Preview switcher relocation from framework
+- Re-sync mobile domain panel overflow fix from framework
+
+## [0.4.19] - 2026-07-01
+
+### Changed
+
+- Re-sync deduped mobile fold-toggle button from framework
+
+### Fixed
+
+- Register the live page as the preview doc in the WP frontend overlay
+- Re-sync mobile Controls/Preview switcher relocation from framework
+- Re-sync mobile domain panel overflow fix from framework
+
 ## [0.4.18] - 2026-07-01
 
 ### Fixed
