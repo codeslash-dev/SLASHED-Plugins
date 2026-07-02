@@ -8,13 +8,13 @@ Requires PHP: 7.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-A no-build CSS framework for WordPress with native Bricks Builder tooling: token pickers, a color browser, class hints, and BEM automation.
+A no-build CSS framework for WordPress, with real Bricks Builder support built in.
 
 == Description ==
 
 SLASHED loads a complete CSS framework on any WordPress site — no build step, no Node, and no JavaScript on the frontend. You restyle the whole site by setting a handful of design tokens; the framework derives every color, every dark-mode value, and the fluid type and spacing scales from them in plain CSS.
 
-The name spells out the philosophy: Standalone, Lean, Agnostic, Structured, Hybrid, Explicit, Deterministic. In practice that means one stylesheet with no toolchain, no lock-in to any theme or builder (the framework itself runs on any CMS or none), every visual value expressed as an explicit named token, and a fixed cascade-layer order that makes the same tokens produce the same design every time.
+The name spells out the philosophy: Standalone, Lean, Agnostic, Structured, Hybrid, Explicit, Deterministic. In practice: one stylesheet, no toolchain, no lock-in to any theme or builder — the framework itself runs on any CMS, or none at all. Every visual value is an explicit named token, and cascade layers are locked in a fixed order, so the same tokens always produce the same design.
 
 The plugin bundles the framework, serves it locally from your own server, and wires it into the editors you already use, so you pick tokens and classes from a list instead of typing them by hand. Bricks Builder gets the full toolset; Gutenberg gets native presets and a token panel.
 
@@ -22,7 +22,7 @@ The plugin bundles the framework, serves it locally from your own server, and wi
 
 A visual editor for every framework token — brand and status colors, typography, fluid type and spacing scales, layout, borders, shadows, motion — built into WordPress at **SLASHED → Design Settings**, with a live light/dark preview. You only ever set validated token values; there is no raw-CSS field.
 
-Set six brand colors (primary, secondary, tertiary, action, neutral, base), each with an optional separate dark value, and the framework recolors itself: hover and active states, tints, shades, tonal steps, and the four status colors (success, warning, danger, info) are all derived for you. Each status color can be overridden individually too.
+Set the six brand colors (primary, secondary, tertiary, action, neutral, base) and the framework recolors itself — hover and active states, tints, shades, and tonal steps all derive automatically. The four status colors (success, warning, danger, info) derive the same way, though you can override any of them individually. Every color takes an optional separate dark value.
 
 The same editor also runs as a floating overlay on the live site — click **/ Design** in the admin bar to tweak tokens without leaving the page — and as a standalone web app at https://slashed.codeslash.dev/configurator for designing without logging in. "Open in configurator" launches it preloaded with your current tokens; "Import shared config" pulls a shared design back in from a code or link.
 
