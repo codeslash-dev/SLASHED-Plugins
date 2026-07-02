@@ -365,6 +365,58 @@ export async function fetchWithRetry(
   throw lastErr;
 }
 
+// Caps total concurrent GitHub API requests across the *whole* recursive tree
+// walk (not just per-directory) so a wide/deep configurator/src tree can't
+// fan out to hundreds of simultaneous requests and trip GitHub's secondary
+// rate limits. Deliberately wraps only the network call itself (inside
+// ghFetch(), below) rather than the recursive syncGhDir()/syncGhFile() work:
+// wrapping a whole recursive subtree would have a directory job hold a slot
+// for its entire subtree's duration while its own children queue behind the
+// same limiter for a slot — a reentrant lock-holding pattern that can starve
+// or deadlock once enough directory jobs are simultaneously in flight.
+// Wrapping just the atomic HTTP request has no such self-referential wait.
+const SYNC_CONCURRENCY = 6;
+
+/**
+ * Bounded-concurrency job queue. `run(fn)` queues `fn` and resolves/rejects
+ * with its result once it's had a turn; at most `limit` jobs run at once.
+ *
+ * `fn` is invoked through `Promise.resolve().then(fn)` rather than called
+ * directly so a job that throws synchronously (instead of returning a
+ * rejected promise) still goes through the same resolve/reject/cleanup path
+ * — a bare `fn()` call would let a sync throw skip `.finally()` entirely,
+ * permanently leaking an "active" slot and stalling every future job.
+ *
+ * @param {number} limit
+ * @returns {(fn: () => Promise<any>) => Promise<any>}
+ */
+export function createLimiter(limit) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new TypeError(`createLimiter: limit must be a positive integer, got ${limit}`);
+  }
+  let active = 0;
+  const queue = [];
+
+  function next() {
+    if (active >= limit || queue.length === 0) return;
+    active++;
+    const { fn, resolve, reject } = queue.shift();
+    Promise.resolve().then(fn).then(resolve, reject).finally(() => {
+      active--;
+      next();
+    });
+  }
+
+  return function run(fn) {
+    return new Promise((resolve, reject) => {
+      queue.push({ fn, resolve, reject });
+      next();
+    });
+  };
+}
+
+const ghLimiter = createLimiter(SYNC_CONCURRENCY);
+
 async function ghFetch(path) {
   const url = `https://api.github.com/repos/${SLASHED_REPO}/contents/${path}?ref=${REF}`;
   const headers = {
@@ -374,7 +426,7 @@ async function ghFetch(path) {
   if (process.env.GITHUB_TOKEN) {
     headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   }
-  const res = await fetchWithRetry(url, { headers });
+  const res = await ghLimiter(() => fetchWithRetry(url, { headers }));
   if (!res.ok) {
     const err = new Error(`GitHub API ${res.status} for ${path}`);
     err.status = res.status;
@@ -417,59 +469,23 @@ async function syncGhFile(ghPath, destPath) {
   }
 }
 
-// Caps total concurrent GitHub API calls across the *whole* recursive tree
-// walk (not just per-directory) — syncGhDir() recurses into subdirectories
-// whose own entries also funnel through this same limiter instance, so a
-// wide/deep configurator/src tree can't fan out to hundreds of simultaneous
-// requests and trip GitHub's secondary rate limits.
-const SYNC_CONCURRENCY = 6;
-
-/**
- * Bounded-concurrency job queue. `run(fn)` queues `fn` and resolves/rejects
- * with its result once it's had a turn; at most `limit` jobs run at once.
- *
- * @param {number} limit
- * @returns {(fn: () => Promise<any>) => Promise<any>}
- */
-export function createLimiter(limit) {
-  let active = 0;
-  const queue = [];
-
-  function next() {
-    if (active >= limit || queue.length === 0) return;
-    active++;
-    const { fn, resolve, reject } = queue.shift();
-    fn().then(resolve, reject).finally(() => {
-      active--;
-      next();
-    });
-  }
-
-  return function run(fn) {
-    return new Promise((resolve, reject) => {
-      queue.push({ fn, resolve, reject });
-      next();
-    });
-  };
-}
-
-const ghLimiter = createLimiter(SYNC_CONCURRENCY);
-
 async function syncGhDir(ghDir, destDir) {
   assertWithinSrc(destDir);
   const entries = await ghFetch(ghDir);
   if (!Array.isArray(entries)) {
     throw new Error(`Expected directory listing from API for ${ghDir}`);
   }
+  // The recursive fan-out itself is unbounded — actual concurrency is capped
+  // where it matters, inside ghFetch()'s shared ghLimiter around the network
+  // request. See the comment on SYNC_CONCURRENCY above for why the limiter
+  // wraps the request rather than this whole recursive call.
   await Promise.all(
     entries.map((entry) => {
       assertSafeName(entry.name);
       const localPath = join(destDir, entry.name);
-      return ghLimiter(() =>
-        entry.type === 'dir'
-          ? syncGhDir(entry.path, localPath)
-          : syncGhFile(entry.path, localPath),
-      );
+      return entry.type === 'dir'
+        ? syncGhDir(entry.path, localPath)
+        : syncGhFile(entry.path, localPath);
     }),
   );
 }

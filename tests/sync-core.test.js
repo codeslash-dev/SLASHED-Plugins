@@ -196,4 +196,29 @@ describe('createLimiter', () => {
     assert.equal(results[2].status, 'fulfilled');
     assert.equal(results[2].value, 'c');
   });
+
+  test('a job that throws synchronously (not returning a rejected promise) still frees its slot', async () => {
+    const run = createLimiter(1);
+    // A plain (non-async) function that throws before ever returning a
+    // promise — the bug this guards against is `fn()` being called directly
+    // instead of via Promise.resolve().then(fn), which would skip the
+    // .finally() cleanup and permanently leak the slot.
+    const badJob = () => { throw new Error('sync boom'); };
+
+    const first = run(badJob);
+    const second = run(async () => 'still runs');
+
+    const results = await Promise.allSettled([first, second]);
+    assert.equal(results[0].status, 'rejected');
+    assert.match(results[0].reason.message, /sync boom/);
+    assert.equal(results[1].status, 'fulfilled');
+    assert.equal(results[1].value, 'still runs'); // never runs if the slot leaked
+  });
+
+  test('rejects construction with a non-positive or non-integer limit', () => {
+    assert.throws(() => createLimiter(0), TypeError);
+    assert.throws(() => createLimiter(-1), TypeError);
+    assert.throws(() => createLimiter(1.5), TypeError);
+    assert.throws(() => createLimiter('3'), TypeError);
+  });
 });
