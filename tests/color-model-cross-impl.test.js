@@ -51,9 +51,16 @@ const FIXTURE_VARS = [
 let phpResultsByVar;
 
 before(() => {
+  try {
+    execFileSync('php', ['--version'], { stdio: 'ignore' });
+  } catch {
+    throw new Error('php not found on PATH — install PHP to run tests/color-model-cross-impl.test.js');
+  }
+
   const output = execFileSync('php', [PHP_HARNESS], {
     input: JSON.stringify(FIXTURE_VARS),
     encoding: 'utf8',
+    timeout: 10_000,
   });
   const phpResults = JSON.parse(output);
   phpResultsByVar = new Map(phpResults.map((r) => [r.var, r.result]));
