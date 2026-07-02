@@ -136,9 +136,9 @@ export function classifyVar(varName) {
     return { family, kind: 'base', step: null, key };
   }
 
-  // The `-light` source token duplicates the base swatch — skip to avoid a
-  // visual dupe (the base swatch already represents the resolved colour).
-  if (suffix === 'light') return null;
+  // The `-light`/`-dark` source tokens are internal implementation details —
+  // skip to avoid exposing them in the UI (base swatch already covers them).
+  if (suffix === 'light' || suffix === 'dark') return null;
 
   if (/^[0-9]+$/.test(suffix)) {
     return { family, kind: 'scale', step: Number(suffix), key };
@@ -374,8 +374,10 @@ export function filterModel(model, query) {
 
   const groups = [];
   for (const group of model.groups) {
+    if (!Array.isArray(group.sections)) continue;
     const sections = [];
     for (const section of group.sections) {
+      if (!Array.isArray(section.swatches)) continue;
       const swatches = section.swatches.filter(
         (s) => s.name.toLowerCase().includes(q) || s.label.toLowerCase().includes(q) || group.label.toLowerCase().includes(q)
       );

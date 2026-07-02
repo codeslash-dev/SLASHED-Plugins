@@ -333,8 +333,10 @@ class Slashed_Gutenberg_Presets {
 				'order'  => -1,
 			);
 		}
-		// The `-light` source duplicates the resolved base swatch — skip.
-		if ( 'light' === $suffix ) {
+		// The `-light`/`-dark` source tokens duplicate the resolved base
+		// swatch — skip both (matches the JS ports in integrations/bricks
+		// and integrations/gutenberg's own editor color-model.js).
+		if ( 'light' === $suffix || 'dark' === $suffix ) {
 			return null;
 		}
 		if ( preg_match( '/^[0-9]+$/', $suffix ) ) {
