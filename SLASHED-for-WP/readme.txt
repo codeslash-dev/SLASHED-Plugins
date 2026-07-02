@@ -12,24 +12,24 @@ A no-build CSS framework for WordPress with native Bricks Builder tooling: token
 
 == Description ==
 
-SLASHED loads a complete CSS framework on any WordPress site — no build step, no Node, no JavaScript on the frontend. You restyle the whole site by setting a handful of design tokens; the framework derives every color, dark-mode value, and fluid type and spacing scale from them in plain CSS.
+SLASHED loads a complete CSS framework on any WordPress site — no build step, no Node, and no JavaScript on the frontend. You restyle the whole site by setting a handful of design tokens; the framework derives every color, every dark-mode value, and the fluid type and spacing scales from them in plain CSS.
 
-The plugin enqueues the framework and wires it into the editors you use, so you pick tokens and classes from a list instead of typing them by hand. Bricks Builder gets the full toolset; Gutenberg gets presets and a token panel.
+The plugin bundles the framework, serves it locally from your own server, and wires it into the editors you already use, so you pick tokens and classes from a list instead of typing them by hand. Bricks Builder gets the full toolset; Gutenberg gets native presets and a token panel.
 
 = Design Settings =
 
-A visual editor for every token — brand and status colors, typography, spacing, borders, shadows, fluid scales, z-index — built into WordPress at **SLASHED → Design Settings**, with a live light/dark preview. You only ever set validated token values; there is no raw-CSS field.
+A visual editor for every framework token — brand and status colors, typography, fluid type and spacing scales, layout, borders, shadows, motion — built into WordPress at **SLASHED → Design Settings**, with a live light/dark preview. You only ever set validated token values; there is no raw-CSS field.
 
-Set six brand colors (primary, secondary, tertiary, action, neutral, base) and five status colors (success, warning, error, info, danger), each with an optional separate dark value, and the framework recolors itself. Hover and active states, tints, shades, and tonal steps are all computed for you.
+Set six brand colors (primary, secondary, tertiary, action, neutral, base), each with an optional separate dark value, and the framework recolors itself: hover and active states, tints, shades, tonal steps, and the four status colors (success, warning, danger, info) are all derived for you. Each status color can be overridden individually too.
 
-The same editor runs as a standalone web app at https://slashed.codeslash.dev/configurator for designing without logging in. "Open in configurator" launches it preloaded with your current tokens; "Import shared config" pulls a shared design back in from a code or link.
+The same editor also runs as a floating overlay on the live site — click **/ Design** in the admin bar to tweak tokens without leaving the page — and as a standalone web app at https://slashed.codeslash.dev/configurator for designing without logging in. "Open in configurator" launches it preloaded with your current tokens; "Import shared config" pulls a shared design back in from a code or link.
 
 = Bricks Builder =
 
 Enable the Bricks integration and the framework shows up natively in the builder:
 
 * **Token pickers.** Every SLASHED variable is registered with Bricks' variable pickers and code-editor autocomplete, grouped by category. Color tokens show a swatch resolved for both light and dark.
-* **Class autocomplete.** Every SLASHED class is added to the Bricks class input — layout, macros, components, and utilities under "SLASHED Layout", and `.is-*` state classes under "SLASHED State". The list is read from the CSS bundle you actually loaded, so it always matches.
+* **Class autocomplete.** Every SLASHED class is added to the Bricks class input — layout primitives and macros under "SLASHED Layout", and `.is-*` state classes under "SLASHED State". The list is read from the CSS bundle you actually loaded, so it always matches the framework version you're running.
 * **Color System panel.** A floating, in-builder browser for the full color palette, organized by family and tone, with a light/dark canvas toggle. Click a swatch to copy its variable and apply it to the selected element's background, text, or border.
 * **Class hints.** With hints enabled, a **?** icon next to each SLASHED class explains what it does and which category it belongs to. The icon is the only trigger, so it never covers Bricks' own controls.
 * **reBEMer.** A BEM class manager in the structure panel. Select an element, name the block, and reBEMer generates clean `block__element` / `block--modifier` names across the whole subtree in one pass. It supports add, rename, replace, add-modifier, and migrate-ID-styles modes, auto-numbers colliding siblings, and won't shadow reserved SLASHED classes. It never deletes a global class.
@@ -60,10 +60,8 @@ A single dark section inside a light page — or the reverse — works with no s
 
 Pick the bundle that fits the project on the settings page:
 
-* **Optimal** (recommended) — tokens, CSS reset, base element styles, light/dark themes, layout primitives (container, stack, grid, cluster, sidebar, switcher, cover, center, frame, reel), macros (prose, flow, truncate, aspect, scroll-shadow), interaction states, motion, accessibility, print, and classless form styling.
-* **Optimal + Components** — adds prebuilt components: buttons, badges, tags, cards, tables, form rows, and loading skeletons, with status and style modifiers.
-* **Optimal + Utilities** — adds utility classes: object-fit, a z-index scale, text balancing, and animation helpers (spin, ping, blink, shimmer, float).
-* **Full** — everything above.
+* **Optimal** (recommended) — everything the framework ships today: tokens, CSS reset, base element styles, light/dark themes, layout primitives (container, stack, grid, cluster, sidebar, switcher, cover, center, frame, reel), macros (prose, flow, truncate, aspect, scroll-shadow), interaction states, motion, accessibility, print, and classless form styling.
+* **Optimal + Components**, **Optimal + Utilities**, and **Full** — identical styling to Optimal for now. They add the framework's reserved component and utility layers, which are staged upstream and currently emit no classes — pick one only if you want those layers the moment a future framework release activates them.
 
 All bundles ship with the plugin and load locally from the plugin's own folder — no external requests are made to render your site. New framework CSS arrives through normal plugin updates.
 
