@@ -1,13 +1,35 @@
 /**
- * Playwright manual test — SLASHED Admin SPA
- * Tests all available tabs, panels, and options and saves screenshots.
+ * PL-034: manual, local-only dev/QA tool — NOT part of `npm test` or CI.
+ * Walks the admin SPA's tabs/panels, saving a screenshot per step and
+ * reporting any browser console errors, for a human to eyeball afterwards.
+ * There's no committed `test-admin.html` fixture and no pass/fail assertion
+ * (a run with console errors still exits 0) — turning this into a real CI
+ * check would mean committing that fixture, starting a dev server in CI,
+ * and rewriting the walkthrough as assertions, which is out of scope here.
+ *
+ * Prerequisites (not automated by this script):
+ *   1. `playwright` installed and its browsers available (`npx playwright
+ *      install chromium` if you don't already have a Playwright checkout).
+ *   2. A local server serving `test-admin.html` (an admin-app test harness
+ *      page — not present in this repo) at http://localhost:9999.
  *
  * Run: node tests/playwright-admin.js
  */
 
-import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
+
+let chromium;
+try {
+  ({ chromium } = await import('playwright'));
+} catch {
+  console.error(
+    'playwright not found. This is a manual dev tool (not an npm dependency of\n' +
+    'this repo) — install it yourself first, e.g.:\n' +
+    '  npm install --no-save playwright && npx playwright install chromium'
+  );
+  process.exit(1);
+}
 
 const BASE_URL = 'http://localhost:9999/test-admin.html';
 const SHOTS_DIR = path.resolve(import.meta.dirname, '../test-screenshots');

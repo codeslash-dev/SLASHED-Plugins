@@ -92,3 +92,10 @@ Downloads release CSS bundles, shallow-clones framework source, regenerates
 | `npm run build:apps` | Build admin SPA + Bricks editor app |
 | `npm test` | Run test suite |
 | `npm run verify` | Verify sync consistency |
+
+`tests/` is `node --test` specs, run automatically by `npm test`, with one
+exception: `tests/playwright-admin.js` is a manual, local-only dev/QA tool —
+it walks the admin SPA and saves screenshots for a human to review, has no
+pass/fail assertions, and isn't wired into `npm test` or CI (no committed
+HTML fixture, needs a locally-running dev server). Run it directly with
+`node tests/playwright-admin.js`; see the file header for prerequisites.
