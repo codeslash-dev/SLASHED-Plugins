@@ -75,7 +75,7 @@ SLASHED targets Chrome 125+, Safari 18.0+, and Firefox 129+. It uses `light-dark
 
 = Open source =
 
-The framework is developed at https://github.com/codeslash-dev/SLASHED.
+The plugin is licensed under the GPL-2.0-or-later and developed at https://github.com/codeslash-dev/SLASHED-Plugins. The bundled SLASHED CSS framework is MIT-licensed (GPL-compatible) and developed at https://github.com/codeslash-dev/SLASHED.
 
 == External services ==
 
