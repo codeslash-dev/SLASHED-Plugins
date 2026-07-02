@@ -9,6 +9,68 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.21] - 2026-07-02
+
+### Added
+
+- Add --check mode to sync-core.mjs and a check orchestrator
+
+### Changed
+
+- Extract color-math and category-map into their own classes
+- Re-sync deduped domain-scoped override key filter from framework
+
+### Fixed
+
+- Precheck mutating on type-check, AppOverlay missing save-error state
+- Eliminate reentrant-lock deadlock risk in the sync concurrency limiter
+- Harden sync-core.mjs's GitHub API sync path
+- Guard ABSPATH definition in PHPUnit bootstrap
+- Pin composer platform.php to the project's 7.4 floor
+- Correct wrong relative path to class-color-math.php in Bricks bootstrap
+- Restore reactivity in AppOverlay's rAF-coalesced preview effect
+- Harden frontend overlay's cssUrl injection and live-preview effect
+- Close TOCTOU/symlink gaps flagged by CodeQL and Qodo
+- Run sync before svelte-check via a precheck hook
+- Update AppOverlay.svelte for upstream codec/lucide renames
+- Filter -dark source tokens consistently across Bricks/Gutenberg
+- Re-sync All-tokens badge count fix from framework
+- Re-sync category-reset domain-scoping fix from framework
+- Restore reset-confirm modal z-index above in-panel tooltips
+- Re-sync per-category reset button and reset-icon visibility fix from framework
+- Stop frontend configurator overlay from covering admin bar dropdowns
+
+## [0.4.21] - 2026-07-02
+
+### Added
+
+- Add --check mode to sync-core.mjs and a check orchestrator
+
+### Changed
+
+- Extract color-math and category-map into their own classes
+- Re-sync deduped domain-scoped override key filter from framework
+
+### Fixed
+
+- Precheck mutating on type-check, AppOverlay missing save-error state
+- Eliminate reentrant-lock deadlock risk in the sync concurrency limiter
+- Harden sync-core.mjs's GitHub API sync path
+- Guard ABSPATH definition in PHPUnit bootstrap
+- Pin composer platform.php to the project's 7.4 floor
+- Correct wrong relative path to class-color-math.php in Bricks bootstrap
+- Restore reactivity in AppOverlay's rAF-coalesced preview effect
+- Harden frontend overlay's cssUrl injection and live-preview effect
+- Close TOCTOU/symlink gaps flagged by CodeQL and Qodo
+- Run sync before svelte-check via a precheck hook
+- Update AppOverlay.svelte for upstream codec/lucide renames
+- Filter -dark source tokens consistently across Bricks/Gutenberg
+- Re-sync All-tokens badge count fix from framework
+- Re-sync category-reset domain-scoping fix from framework
+- Restore reset-confirm modal z-index above in-panel tooltips
+- Re-sync per-category reset button and reset-icon visibility fix from framework
+- Stop frontend configurator overlay from covering admin bar dropdowns
+
 ## [0.4.20] - 2026-07-01
 
 ### Fixed
