@@ -10,7 +10,7 @@
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import {
-    ChevronRight, Undo2, Redo2, Trash2, FolderOpen, Download, Save, Check, Loader2,
+    ChevronRight, Undo2, Redo2, Trash2, FolderOpen, Download, Save, Check, Loader2, AlertTriangle,
   } from '@lucide/svelte';
 
   const ALL_TOKENS = ((tokensRaw as any).tokens ?? tokensRaw) as SlashedToken[];
@@ -70,7 +70,7 @@
   }
 
   let lastSavedOverrides = $state<Record<string, string>>(untrack(() => ({ ...overrides })));
-  let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
+  let saveState = $state<'idle' | 'saving' | 'saved' | 'error'>('idle');
   let hasPendingChanges = $derived(!shallowEq(overrides, lastSavedOverrides));
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -152,7 +152,7 @@
     if (!shallowEq(prev, next)) {
       past = [...past.slice(-49), prev];
       future = [];
-      if (saveState === 'saved') saveState = 'idle';
+      if (saveState === 'saved' || saveState === 'error') saveState = 'idle';
     }
     overrides = next;
   }
@@ -176,7 +176,7 @@
       }
     } catch (err) {
       console.warn('slashed: save failed', err);
-      saveState = 'idle';
+      saveState = 'error';
     }
   }
 
@@ -349,11 +349,13 @@
     <button
       onclick={handleSave}
       disabled={!hasPendingChanges || saveState === 'saving'}
-      title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
-      aria-label={saveState === 'saving' ? 'Saving changes' : hasPendingChanges ? 'Save changes' : 'No unsaved changes'}
+      title={saveState === 'error' ? "Save failed — click to retry" : hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
+      aria-label={saveState === 'saving' ? 'Saving changes' : saveState === 'error' ? 'Save failed' : hasPendingChanges ? 'Save changes' : 'No unsaved changes'}
       class={[
         "p-1 rounded transition-colors cursor-pointer shrink-0 disabled:pointer-events-none",
-        saveState === 'saved'
+        saveState === 'error'
+          ? "text-red-400"
+          : saveState === 'saved'
           ? "text-emerald-300"
           : hasPendingChanges
             ? "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
@@ -364,6 +366,8 @@
         <Loader2 class="w-3 h-3 animate-spin" />
       {:else if saveState === 'saved'}
         <Check class="w-3 h-3" />
+      {:else if saveState === 'error'}
+        <AlertTriangle class="w-3 h-3" />
       {:else}
         <Save class="w-3 h-3" />
       {/if}

@@ -10,7 +10,7 @@
     "dev": "vite",
     "prebuild": "node scripts/sync-core.mjs",
     "build": "vite build",
-    "precheck": "node scripts/sync-core.mjs",
+    "precheck": "node scripts/sync-core.mjs --check",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
