@@ -58,7 +58,12 @@
 
   /* SECTION-LEVEL THEMING */
   /* light-dark() bakes at :root declaration time; re-declarations on [data-theme]
-     elements are required for section-level theming to work. */
+     elements are required for section-level theming to work.
+     SL-001: the clamp() derivation formula below is the same one used inside
+     tokens.css's "Resolved color tokens — auto-switch via light-dark()"
+     block (search core/tokens.css for that comment) — duplicated here, not
+     shared, because this file needs flat values outside light-dark().
+     Keep both copies in sync if the formula ever changes. */
   @supports (color: oklch(from red l c h)) {
 
         :root {

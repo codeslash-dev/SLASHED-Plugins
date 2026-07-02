@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Check, Copy, Download, Link } from 'lucide-svelte';
-  import { fa, qa } from '../../lib/codec';
+  import { Check, Copy, Download, Link } from '@lucide/svelte';
+  import { generateCSS, buildShareUrl } from '../../lib/codec';
 
   let { overrides }: {
     overrides: Record<string, string>;
@@ -10,7 +10,7 @@
   let copied = $state(false);
   let copiedLink = $state(false);
 
-  let css = $derived(fa(overrides, { mode: outputMode, banner: true }));
+  let css = $derived(generateCSS(overrides, { mode: outputMode, banner: true }));
   let count = $derived(Object.keys(overrides).length);
 
   async function handleCopy() {
@@ -23,7 +23,7 @@
 
   async function handleCopyLink() {
     try {
-      const url = qa(overrides);
+      const url = buildShareUrl(overrides);
       await navigator.clipboard.writeText(url);
       copiedLink = true;
       setTimeout(() => { copiedLink = false; }, 2000);

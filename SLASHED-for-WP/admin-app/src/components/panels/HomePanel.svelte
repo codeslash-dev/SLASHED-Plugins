@@ -2,7 +2,7 @@
   import {
     Sparkles, Palette, Type, Ruler, Layout, Square, Layers, Zap,
     Puzzle, Blocks, SwatchBook, ShieldCheck, Package, BookOpen, Save,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
   import type { SavedSlot } from '../../types';
   import { listSavedThemes, saveTheme } from '../../lib/savedThemes';
 

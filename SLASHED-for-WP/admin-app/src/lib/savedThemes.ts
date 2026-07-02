@@ -10,7 +10,7 @@ import type { SavedSlot } from "../types";
 
 const LS_KEY = "slashed-studio/themes/v1";
 
-function isStringRecord(value: unknown): value is Record<string, string> {
+export function isStringRecord(value: unknown): value is Record<string, string> {
   return !!value
     && typeof value === "object"
     && !Array.isArray(value)

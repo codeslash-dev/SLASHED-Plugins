@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SlidersHorizontal, List } from 'lucide-svelte';
+  import { SlidersHorizontal, List } from '@lucide/svelte';
   import type { SlashedToken } from '../types';
   import { DOMAIN_PATTERNS, domainOf } from '../lib/domains';
   import HomePanel from './panels/HomePanel.svelte';
