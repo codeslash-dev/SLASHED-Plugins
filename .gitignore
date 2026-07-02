@@ -30,3 +30,6 @@ test-screenshots/
 # PHP Composer dependencies (PHPCS/WPCS + PHPStan tooling).
 # composer.json + composer.lock are tracked; the installed tree is not.
 /vendor/
+
+# PHPUnit result cache.
+/.phpunit.cache/

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tick } from 'svelte';
-  import { Undo2, Redo2, Trash2, Share2, FolderOpen, Check, Save, Loader2 } from 'lucide-svelte';
+  import { Undo2, Redo2, Trash2, Share2, FolderOpen, Check, Save, Loader2, AlertTriangle } from '@lucide/svelte';
 
   const version = typeof __SLASHED_VERSION__ !== "undefined" ? __SLASHED_VERSION__ : "";
 
@@ -9,7 +9,7 @@
     canUndo: boolean;
     canRedo: boolean;
     hasPendingChanges: boolean;
-    saveState: 'idle' | 'saving' | 'saved';
+    saveState: 'idle' | 'saving' | 'saved' | 'error';
     onUndo: () => void;
     onRedo: () => void;
     onResetAll: () => void;
@@ -86,10 +86,12 @@
     <button
       onclick={onSave}
       disabled={!hasPendingChanges || saveState === 'saving'}
-      title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
+      title={saveState === 'error' ? "Save failed — click to retry" : hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
       class={[
         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors cursor-pointer",
-        saveState === 'saved'
+        saveState === 'error'
+          ? "bg-red-900/40 border border-red-500/30 text-red-300"
+          : saveState === 'saved'
           ? "bg-emerald-900/40 border border-emerald-500/30 text-emerald-300"
           : hasPendingChanges
             ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shadow-emerald-600/30"
@@ -102,6 +104,9 @@
       {:else if saveState === 'saved'}
         <Check class="w-3.5 h-3.5" />
         Saved
+      {:else if saveState === 'error'}
+        <AlertTriangle class="w-3.5 h-3.5" />
+        Save failed
       {:else}
         <Save class="w-3.5 h-3.5" />
         Save

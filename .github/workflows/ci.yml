@@ -112,6 +112,9 @@ jobs:
       - name: Lint PHP syntax (php -l)
         run: npm run lint:php
 
+      - name: PHP unit tests
+        run: composer phpunit
+
       - name: Register PHPCS standards
         run: >-
           vendor/bin/phpcs --config-set installed_paths

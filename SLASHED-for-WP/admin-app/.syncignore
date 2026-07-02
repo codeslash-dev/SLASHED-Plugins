@@ -3,11 +3,6 @@
 # Plugin-specific build wiring lives OUTSIDE src/ (vite.config.js, package.json,
 # svelte.config.js, tsconfig.json) and is never touched by the sync.
 
-# codeslash-dev/slashed#443 (the companion upstream PR that added @framework-css
-# aliases + the WP persistence seam) merged to main on 2026-06-28. main.ts,
-# App.svelte, PreviewPanel.svelte, vite-env.d.ts, lib/persistence.ts, and
-# StudioHeader.svelte are no longer plugin-divergent — they sync normally now.
-
 # Plugin-specific: frontend overlay (not in upstream configurator).
 src/plugin-main.ts
 src/AppOverlay.svelte

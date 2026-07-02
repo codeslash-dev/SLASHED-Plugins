@@ -251,6 +251,7 @@ add_action( 'rest_api_init', 'slashed_bricks_rest_routes_init' );
  */
 function slashed_bricks_require_data_classes() {
 	require_once SLASHED_BRICKS_PATH . 'includes/class-css-parser.php';
+	require_once SLASHED_BRICKS_PATH . '../../includes/class-color-math.php';
 	require_once SLASHED_BRICKS_PATH . 'includes/class-color-resolver.php';
 	require_once SLASHED_BRICKS_PATH . 'includes/class-inventory.php';
 	require_once SLASHED_BRICKS_PATH . 'includes/class-elements.php';

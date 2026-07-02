@@ -4,14 +4,14 @@
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
   import CommandPalette from './components/CommandPalette.svelte';
-  import { fa } from './lib/codec';
+  import { generateCSS } from './lib/codec';
   import { loadInitialOverrides, injectLivePreview, saveOverrides } from './lib/persistence';
   import { registerPreviewDoc } from './lib/previewResolver.svelte';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import {
-    ChevronRight, Undo2, Redo2, Trash2, FolderOpen, Download, Save, Check, Loader2,
-  } from 'lucide-svelte';
+    ChevronRight, Undo2, Redo2, Trash2, FolderOpen, Download, Save, Check, Loader2, AlertTriangle,
+  } from '@lucide/svelte';
 
   const ALL_TOKENS = ((tokensRaw as any).tokens ?? tokensRaw) as SlashedToken[];
 
@@ -70,7 +70,7 @@
   }
 
   let lastSavedOverrides = $state<Record<string, string>>(untrack(() => ({ ...overrides })));
-  let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
+  let saveState = $state<'idle' | 'saving' | 'saved' | 'error'>('idle');
   let hasPendingChanges = $derived(!shallowEq(overrides, lastSavedOverrides));
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -103,13 +103,26 @@
   // here, resolveColor()/resolveColorForTheme() always return "" and every
   // swatch that depends on them (the whole Semantic colors grid) renders
   // blank/transparent instead of the resolved color.
+  // Coalesced into a single rAF like PreviewPanel.svelte's SL-020 fix: a
+  // fast-changing control (dragging a slider) can re-run this effect many
+  // times per frame, but injectLivePreview()'s <style> rewrite + derived-
+  // token recompute only need to happen once per paint. `overrides` must be
+  // read here, synchronously in the effect body, not inside the rAF
+  // callback — $effect only tracks reads that happen during its own
+  // synchronous execution, so reading it only inside the (later-firing) rAF
+  // callback would silently stop the effect from re-running on override
+  // changes after the first paint.
   $effect(() => {
-    injectLivePreview(overrides);
-    // registerPreviewDoc() bumps previewVersion itself (on both the
-    // first-registration and already-registered paths), so panels reading
-    // previewVersion.value re-resolve on every override change without a
-    // separate explicit bump here.
-    registerPreviewDoc(document);
+    const ov = overrides;
+    const rafId = requestAnimationFrame(() => {
+      injectLivePreview(ov);
+      // registerPreviewDoc() bumps previewVersion itself (on both the
+      // first-registration and already-registered paths), so panels reading
+      // previewVersion.value re-resolve on every override change without a
+      // separate explicit bump here.
+      registerPreviewDoc(document);
+    });
+    return () => cancelAnimationFrame(rafId);
   });
 
   // On desktop push page content left; on mobile the panel is a full overlay.
@@ -139,7 +152,7 @@
     if (!shallowEq(prev, next)) {
       past = [...past.slice(-49), prev];
       future = [];
-      if (saveState === 'saved') saveState = 'idle';
+      if (saveState === 'saved' || saveState === 'error') saveState = 'idle';
     }
     overrides = next;
   }
@@ -163,7 +176,7 @@
       }
     } catch (err) {
       console.warn('slashed: save failed', err);
-      saveState = 'idle';
+      saveState = 'error';
     }
   }
 
@@ -200,7 +213,7 @@
   }
 
   function handleExport() {
-    const css  = fa(overrides, { mode: 'layer', banner: true });
+    const css  = generateCSS(overrides, { mode: 'layer', banner: true });
     const blob = new Blob([css], { type: 'text/css' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
@@ -336,11 +349,13 @@
     <button
       onclick={handleSave}
       disabled={!hasPendingChanges || saveState === 'saving'}
-      title={hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
-      aria-label={saveState === 'saving' ? 'Saving changes' : hasPendingChanges ? 'Save changes' : 'No unsaved changes'}
+      title={saveState === 'error' ? "Save failed — click to retry" : hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
+      aria-label={saveState === 'saving' ? 'Saving changes' : saveState === 'error' ? 'Save failed' : hasPendingChanges ? 'Save changes' : 'No unsaved changes'}
       class={[
         "p-1 rounded transition-colors cursor-pointer shrink-0 disabled:pointer-events-none",
-        saveState === 'saved'
+        saveState === 'error'
+          ? "text-red-400"
+          : saveState === 'saved'
           ? "text-emerald-300"
           : hasPendingChanges
             ? "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
@@ -351,6 +366,8 @@
         <Loader2 class="w-3 h-3 animate-spin" />
       {:else if saveState === 'saved'}
         <Check class="w-3 h-3" />
+      {:else if saveState === 'error'}
+        <AlertTriangle class="w-3 h-3" />
       {:else}
         <Save class="w-3 h-3" />
       {/if}

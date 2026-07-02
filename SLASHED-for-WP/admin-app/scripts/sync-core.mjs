@@ -19,6 +19,13 @@
  * to diverge — `.syncignore` is empty by default. Plugin build wiring lives
  * outside src/ (vite.config.js, package.json, svelte.config.js, tsconfig.json)
  * and is never touched by this script.
+ *
+ * --check / --dry-run: reports drift against the framework source (files that
+ * would change, be added, or are vendored locally but no longer exist upstream)
+ * without writing anything. Used by `npm run check` (PL-025) to catch admin-app
+ * vendoring drift in CI. See writeFile() below — every write in this script
+ * routes through it, so the "never touch disk in check mode" invariant only
+ * has to hold in one place.
  */
 
 import {
@@ -29,10 +36,13 @@ import {
 import { resolve, dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+const CHECK_MODE = process.argv.includes('--check') || process.argv.includes('--dry-run');
+
 // ── Vendored manifest ─────────────────────────────────────────────────────────
-// Written after every sync so editors / AI tools can tell at a glance which
-// files in src/ originate from the framework and must NOT be edited here.
-// Edit those files in codeslash-dev/SLASHED → configurator/src/ instead.
+// Written after every real sync so editors / AI tools can tell at a glance
+// which files in src/ originate from the framework and must NOT be edited
+// here. Edit those files in codeslash-dev/SLASHED → configurator/src/ instead.
+// Skipped entirely in --check mode (no sync happened, nothing to record).
 
 const MANIFEST_PATH = resolve(resolve(dirname(fileURLToPath(import.meta.url)), '..'), '.vendored-manifest.json');
 const _vendoredFiles = [];
@@ -125,18 +135,101 @@ function isIgnored(relFromSrc) {
   return syncIgnore.has(posix) || syncIgnore.has('src/' + posix);
 }
 
+// ── --check mode: drift tracking + the single write call site ─────────────────
+
+const driftFindings = [];
+// Relative (posix, from SRC) paths this run actually resolved against the
+// framework source — used in --check mode to detect files vendored locally
+// that no longer exist upstream ("orphans").
+const visitedSrcRel = new Set();
+
+function reportDrift(kind, label, detail) {
+  driftFindings.push(`  ${kind.padEnd(8)} ${label}${detail ? ` (${detail})` : ''}`);
+}
+
+/**
+ * Writes `content` (string or Buffer) to `destPath` — or, in --check mode,
+ * compares it against the existing file and records drift instead of
+ * touching disk. This is the *only* place either the real sync or the check
+ * mode writes a file, so "never write in --check mode" only needs to be true
+ * here rather than in every call site separately.
+ */
+function writeFile(destPath, content, label) {
+  if (!CHECK_MODE) {
+    mkdirSync(dirname(destPath), { recursive: true });
+    writeFileSync(destPath, content);
+    return;
+  }
+  const next = Buffer.isBuffer(content) ? content : Buffer.from(content, 'utf8');
+  if (!existsSync(destPath)) {
+    reportDrift('missing', label, 'present upstream, not vendored locally');
+    return;
+  }
+  const existing = readFileSync(destPath);
+  if (!existing.equals(next)) {
+    reportDrift('stale', label, 'vendored copy differs from upstream source');
+  }
+}
+
+/** Recursively list every file under `dir`, relative (posix) to `base`. Read-only. */
+function listRelFiles(dir, base, out = []) {
+  if (!existsSync(dir)) return out;
+  for (const entry of readdirSync(dir)) {
+    const p = join(dir, entry);
+    if (statSync(p).isDirectory()) {
+      listRelFiles(p, base, out);
+    } else {
+      out.push(toPosix(relative(base, p)));
+    }
+  }
+  return out;
+}
+
+/**
+ * In --check mode, flag files vendored locally but no longer resolved from
+ * upstream: src/ files not visited this run, and framework-css/core/ files
+ * outside the fixed CHROME_LAYERS set (the complete, hardcoded list of
+ * chrome layers this script ever vendors — anything else there is stale).
+ */
+function reportOrphans() {
+  if (!CHECK_MODE) return;
+  for (const rel of listRelFiles(SRC, SRC)) {
+    if (isIgnored(rel) || visitedSrcRel.has(rel)) continue;
+    reportDrift('orphan', `src/${rel}`, 'vendored locally, no longer present upstream');
+  }
+  for (const rel of listRelFiles(VENDOR_CORE, VENDOR_CORE)) {
+    if (CHROME_LAYERS.includes(rel)) continue;
+    reportDrift('orphan', `framework-css/core/${rel}`, 'vendored locally, no longer a tracked chrome layer');
+  }
+}
+
+/** Print the check result and set the process exit code. Never used outside --check mode. */
+function finishCheck(sourceLabel) {
+  console.log(`  source: ${sourceLabel}`);
+  if (driftFindings.length === 0) {
+    console.log('OK — admin-app/src/ (and vendored framework-css/) match the framework configurator.');
+    return;
+  }
+  console.error('Drift detected against the framework configurator:');
+  for (const line of driftFindings) console.error(line);
+  console.error(`\n${driftFindings.length} finding(s) — run npm run sync to update.`);
+  process.exitCode = 1;
+}
+
 // ── Framework CSS vendoring (shared) ───────────────────────────────────────────
 
 /** Copy the plugin's full bundle into the vendored badges/ dir for the preview. */
 function vendorFullBundle() {
-  mkdirSync(VENDOR_BADGES, { recursive: true });
+  const label = 'framework-css/badges/slashed.full.css';
+  const dest = join(VENDOR_BADGES, 'slashed.full.css');
   if (existsSync(PLUGIN_FULL_CSS)) {
-    copyFileSync(PLUGIN_FULL_CSS, join(VENDOR_BADGES, 'slashed.full.css'));
-    process.stdout.write('  copy  framework-css/badges/slashed.full.css (from dist/)\n');
-  } else if (existsSync(join(VENDOR_BADGES, 'slashed.full.css'))) {
-    process.stdout.write('  keep  framework-css/badges/slashed.full.css (dist/ bundle missing)\n');
+    if (!CHECK_MODE) mkdirSync(VENDOR_BADGES, { recursive: true });
+    writeFile(dest, readFileSync(PLUGIN_FULL_CSS), label);
+    if (!CHECK_MODE) process.stdout.write(`  copy  ${label} (from dist/)\n`);
+  } else if (existsSync(dest)) {
+    if (!CHECK_MODE) process.stdout.write(`  keep  ${label} (dist/ bundle missing)\n`);
   } else {
-    process.stderr.write('  WARN  dist/slashed.full.css not found — preview will be unstyled until the framework CSS is installed.\n');
+    process.stderr.write(`  WARN  dist/slashed.full.css not found — preview will be unstyled until the framework CSS is installed.\n`);
   }
 }
 
@@ -167,37 +260,162 @@ function copyLocalDir(srcDir, srcBase) {
   for (const entry of readdirSync(srcDir)) {
     const srcPath = join(srcDir, entry);
     const rel = relative(srcBase, srcPath);
-    if (statSync(srcPath).isDirectory()) {
-      copyLocalDir(srcPath, srcBase);
-    } else {
-      if (isIgnored(rel)) {
-        process.stdout.write(`  skip  src/${rel} (syncignore)\n`);
-        continue;
+    // Open first so the isDirectory check and (for files) the read below
+    // operate on the same fd/inode — no TOCTOU window between checking what
+    // the entry is and using it, matching the O_NOFOLLOW idiom used elsewhere
+    // in this file for the syncignore-preservation reads.
+    const fd = openSync(srcPath, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0));
+    let isDir;
+    try {
+      isDir = fstatSync(fd).isDirectory();
+      if (!isDir) {
+        if (isIgnored(rel)) {
+          if (!CHECK_MODE) process.stdout.write(`  skip  src/${rel} (syncignore)\n`);
+        } else {
+          const destPath = join(SRC, rel);
+          assertWithinSrc(destPath);
+          const relPosix = toPosix(rel);
+          visitedSrcRel.add(relPosix);
+          writeFile(destPath, readFileSync(fd), `src/${relPosix}`);
+          if (!CHECK_MODE) {
+            trackVendored(rel, `local:configurator/src/${rel}`);
+            process.stdout.write(`  copy  src/${rel}\n`);
+          }
+        }
       }
-      const destPath = join(SRC, rel);
-      assertWithinSrc(destPath);
-      mkdirSync(dirname(destPath), { recursive: true });
-      copyFileSync(srcPath, destPath);
-      trackVendored(rel, `local:configurator/src/${rel}`);
-      process.stdout.write(`  copy  src/${rel}\n`);
+    } finally {
+      closeSync(fd);
     }
+    if (isDir) copyLocalDir(srcPath, srcBase);
   }
 }
 
 function vendorChromeLocal(repoRoot) {
   const coreDir = resolve(repoRoot, 'core');
-  mkdirSync(VENDOR_CORE, { recursive: true });
+  if (!CHECK_MODE) mkdirSync(VENDOR_CORE, { recursive: true });
   for (const name of CHROME_LAYERS) {
     const from = join(coreDir, name);
     if (!existsSync(from)) {
       throw new Error(`Framework chrome layer missing: ${from}`);
     }
-    copyFileSync(from, join(VENDOR_CORE, name));
-    process.stdout.write(`  copy  framework-css/core/${name}\n`);
+    const dest = join(VENDOR_CORE, name);
+    const label = `framework-css/core/${name}`;
+    writeFile(dest, readFileSync(from), label);
+    if (!CHECK_MODE) process.stdout.write(`  copy  ${label}\n`);
   }
 }
 
 // ── GitHub API sync ───────────────────────────────────────────────────────────
+//
+// Content fetched here is written to disk verbatim by writeFile() (source
+// vendoring — there's no meaningful way to "sanitize" a .svelte/.ts file
+// without corrupting it). The accepted trust boundary: SLASHED_REPO/REF are
+// hardcoded constants (not derived from any input), fetched over HTTPS via
+// the official GitHub REST API, and every write destination is confined to
+// SRC by assertWithinSrc()/assertSafeName() regardless of fetched content.
+
+const RETRY_MAX_ATTEMPTS = 3; // total attempts, i.e. up to 2 retries.
+const RETRY_BASE_DELAY_MS = 500;
+
+/** Exponential backoff delay (ms) before retry attempt `attempt` (0-based). */
+export function backoffDelayMs(attempt, baseDelayMs = RETRY_BASE_DELAY_MS) {
+  return baseDelayMs * 2 ** attempt;
+}
+
+function defaultSleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+/**
+ * fetch() wrapper that retries transient failures with exponential backoff:
+ * network errors (fetch itself throwing), 5xx responses, and 403 responses
+ * GitHub marks as an exhausted rate limit (`x-ratelimit-remaining: 0`).
+ * Any other response (2xx, or a non-retryable error like plain 403/404) is
+ * returned/thrown immediately on the first attempt so existing callers'
+ * "keep the vendored copy" fallback logic still runs on real not-found /
+ * permission errors instead of being delayed by pointless retries.
+ *
+ * `fetchImpl`/`sleep` are injectable so this is unit-testable without a
+ * real network or real timers.
+ */
+export async function fetchWithRetry(
+  url,
+  options,
+  { maxAttempts = RETRY_MAX_ATTEMPTS, baseDelayMs = RETRY_BASE_DELAY_MS, fetchImpl = fetch, sleep = defaultSleep } = {},
+) {
+  let lastErr;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    let res;
+    try {
+      res = await fetchImpl(url, options);
+    } catch (err) {
+      lastErr = err;
+      if (attempt === maxAttempts - 1) throw err;
+      await sleep(backoffDelayMs(attempt, baseDelayMs));
+      continue;
+    }
+    if (res.ok) return res;
+    const rateLimited = res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0';
+    const retryable = res.status >= 500 || rateLimited;
+    if (!retryable || attempt === maxAttempts - 1) return res;
+    await sleep(backoffDelayMs(attempt, baseDelayMs));
+  }
+  // Unreachable in practice (the loop always returns or throws above), but
+  // keeps control flow explicit for the "all attempts were network errors" case.
+  throw lastErr;
+}
+
+// Caps total concurrent GitHub API requests across the *whole* recursive tree
+// walk (not just per-directory) so a wide/deep configurator/src tree can't
+// fan out to hundreds of simultaneous requests and trip GitHub's secondary
+// rate limits. Deliberately wraps only the network call itself (inside
+// ghFetch(), below) rather than the recursive syncGhDir()/syncGhFile() work:
+// wrapping a whole recursive subtree would have a directory job hold a slot
+// for its entire subtree's duration while its own children queue behind the
+// same limiter for a slot — a reentrant lock-holding pattern that can starve
+// or deadlock once enough directory jobs are simultaneously in flight.
+// Wrapping just the atomic HTTP request has no such self-referential wait.
+const SYNC_CONCURRENCY = 6;
+
+/**
+ * Bounded-concurrency job queue. `run(fn)` queues `fn` and resolves/rejects
+ * with its result once it's had a turn; at most `limit` jobs run at once.
+ *
+ * `fn` is invoked through `Promise.resolve().then(fn)` rather than called
+ * directly so a job that throws synchronously (instead of returning a
+ * rejected promise) still goes through the same resolve/reject/cleanup path
+ * — a bare `fn()` call would let a sync throw skip `.finally()` entirely,
+ * permanently leaking an "active" slot and stalling every future job.
+ *
+ * @param {number} limit
+ * @returns {(fn: () => Promise<any>) => Promise<any>}
+ */
+export function createLimiter(limit) {
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new TypeError(`createLimiter: limit must be a positive integer, got ${limit}`);
+  }
+  let active = 0;
+  const queue = [];
+
+  function next() {
+    if (active >= limit || queue.length === 0) return;
+    active++;
+    const { fn, resolve, reject } = queue.shift();
+    Promise.resolve().then(fn).then(resolve, reject).finally(() => {
+      active--;
+      next();
+    });
+  }
+
+  return function run(fn) {
+    return new Promise((resolve, reject) => {
+      queue.push({ fn, resolve, reject });
+      next();
+    });
+  };
+}
+
+const ghLimiter = createLimiter(SYNC_CONCURRENCY);
 
 async function ghFetch(path) {
   const url = `https://api.github.com/repos/${SLASHED_REPO}/contents/${path}?ref=${REF}`;
@@ -208,7 +426,7 @@ async function ghFetch(path) {
   if (process.env.GITHUB_TOKEN) {
     headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   }
-  const res = await fetch(url, { headers });
+  const res = await ghLimiter(() => fetchWithRetry(url, { headers }));
   if (!res.ok) {
     const err = new Error(`GitHub API ${res.status} for ${path}`);
     err.status = res.status;
@@ -228,24 +446,27 @@ async function ghFetchContent(ghPath) {
 async function syncGhFile(ghPath, destPath) {
   assertWithinSrc(destPath);
   const rel = relative(SRC, destPath);
+  const relPosix = toPosix(rel);
   if (isIgnored(rel)) {
-    process.stdout.write(`  skip  src/${rel} (syncignore)\n`);
+    if (!CHECK_MODE) process.stdout.write(`  skip  src/${rel} (syncignore)\n`);
     return;
   }
+  visitedSrcRel.add(relPosix);
   let content;
   try {
     content = await ghFetchContent(ghPath);
   } catch (err) {
     if ((err.status === 403 || err.status === 404) && existsSync(destPath)) {
-      process.stdout.write(`  keep  src/${rel} (GitHub API ${err.status} — keeping vendored copy)\n`);
+      if (!CHECK_MODE) process.stdout.write(`  keep  src/${rel} (GitHub API ${err.status} — keeping vendored copy)\n`);
       return;
     }
     throw err;
   }
-  mkdirSync(dirname(destPath), { recursive: true });
-  writeFileSync(destPath, content, { encoding: 'utf8' });
-  trackVendored(rel, `github:${SLASHED_REPO}/${ghPath}@${REF}`);
-  process.stdout.write(`  fetch src/${rel}\n`);
+  writeFile(destPath, content, `src/${relPosix}`);
+  if (!CHECK_MODE) {
+    trackVendored(rel, `github:${SLASHED_REPO}/${ghPath}@${REF}`);
+    process.stdout.write(`  fetch src/${rel}\n`);
+  }
 }
 
 async function syncGhDir(ghDir, destDir) {
@@ -254,6 +475,10 @@ async function syncGhDir(ghDir, destDir) {
   if (!Array.isArray(entries)) {
     throw new Error(`Expected directory listing from API for ${ghDir}`);
   }
+  // The recursive fan-out itself is unbounded — actual concurrency is capped
+  // where it matters, inside ghFetch()'s shared ghLimiter around the network
+  // request. See the comment on SYNC_CONCURRENCY above for why the limiter
+  // wraps the request rather than this whole recursive call.
   await Promise.all(
     entries.map((entry) => {
       assertSafeName(entry.name);
@@ -266,18 +491,17 @@ async function syncGhDir(ghDir, destDir) {
 }
 
 async function vendorChromeRemote() {
-  mkdirSync(VENDOR_CORE, { recursive: true });
+  if (!CHECK_MODE) mkdirSync(VENDOR_CORE, { recursive: true });
   for (const name of CHROME_LAYERS) {
     const dest = join(VENDOR_CORE, name);
+    const label = `framework-css/core/${name}`;
     try {
       const content = await ghFetchContent(`core/${name}`);
-      // lgtm[js/path-injection] -- dest is join(VENDOR_CORE, name) where name
-      // is from the hardcoded CHROME_LAYERS array, not from network data.
-      writeFileSync(dest, content, 'utf8');
-      process.stdout.write(`  fetch framework-css/core/${name}\n`);
+      writeFile(dest, content, label);
+      if (!CHECK_MODE) process.stdout.write(`  fetch ${label}\n`);
     } catch (err) {
       if ((err.status === 403 || err.status === 404) && existsSync(dest)) {
-        process.stdout.write(`  keep  framework-css/core/${name} (GitHub API ${err.status})\n`);
+        if (!CHECK_MODE) process.stdout.write(`  keep  ${label} (GitHub API ${err.status})\n`);
         continue;
       }
       throw err;
@@ -288,21 +512,68 @@ async function vendorChromeRemote() {
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('Syncing configurator core...');
+  console.log(CHECK_MODE ? 'Checking configurator core sync...' : 'Syncing configurator core...');
 
   const local = findLocalCfgSrc();
   if (local) {
-    console.log(`  source: local ${local}`);
-    // Fresh tree: drop any stale files from the previous fork before copying,
-    // but preserve syncignored plugin-specific files across the wipe (mirrors
-    // the same logic used in GitHub API mode).
+    if (!CHECK_MODE) {
+      console.log(`  source: local ${local}`);
+      // Fresh tree: drop any stale files from the previous fork before copying,
+      // but preserve syncignored plugin-specific files across the wipe (mirrors
+      // the same logic used in GitHub API mode).
+      const preserved = [];
+      if (existsSync(SRC)) {
+        for (const entry of syncIgnore) {
+          const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
+          const srcPath = resolve(join(SRC, rel));
+          if (!srcPath.startsWith(SRC_ROOT)) continue;
+          // O_NOFOLLOW rejects symlinks at open time without a TOCTOU-prone pre-check.
+          let fd;
+          try { fd = openSync(srcPath, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0)); } catch { continue; }
+          try {
+            if (!fstatSync(fd).isFile()) continue;
+            preserved.push({ rel, content: readFileSync(fd) });
+            process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
+          } finally { closeSync(fd); }
+        }
+        rmSync(SRC, { recursive: true, force: true });
+      }
+      mkdirSync(SRC, { recursive: true });
+      for (const { rel, content } of preserved) {
+        const destPath = resolve(join(SRC, rel));
+        if (!destPath.startsWith(SRC_ROOT)) continue;
+        mkdirSync(dirname(destPath), { recursive: true });
+        writeFileSync(destPath, content);
+      }
+    }
+    // --check mode never wipes/preserves — SRC is left untouched; copyLocalDir
+    // below only reads from it (via writeFile()'s compare branch).
+    copyLocalDir(local, local);
+    vendorChromeLocal(resolve(local, '../..')); // configurator/src -> repo root
+    vendorFullBundle();
+    if (CHECK_MODE) {
+      reportOrphans();
+      finishCheck(`local ${local}`);
+      return;
+    }
+    writeManifest(process.env.SLASHED_CONFIGURATOR_SRC ? 'local:SLASHED_CONFIGURATOR_SRC' : 'local');
+    console.log('Done (local).');
+    return;
+  }
+
+  if (!CHECK_MODE) {
+    console.log(`  source: GitHub ${SLASHED_REPO}@${REF}`);
+    // Fresh tree: drop stale files before fetching, but preserve any syncignored
+    // files so plugin-specific overrides survive the wipe.
     const preserved = [];
     if (existsSync(SRC)) {
       for (const entry of syncIgnore) {
         const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
         const srcPath = resolve(join(SRC, rel));
         if (!srcPath.startsWith(SRC_ROOT)) continue;
-        // O_NOFOLLOW rejects symlinks at open time without a TOCTOU-prone pre-check.
+        // Open the fd first so stat + read operate on the same inode (no
+        // TOCTOU). O_NOFOLLOW rejects symlinks at open time, matching the
+        // local-source preserve block above.
         let fd;
         try { fd = openSync(srcPath, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0)); } catch { continue; }
         try {
@@ -320,51 +591,29 @@ async function main() {
       mkdirSync(dirname(destPath), { recursive: true });
       writeFileSync(destPath, content);
     }
-    copyLocalDir(local, local);
-    vendorChromeLocal(resolve(local, '../..')); // configurator/src -> repo root
-    vendorFullBundle();
-    writeManifest(process.env.SLASHED_CONFIGURATOR_SRC ? 'local:SLASHED_CONFIGURATOR_SRC' : 'local');
-    console.log('Done (local).');
-    return;
-  }
-
-  console.log(`  source: GitHub ${SLASHED_REPO}@${REF}`);
-  // Fresh tree: drop stale files before fetching, but preserve any syncignored
-  // files so plugin-specific overrides survive the wipe.
-  const preserved = [];
-  if (existsSync(SRC)) {
-    for (const entry of syncIgnore) {
-      const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
-      const srcPath = resolve(join(SRC, rel));
-      if (!srcPath.startsWith(SRC_ROOT)) continue;
-      // Open the fd first so stat + read operate on the same inode (no TOCTOU).
-      let fd;
-      try { fd = openSync(srcPath, 'r'); } catch { continue; }
-      try {
-        if (!fstatSync(fd).isFile()) continue;
-        preserved.push({ rel, content: readFileSync(fd) });
-        process.stdout.write(`  keep  src/${rel} (syncignore — saved across wipe)\n`);
-      } finally { closeSync(fd); }
-    }
-    rmSync(SRC, { recursive: true, force: true });
-  }
-  mkdirSync(SRC, { recursive: true });
-  for (const { rel, content } of preserved) {
-    const destPath = resolve(join(SRC, rel));
-    if (!destPath.startsWith(SRC_ROOT)) continue;
-    mkdirSync(dirname(destPath), { recursive: true });
-    writeFileSync(destPath, content);
   }
   // Recursively vendor the entire configurator/src tree (components, lib, data,
   // and root files: App.svelte, main.ts, types.ts, app.css, vite-env.d.ts).
   await syncGhDir(CFG_SRC, SRC);
   await vendorChromeRemote();
   vendorFullBundle();
+  if (CHECK_MODE) {
+    reportOrphans();
+    finishCheck(`GitHub ${SLASHED_REPO}@${REF}`);
+    return;
+  }
   writeManifest(`github:${SLASHED_REPO}@${REF}`);
   console.log('Done (remote).');
 }
 
-main().catch((err) => {
-  console.error('sync-core failed:', err.message);
-  process.exit(1);
-});
+// Only run when executed directly (`node scripts/sync-core.mjs`, which is how
+// every npm script invokes this file) — not when imported, so unit tests can
+// import the exported pure helpers (backoffDelayMs, fetchWithRetry,
+// createLimiter) above without triggering a real sync as an import side effect.
+const isMainModule = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+if (isMainModule) {
+  main().catch((err) => {
+    console.error('sync-core failed:', err.message);
+    process.exit(1);
+  });
+}
