@@ -5,10 +5,11 @@
 <script lang="ts">
   import classesData from '../../data/classes.generated.json';
   import tokensData from '../../data/api-index.generated.json';
-  import { Copy, Check } from 'lucide-svelte';
+  import { Copy, Check } from '@lucide/svelte';
+  import type { SlashedClass } from '../../types';
 
   const classes = classesData.classes;
-  const tokens = tokensData.tokens.filter((t: any) => t.tier === 'PUBLIC' || t.tier === 'PUBLIC-ADVANCED');
+  const tokens = tokensData.tokens.filter((t) => t.tier === 'PUBLIC' || t.tier === 'PUBLIC-ADVANCED');
 
   let query = $state('');
   let tab = $state<'classes' | 'tokens'>('classes');
@@ -17,7 +18,7 @@
   let filteredClasses = $derived(() => {
     const q = query.trim().toLowerCase();
     if (!q) return classes;
-    return classes.filter((c: any) =>
+    return classes.filter((c: SlashedClass) =>
       c.name.toLowerCase().includes(q) ||
       c.selector?.toLowerCase().includes(q) ||
       c.description?.toLowerCase().includes(q) ||
@@ -28,7 +29,7 @@
   let filteredTokens = $derived(() => {
     const q = query.trim().toLowerCase();
     if (!q) return tokens;
-    return tokens.filter((t: any) =>
+    return tokens.filter((t) =>
       t.name.toLowerCase().includes(q) ||
       t.description?.toLowerCase().includes(q) ||
       t.group?.toLowerCase().includes(q) ||

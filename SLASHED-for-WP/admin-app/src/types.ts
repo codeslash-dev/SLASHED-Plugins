@@ -19,6 +19,68 @@ export interface SlashedToken {
   syntax?: string | null;
 }
 
+// SL-017/024: types for the two consumed-generated-JSON shapes and codec.ts's
+// options objects, replacing `any` at their 7 call sites.
+
+/** A token entry as it appears in data/api-index.generated.json's `tokens` array. */
+export interface ApiIndexToken extends SlashedToken {
+  fallbackOnly?: boolean;
+  optional?: boolean;
+  layer?: string | null;
+  bundles?: string[];
+}
+
+/** Shape of data/api-index.generated.json (configurator/scripts/sync-api.mjs's output). */
+export interface ApiIndex {
+  _sync?: Record<string, unknown>;
+  tokens: ApiIndexToken[];
+}
+
+/** A class entry as it appears in data/classes.generated.json's `classes` array. */
+export interface SlashedClass {
+  name: string;
+  selector: string;
+  kind: string;
+  category: string;
+  group?: string;
+  description?: string;
+  optional?: boolean;
+  layer?: string | null;
+}
+
+/** Shape of data/classes.generated.json (configurator/scripts/sync-api.mjs's output). */
+export interface ClassIndex {
+  _sync?: Record<string, unknown>;
+  classes: SlashedClass[];
+}
+
+/** A registry entry as it appears in data/token-registry.generated.json's `tokens` array. */
+export interface TokenRegistryEntry {
+  id: number;
+  name: string;
+  removed?: boolean;
+}
+
+/** Shape of data/token-registry.generated.json, consumed by codec.ts's encode/decode. */
+export interface TokenRegistry {
+  _meta?: Record<string, unknown>;
+  tokens: TokenRegistryEntry[];
+}
+
+/** Options accepted by codec.ts's decode(). */
+export interface DecodeOptions {
+  sanitize?: (value: string) => string;
+  isKnown?: (tokenName: string) => boolean;
+}
+
+/**
+ * Options accepted by codec.ts's readShareFromHash() / readShareFromHashIfPresent().
+ * Deliberately omits `sanitize` (unlike DecodeOptions): these are the public
+ * share-link entry points and always force sanitizeValue as a CSS-injection
+ * safeguard, so a caller-supplied sanitize is never honoured.
+ */
+export type ShareOptions = Pick<DecodeOptions, "isKnown">;
+
 export interface SlashedCategory {
   id: string;
   label: string;

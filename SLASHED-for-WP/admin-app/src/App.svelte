@@ -1,19 +1,19 @@
 <script lang="ts">
   import { onMount, untrack } from 'svelte';
-  import { SlidersHorizontal, Eye, RotateCcw } from 'lucide-svelte';
-  import type { PreviewTemplate, SlashedToken } from './types';
+  import { SlidersHorizontal, Eye, RotateCcw } from '@lucide/svelte';
+  import type { PreviewTemplate, SlashedToken, ApiIndex } from './types';
   import StudioHeader from './components/shell/StudioHeader.svelte';
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import StatusBar from './components/shell/StatusBar.svelte';
   import PreviewPanel from './components/shell/PreviewPanel.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
-  import { fa } from './lib/codec';
+  import { generateCSS } from './lib/codec';
   import { loadInitialOverrides, injectLivePreview, saveOverrides, hasWpBoot } from './lib/persistence';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import CommandPalette from './components/CommandPalette.svelte';
 
-  const ALL_TOKENS = ((tokensRaw as any).tokens ?? tokensRaw) as SlashedToken[];
+  const ALL_TOKENS = ((tokensRaw as ApiIndex).tokens ?? tokensRaw) as SlashedToken[];
 
   const DOMAIN_LABELS: Record<string, string> = {
     home: "Home", colors: "Colors", typography: "Typography", spacing: "Spacing",
@@ -79,7 +79,7 @@
 
   // Save state — hasPendingChanges is derived so undo/redo update it automatically.
   let lastSavedOverrides = $state<Record<string, string>>(untrack(() => ({ ...overrides })));
-  let saveState = $state<'idle' | 'saving' | 'saved'>('idle');
+  let saveState = $state<'idle' | 'saving' | 'saved' | 'error'>('idle');
   let hasPendingChanges = $derived(!shallowEq(overrides, lastSavedOverrides));
   let saveStateTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -92,7 +92,7 @@
     if (!shallowEq(prev, next)) {
       past = [...past.slice(-49), prev];
       future = [];
-      if (saveState === 'saved') saveState = 'idle';
+      if (saveState === 'saved' || saveState === 'error') saveState = 'idle';
     }
     overrides = next;
   }
@@ -117,7 +117,7 @@
       }
     } catch (err) {
       console.warn('slashed: save failed', err);
-      saveState = 'idle';
+      saveState = 'error';
     }
   }
 
@@ -219,7 +219,7 @@
   }
 
   function handleExport() {
-    const css = fa(overrides, { mode: "layer", banner: true });
+    const css = generateCSS(overrides, { mode: "layer", banner: true });
     const blob = new Blob([css], { type: "text/css" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

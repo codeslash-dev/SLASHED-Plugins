@@ -34,6 +34,14 @@ let probeDarkEl: HTMLElement | null = null;
 // function is a pure write with no reactive read, so clearing here can't cause loops.
 const resolveCache = new Map<string, string>();
 
+// SL-025: deliberately module-level (not created inside a component/store
+// factory). Every panel across the whole tree resolves colors against the
+// *same* single preview iframe registered via registerPreviewDoc(), so there
+// is exactly one meaningful "preview version" for the app to share — scoping
+// this to a component would just mean re-deriving/passing it down everywhere
+// for no benefit. Wrapped in an object (`.value`) because `$state` on a bare
+// module-level primitive isn't itself reactive outside a component context;
+// consumers read `previewVersion.value`, never reassign `previewVersion`.
 /** Reactive version counter — Svelte runes pick this up via `.value`. */
 export const previewVersion = $state({ value: 0 });
 

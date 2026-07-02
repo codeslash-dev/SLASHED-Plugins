@@ -1,11 +1,15 @@
 /* SLASHED — core/layout.css
    @layer slashed.layout
    Layout primitives: section, container, stack, cluster, grid, sidebar, switcher, frame.
-   Prefix: .sf-*; local rhythm via --sf-*-gap / sizing tokens. */
+   Prefix: .sf-*; local rhythm via --sf-*-gap / sizing tokens.
+   SL-005: every @container query in this file hardcodes its breakpoint
+   instead of referencing a --sf-* token — var() is not allowed inside an
+   @container condition per the CSS spec. This applies framework-wide to
+   every @container site below; not re-explained at each one. */
 
 @layer slashed.layout {
 
-  
+  /* Section */
   .sf-section     { padding-block: var(--sf-section-pad); }
   .sf-section--xs { --sf-section-pad: var(--sf-section-pad--xs); }
   .sf-section--s  { --sf-section-pad: var(--sf-section-pad--s); }
@@ -52,6 +56,7 @@
   }
 
   
+  /* Container */
   .sf-container {
     container:      sf-layout / inline-size;
     width:          100%;
@@ -71,6 +76,7 @@
   }
 
   
+  /* Stack & gap */
   .sf-stack {
     display:        flex;
     flex-direction: column;
@@ -96,12 +102,14 @@
   .sf-gap--2xl { gap: var(--sf-space-2xl); }
 
   
+  /* Box */
   .sf-box {
     padding: var(--sf-box-padding);
     outline: var(--sf-box-border-width) solid var(--sf-box-border-color);
   }
 
   
+  /* Center */
   .sf-center {
     box-sizing:      content-box;
     width:           auto;
@@ -117,6 +125,7 @@
   }
 
   
+  /* Cluster */
   .sf-cluster {
     display:         flex;
     flex-wrap:       wrap;
@@ -137,6 +146,7 @@
   .sf-cluster--between  { justify-content: space-between; }
 
   
+  /* Sidebar */
   .sf-sidebar {
     display:   flex;
     flex-wrap: wrap;
@@ -169,6 +179,7 @@
   .sf-sidebar--wide   { --sf-sidebar-width: 26rem; }
 
   
+  /* Switcher */
   .sf-switcher {
     display:   flex;
     flex-wrap: wrap;
@@ -184,6 +195,7 @@
   .sf-switcher--vertical { flex-direction: column; }
 
   
+  /* Grid & icon */
   .sf-grid {
     display:               grid;
     grid-template-columns: repeat(auto-fill, minmax(min(var(--sf-grid-min), 100%), 1fr));
@@ -229,6 +241,7 @@
   }
 
   
+  /* Cover */
   .sf-cover {
     display:        flex;
     flex-direction: column;
@@ -247,6 +260,7 @@
   .sf-cover--padding-l { padding-block: var(--sf-space-4xl); }
 
   
+  /* Frame */
   .sf-frame {
     aspect-ratio:    var(--sf-frame-ratio);
     overflow:        hidden;
@@ -395,7 +409,6 @@
     container: sf-grid / inline-size;
   }
 
-  /* Cannot use var() inside @container per CSS spec — breakpoints hardcoded. */
   @container (min-width: 30em) {
     .sf-grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
     .sf-grid-cols-6 { grid-template-columns: repeat(3, 1fr); }

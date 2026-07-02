@@ -101,14 +101,20 @@
     --sf-color-danger:    var(--sf-color-danger-source-light);
   }
 
-  /* Mode flag — drives formula direction for non-color dark overrides.
-     Set by themes.css via [data-theme="dark"] and the prefers-color-scheme
-     media query. Do not set directly. */
+  /* Mode flag — INTERNAL, not a public hook (SL-003: same "--sf-is-*" naming
+     pattern as the public flags below, opposite contract — read here, don't
+     set). Drives formula direction for non-color dark overrides. Set only by
+     themes.css via [data-theme="dark"] and the prefers-color-scheme media
+     query; every other read site (core/tokens.css, the configurator's power
+     knobs) only reads it inside calc() expressions. Setting it directly
+     desyncs it from color-scheme/[data-theme] and produces an inconsistent
+     theme. */
   @property --sf-is-dark { syntax: "<integer>"; inherits: true; initial-value: 0; }
 
   /* @property — INTERACTION STATE FLAGS */
-  /* Public hooks for Style Queries. Allow components to react to states
-     toggled on ancestors via .is-* classes. */
+  /* PUBLIC hooks for Style Queries — safe to set from consumer code, unlike
+     --sf-is-dark above. Allow components to react to states toggled on
+     ancestors via .is-* classes. */
   @property --sf-is-active  { syntax: "<integer>"; inherits: true; initial-value: 0; }
   @property --sf-is-current { syntax: "<integer>"; inherits: true; initial-value: 0; }
   @property --sf-is-pressed { syntax: "<integer>"; inherits: true; initial-value: 0; }
@@ -366,7 +372,11 @@
          Dark auto-derivation formula (brand + status):
          clamp(0.65, 0.95 - l*0.5, 0.88) lightens dark-mode value relative to the light source.
          Surface inverts: clamp(0.16, 1.18 - l, 0.24) — near-white flips to near-dark.
-         Override any --sf-color-X-dark to take full per-mode control. */
+         Override any --sf-color-X-dark to take full per-mode control.
+         SL-001: this same clamp() formula is re-declared flat in themes.css
+         (SECTION-LEVEL THEMING) so [data-theme] overrides on non-:root elements
+         still resolve correctly — light-dark() only bakes at :root. Keep both
+         copies in sync if the formula ever changes. */
       --sf-color-primary:   light-dark(var(--sf-color-primary-source-light),   var(--sf-color-primary-source-dark,   oklch(from var(--sf-color-primary-source-light)   clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h)));
       --sf-color-secondary: light-dark(var(--sf-color-secondary-source-light), var(--sf-color-secondary-source-dark, oklch(from var(--sf-color-secondary-source-light) clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h)));
       --sf-color-tertiary:  light-dark(var(--sf-color-tertiary-source-light),  var(--sf-color-tertiary-source-dark,  oklch(from var(--sf-color-tertiary-source-light)  clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h)));
