@@ -420,7 +420,7 @@ class Slashed_Inventory {
 		}
 
 		$ordered = array();
-		foreach ( self::category_order() as $cat ) {
+		foreach ( Slashed_Category_Map::order() as $cat ) {
 			if ( ! empty( $grouped[ $cat ] ) ) {
 				sort( $grouped[ $cat ], SORT_NATURAL | SORT_FLAG_CASE );
 				$ordered[ $cat ] = $grouped[ $cat ];
@@ -456,8 +456,8 @@ class Slashed_Inventory {
 		$dash  = strpos( $key, '-' );
 		$first = false === $dash ? $key : substr( $key, 0, $dash );
 
-		$map = self::category_map();
-		return isset( $map[ $first ] ) ? $map[ $first ] : 'Misc';
+		$label = Slashed_Category_Map::label_for( $first );
+		return null !== $label ? $label : 'Misc';
 	}
 
 	/**
@@ -467,147 +467,7 @@ class Slashed_Inventory {
 	 * @return string[]
 	 */
 	public static function category_order() {
-		return array(
-			'Colors',
-			'Typography',
-			'Spacing',
-			'Sizing',
-			'Layout',
-			'Borders',
-			'Radius',
-			'Shadows',
-			'Effects',
-			'Motion',
-			'Icons',
-			'Z-Index',
-			'States',
-			'Focus',
-			'Scroll',
-			'Print',
-			'Fallback/Legacy',
-			'Misc',
-		);
-	}
-
-	/**
-	 * First-segment -> category-label mapping. Drives categorize_variable().
-	 *
-	 * @return array<string, string>
-	 */
-	private static function category_map() {
-		return array(
-			// Colors.
-			'color'       => 'Colors',
-			// Typography.
-			'text'        => 'Typography',
-			'font'        => 'Typography',
-			'leading'     => 'Typography',
-			'tracking'    => 'Typography',
-			'body'        => 'Typography',
-			'heading'     => 'Typography',
-			'h1'          => 'Typography',
-			'h2'          => 'Typography',
-			'h3'          => 'Typography',
-			'h4'          => 'Typography',
-			'h5'          => 'Typography',
-			'h6'          => 'Typography',
-			'prose'       => 'Typography',
-			'code'        => 'Typography',
-			'optical'     => 'Typography',
-			'line'        => 'Typography',
-			// Spacing.
-			'space'       => 'Spacing',
-			'gap'         => 'Spacing',
-			'gutter'      => 'Spacing',
-			'component'   => 'Spacing',
-			'section'     => 'Spacing',
-			'flow'        => 'Spacing',
-			'safe'        => 'Spacing',
-			'header'      => 'Spacing',
-			'sticky'      => 'Spacing',
-			// Sizing.
-			'size'        => 'Sizing',
-			'aspect'      => 'Sizing',
-			'ratio'       => 'Sizing',
-			'touch'       => 'Sizing',
-			// Layout.
-			'container'   => 'Layout',
-			'stack'       => 'Layout',
-			'cluster'     => 'Layout',
-			'sidebar'     => 'Layout',
-			'switcher'    => 'Layout',
-			'grid'        => 'Layout',
-			'cover'       => 'Layout',
-			'frame'       => 'Layout',
-			'reel'        => 'Layout',
-			'imposter'    => 'Layout',
-			'bento'       => 'Layout',
-			'box'         => 'Layout',
-			'center'      => 'Layout',
-			'content'     => 'Layout',
-			'breakout'    => 'Layout',
-			'divider'     => 'Layout',
-			'field'       => 'Layout',
-			'alternate'   => 'Layout',
-			'equal'       => 'Layout',
-			'col'         => 'Layout',
-			// Sizing (media).
-			'object'      => 'Sizing',
-			// Borders.
-			'border'      => 'Borders',
-			'stroke'      => 'Borders',
-			// Radius.
-			'radius'      => 'Radius',
-			// Shadows.
-			'shadow'      => 'Shadows',
-			// Effects.
-			'blur'        => 'Effects',
-			'opacity'     => 'Effects',
-			'gradient'    => 'Effects',
-			'mask'        => 'Effects',
-			'perspective' => 'Effects',
-			'drop'        => 'Effects',
-			'contrast'    => 'Effects',
-			// Motion.
-			'duration'    => 'Motion',
-			'ease'        => 'Motion',
-			'transition'  => 'Motion',
-			'motion'      => 'Motion',
-			'animation'   => 'Motion',
-			// Icons.
-			'icon'        => 'Icons',
-			// Z-Index.
-			'z'           => 'Z-Index',
-			// States.
-			'is'          => 'States',
-			'current'     => 'States',
-			'state'       => 'States',
-			// Focus.
-			'focus'       => 'Focus',
-			'caret'       => 'Focus',
-			// Scroll.
-			'scroll'      => 'Scroll',
-			'scrollbar'   => 'Scroll',
-			// Print.
-			'print'       => 'Print',
-			// Fallback/Legacy: HSL channel triplets (--sf-{name}-h/-s/-l)
-			// backing core/tokens.color-fallbacks.css — only consumed by the
-			// legacy hsl() fallback chain for browsers without light-dark() /
-			// oklch(from …) support.
-			'primary'     => 'Fallback/Legacy',
-			'secondary'   => 'Fallback/Legacy',
-			'tertiary'    => 'Fallback/Legacy',
-			'action'      => 'Fallback/Legacy',
-			'neutral'     => 'Fallback/Legacy',
-			'base'        => 'Fallback/Legacy',
-			'success'     => 'Fallback/Legacy',
-			'warning'     => 'Fallback/Legacy',
-			'error'       => 'Fallback/Legacy',
-			'info'        => 'Fallback/Legacy',
-			'danger'      => 'Fallback/Legacy',
-			// Misc explicit assignments.
-			'truncate'    => 'Misc',
-		);
+		return Slashed_Category_Map::order();
 	}
 
 	// ---------------------------------------------------------------

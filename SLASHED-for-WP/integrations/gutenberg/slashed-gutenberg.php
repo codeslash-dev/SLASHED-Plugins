@@ -169,6 +169,7 @@ if ( ! defined( 'SLASHED_VERSION' ) ) {
  */
 function slashed_gutenberg_require_data_classes() {
 	require_once SLASHED_GUTENBERG_PATH . '../../includes/class-css-parser.php';
+	require_once SLASHED_GUTENBERG_PATH . '../../includes/class-color-math.php';
 	require_once SLASHED_GUTENBERG_PATH . '../../includes/class-color-resolver.php';
 	require_once SLASHED_GUTENBERG_PATH . 'includes/class-inventory.php';
 }
