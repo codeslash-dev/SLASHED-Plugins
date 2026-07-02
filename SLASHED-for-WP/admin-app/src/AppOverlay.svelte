@@ -103,13 +103,20 @@
   // here, resolveColor()/resolveColorForTheme() always return "" and every
   // swatch that depends on them (the whole Semantic colors grid) renders
   // blank/transparent instead of the resolved color.
+  // Coalesced into a single rAF like PreviewPanel.svelte's SL-020 fix: a
+  // fast-changing control (dragging a slider) can re-run this effect many
+  // times per frame, but injectLivePreview()'s <style> rewrite + derived-
+  // token recompute only need to happen once per paint.
   $effect(() => {
-    injectLivePreview(overrides);
-    // registerPreviewDoc() bumps previewVersion itself (on both the
-    // first-registration and already-registered paths), so panels reading
-    // previewVersion.value re-resolve on every override change without a
-    // separate explicit bump here.
-    registerPreviewDoc(document);
+    const rafId = requestAnimationFrame(() => {
+      injectLivePreview(overrides);
+      // registerPreviewDoc() bumps previewVersion itself (on both the
+      // first-registration and already-registered paths), so panels reading
+      // previewVersion.value re-resolve on every override change without a
+      // separate explicit bump here.
+      registerPreviewDoc(document);
+    });
+    return () => cancelAnimationFrame(rafId);
   });
 
   // On desktop push page content left; on mobile the panel is a full overlay.
