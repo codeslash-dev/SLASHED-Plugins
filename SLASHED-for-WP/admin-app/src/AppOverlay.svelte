@@ -106,10 +106,16 @@
   // Coalesced into a single rAF like PreviewPanel.svelte's SL-020 fix: a
   // fast-changing control (dragging a slider) can re-run this effect many
   // times per frame, but injectLivePreview()'s <style> rewrite + derived-
-  // token recompute only need to happen once per paint.
+  // token recompute only need to happen once per paint. `overrides` must be
+  // read here, synchronously in the effect body, not inside the rAF
+  // callback — $effect only tracks reads that happen during its own
+  // synchronous execution, so reading it only inside the (later-firing) rAF
+  // callback would silently stop the effect from re-running on override
+  // changes after the first paint.
   $effect(() => {
+    const ov = overrides;
     const rafId = requestAnimationFrame(() => {
-      injectLivePreview(overrides);
+      injectLivePreview(ov);
       // registerPreviewDoc() bumps previewVersion itself (on both the
       // first-registration and already-registered paths), so panels reading
       // previewVersion.value re-resolve on every override change without a
