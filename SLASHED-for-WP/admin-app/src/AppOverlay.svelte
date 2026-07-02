@@ -4,14 +4,14 @@
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import DomainPanel from './components/DomainPanel.svelte';
   import CommandPalette from './components/CommandPalette.svelte';
-  import { fa } from './lib/codec';
+  import { generateCSS } from './lib/codec';
   import { loadInitialOverrides, injectLivePreview, saveOverrides } from './lib/persistence';
   import { registerPreviewDoc } from './lib/previewResolver.svelte';
   import { domainOf } from './lib/domains';
   import tokensRaw from './data/api-index.generated.json';
   import {
     ChevronRight, Undo2, Redo2, Trash2, FolderOpen, Download, Save, Check, Loader2,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
 
   const ALL_TOKENS = ((tokensRaw as any).tokens ?? tokensRaw) as SlashedToken[];
 
@@ -200,7 +200,7 @@
   }
 
   function handleExport() {
-    const css  = fa(overrides, { mode: 'layer', banner: true });
+    const css  = generateCSS(overrides, { mode: 'layer', banner: true });
     const blob = new Blob([css], { type: 'text/css' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
