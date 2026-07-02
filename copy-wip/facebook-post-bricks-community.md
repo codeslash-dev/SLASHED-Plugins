@@ -2,7 +2,7 @@
 
 Hey everyone — I built a CSS framework and a Bricks plugin for it, and I'd love some honest feedback from this group.
 
-Why another one? Because everything I tried on the market was either too opinionated or quietly locked me into one ecosystem. SLASHED is neither: it's pure CSS built on design tokens — no build step, no frontend JavaScript — so it works on any platform or CMS. WordPress, Shopify, Ghost, Laravel, plain HTML, a React app, whatever renders a stylesheet. Set six brand colors and everything derives from them automatically, including the full dark palette.
+Why another one? Because everything I tried on the market was either too opinionated or quietly locked me into one ecosystem. So I built the opposite and put the philosophy right in the name — SLASHED: Standalone, Lean, Agnostic, Structured, Hybrid, Explicit, Deterministic. The "Agnostic" part is the whole point: it's pure CSS built on design tokens — no build step, no frontend JavaScript — so it works on any platform or CMS. WordPress, Shopify, Ghost, Laravel, plain HTML, a React app, whatever renders a stylesheet. Set six brand colors and everything derives from them automatically ("Deterministic" — same tokens in, same design out), including the full dark palette.
 
 The plugin makes it feel native in Bricks: all variables in the pickers (with light/dark swatches), classes in the autocomplete, a floating color panel, and reBEMer — select an element in the structure panel, type a block name, and it BEM-names the whole subtree in one pass.
 

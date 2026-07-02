@@ -14,6 +14,8 @@ A no-build CSS framework for WordPress with native Bricks Builder tooling: token
 
 SLASHED loads a complete CSS framework on any WordPress site — no build step, no Node, and no JavaScript on the frontend. You restyle the whole site by setting a handful of design tokens; the framework derives every color, every dark-mode value, and the fluid type and spacing scales from them in plain CSS.
 
+The name spells out the philosophy: Standalone, Lean, Agnostic, Structured, Hybrid, Explicit, Deterministic. In practice that means one stylesheet with no toolchain, no lock-in to any theme or builder (the framework itself runs on any CMS or none), every visual value expressed as an explicit named token, and a fixed cascade-layer order that makes the same tokens produce the same design every time.
+
 The plugin bundles the framework, serves it locally from your own server, and wires it into the editors you already use, so you pick tokens and classes from a list instead of typing them by hand. Bricks Builder gets the full toolset; Gutenberg gets native presets and a token panel.
 
 = Design Settings =

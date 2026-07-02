@@ -1,6 +1,6 @@
 # SLASHED for WordPress
 
-[SLASHED](https://github.com/codeslash-dev/SLASHED) is a cascade-layer CSS framework that runs entirely on design tokens — no build step, no frontend JavaScript. This plugin puts it to work inside WordPress: it bundles the framework CSS, serves it locally from your own server, and wires it into the editors you already use.
+[SLASHED](https://github.com/codeslash-dev/SLASHED) is a cascade-layer CSS framework that runs entirely on design tokens — no build step, no frontend JavaScript. The name spells out the philosophy: **S**tandalone · **L**ean · **A**gnostic · **S**tructured · **H**ybrid · **E**xplicit · **D**eterministic. *Agnostic* is why this plugin exists at all: the framework assumes no stack and locks you into nothing — it runs on any CMS or none — and this plugin is simply the WordPress-native wiring for it. It bundles the framework CSS, serves it locally from your own server, and connects it to the editors you already use.
 
 Three pieces, one plugin:
 
