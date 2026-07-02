@@ -13,12 +13,14 @@
     "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
     "phpstan/phpstan": "^2.1",
     "szepeviktor/phpstan-wordpress": "^2.0",
-    "php-stubs/wordpress-stubs": "^6.7"
+    "php-stubs/wordpress-stubs": "^6.7",
+    "phpunit/phpunit": "^9.6"
   },
   "scripts": {
     "phpcs": "phpcs",
     "phpcbf": "phpcbf",
-    "phpstan": "phpstan analyse --memory-limit=1G"
+    "phpstan": "phpstan analyse --memory-limit=1G",
+    "phpunit": "phpunit"
   },
   "config": {
     "allow-plugins": {
