@@ -7,6 +7,30 @@ import './main.ts';
 import { mount } from 'svelte';
 import AppOverlay from './AppOverlay.svelte';
 
+// vite-env.d.ts (vendored, upstream configurator) already types
+// window.slashedApp generically ([key: string]: unknown), so it has no
+// reason to know about cssUrl — that field only exists because this
+// plugin's PHP additionally localizes it (class-frontend-configurator.php).
+// A local intersection type here, mirroring the same pattern persistence.ts
+// already uses for its own window.slashedApp read, avoids re-declaring (and
+// risking a conflicting merge with) the vendored global Window.slashedApp
+// interface.
+interface PluginSlashedAppBoot {
+  cssUrl?: string;
+}
+
+function getCssUrl(): string | undefined {
+  return (window as Window & { slashedApp?: PluginSlashedAppBoot }).slashedApp?.cssUrl;
+}
+
+function isSameOrigin(url: string): boolean {
+  try {
+    return new URL(url, location.href).origin === location.origin;
+  } catch {
+    return false;
+  }
+}
+
 function mountOverlay() {
   const overlayTarget = document.getElementById('slashed-frontend-overlay');
   if (!overlayTarget) return;
@@ -33,8 +57,13 @@ function mountOverlay() {
     overlayTarget.setAttribute('data-slashed-ready', '');
   };
 
-  const cssUrl = (window as any).slashedApp?.cssUrl as string | undefined;
-  if (cssUrl) {
+  const cssUrl = getCssUrl();
+  // window.slashedApp is a plain global — any other script on the page (a
+  // theme, another plugin) can clobber it before this module runs. It's
+  // normally same-origin PHP output (esc_url_raw() over the plugin's own
+  // asset path, see class-frontend-configurator.php), but don't set it as a
+  // stylesheet href without checking that invariant still holds.
+  if (cssUrl && isSameOrigin(cssUrl)) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = cssUrl;

@@ -27,6 +27,7 @@
     "version-sync": "node scripts/version-sync.js",
     "changelog": "node scripts/changelog-release.js",
     "verify": "node scripts/verify-sync.js",
+    "check": "node scripts/check.js",
     "lint:css": "stylelint \"SLASHED-for-WP/**/*.css\"",
     "lint:css:fix": "stylelint \"SLASHED-for-WP/**/*.css\" --fix",
     "lint:php": "node scripts/lint-php.js",

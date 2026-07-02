@@ -7,12 +7,16 @@ SLASHED-for-WP/          WordPress plugin
   admin-app/             Svelte SPA — configurator UI embedded in WP admin + frontend overlay
     src/                 ⚠️  VENDORED — see below
     framework-css/       Vendored framework CSS (chrome layers + full bundle)
+  assets/                Built SPA output (admin-app/, editor-app/ — committed build artifacts)
+  data/                  Generated inventories/hints (class-hints.json, variables-hints.json…)
   integrations/
     bricks/editor-app/   Bricks Builder panel — independent, NOT vendored
     gutenberg/           Gutenberg integration
   includes/              PHP backend (REST API, CSS generator, token store…)
   dist/                  Framework CSS bundles (updated by npm run update-framework)
 scripts/                 Plugin-level build/sync scripts
+tests/                   Node --test suite + Playwright admin smoke test
+docs/                    Project docs
 ```
 
 ## ⚠️  Vendored files — DO NOT edit in this repo
@@ -64,13 +68,19 @@ These are plugin-specific and never overwritten by sync:
 
 ## Syncing the framework into the plugin
 
+`npm run sync` is defined in `SLASHED-for-WP/admin-app/package.json`, not the
+root `package.json` — run it from that directory (or via `npm run
+build:admin-app` at the root, which runs it as a `prebuild` step):
+
 ```bash
-npm run sync          # pull latest configurator/src from framework (local sibling or GitHub)
-npm run build:apps    # rebuild admin SPA + bricks editor app
+cd SLASHED-for-WP/admin-app
+npm run sync           # pull latest configurator/src from framework (local sibling or GitHub)
+cd ../../..
+npm run build:apps     # rebuild admin SPA + bricks editor app
 ```
 
 `SLASHED_CONFIGURATOR_SRC=/path/to/SLASHED/configurator/src npm run sync`
-forces a specific local checkout.
+(run from `SLASHED-for-WP/admin-app`) forces a specific local checkout.
 
 ## Updating the bundled framework CSS
 
@@ -91,7 +101,8 @@ Downloads release CSS bundles, shallow-clones framework source, regenerates
 | `npm run build` | Full build: data + sync-dist + SPA apps + zip |
 | `npm run build:apps` | Build admin SPA + Bricks editor app |
 | `npm test` | Run test suite |
-| `npm run verify` | Verify sync consistency |
+| `npm run verify` | Verify version metadata is in sync |
+| `npm run check` | Verify generated artifacts (class hints, variables hints, vendored admin-app core) aren't stale — exits non-zero on drift, never writes |
 
 `tests/` is `node --test` specs, run automatically by `npm test`, with one
 exception: `tests/playwright-admin.js` is a manual, local-only dev/QA tool —
