@@ -5,8 +5,8 @@ Requires at least: 6.4
 Tested up to: 7.0
 Stable tag: 0.4.20
 Requires PHP: 7.4
-License: GPL-2.0-or-later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License: GPL-3.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 A no-build CSS framework for WordPress with native Bricks Builder tooling: token pickers, a color browser, class hints, and BEM automation.
 
@@ -75,7 +75,7 @@ SLASHED targets Chrome 125+, Safari 18.0+, and Firefox 129+. It uses `light-dark
 
 = Open source =
 
-The plugin is licensed under the GPL-2.0-or-later and developed at https://github.com/codeslash-dev/SLASHED-Plugins. The bundled SLASHED CSS framework is MIT-licensed (GPL-compatible) and developed at https://github.com/codeslash-dev/SLASHED.
+The plugin is licensed under the GPL-3.0-or-later and developed at https://github.com/codeslash-dev/SLASHED-Plugins. The bundled SLASHED CSS framework is MIT-licensed (GPL-compatible) and developed at https://github.com/codeslash-dev/SLASHED.
 
 == External services ==
 

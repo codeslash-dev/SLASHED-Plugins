@@ -185,6 +185,6 @@ the URL entirely with `slashed_bricks/css_bundle_url`.
 
 ## License
 
-GPL-2.0-or-later, as part of the SLASHED for WordPress plugin (see the
+GPL-3.0-or-later, as part of the SLASHED for WordPress plugin (see the
 plugin's `license.txt`). The bundled SLASHED framework CSS is MIT-licensed
 (GPL-compatible).

@@ -85,4 +85,4 @@ npm run verify            # verify sync consistency
 
 ## License
 
-The WordPress plugin — everything under `SLASHED-for-WP/` — is distributed under [GPL-2.0-or-later](SLASHED-for-WP/license.txt), as declared in its plugin header and `readme.txt`. The bundled [SLASHED framework](https://github.com/codeslash-dev/SLASHED) CSS is [MIT](https://github.com/codeslash-dev/SLASHED/blob/main/LICENSE)-licensed (GPL-compatible).
+The plugin is licensed under [GPL-3.0-or-later](LICENSE). The bundled [SLASHED framework](https://github.com/codeslash-dev/SLASHED) is [MIT](https://github.com/codeslash-dev/SLASHED/blob/main/LICENSE)-licensed (GPL-compatible) — see the third-party notice at the end of [LICENSE](LICENSE).
