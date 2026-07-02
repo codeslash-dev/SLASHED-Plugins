@@ -5,7 +5,7 @@
 <script lang="ts">
   import classesData from '../../data/classes.generated.json';
   import tokensData from '../../data/api-index.generated.json';
-  import { Copy, Check } from 'lucide-svelte';
+  import { Copy, Check } from '@lucide/svelte';
 
   const classes = classesData.classes;
   const tokens = tokensData.tokens.filter((t: any) => t.tier === 'PUBLIC' || t.tier === 'PUBLIC-ADVANCED');

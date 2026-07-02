@@ -2,7 +2,7 @@
   import {
     Home, Palette, Type, Ruler, Layout, Square, Layers, Zap, Sparkles, Puzzle,
     Blocks, SwatchBook, ShieldCheck, Package, BookOpen,
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
 
   let { activeId, onSelect, overridesByDomain = {} }: {
     activeId: string;

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Sun, Moon, Smartphone, Tablet, Monitor, RefreshCw, ExternalLink, Columns2 } from 'lucide-svelte';
+  import { Sun, Moon, Smartphone, Tablet, Monitor, RefreshCw, ExternalLink, Columns2 } from '@lucide/svelte';
   import type { PreviewTemplate } from '../../types';
   import { fa } from '../../lib/codec';
   import { computeDerivedOverrides } from '../../lib/persistence';

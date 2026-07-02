@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Save, Trash2, Check } from 'lucide-svelte';
+  import { Save, Trash2, Check } from '@lucide/svelte';
   import type { SavedSlot } from '../../types';
   import { listSavedThemes, saveTheme, deleteTheme } from '../../lib/savedThemes';
 

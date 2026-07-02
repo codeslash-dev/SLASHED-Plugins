@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Check, Copy, Download, Link } from 'lucide-svelte';
+  import { Check, Copy, Download, Link } from '@lucide/svelte';
   import { fa, qa } from '../../lib/codec';
 
   let { overrides }: {
