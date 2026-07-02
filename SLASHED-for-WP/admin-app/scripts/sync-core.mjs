@@ -314,6 +314,57 @@ function vendorChromeLocal(repoRoot) {
 // the official GitHub REST API, and every write destination is confined to
 // SRC by assertWithinSrc()/assertSafeName() regardless of fetched content.
 
+const RETRY_MAX_ATTEMPTS = 3; // total attempts, i.e. up to 2 retries.
+const RETRY_BASE_DELAY_MS = 500;
+
+/** Exponential backoff delay (ms) before retry attempt `attempt` (0-based). */
+export function backoffDelayMs(attempt, baseDelayMs = RETRY_BASE_DELAY_MS) {
+  return baseDelayMs * 2 ** attempt;
+}
+
+function defaultSleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+/**
+ * fetch() wrapper that retries transient failures with exponential backoff:
+ * network errors (fetch itself throwing), 5xx responses, and 403 responses
+ * GitHub marks as an exhausted rate limit (`x-ratelimit-remaining: 0`).
+ * Any other response (2xx, or a non-retryable error like plain 403/404) is
+ * returned/thrown immediately on the first attempt so existing callers'
+ * "keep the vendored copy" fallback logic still runs on real not-found /
+ * permission errors instead of being delayed by pointless retries.
+ *
+ * `fetchImpl`/`sleep` are injectable so this is unit-testable without a
+ * real network or real timers.
+ */
+export async function fetchWithRetry(
+  url,
+  options,
+  { maxAttempts = RETRY_MAX_ATTEMPTS, baseDelayMs = RETRY_BASE_DELAY_MS, fetchImpl = fetch, sleep = defaultSleep } = {},
+) {
+  let lastErr;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    let res;
+    try {
+      res = await fetchImpl(url, options);
+    } catch (err) {
+      lastErr = err;
+      if (attempt === maxAttempts - 1) throw err;
+      await sleep(backoffDelayMs(attempt, baseDelayMs));
+      continue;
+    }
+    if (res.ok) return res;
+    const rateLimited = res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0';
+    const retryable = res.status >= 500 || rateLimited;
+    if (!retryable || attempt === maxAttempts - 1) return res;
+    await sleep(backoffDelayMs(attempt, baseDelayMs));
+  }
+  // Unreachable in practice (the loop always returns or throws above), but
+  // keeps control flow explicit for the "all attempts were network errors" case.
+  throw lastErr;
+}
+
 async function ghFetch(path) {
   const url = `https://api.github.com/repos/${SLASHED_REPO}/contents/${path}?ref=${REF}`;
   const headers = {
@@ -323,7 +374,7 @@ async function ghFetch(path) {
   if (process.env.GITHUB_TOKEN) {
     headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   }
-  const res = await fetch(url, { headers });
+  const res = await fetchWithRetry(url, { headers });
   if (!res.ok) {
     const err = new Error(`GitHub API ${res.status} for ${path}`);
     err.status = res.status;
@@ -366,6 +417,44 @@ async function syncGhFile(ghPath, destPath) {
   }
 }
 
+// Caps total concurrent GitHub API calls across the *whole* recursive tree
+// walk (not just per-directory) — syncGhDir() recurses into subdirectories
+// whose own entries also funnel through this same limiter instance, so a
+// wide/deep configurator/src tree can't fan out to hundreds of simultaneous
+// requests and trip GitHub's secondary rate limits.
+const SYNC_CONCURRENCY = 6;
+
+/**
+ * Bounded-concurrency job queue. `run(fn)` queues `fn` and resolves/rejects
+ * with its result once it's had a turn; at most `limit` jobs run at once.
+ *
+ * @param {number} limit
+ * @returns {(fn: () => Promise<any>) => Promise<any>}
+ */
+export function createLimiter(limit) {
+  let active = 0;
+  const queue = [];
+
+  function next() {
+    if (active >= limit || queue.length === 0) return;
+    active++;
+    const { fn, resolve, reject } = queue.shift();
+    fn().then(resolve, reject).finally(() => {
+      active--;
+      next();
+    });
+  }
+
+  return function run(fn) {
+    return new Promise((resolve, reject) => {
+      queue.push({ fn, resolve, reject });
+      next();
+    });
+  };
+}
+
+const ghLimiter = createLimiter(SYNC_CONCURRENCY);
+
 async function syncGhDir(ghDir, destDir) {
   assertWithinSrc(destDir);
   const entries = await ghFetch(ghDir);
@@ -376,9 +465,11 @@ async function syncGhDir(ghDir, destDir) {
     entries.map((entry) => {
       assertSafeName(entry.name);
       const localPath = join(destDir, entry.name);
-      return entry.type === 'dir'
-        ? syncGhDir(entry.path, localPath)
-        : syncGhFile(entry.path, localPath);
+      return ghLimiter(() =>
+        entry.type === 'dir'
+          ? syncGhDir(entry.path, localPath)
+          : syncGhFile(entry.path, localPath),
+      );
     }),
   );
 }
@@ -499,7 +590,14 @@ async function main() {
   console.log('Done (remote).');
 }
 
-main().catch((err) => {
-  console.error('sync-core failed:', err.message);
-  process.exit(1);
-});
+// Only run when executed directly (`node scripts/sync-core.mjs`, which is how
+// every npm script invokes this file) — not when imported, so unit tests can
+// import the exported pure helpers (backoffDelayMs, fetchWithRetry,
+// createLimiter) above without triggering a real sync as an import side effect.
+const isMainModule = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+if (isMainModule) {
+  main().catch((err) => {
+    console.error('sync-core failed:', err.message);
+    process.exit(1);
+  });
+}
