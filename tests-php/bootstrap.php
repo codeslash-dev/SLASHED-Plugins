@@ -15,7 +15,9 @@
  * @package SLASHED
  */
 
-define( 'ABSPATH', __DIR__ . '/' );
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/' );
+}
 
 if ( ! function_exists( 'sanitize_key' ) ) {
 	function sanitize_key( $key ) {
