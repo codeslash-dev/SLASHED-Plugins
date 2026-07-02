@@ -185,12 +185,21 @@ function listRelFiles(dir, base, out = []) {
   return out;
 }
 
-/** In --check mode, flag src/ files that are vendored locally but no longer resolved from upstream. */
+/**
+ * In --check mode, flag files vendored locally but no longer resolved from
+ * upstream: src/ files not visited this run, and framework-css/core/ files
+ * outside the fixed CHROME_LAYERS set (the complete, hardcoded list of
+ * chrome layers this script ever vendors — anything else there is stale).
+ */
 function reportOrphans() {
   if (!CHECK_MODE) return;
   for (const rel of listRelFiles(SRC, SRC)) {
     if (isIgnored(rel) || visitedSrcRel.has(rel)) continue;
     reportDrift('orphan', `src/${rel}`, 'vendored locally, no longer present upstream');
+  }
+  for (const rel of listRelFiles(VENDOR_CORE, VENDOR_CORE)) {
+    if (CHROME_LAYERS.includes(rel)) continue;
+    reportDrift('orphan', `framework-css/core/${rel}`, 'vendored locally, no longer a tracked chrome layer');
   }
 }
 
@@ -251,23 +260,33 @@ function copyLocalDir(srcDir, srcBase) {
   for (const entry of readdirSync(srcDir)) {
     const srcPath = join(srcDir, entry);
     const rel = relative(srcBase, srcPath);
-    if (statSync(srcPath).isDirectory()) {
-      copyLocalDir(srcPath, srcBase);
-    } else {
-      if (isIgnored(rel)) {
-        if (!CHECK_MODE) process.stdout.write(`  skip  src/${rel} (syncignore)\n`);
-        continue;
+    // Open first so the isDirectory check and (for files) the read below
+    // operate on the same fd/inode — no TOCTOU window between checking what
+    // the entry is and using it, matching the O_NOFOLLOW idiom used elsewhere
+    // in this file for the syncignore-preservation reads.
+    const fd = openSync(srcPath, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0));
+    let isDir;
+    try {
+      isDir = fstatSync(fd).isDirectory();
+      if (!isDir) {
+        if (isIgnored(rel)) {
+          if (!CHECK_MODE) process.stdout.write(`  skip  src/${rel} (syncignore)\n`);
+        } else {
+          const destPath = join(SRC, rel);
+          assertWithinSrc(destPath);
+          const relPosix = toPosix(rel);
+          visitedSrcRel.add(relPosix);
+          writeFile(destPath, readFileSync(fd), `src/${relPosix}`);
+          if (!CHECK_MODE) {
+            trackVendored(rel, `local:configurator/src/${rel}`);
+            process.stdout.write(`  copy  src/${rel}\n`);
+          }
+        }
       }
-      const destPath = join(SRC, rel);
-      assertWithinSrc(destPath);
-      const relPosix = toPosix(rel);
-      visitedSrcRel.add(relPosix);
-      writeFile(destPath, readFileSync(srcPath), `src/${relPosix}`);
-      if (!CHECK_MODE) {
-        trackVendored(rel, `local:configurator/src/${rel}`);
-        process.stdout.write(`  copy  src/${rel}\n`);
-      }
+    } finally {
+      closeSync(fd);
     }
+    if (isDir) copyLocalDir(srcPath, srcBase);
   }
 }
 
@@ -287,6 +306,13 @@ function vendorChromeLocal(repoRoot) {
 }
 
 // ── GitHub API sync ───────────────────────────────────────────────────────────
+//
+// Content fetched here is written to disk verbatim by writeFile() (source
+// vendoring — there's no meaningful way to "sanitize" a .svelte/.ts file
+// without corrupting it). The accepted trust boundary: SLASHED_REPO/REF are
+// hardcoded constants (not derived from any input), fetched over HTTPS via
+// the official GitHub REST API, and every write destination is confined to
+// SRC by assertWithinSrc()/assertSafeName() regardless of fetched content.
 
 async function ghFetch(path) {
   const url = `https://api.github.com/repos/${SLASHED_REPO}/contents/${path}?ref=${REF}`;
@@ -438,9 +464,11 @@ async function main() {
         const rel = entry.startsWith('src/') ? entry.slice(4) : entry;
         const srcPath = resolve(join(SRC, rel));
         if (!srcPath.startsWith(SRC_ROOT)) continue;
-        // Open the fd first so stat + read operate on the same inode (no TOCTOU).
+        // Open the fd first so stat + read operate on the same inode (no
+        // TOCTOU). O_NOFOLLOW rejects symlinks at open time, matching the
+        // local-source preserve block above.
         let fd;
-        try { fd = openSync(srcPath, 'r'); } catch { continue; }
+        try { fd = openSync(srcPath, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0)); } catch { continue; }
         try {
           if (!fstatSync(fd).isFile()) continue;
           preserved.push({ rel, content: readFileSync(fd) });
