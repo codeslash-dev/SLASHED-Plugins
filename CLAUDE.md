@@ -103,6 +103,7 @@ Downloads release CSS bundles, shallow-clones framework source, regenerates
 | `npm test` | Run test suite |
 | `npm run verify` | Verify version metadata is in sync |
 | `npm run check` | Verify generated artifacts (class hints, variables hints, vendored admin-app core) aren't stale — exits non-zero on drift, never writes |
+| `composer phpunit` | Run the PHP unit suite (`tests-php/`) |
 
 `tests/` is `node --test` specs, run automatically by `npm test`, with one
 exception: `tests/playwright-admin.js` is a manual, local-only dev/QA tool —
@@ -110,3 +111,11 @@ it walks the admin SPA and saves screenshots for a human to review, has no
 pass/fail assertions, and isn't wired into `npm test` or CI (no committed
 HTML fixture, needs a locally-running dev server). Run it directly with
 `node tests/playwright-admin.js`; see the file header for prerequisites.
+
+`tests-php/` is a plain PHPUnit suite (`composer phpunit`, wired into CI's
+`quality` job) covering pure/near-pure PHP logic that needs no WordPress
+runtime — CSS parsing, override-value validation, and REST input
+sanitization. `tests-php/bootstrap.php` defines `ABSPATH` and stubs the one
+WordPress function this code touches (`sanitize_key()`) rather than pulling
+in a mocking framework; it does not boot WordPress, so classes with real
+`wpdb`/hook dependencies aren't covered here.
