@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once SLASHED_BRICKS_PATH . '../../includes/class-category-map.php';
 require_once SLASHED_BRICKS_PATH . '../../includes/class-inventory.php';
 
 if ( ! class_exists( 'Slashed_Bricks_Inventory' ) ) {

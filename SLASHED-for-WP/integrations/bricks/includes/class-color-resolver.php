@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once SLASHED_BRICKS_PATH . '../../includes/class-color-math.php';
 require_once SLASHED_BRICKS_PATH . '../../includes/class-color-resolver.php';
 
 if ( ! class_exists( 'Slashed_Bricks_Color_Resolver' ) ) {
