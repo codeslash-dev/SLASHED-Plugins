@@ -6,8 +6,8 @@
  * Version: 0.4.21
  * Author: Jack Granatowski
  * Author URI: https://codeslash.net
- * License: GPL-2.0-or-later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * License: GPL-3.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * Requires PHP: 7.4
  * Requires at least: 6.4
  * Text Domain: slashed-bricks

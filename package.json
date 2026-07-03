@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "description": "SLASHED for WordPress — Bricks Builder and Gutenberg integrations for the SLASHED cascade-layer CSS framework.",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "author": "jackgranatowski",
   "repository": {
     "type": "git",

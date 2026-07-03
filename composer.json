@@ -2,7 +2,7 @@
   "name": "codeslash-dev/slashed-for-wp",
   "description": "Dev tooling (static analysis + coding standards) for the SLASHED for WordPress plugin.",
   "type": "wordpress-plugin",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "require": {
     "php": ">=7.4"
   },
