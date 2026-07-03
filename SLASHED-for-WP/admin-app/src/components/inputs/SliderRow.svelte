@@ -90,7 +90,7 @@
   {:else}
     <RangeWithNumber {value} {min} {max} {step} {unit} {onChange} />
     {#if rawDefault && !overridden}
-      <p class="text-[9px] font-mono text-slate-300 dark:text-slate-700 mt-0.5 leading-none">default: {rawDefault}</p>
+      <p class="text-[9px] font-mono text-slate-300 dark:text-slate-400 mt-0.5 leading-none">default: {rawDefault}</p>
     {/if}
   {/if}
 

@@ -50,7 +50,7 @@
         bind:value={newName}
         placeholder="Theme name"
         onkeydown={(e) => { if (e.key === "Enter") handleSave(); }}
-        class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+        class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
       />
       <button
         onclick={handleSave}
@@ -74,7 +74,7 @@
   <div class="space-y-2">
     {#if themes.length === 0}
       <div class="rounded-xl border border-dashed border-black/10 dark:border-white/10 p-6 text-center">
-        <p class="text-[11px] text-slate-500">No saved themes yet.</p>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400">No saved themes yet.</p>
         <p class="text-[10px] text-slate-400 dark:text-slate-600 mt-1">Configure your tokens, then save them above.</p>
       </div>
     {:else}

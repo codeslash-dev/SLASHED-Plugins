@@ -58,6 +58,19 @@ export function toggleTheme() {
   setTheme(themeState.value === "dark" ? "light" : "dark");
 }
 
+/**
+ * Pin the theme in-memory without persisting to storage or the user's saved
+ * preference — for embeddings that force a fixed appearance (e.g. a host
+ * page with its own hardcoded dark shell) independent of the Studio's own
+ * theme setting. Also stops following the OS preference, so a later
+ * prefers-color-scheme change can't undo the pin.
+ */
+export function forceTheme(t: Theme) {
+  followSystem = false;
+  themeState.value = t;
+  applyToRoot();
+}
+
 if (typeof matchMedia !== "undefined") {
   const mql = matchMedia("(prefers-color-scheme: dark)");
   const onChange = (e: MediaQueryListEvent) => {
