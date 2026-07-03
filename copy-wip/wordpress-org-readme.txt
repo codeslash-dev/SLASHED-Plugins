@@ -90,6 +90,15 @@ The SLASHED Configurator (https://slashed.codeslash.dev/configurator/)
 * What it is and what it's for: a hosted web app, run by the plugin author, for designing your SLASHED token set outside of WordPress. It is entirely optional — the same editor is built into the plugin at SLASHED → Design Settings, so you never need to leave your site.
 * What data is sent and when: nothing is sent automatically, and the plugin never contacts it in the background. Clicking **"Open in configurator"** opens the tool in a new browser tab with your current design tokens (color, spacing, typography and similar non-personal style values) encoded in the URL fragment — the part after "#", which browsers keep on your device and do not transmit to the server. **"Import shared config"** simply loads a design code that you paste in. No personal data, site content, or credentials are sent, and no account is required. As with visiting any website, the host may record standard web-server access logs (such as IP address and request time) when the page loads.
 
+== Screenshots ==
+
+1. Design Settings — the visual token editor in wp-admin, with a live light/dark preview. Every field sets a validated token; there is no raw-CSS field.
+2. The same editor as a floating overlay on the live site — click "/ Design" in the admin bar to tweak tokens without leaving the page.
+3. The standalone Configurator web app at slashed.codeslash.dev/configurator — design a token set without logging into WordPress, then import it back with a shared config code.
+4. Bricks Builder — the Color System panel: a floating browser for the full palette, organized by family and tone, with a light/dark canvas toggle. Click a swatch to copy its variable and apply it to the selected element.
+5. Bricks Builder — reBEMer in the structure panel: select an element, name the block, and it generates `block__element` / `block--modifier` names across the whole subtree in one pass.
+6. Bricks Builder — class and variable hints: a "?" icon next to each SLASHED class or token explains what it does inline, without covering Bricks' own controls.
+
 == Installation ==
 
 1. Install the plugin ZIP from **Plugins → Add New → Upload Plugin**, or upload the `slashed` folder to `/wp-content/plugins/`.
