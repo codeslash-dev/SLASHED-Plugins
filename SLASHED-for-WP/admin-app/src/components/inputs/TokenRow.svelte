@@ -33,12 +33,12 @@
   let swatchColor = $derived(type === "color" ? paintSwatch(displayValue) : "");
 </script>
 
-<div class={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors group ${isOverridden ? "bg-indigo-500/8 border border-indigo-500/15" : "hover:bg-white/4"}`}>
+<div class={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors group ${isOverridden ? "bg-indigo-500/8 border border-indigo-500/15" : "hover:bg-black/4 dark:hover:bg-white/4"}`}>
   <div class={`w-1.5 h-1.5 rounded-full shrink-0 ${isOverridden ? "bg-indigo-500" : "bg-transparent"}`}></div>
 
   {#if type === "color"}
     <div
-      class="w-4 h-4 rounded-sm border border-white/10 shrink-0"
+      class="w-4 h-4 rounded-sm border border-black/10 dark:border-white/10 shrink-0"
       style:background={swatchColor}
     ></div>
   {:else}
@@ -46,11 +46,11 @@
   {/if}
 
   <div class="flex-1 min-w-0">
-    <div class="text-[10px] font-mono text-slate-400 truncate" title={token.name}>
+    <div class="text-[10px] font-mono text-slate-600 dark:text-slate-400 truncate" title={token.name}>
       {shortName}
     </div>
     {#if token.description}
-      <div class="text-[9px] text-slate-600 truncate">{token.description}</div>
+      <div class="text-[9px] text-slate-400 dark:text-slate-600 truncate">{token.description}</div>
     {/if}
   </div>
 
@@ -67,16 +67,16 @@
         if (e.key === "Enter") (e.currentTarget as HTMLInputElement).blur();
         if (e.key === "Escape") { expanded = false; }
       }}
-      class="w-28 bg-white/8 border border-indigo-500/50 rounded px-1.5 py-0.5 text-[10px] font-mono text-slate-200 focus:outline-none text-right"
+      class="w-28 bg-black/8 dark:bg-white/8 border border-indigo-500/50 rounded px-1.5 py-0.5 text-[10px] font-mono text-slate-800 dark:text-slate-200 focus:outline-none text-right"
     />
   {:else}
     <button
       onclick={() => { expanded = true; }}
-      class="text-[10px] font-mono text-slate-500 hover:text-slate-200 truncate max-w-28 text-right cursor-pointer transition-colors"
+      class="text-[10px] font-mono text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 truncate max-w-28 text-right cursor-pointer transition-colors"
       title={displayValue}
     >
       {#if isOverridden}
-        <span class="text-indigo-300">{displayValue}</span>
+        <span class="text-indigo-700 dark:text-indigo-300">{displayValue}</span>
       {:else}
         {displayValue}
       {/if}
@@ -86,7 +86,7 @@
   {#if isOverridden}
     <button
       onclick={onReset}
-      class="text-[9px] text-slate-600 hover:text-rose-400 transition-colors cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 shrink-0"
+      class="text-[9px] text-slate-400 dark:text-slate-600 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 shrink-0"
     >
       ✕
     </button>

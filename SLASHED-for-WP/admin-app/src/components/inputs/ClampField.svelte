@@ -6,7 +6,13 @@
    * band, a live clamp readout, an optional min→max preview, and optional
    * modular-scale ratio preset chips folded into the same card.
    */
+  import { themeState } from '../../lib/theme.svelte';
+
   type RatioPreset = { label: string; value: number };
+
+  // <option> only reliably accepts a background via inline style (no dark:
+  // variant support), so it's derived from the chrome theme directly.
+  let optionBg = $derived(themeState.value === 'dark' ? '#16161e' : '#ffffff');
 
   let {
     title,
@@ -77,17 +83,17 @@
   );
 </script>
 
-<div class={`rounded-xl border p-3 ${overridden ? "bg-indigo-500/8 border-indigo-500/25" : "bg-white/4 border-white/8"}`}>
+<div class={`rounded-xl border p-3 ${overridden ? "bg-indigo-500/8 border-indigo-500/25" : "bg-black/4 dark:bg-white/4 border-black/8 dark:border-white/8"}`}>
   <div class="flex items-center justify-between mb-2">
-    <span class="text-[10px] font-bold text-slate-300">{title}</span>
+    <span class="text-[10px] font-bold text-slate-700 dark:text-slate-300">{title}</span>
     <span class="text-[9px] font-mono text-slate-500">
-      clamp(<span class="text-indigo-300">{minValue}{unit}</span> … <span class="text-indigo-300">{maxValue}{unit}</span>)
+      clamp(<span class="text-indigo-700 dark:text-indigo-300">{minValue}{unit}</span> … <span class="text-indigo-700 dark:text-indigo-300">{maxValue}{unit}</span>)
     </span>
   </div>
 
   <!-- Connected dual-thumb track -->
   <div class="clampTrack relative h-5 flex items-center mb-2">
-    <div class="absolute inset-x-0 h-1 bg-white/8 rounded-full"></div>
+    <div class="absolute inset-x-0 h-1 bg-black/8 dark:bg-white/8 rounded-full"></div>
     <div
       class="absolute h-1 bg-indigo-500 rounded-full"
       style={`left:${Math.min(minPct, maxPct)}%; right:${100 - Math.max(minPct, maxPct)}%`}
@@ -112,13 +118,13 @@
       <span class="text-[9px] text-slate-500 shrink-0">{minLabel}</span>
       <input type="number" {min} {max} {step} value={minValue}
         onchange={(e) => onMinChange(clamp(parseFloat((e.target as HTMLInputElement).value) || min))}
-        class="w-full bg-white/5 border border-white/10 rounded text-[11px] font-mono text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500" />
+        class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded text-[11px] font-mono text-slate-800 dark:text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500" />
     </label>
     <label class="flex items-center gap-1.5">
       <span class="text-[9px] text-slate-500 shrink-0">{maxLabel}</span>
       <input type="number" {min} {max} {step} value={maxValue}
         onchange={(e) => onMaxChange(clamp(parseFloat((e.target as HTMLInputElement).value) || max))}
-        class="w-full bg-white/5 border border-white/10 rounded text-[11px] font-mono text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500" />
+        class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded text-[11px] font-mono text-slate-800 dark:text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500" />
     </label>
   </div>
 
@@ -126,14 +132,14 @@
   {#if previewKind === "type"}
     <div class="flex items-baseline justify-between gap-3 mt-2 px-1 overflow-hidden">
       <span class="text-slate-500 leading-none truncate" style={`font-size:${Math.min(minValue, 2)}rem`}>Aa<span class="text-[8px] font-mono align-middle ml-1">{minLabel.toLowerCase()}</span></span>
-      <span class="text-white/80 leading-none truncate" style={`font-size:${Math.min(maxValue, 2.6)}rem`}>Aa<span class="text-[8px] font-mono align-middle ml-1">{maxLabel.toLowerCase()}</span></span>
+      <span class="text-slate-900/80 dark:text-white/80 leading-none truncate" style={`font-size:${Math.min(maxValue, 2.6)}rem`}>Aa<span class="text-[8px] font-mono align-middle ml-1">{maxLabel.toLowerCase()}</span></span>
     </div>
   {:else if previewKind === "space"}
     <div class="flex items-center gap-2 mt-2 px-1">
       <div class="h-2 bg-indigo-500/40 rounded shrink-0" style={`width:${Math.min(minValue * 28, 120)}px`}></div>
-      <span class="text-[8px] font-mono text-slate-600">min</span>
+      <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600">min</span>
       <div class="h-2 bg-indigo-500/70 rounded shrink-0" style={`width:${Math.min(maxValue * 28, 200)}px`}></div>
-      <span class="text-[8px] font-mono text-slate-600">max</span>
+      <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600">max</span>
     </div>
   {/if}
 
@@ -141,7 +147,7 @@
        Each breakpoint has its own preset dropdown plus an always-visible custom
        number input, so a preset can be picked and then fine-tuned per side. -->
   {#if ratioPresets}
-    <div class="mt-3 pt-3 border-t border-white/6">
+    <div class="mt-3 pt-3 border-t border-black/6 dark:border-white/6">
       <div class="text-[9px] font-semibold text-slate-500 mb-2">Modular scale ratio</div>
       <div class="space-y-2">
         {#each [
@@ -157,20 +163,20 @@
                 const v = parseFloat((e.target as HTMLSelectElement).value);
                 if (Number.isFinite(v)) row.onChange?.(clampRatio(v));
               }}
-              class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded text-[10px] text-slate-200 px-1.5 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer"
+              class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded text-[10px] text-slate-800 dark:text-slate-200 px-1.5 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer"
             >
               {#if row.active === undefined}
-                <option value="" style="background:#16161e;">Custom</option>
+                <option value="" style={`background:${optionBg};`}>Custom</option>
               {/if}
               {#each ratioPresets as p (p.value)}
-                <option value={String(p.value)} style="background:#16161e;">{p.label}</option>
+                <option value={String(p.value)} style={`background:${optionBg};`}>{p.label}</option>
               {/each}
             </select>
             <input
               aria-label={`${row.side} modular scale custom ratio`}
               type="number" min={ratioMin_bound} max={ratioMax_bound} step={0.001} value={row.value}
               onchange={(e) => { const n = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(n)) row.onChange?.(clampRatio(n)); }}
-              class="w-16 shrink-0 bg-white/5 border border-white/10 rounded text-[11px] font-mono text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500"
+              class="w-16 shrink-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded text-[11px] font-mono text-slate-800 dark:text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500"
             />
           </div>
         {/each}
@@ -180,7 +186,7 @@
 
   {#if overridden && onReset}
     <div class="flex justify-end mt-2">
-      <button onclick={onReset} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer">reset</button>
+      <button onclick={onReset} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer">reset</button>
     </div>
   {/if}
 </div>

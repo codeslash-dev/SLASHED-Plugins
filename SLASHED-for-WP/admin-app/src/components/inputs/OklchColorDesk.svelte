@@ -50,19 +50,19 @@
   }
 </script>
 
-<div class={`rounded-xl border transition-all ${overridden ? "bg-indigo-500/8 border-indigo-500/20" : "bg-white/4 border-white/8 hover:border-white/12"}`}>
+<div class={`rounded-xl border transition-all ${overridden ? "bg-indigo-500/8 border-indigo-500/20" : "bg-black/4 dark:bg-white/4 border-black/8 dark:border-white/8 hover:border-black/12 dark:hover:border-white/12"}`}>
   <button
     onclick={() => { expanded = !expanded; }}
     class="w-full flex items-center gap-3 px-3 py-2.5 cursor-pointer"
   >
     <div
-      class="w-8 h-8 rounded-lg border border-white/10 shrink-0 shadow-lg"
+      class="w-8 h-8 rounded-lg border border-black/10 dark:border-white/10 shrink-0 shadow-lg"
       style:background={swatchColor}
     ></div>
     <div class="flex-1 text-left min-w-0">
-      <div class="text-[11px] font-semibold text-slate-200">{label}</div>
+      <div class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">{label}</div>
       <div class="text-[9px] font-mono text-slate-500">{shortName}</div>
-      <div class="text-[9px] font-mono text-slate-600">{value}</div>
+      <div class="text-[9px] font-mono text-slate-400 dark:text-slate-600">{value}</div>
     </div>
     {#if overridden}
       <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></div>
@@ -71,12 +71,12 @@
   </button>
 
   {#if expanded}
-    <div class="px-3 pb-3 border-t border-white/6 pt-3 space-y-3">
+    <div class="px-3 pb-3 border-t border-black/6 dark:border-white/6 pt-3 space-y-3">
       <!-- L slider -->
       <div>
         <div class="flex justify-between mb-1">
-          <span class="text-[10px] font-bold text-slate-400">Lightness (L)</span>
-          <span class="text-[10px] font-mono text-slate-400">{parsed.l.toFixed(3)}</span>
+          <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Lightness (L)</span>
+          <span class="text-[10px] font-mono text-slate-600 dark:text-slate-400">{parsed.l.toFixed(3)}</span>
         </div>
         <div
           class="h-4 rounded-full mb-1"
@@ -94,8 +94,8 @@
       <!-- C slider -->
       <div>
         <div class="flex justify-between mb-1">
-          <span class="text-[10px] font-bold text-slate-400">Chroma (C)</span>
-          <span class="text-[10px] font-mono text-slate-400">{parsed.c.toFixed(3)}</span>
+          <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Chroma (C)</span>
+          <span class="text-[10px] font-mono text-slate-600 dark:text-slate-400">{parsed.c.toFixed(3)}</span>
         </div>
         <RangeWithNumber
           value={parsed.c}
@@ -109,8 +109,8 @@
       <!-- H slider -->
       <div>
         <div class="flex justify-between mb-1">
-          <span class="text-[10px] font-bold text-slate-400">Hue (H)</span>
-          <span class="text-[10px] font-mono text-slate-400">{parsed.h.toFixed(1)}°</span>
+          <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Hue (H)</span>
+          <span class="text-[10px] font-mono text-slate-600 dark:text-slate-400">{parsed.h.toFixed(1)}°</span>
         </div>
         <div
           class="h-4 rounded-full mb-1"
@@ -149,13 +149,13 @@
                 (e.currentTarget as HTMLInputElement).blur();
               }
             }}
-            class="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[10px] font-mono text-slate-200 focus:outline-none focus:border-indigo-500"
+            class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[10px] font-mono text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500"
             placeholder="oklch(0.6 0.15 264)"
           />
           {#if overridden}
             <button
               onclick={onReset}
-              class="px-2 py-1 rounded-lg text-[10px] text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-colors cursor-pointer"
+              class="px-2 py-1 rounded-lg text-[10px] text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-colors cursor-pointer"
             >
               Reset
             </button>

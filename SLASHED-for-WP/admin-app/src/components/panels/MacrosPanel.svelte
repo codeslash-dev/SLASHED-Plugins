@@ -70,11 +70,11 @@
 
 <div class="p-4 space-y-6">
 
-  <p class="text-[10px] text-slate-600 leading-relaxed">
-    Tokens for the framework's utility macros — <span class="font-mono text-slate-400">.sf-prose</span>,
-    <span class="font-mono text-slate-400">.sf-flow</span>, <span class="font-mono text-slate-400">.sf-line-clamp</span>,
-    <span class="font-mono text-slate-400">.sf-aspect</span>, <span class="font-mono text-slate-400">.sf-scroll-shadow</span>
-    and <span class="font-mono text-slate-400">.sf-scrim</span>.
+  <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
+    Tokens for the framework's utility macros — <span class="font-mono text-slate-600 dark:text-slate-400">.sf-prose</span>,
+    <span class="font-mono text-slate-600 dark:text-slate-400">.sf-flow</span>, <span class="font-mono text-slate-600 dark:text-slate-400">.sf-line-clamp</span>,
+    <span class="font-mono text-slate-600 dark:text-slate-400">.sf-aspect</span>, <span class="font-mono text-slate-600 dark:text-slate-400">.sf-scroll-shadow</span>
+    and <span class="font-mono text-slate-600 dark:text-slate-400">.sf-scrim</span>.
   </p>
 
   <!-- FLOW -->
@@ -98,7 +98,7 @@
         currentRaw={overrides["--sf-flow-space"]}
         onRawSet={(v) => onSet("--sf-flow-space", v)}
       />
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3" style={`display:flex;flex-direction:column;gap:${flowSpace}rem`}>
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3" style={`display:flex;flex-direction:column;gap:${flowSpace}rem`}>
         {#each [0, 1, 2] as i (i)}
           <div class="h-2.5 rounded bg-indigo-500/40" style={`width:${90 - i * 12}%`}></div>
         {/each}
@@ -106,7 +106,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- LINE CLAMP -->
   <section class="space-y-3">
@@ -126,9 +126,9 @@
         onChange={(v) => onSet("--sf-line-clamp", String(v))}
         onReset={() => onReset("--sf-line-clamp")}
       />
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
         <p
-          class="text-[11px] text-slate-300 leading-relaxed"
+          class="text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed"
           style={`display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:${lineClamp};overflow:hidden`}
         >
           SLASHED is a token-first CSS framework. This sample paragraph repeats so you
@@ -140,7 +140,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ASPECT -->
   <section class="space-y-3">
@@ -153,29 +153,29 @@
       <span class="text-[10px] text-slate-500">{showAspect ? "▲" : "▼"}</span>
     </button>
     {#if showAspect}
-      <p class="text-[9px] text-slate-600">--sf-aspect — default ratio for .sf-aspect / .sf-frame</p>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600">--sf-aspect — default ratio for .sf-aspect / .sf-frame</p>
       <div class="grid grid-cols-3 gap-1.5">
         {#each ASPECT_PRESETS as p (p.value)}
           <button
             onclick={() => p.value === "16 / 9" ? onReset("--sf-aspect") : onSet("--sf-aspect", p.value)}
             class={`py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer font-mono ${
               aspectVal.replace(/\s/g, "") === p.value.replace(/\s/g, "")
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
             }`}
           >{p.label}</button>
         {/each}
       </div>
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 flex justify-center">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 flex justify-center">
         <div
-          class="bg-indigo-500/30 border border-indigo-500/30 rounded-lg flex items-center justify-center text-[9px] font-mono text-indigo-200"
+          class="bg-indigo-500/30 border border-indigo-500/30 rounded-lg flex items-center justify-center text-[9px] font-mono text-indigo-800 dark:text-indigo-200"
           style={`aspect-ratio:${aspectVal};max-height:120px;max-width:100%;width:auto;height:120px`}
         >{aspectVal}</div>
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCROLL SHADOW -->
   <section class="space-y-3">
@@ -198,7 +198,7 @@
         currentRaw={overrides["--sf-scroll-shadow-size"]}
         onRawSet={(v) => onSet("--sf-scroll-shadow-size", v)}
       />
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
         <div
           class="h-8 rounded bg-indigo-500/40"
           style={`mask:linear-gradient(to right, transparent, #000 ${scrollSize}rem, #000 calc(100% - ${scrollSize}rem), transparent)`}
@@ -207,7 +207,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCRIM -->
   <section class="space-y-3">
@@ -220,9 +220,9 @@
       <span class="text-[10px] text-slate-500">{showScrim ? "▲" : "▼"}</span>
     </button>
     {#if showScrim}
-      <p class="text-[9px] text-slate-600">--sf-scrim-color / --sf-scrim-direction — darkening gradient for .sf-scrim</p>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600">--sf-scrim-color / --sf-scrim-direction — darkening gradient for .sf-scrim</p>
       <div class="flex items-center gap-2">
-        <div class="text-[10px] font-semibold text-slate-400 w-20 shrink-0">Color</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Color</div>
         <input
           type="text"
           value={overrides["--sf-scrim-color"] ?? ""}
@@ -231,34 +231,34 @@
             const v = (e.target as HTMLInputElement).value.trim();
             v ? onSet("--sf-scrim-color", v) : onReset("--sf-scrim-color");
           }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
         />
         {#if "--sf-scrim-color" in overrides}
-          <button onclick={() => onReset("--sf-scrim-color")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          <button onclick={() => onReset("--sf-scrim-color")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
       <div>
-        <div class="text-[10px] font-semibold text-slate-400 mb-1.5">Direction</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Direction</div>
         <div class="grid grid-cols-3 gap-1">
           {#each SCRIM_DIRECTIONS as d (d.value)}
             <button
               onclick={() => d.value === "to top" ? onReset("--sf-scrim-direction") : onSet("--sf-scrim-direction", d.value)}
               class={`py-1 rounded-lg text-[10px] border transition-all cursor-pointer ${
                 scrimDir === d.value
-                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                  : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >{d.label}</button>
           {/each}
         </div>
       </div>
-      <div class="relative h-24 rounded-xl border border-white/8 overflow-hidden flex items-end p-2"
+      <div class="relative h-24 rounded-xl border border-black/8 dark:border-white/8 overflow-hidden flex items-end p-2"
         style="background:repeating-linear-gradient(45deg,#475569,#475569 8px,#334155 8px,#334155 16px)">
         <div class="absolute inset-0" style={`background:linear-gradient(${scrimDir}, ${scrimColor}, transparent)`}></div>
         <span class="relative text-[11px] font-bold text-white">Caption over scrim</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="text-[10px] font-semibold text-slate-400 w-20 shrink-0">Text shadow</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Text shadow</div>
         <input
           type="text"
           value={overrides["--sf-scrim-text-shadow"] ?? ""}
@@ -267,16 +267,16 @@
             const v = (e.target as HTMLInputElement).value.trim();
             v ? onSet("--sf-scrim-text-shadow", v) : onReset("--sf-scrim-text-shadow");
           }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
         />
         {#if "--sf-scrim-text-shadow" in overrides}
-          <button onclick={() => onReset("--sf-scrim-text-shadow")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          <button onclick={() => onReset("--sf-scrim-text-shadow")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- PROSE -->
   <section class="space-y-3">
@@ -289,7 +289,7 @@
       <span class="text-[10px] text-slate-500">{showProse ? "▲" : "▼"}</span>
     </button>
     {#if showProse}
-      <p class="text-[9px] text-slate-600">Spacing tokens for .sf-prose. Defaults track the space scale; sliders write rem overrides.</p>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600">Spacing tokens for .sf-prose. Defaults track the space scale; sliders write rem overrides.</p>
       <div class="space-y-2">
         {#each PROSE_SPACE as t (t.token)}
           <SliderRow
@@ -314,7 +314,7 @@
           onRawSet={(v) => onSet("--sf-prose-media-radius", v)}
         />
         <div class="flex items-center gap-2 pt-1">
-          <div class="text-[10px] font-semibold text-slate-400 w-20 shrink-0">Marker color</div>
+          <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Marker color</div>
           <input
             type="text"
             value={overrides["--sf-prose-marker-color"] ?? ""}
@@ -323,10 +323,10 @@
               const v = (e.target as HTMLInputElement).value.trim();
               v ? onSet("--sf-prose-marker-color", v) : onReset("--sf-prose-marker-color");
             }}
-            class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+            class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
           />
           {#if "--sf-prose-marker-color" in overrides}
-            <button onclick={() => onReset("--sf-prose-marker-color")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+            <button onclick={() => onReset("--sf-prose-marker-color")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
           {/if}
         </div>
       </div>
@@ -344,11 +344,11 @@
       <span class="text-[10px] text-slate-500">{showContentIntrinsic ? "▲" : "▼"}</span>
     </button>
     {#if showContentIntrinsic}
-      <p class="text-[9px] text-slate-600 leading-relaxed">
-        --sf-content-intrinsic-size — placeholder size used with <span class="font-mono text-slate-400">content-visibility: auto</span> to improve scroll performance on tall pages.
+      <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
+        --sf-content-intrinsic-size — placeholder size used with <span class="font-mono text-slate-600 dark:text-slate-400">content-visibility: auto</span> to improve scroll performance on tall pages.
       </p>
       <div class="flex items-center gap-2">
-        <div class="text-[10px] font-semibold text-slate-400 w-20 shrink-0">Intrinsic size</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Intrinsic size</div>
         <input
           type="text"
           value={overrides["--sf-content-intrinsic-size"] ?? ""}
@@ -357,18 +357,18 @@
             const v = (e.target as HTMLInputElement).value.trim();
             v ? onSet("--sf-content-intrinsic-size", v) : onReset("--sf-content-intrinsic-size");
           }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
         />
         {#if "--sf-content-intrinsic-size" in overrides}
-          <button onclick={() => onReset("--sf-content-intrinsic-size")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          <button onclick={() => onReset("--sf-content-intrinsic-size")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
     {/if}
   </section>
 
-  <div class="rounded-lg bg-white/3 border border-white/6 p-3">
+  <div class="rounded-lg bg-black/3 dark:bg-white/3 border border-black/6 dark:border-white/6 p-3">
     <p class="text-[10px] text-slate-500 leading-relaxed">
-      <span class="text-slate-400 font-semibold">All tokens tab</span> — edit every prose, scrim and surface token directly.
+      <span class="text-slate-600 dark:text-slate-400 font-semibold">All tokens tab</span> — edit every prose, scrim and surface token directly.
     </p>
   </div>
 </div>

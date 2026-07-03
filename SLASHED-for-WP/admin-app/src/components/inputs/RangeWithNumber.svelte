@@ -18,7 +18,7 @@
 
 <div class="flex items-center gap-2 w-full">
   <div class="relative flex-1 h-5 flex items-center">
-    <div class="absolute inset-x-0 h-1 bg-white/8 rounded-full"></div>
+    <div class="absolute inset-x-0 h-1 bg-black/8 dark:bg-white/8 rounded-full"></div>
     <div
       class="absolute left-0 h-1 bg-indigo-500 rounded-full"
       style={`width: ${pct}%`}
@@ -34,7 +34,7 @@
       class="absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed h-full"
     />
     <div
-      class="absolute w-3 h-3 bg-white rounded-full shadow-md border border-white/20 pointer-events-none"
+      class="absolute w-3 h-3 bg-white rounded-full shadow-md border border-black/20 dark:border-white/20 pointer-events-none"
       style={`left: calc(${pct}% - 6px)`}
     ></div>
   </div>
@@ -47,7 +47,7 @@
       {value}
       {disabled}
       onchange={(e) => onChange(clamp(parseFloat((e.target as HTMLInputElement).value) || 0))}
-      class="w-14 bg-white/5 border border-white/10 rounded text-[11px] font-mono text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500 disabled:opacity-40"
+      class="w-14 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded text-[11px] font-mono text-slate-800 dark:text-slate-200 text-right px-1.5 py-0.5 focus:outline-none focus:border-indigo-500 disabled:opacity-40"
     />
     {#if unit}
       <span class="text-[10px] text-slate-500 ml-1 font-mono">{unit}</span>

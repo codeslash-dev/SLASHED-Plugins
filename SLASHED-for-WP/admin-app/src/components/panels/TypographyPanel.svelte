@@ -5,6 +5,11 @@
   import SliderRow from '../inputs/SliderRow.svelte';
   import RangeWithNumber from '../inputs/RangeWithNumber.svelte';
   import ClampField from '../inputs/ClampField.svelte';
+  import { themeState } from '../../lib/theme.svelte';
+
+  // <option> only reliably accepts a background via inline style (no dark:
+  // variant support), so it's derived from the chrome theme directly.
+  let optionBg = $derived(themeState.value === 'dark' ? '#16161e' : '#ffffff');
 
   let { overrides, onSet, onReset, onBulkChange }: {
     tokens: SlashedToken[];
@@ -265,51 +270,51 @@
       { label: "Mono", token: "--sf-font-mono", current: currentMonoFont, opts: MONO_STACKS },
     ] as f (f.token)}
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-semibold text-slate-400 w-14 shrink-0">{f.label}</span>
+        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-14 shrink-0">{f.label}</span>
         <select
           value={f.current}
           onchange={(e) => {
             const v = (e.target as HTMLSelectElement).value;
             v ? onSet(f.token, v) : onReset(f.token);
           }}
-          class="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+          class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
           style={`font-family: ${f.current || "inherit"}`}
         >
           {#each f.opts as o (o.label)}
-            <option value={o.value} style="font-family:inherit;background:#16161e;">{o.label}</option>
+            <option value={o.value} style={`font-family:inherit;background:${optionBg};`}>{o.label}</option>
           {/each}
           {#if f.current && !f.opts.some((o) => o.value === f.current)}
-            <option value={f.current} style="background:#16161e;">Custom: {f.current.split(",")[0].replace(/['"]/g, "")}</option>
+            <option value={f.current} style={`background:${optionBg};`}>Custom: {f.current.split(",")[0].replace(/['"]/g, "")}</option>
           {/if}
         </select>
         {#if f.token in overrides}
-          <button onclick={() => onReset(f.token)} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          <button onclick={() => onReset(f.token)} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
     {/each}
 
     <!-- Google font loader (dropdown + custom) -->
-    <div class="rounded-xl bg-white/4 border border-white/8 p-3 space-y-2">
-      <div class="text-[10px] font-semibold text-slate-400">Google Font</div>
+    <div class="rounded-xl bg-black/4 dark:bg-white/4 border border-black/8 dark:border-white/8 p-3 space-y-2">
+      <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Google Font</div>
       <div class="flex gap-2">
         <select
           value={googleFontChoice}
           onchange={(e) => { googleFontChoice = (e.target as HTMLSelectElement).value; }}
-          class="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+          class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
         >
-          <option value="" style="background:#16161e;">Pick a font…</option>
+          <option value="" style={`background:${optionBg};`}>Pick a font…</option>
           {#each GOOGLE_FONTS as g (g)}
-            <option value={g} style="background:#16161e;">{g}</option>
+            <option value={g} style={`background:${optionBg};`}>{g}</option>
           {/each}
         </select>
         <div class="flex gap-1 shrink-0">
           <button
             onclick={() => { customFontTarget = "body"; }}
-            class={`px-2 rounded text-[10px] border transition-all cursor-pointer ${customFontTarget === "body" ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200" : "border-white/8 text-slate-400"}`}
+            class={`px-2 rounded text-[10px] border transition-all cursor-pointer ${customFontTarget === "body" ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200" : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400"}`}
           >Body</button>
           <button
             onclick={() => { customFontTarget = "heading"; }}
-            class={`px-2 rounded text-[10px] border transition-all cursor-pointer ${customFontTarget === "heading" ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200" : "border-white/8 text-slate-400"}`}
+            class={`px-2 rounded text-[10px] border transition-all cursor-pointer ${customFontTarget === "heading" ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200" : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400"}`}
           >Heading</button>
         </div>
       </div>
@@ -318,11 +323,11 @@
         placeholder="…or type any Google font name"
         oninput={(e) => { googleFontChoice = (e.target as HTMLInputElement).value; }}
         value={googleFontChoice}
-        class="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+        class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
       />
       <button
         onclick={() => applyCustomFont(googleFontChoice, customFontTarget)}
-        class="w-full py-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-[11px] font-bold cursor-pointer hover:bg-indigo-600/30 transition-all"
+        class="w-full py-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold cursor-pointer hover:bg-indigo-600/30 transition-all"
       >
         Load &amp; apply to {customFontTarget}
       </button>
@@ -330,7 +335,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- PER-TYPE (body + h1–h6) -->
   <section class="space-y-3">
@@ -345,13 +350,13 @@
     {#if showPerType}
 
     <!-- Level selector -->
-    <div class="flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5">
+    <div class="flex bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded-lg p-0.5 gap-0.5">
       {#each TYPE_LEVELS as lvl (lvl.id)}
         {@const isOv = (lvl.size in overrides) || (lvl.lh in overrides) || (lvl.wt in overrides) || (!!lvl.ls && lvl.ls in overrides)}
         <button
           onclick={() => { activeLevelId = lvl.id; }}
           class={`relative flex-1 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-            activeLevelId === lvl.id ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"
+            activeLevelId === lvl.id ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
           }`}
         >
           {lvl.label}
@@ -361,9 +366,9 @@
     </div>
 
     <!-- Live sample -->
-    <div class="bg-white/4 rounded-xl border border-white/8 px-3 py-3 overflow-hidden">
+    <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 px-3 py-3 overflow-hidden">
       <div
-        class="text-white/85 truncate"
+        class="text-slate-900/85 dark:text-white/85 truncate"
         style={`font-size:${sampleSize}rem; font-weight:${sampleWeight}; letter-spacing:${sampleTracking}em; line-height:${sampleLeading}; font-family:${activeLevel.id === "body" ? (currentBodyFont || "inherit") : (currentHeadingFont || currentBodyFont || "inherit")}`}
       >The quick brown fox
       </div>
@@ -371,41 +376,41 @@
 
     <!-- Size -->
     <div class="flex items-center gap-2">
-      <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">Size</span>
+      <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">Size</span>
       <select
         value={levelVal(activeLevel.size, activeLevel.dSize)}
         onchange={(e) => setLevel(activeLevel.size, (e.target as HTMLSelectElement).value, activeLevel.dSize)}
-        class="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+        class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
       >
         {#each SIZE_OPTIONS as o (o.value)}
-          <option value={o.value} style="background:#16161e;">{o.label}</option>
+          <option value={o.value} style={`background:${optionBg};`}>{o.label}</option>
         {/each}
         {#if !SIZE_OPTIONS.some((o) => o.value === levelVal(activeLevel.size, activeLevel.dSize))}
-          <option value={levelVal(activeLevel.size, activeLevel.dSize)} style="background:#16161e;">custom</option>
+          <option value={levelVal(activeLevel.size, activeLevel.dSize)} style={`background:${optionBg};`}>custom</option>
         {/if}
       </select>
     </div>
 
     <!-- Line height -->
     <div class="flex items-center gap-2">
-      <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">Line height</span>
+      <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">Line height</span>
       <select
         value={levelVal(activeLevel.lh, activeLevel.dLh)}
         onchange={(e) => setLevel(activeLevel.lh, (e.target as HTMLSelectElement).value, activeLevel.dLh)}
-        class="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+        class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
       >
         {#each LEADING_OPTIONS as o (o.value)}
-          <option value={o.value} style="background:#16161e;">{o.label} · {o.num}</option>
+          <option value={o.value} style={`background:${optionBg};`}>{o.label} · {o.num}</option>
         {/each}
         {#if !LEADING_OPTIONS.some((o) => o.value === levelVal(activeLevel.lh, activeLevel.dLh))}
-          <option value={levelVal(activeLevel.lh, activeLevel.dLh)} style="background:#16161e;">custom</option>
+          <option value={levelVal(activeLevel.lh, activeLevel.dLh)} style={`background:${optionBg};`}>custom</option>
         {/if}
       </select>
     </div>
 
     <!-- Weight -->
     <div>
-      <span class="text-[10px] font-semibold text-slate-400">Weight</span>
+      <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Weight</span>
       <div class="flex gap-1 mt-1">
         {#each WEIGHT_OPTIONS as w (w)}
           {@const cur = levelVal(activeLevel.wt, activeLevel.dWt)}
@@ -413,7 +418,7 @@
             onclick={() => setLevel(activeLevel.wt, w, activeLevel.dWt)}
             style={`font-weight:${parseInt(w)}`}
             class={`flex-1 py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer font-mono ${
-              cur === w ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200" : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+              cur === w ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200" : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
             }`}
           >{w}</button>
         {/each}
@@ -423,17 +428,17 @@
     <!-- Letter spacing (headings only) -->
     {#if activeLevel.ls}
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">Tracking</span>
+        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">Tracking</span>
         <select
           value={levelVal(activeLevel.ls, activeLevel.dLs)}
           onchange={(e) => setLevel(activeLevel.ls, (e.target as HTMLSelectElement).value, activeLevel.dLs)}
-          class="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+          class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
         >
           {#each TRACKING_OPTIONS as o (o.value)}
-            <option value={o.value} style="background:#16161e;">{o.label}</option>
+            <option value={o.value} style={`background:${optionBg};`}>{o.label}</option>
           {/each}
           {#if !TRACKING_OPTIONS.some((o) => o.value === levelVal(activeLevel.ls, activeLevel.dLs))}
-            <option value={levelVal(activeLevel.ls, activeLevel.dLs)} style="background:#16161e;">custom</option>
+            <option value={levelVal(activeLevel.ls, activeLevel.dLs)} style={`background:${optionBg};`}>custom</option>
           {/if}
         </select>
       </div>
@@ -443,7 +448,7 @@
     {#if activeLevel.id !== "body"}
       {@const maxWidthToken = `--sf-${activeLevel.id}-max-width`}
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">Max width</span>
+        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">Max width</span>
         <input
           type="text"
           value={overrides[maxWidthToken] ?? ""}
@@ -452,10 +457,10 @@
             const v = (e.target as HTMLInputElement).value.trim();
             v ? onSet(maxWidthToken, v) : onReset(maxWidthToken);
           }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
         />
         {#if maxWidthToken in overrides}
-          <button onclick={() => onReset(maxWidthToken)} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          <button onclick={() => onReset(maxWidthToken)} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
     {/if}
@@ -468,14 +473,14 @@
             if (activeLevel.ls) patch[activeLevel.ls] = null;
             onBulkChange(patch);
           }}
-          class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer"
+          class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer"
         >reset {activeLevel.label}</button>
       {/if}
     </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- BODY TEXT -->
   <section class="space-y-4">
@@ -499,9 +504,9 @@
       {@const isOverridden = row.tokenName in overrides}
       <div class="group">
         <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[11px] font-semibold text-slate-200">{row.label} weight</span>
+          <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">{row.label} weight</span>
           {#if isOverridden}
-            <button onclick={() => onReset(row.tokenName)} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 transition-colors">reset</button>
+            <button onclick={() => onReset(row.tokenName)} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 transition-colors">reset</button>
           {/if}
         </div>
         <div class="flex gap-1">
@@ -511,8 +516,8 @@
               style={`font-weight: ${parseInt(w)}`}
               class={`flex-1 py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer font-mono ${
                 current === w
-                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                  : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >{w}</button>
           {/each}
@@ -522,7 +527,7 @@
 
     <!-- Em style toggle -->
     <div>
-      <div class="text-[10px] font-semibold text-slate-400 mb-2">Emphasis style</div>
+      <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-2">Emphasis style</div>
       <div class="flex gap-1">
         {#each [["Italic", "italic"], ["Normal", "normal"]] as [label, val] (val)}
           {@const current = overrides["--sf-body-em-style"] ?? "italic"}
@@ -530,8 +535,8 @@
             onclick={() => val === "italic" ? onReset("--sf-body-em-style") : onSet("--sf-body-em-style", val)}
             class={`flex-1 py-2 rounded-lg text-[10px] border transition-all cursor-pointer ${
               current === val
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
             }`}
           ><span style={`font-style: ${val}`}>{label}</span></button>
         {/each}
@@ -554,15 +559,15 @@
     ] as row (row.token)}
       {@const current = overrides[row.token] ?? row.defaultVal}
       <div>
-        <div class="text-[10px] font-semibold text-slate-400 mb-1.5">{row.label}</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">{row.label}</div>
         <div class="flex gap-1">
           {#each WRAP_OPTIONS as o (o.value)}
             <button
               onclick={() => o.value === row.defaultVal && !(row.token in overrides) ? undefined : (o.value === row.defaultVal ? onReset(row.token) : onSet(row.token, o.value))}
               class={`flex-1 px-2 py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer ${
                 current === o.value
-                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                  : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >{o.label}</button>
           {/each}
@@ -572,7 +577,7 @@
 
     <!-- Link external marker -->
     <div class="flex items-center gap-2">
-      <span class="text-[10px] font-semibold text-slate-400 w-24 shrink-0">External marker</span>
+      <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">External marker</span>
       <input
         type="text"
         value={overrides["--sf-link-external-marker"] ?? ""}
@@ -581,16 +586,16 @@
           const v = (e.target as HTMLInputElement).value;
           v ? onSet("--sf-link-external-marker", v) : onReset("--sf-link-external-marker");
         }}
-        class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+        class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
       />
       {#if "--sf-link-external-marker" in overrides}
-        <button onclick={() => onReset("--sf-link-external-marker")} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+        <button onclick={() => onReset("--sf-link-external-marker")} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
       {/if}
     </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- FONT WEIGHT SCALE -->
   <section class="space-y-3">
@@ -603,7 +608,7 @@
       <span class="text-[10px] text-slate-500">{showFontWeights ? "▲" : "▼"}</span>
     </button>
     {#if showFontWeights}
-      <p class="text-[9px] text-slate-600 leading-relaxed">Named weight tokens. Override if your font uses non-standard axis values.</p>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">Named weight tokens. Override if your font uses non-standard axis values.</p>
       {#each [
         { label: "Light",    token: "--sf-font-weight-light",    def: 300 },
         { label: "Normal",   token: "--sf-font-weight-normal",   def: 400 },
@@ -613,9 +618,9 @@
       ] as row (row.token)}
         <div class="group">
           <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] font-semibold text-slate-200">{row.label}</span>
+            <span class="text-[10px] font-semibold text-slate-800 dark:text-slate-200">{row.label}</span>
             {#if row.token in overrides}
-              <button onclick={() => onReset(row.token)} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
+              <button onclick={() => onReset(row.token)} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
             {/if}
           </div>
           <div class="flex gap-1">
@@ -626,8 +631,8 @@
                 style={`font-weight:${parseInt(w)}`}
                 class={`flex-1 py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer font-mono ${
                   cur === w
-                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                    : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                    : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >{w}</button>
             {/each}
@@ -637,7 +642,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- DISPLAY TYPE -->
   <section class="space-y-4">
@@ -669,7 +674,7 @@
         { label: "Display M line-height", token: "--sf-display-m-line-height", def: 1.05 },
       ] as row (row.token)}
         <div>
-          <div class="text-[9px] text-slate-600 mb-1">{row.label}</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">{row.label}</div>
           <SliderRow
             label="" value={num(row.token, row.def)} min={0.8} max={1.5} step={0.025}
             overridden={row.token in overrides}
@@ -690,9 +695,9 @@
       {@const isOverridden = row.tokenName in overrides}
       <div class="group">
         <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[11px] font-semibold text-slate-200">{row.label} weight</span>
+          <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">{row.label} weight</span>
           {#if isOverridden}
-            <button onclick={() => onReset(row.tokenName)} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 transition-colors">reset</button>
+            <button onclick={() => onReset(row.tokenName)} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 transition-colors">reset</button>
           {/if}
         </div>
         <div class="flex gap-1">
@@ -702,8 +707,8 @@
               style={`font-weight: ${parseInt(w)}`}
               class={`flex-1 py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer font-mono ${
                 current === w
-                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                  : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >{w}</button>
           {/each}
@@ -713,7 +718,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- FINE-TUNE (type ramp clamp + rhythm + tracking) -->
   <section class="space-y-4">
@@ -726,7 +731,7 @@
       <span class="text-[10px] text-slate-500">{showModularScale ? "▲" : "▼"}</span>
     </button>
     {#if showModularScale}
-    <p class="text-[10px] text-slate-600 leading-relaxed">
+    <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
       Utopia-style fluid scale. Each endpoint has three values — viewport width,
       base size, and modular ratio. Sizes interpolate fluidly between mobile and desktop.
     </p>
@@ -762,7 +767,7 @@
 
     <!-- Line height scale -->
     <div>
-      <div class="text-[10px] font-semibold text-slate-400 mb-2">Line height scale</div>
+      <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-2">Line height scale</div>
       <div class="space-y-2">
         {#each LEADING_TOKENS as t (t.token)}
           <SliderRow
@@ -786,17 +791,17 @@
 
     <!-- Letter-spacing scale -->
     <div>
-      <div class="text-[10px] font-semibold text-slate-400 mb-2">Letter-spacing scale</div>
-      <p class="text-[9px] text-slate-600 mb-2">
+      <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-2">Letter-spacing scale</div>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600 mb-2">
         Overriding these propagates to heading sizes that reference them.
       </p>
       <div class="space-y-2">
         {#each TRACKING_TOKENS as t (t.token)}
           <div class="group">
             <div class="flex items-center justify-between mb-1">
-              <span class="text-[10px] font-semibold text-slate-200">{t.label}</span>
+              <span class="text-[10px] font-semibold text-slate-800 dark:text-slate-200">{t.label}</span>
               {#if t.token in overrides}
-                <button onclick={() => onReset(t.token)} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
+                <button onclick={() => onReset(t.token)} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
               {/if}
             </div>
             <RangeWithNumber
@@ -814,7 +819,7 @@
       <button
         onclick={() => { showScaleAdvanced = !showScaleAdvanced; }}
         aria-expanded={showScaleAdvanced}
-        class="w-full flex items-center justify-between text-slate-600 hover:text-slate-400 transition-colors cursor-pointer"
+        class="w-full flex items-center justify-between text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors cursor-pointer"
       >
         <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
         <span class="text-[10px]">{showScaleAdvanced ? "▲" : "▼"}</span>
@@ -834,7 +839,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCALE PREVIEW -->
   <section>
@@ -847,26 +852,26 @@
       <span class="text-[10px] text-slate-500">{showScalePreview ? "▲" : "▼"}</span>
     </button>
     {#if showScalePreview}
-    <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-1 overflow-hidden">
+    <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-1 overflow-hidden">
       {#each [...TEXT_STEPS].reverse() as { label, factor } (label)}
         {@const midBase = (baseMin + baseMax) / 2}
         {@const size = midBase * factor * textScale}
         <div class="flex items-baseline gap-2">
-          <span class="text-[9px] font-mono text-slate-600 w-6 shrink-0 text-right">{label}</span>
+          <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-6 shrink-0 text-right">{label}</span>
           <span
-            class="text-white/80 font-medium leading-none truncate"
+            class="text-slate-900/80 dark:text-white/80 font-medium leading-none truncate"
             style={`font-size: ${Math.min(size, 2.5)}rem; font-family: ${currentBodyFont || "inherit"}`}
           >
             Aa
           </span>
-          <span class="text-[9px] font-mono text-slate-600 ml-auto shrink-0">{size.toFixed(2)}rem</span>
+          <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 ml-auto shrink-0">{size.toFixed(2)}rem</span>
         </div>
       {/each}
     </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- LINE LENGTHS -->
   <section class="space-y-3">
@@ -879,8 +884,8 @@
       <span class="text-[10px] text-slate-500">{showLineLengths ? "▲" : "▼"}</span>
     </button>
     {#if showLineLengths}
-      <p class="text-[9px] text-slate-600 leading-relaxed">
-        Per-text-size max-width caps on <span class="font-mono text-slate-400">.sf-text-*</span> elements. Set to <span class="font-mono text-slate-400">none</span> to remove the constraint; use <span class="font-mono text-slate-400">ch</span> units for character-based measures.
+      <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
+        Per-text-size max-width caps on <span class="font-mono text-slate-600 dark:text-slate-400">.sf-text-*</span> elements. Set to <span class="font-mono text-slate-600 dark:text-slate-400">none</span> to remove the constraint; use <span class="font-mono text-slate-600 dark:text-slate-400">ch</span> units for character-based measures.
       </p>
       <div class="space-y-1.5">
         {#each [
@@ -895,7 +900,7 @@
           { label: "4xl", token: "--sf-text-4xl-max-width", def: "none" },
         ] as row (row.token)}
           <div class="flex items-center gap-2">
-            <span class="text-[9px] font-mono text-slate-400 w-6 shrink-0">{row.label}</span>
+            <span class="text-[9px] font-mono text-slate-600 dark:text-slate-400 w-6 shrink-0">{row.label}</span>
             <input
               type="text"
               value={overrides[row.token] ?? ""}
@@ -904,10 +909,10 @@
                 const v = (e.target as HTMLInputElement).value.trim();
                 v ? onSet(row.token, v) : onReset(row.token);
               }}
-              class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+              class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
             />
             {#if row.token in overrides}
-              <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+              <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
           </div>
         {/each}
@@ -915,7 +920,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ADVANCED TYPOGRAPHY -->
   <section class="space-y-3">
@@ -928,11 +933,11 @@
       <span class="text-[10px] text-slate-500">{showAdvancedType ? "▲" : "▼"}</span>
     </button>
     {#if showAdvancedType}
-      <p class="text-[9px] text-slate-600 leading-relaxed">Advanced OpenType and variable-font axes. Leave as <span class="font-mono text-slate-400">normal</span> unless your font supports these features.</p>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">Advanced OpenType and variable-font axes. Leave as <span class="font-mono text-slate-600 dark:text-slate-400">normal</span> unless your font supports these features.</p>
 
       <!-- font-numeric -->
       <div>
-        <div class="text-[10px] font-semibold text-slate-400 mb-1.5">Numeric figures</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Numeric figures</div>
         <div class="flex gap-1">
           {#each [["tabular-nums", "tabular-nums (default)"], ["proportional-nums", "proportional-nums"], ["normal", "normal"]] as [val, label] (val)}
             {@const cur = overrides["--sf-font-numeric"] ?? "tabular-nums"}
@@ -940,8 +945,8 @@
               onclick={() => val === "tabular-nums" ? onReset("--sf-font-numeric") : onSet("--sf-font-numeric", val)}
               class={`flex-1 py-1.5 rounded-lg text-[9px] border transition-all cursor-pointer ${
                 cur === val
-                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                  : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >{label}</button>
           {/each}
@@ -950,7 +955,7 @@
 
       <!-- optical-sizing -->
       <div>
-        <div class="text-[10px] font-semibold text-slate-400 mb-1.5">Optical sizing</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Optical sizing</div>
         <div class="flex gap-1">
           {#each [["auto", "auto (default)"], ["none", "none"]] as [val, label] (val)}
             {@const cur = overrides["--sf-optical-sizing"] ?? "auto"}
@@ -958,8 +963,8 @@
               onclick={() => val === "auto" ? onReset("--sf-optical-sizing") : onSet("--sf-optical-sizing", val)}
               class={`flex-1 py-2 rounded-lg text-[10px] border transition-all cursor-pointer ${
                 cur === val
-                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                  : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >{label}</button>
           {/each}
@@ -968,7 +973,7 @@
 
       <!-- font-features -->
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-semibold text-slate-400 w-24 shrink-0">Font features</span>
+        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Font features</span>
         <input
           type="text"
           value={overrides["--sf-font-features"] ?? ""}
@@ -977,16 +982,16 @@
             const v = (e.target as HTMLInputElement).value.trim();
             v ? onSet("--sf-font-features", v) : onReset("--sf-font-features");
           }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
         />
         {#if "--sf-font-features" in overrides}
-          <button onclick={() => onReset("--sf-font-features")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          <button onclick={() => onReset("--sf-font-features")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
 
       <!-- font-variation -->
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-semibold text-slate-400 w-24 shrink-0">Variation</span>
+        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Variation</span>
         <input
           type="text"
           value={overrides["--sf-font-variation"] ?? ""}
@@ -995,10 +1000,10 @@
             const v = (e.target as HTMLInputElement).value.trim();
             v ? onSet("--sf-font-variation", v) : onReset("--sf-font-variation");
           }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
         />
         {#if "--sf-font-variation" in overrides}
-          <button onclick={() => onReset("--sf-font-variation")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          <button onclick={() => onReset("--sf-font-variation")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
     {/if}

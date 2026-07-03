@@ -33,7 +33,7 @@
   <div class="flex items-center justify-between">
     <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest capitalize">{domain} tokens</div>
     {#if modifiedCount > 0}
-      <span class="text-[9px] font-bold text-indigo-400 font-mono">{modifiedCount} modified</span>
+      <span class="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 font-mono">{modifiedCount} modified</span>
     {/if}
   </div>
 
@@ -42,11 +42,11 @@
     placeholder={`Search ${domain} tokens…`}
     value={query}
     oninput={(e) => { query = (e.target as HTMLInputElement).value; }}
-    class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+    class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
   />
 
   {#if filtered().length === 0}
-    <p class="text-[11px] text-slate-600 text-center py-8">No tokens found</p>
+    <p class="text-[11px] text-slate-400 dark:text-slate-600 text-center py-8">No tokens found</p>
   {:else}
     <div class="space-y-0.5">
       {#each filtered().slice(0, 60) as t (t.name)}
@@ -58,7 +58,7 @@
         />
       {/each}
       {#if filtered().length > 60}
-        <p class="text-[10px] text-slate-600 text-center py-2">
+        <p class="text-[10px] text-slate-400 dark:text-slate-600 text-center py-2">
           {filtered().length - 60} more — refine your search
         </p>
       {/if}

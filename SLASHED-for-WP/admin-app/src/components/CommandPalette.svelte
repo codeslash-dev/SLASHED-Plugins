@@ -76,9 +76,9 @@
   onmousedown={(e) => { if (e.target === e.currentTarget) onClose(); }}
 >
   <!-- Panel -->
-  <div class="w-[560px] max-w-[95vw] bg-[#111118] border border-white/12 rounded-2xl shadow-2xl overflow-hidden">
+  <div class="w-[560px] max-w-[95vw] bg-white dark:bg-[#111118] border border-black/12 dark:border-white/12 rounded-2xl shadow-2xl overflow-hidden">
     <!-- Search input -->
-    <div class="flex items-center gap-3 px-4 py-3 border-b border-white/8">
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-black/8 dark:border-white/8">
       <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
@@ -87,42 +87,42 @@
         bind:value={query}
         onkeydown={handleKeydown}
         placeholder="Search tokens… (e.g. radius, primary, duration)"
-        class="flex-1 bg-transparent text-[13px] text-slate-100 placeholder-slate-600 outline-none"
+        class="flex-1 bg-transparent text-[13px] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-600 outline-none"
       />
-      <kbd class="text-[9px] font-mono text-slate-600 border border-white/10 rounded px-1.5 py-0.5 shrink-0">Esc</kbd>
+      <kbd class="text-[9px] font-mono text-slate-400 dark:text-slate-600 border border-black/10 dark:border-white/10 rounded px-1.5 py-0.5 shrink-0">Esc</kbd>
     </div>
 
     <!-- Results -->
     <div class="max-h-[360px] overflow-y-auto">
       {#if query.trim() && results.length === 0}
-        <div class="px-4 py-8 text-center text-[11px] text-slate-600">No tokens matching "{query}"</div>
+        <div class="px-4 py-8 text-center text-[11px] text-slate-400 dark:text-slate-600">No tokens matching "{query}"</div>
       {:else if !query.trim()}
-        <div class="px-4 py-8 text-center text-[11px] text-slate-600">Type to search tokens by name or description</div>
+        <div class="px-4 py-8 text-center text-[11px] text-slate-400 dark:text-slate-600">Type to search tokens by name or description</div>
       {:else}
         {#each results as r, i (r.token.name)}
           <button
             onmouseenter={() => { selectedIndex = i; }}
             onclick={() => handleSelect(r.domain)}
             class={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors cursor-pointer ${
-              selectedIndex === i ? "bg-indigo-500/15" : "hover:bg-white/4"
+              selectedIndex === i ? "bg-indigo-500/15" : "hover:bg-black/4 dark:hover:bg-white/4"
             }`}
           >
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">
-                <span class="text-[11px] font-mono text-slate-200 truncate">{r.token.name}</span>
+                <span class="text-[11px] font-mono text-slate-800 dark:text-slate-200 truncate">{r.token.name}</span>
                 {#if r.overridden}
-                  <span class="shrink-0 text-[8px] font-bold text-indigo-400 bg-indigo-500/15 border border-indigo-500/25 rounded px-1 py-0.5">overridden</span>
+                  <span class="shrink-0 text-[8px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/15 border border-indigo-500/25 rounded px-1 py-0.5">overridden</span>
                 {/if}
               </div>
               {#if r.token.description}
-                <div class="text-[10px] text-slate-600 truncate mt-0.5">{r.token.description}</div>
+                <div class="text-[10px] text-slate-400 dark:text-slate-600 truncate mt-0.5">{r.token.description}</div>
               {/if}
             </div>
             <div class="flex items-center gap-2 shrink-0">
-              <span class="text-[9px] text-slate-600 font-mono truncate max-w-[100px]">
+              <span class="text-[9px] text-slate-400 dark:text-slate-600 font-mono truncate max-w-[100px]">
                 {r.overridden ? overrides[r.token.name] : r.token.value}
               </span>
-              <span class="text-[9px] font-bold text-slate-500 bg-white/5 rounded px-1.5 py-0.5">
+              <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5 rounded px-1.5 py-0.5">
                 {DOMAIN_LABELS[r.domain] ?? r.domain}
               </span>
             </div>
@@ -133,10 +133,10 @@
 
     <!-- Footer hint -->
     {#if results.length > 0}
-      <div class="px-4 py-2 border-t border-white/6 flex items-center gap-3 text-[9px] text-slate-600">
-        <span><kbd class="font-mono border border-white/10 rounded px-1">↑↓</kbd> navigate</span>
-        <span><kbd class="font-mono border border-white/10 rounded px-1">↵</kbd> open panel</span>
-        <span><kbd class="font-mono border border-white/10 rounded px-1">Esc</kbd> close</span>
+      <div class="px-4 py-2 border-t border-black/6 dark:border-white/6 flex items-center gap-3 text-[9px] text-slate-400 dark:text-slate-600">
+        <span><kbd class="font-mono border border-black/10 dark:border-white/10 rounded px-1">↑↓</kbd> navigate</span>
+        <span><kbd class="font-mono border border-black/10 dark:border-white/10 rounded px-1">↵</kbd> open panel</span>
+        <span><kbd class="font-mono border border-black/10 dark:border-white/10 rounded px-1">Esc</kbd> close</span>
       </div>
     {/if}
   </div>
