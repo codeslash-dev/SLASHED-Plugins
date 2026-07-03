@@ -8,7 +8,7 @@ Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A no-build CSS framework for WordPress with native Bricks Builder tooling: token pickers, a color browser, class hints, and BEM automation.
+A no-build CSS framework for WordPress, with real Bricks Builder support built in.
 
 == Description ==
 
@@ -20,7 +20,7 @@ The plugin enqueues the framework and wires it into the editors you use, so you 
 
 A visual editor for every token — brand and status colors, typography, spacing, borders, shadows, fluid scales, z-index — built into WordPress at **SLASHED → Design Settings**, with a live light/dark preview. You only ever set validated token values; there is no raw-CSS field.
 
-Set six brand colors (primary, secondary, tertiary, action, neutral, base) and five status colors (success, warning, error, info, danger), each with an optional separate dark value, and the framework recolors itself. Hover and active states, tints, shades, and tonal steps are all computed for you.
+Set the six brand colors (primary, secondary, tertiary, action, neutral, base) and the framework recolors itself — hover and active states, tints, shades, and tonal steps are all computed for you. The five status colors (success, warning, error, info, danger) work the same way. Each one takes an optional separate dark value.
 
 The same editor runs as a standalone web app at https://slashed.codeslash.dev/configurator for designing without logging in. "Open in configurator" launches it preloaded with your current tokens; "Import shared config" pulls a shared design back in from a code or link.
 
