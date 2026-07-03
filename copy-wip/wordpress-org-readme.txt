@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.20
+Stable tag: 0.4.21
 Requires PHP: 7.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -129,6 +129,14 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.21 =
+* Added: Add --check mode to sync-core.mjs and a check orchestrator
+* Changed: Extract color-math and category-map into their own classes
+* Changed: Re-sync deduped domain-scoped override key filter from framework
+* Fixed: Precheck mutating on type-check, AppOverlay missing save-error state
+* Fixed: Eliminate reentrant-lock deadlock risk in the sync concurrency limiter
+* Fixed: Harden sync-core.mjs's GitHub API sync path
 
 = 0.4.20 =
 * Fixed: Resolve dependabot lockfile/peer conflicts
