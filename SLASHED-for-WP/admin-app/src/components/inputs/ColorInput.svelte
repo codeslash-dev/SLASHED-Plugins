@@ -61,7 +61,7 @@
 
 <div class="flex items-center gap-2">
   <!-- Swatch / native picker trigger -->
-  <div class="relative shrink-0 w-7 h-7 rounded border border-white/10 overflow-hidden cursor-pointer">
+  <div class="relative shrink-0 w-7 h-7 rounded border border-black/10 dark:border-white/10 overflow-hidden cursor-pointer">
     <div class="absolute inset-0" style:background={swatchColor}></div>
     {#if !isVar}
       <input
@@ -91,15 +91,15 @@
         if (e.key === "Escape") { cancelBlur = true; editing = false; }
       }}
       placeholder={placeholder ?? "default"}
-      class="flex-1 bg-white/8 border border-indigo-500/50 rounded px-1.5 py-0.5 text-[10px] font-mono text-slate-200 focus:outline-none"
+      class="flex-1 bg-black/8 dark:bg-white/8 border border-indigo-500/50 rounded px-1.5 py-0.5 text-[10px] font-mono text-slate-800 dark:text-slate-200 focus:outline-none"
     />
   {:else}
     <button
       onclick={() => { editing = true; }}
-      class="flex-1 text-left text-[9px] font-mono text-slate-500 hover:text-slate-200 truncate cursor-pointer transition-colors"
+      class="flex-1 text-left text-[9px] font-mono text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 truncate cursor-pointer transition-colors"
     >
       {#if isOverridden}
-        <span class="text-indigo-300">{value}</span>
+        <span class="text-indigo-700 dark:text-indigo-300">{value}</span>
       {:else}
         {placeholder ?? "default"}
       {/if}
@@ -107,6 +107,6 @@
   {/if}
 
   {#if isOverridden}
-    <button onclick={onReset} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+    <button onclick={onReset} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
   {/if}
 </div>

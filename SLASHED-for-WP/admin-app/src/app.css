@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+/* Studio chrome theme — toggled by lib/theme.svelte.ts via a `.dark` class
+   on the mount root, independent of the framework's own [data-theme]
+   (which only governs the dogfooded --sf-* tokens loaded below). */
+@custom-variant dark (&:where(.dark, .dark *));

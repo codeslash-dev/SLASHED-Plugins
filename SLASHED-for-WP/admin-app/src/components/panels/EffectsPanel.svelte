@@ -66,23 +66,23 @@
         onReset={() => onReset("--sf-blur")}
       />
       <!-- Blur preview -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-4 flex gap-3 items-center justify-center overflow-hidden relative">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex gap-3 items-center justify-center overflow-hidden relative">
         <div class="absolute inset-0 grid grid-cols-4 grid-rows-3 gap-px opacity-30">
           {#each Array.from({ length: 12 }) as _, i (i)}
             <div class={i % 3 === 0 ? "bg-indigo-500/50" : i % 3 === 1 ? "bg-purple-500/40" : "bg-blue-500/30"}></div>
           {/each}
         </div>
         <div
-          class="relative z-10 w-20 h-12 rounded-lg border border-white/20 bg-white/10 flex items-center justify-center"
+          class="relative z-10 w-20 h-12 rounded-lg border border-black/20 dark:border-white/20 bg-black/10 dark:bg-white/10 flex items-center justify-center"
           style={`backdrop-filter: blur(${blur}px)`}
         >
-          <span class="text-[9px] font-mono text-white/70">{blur}px</span>
+          <span class="text-[9px] font-mono text-slate-900/70 dark:text-white/70">{blur}px</span>
         </div>
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- OPACITY -->
   <section class="space-y-4">
@@ -117,14 +117,14 @@
         onReset={() => onReset("--sf-state-pending-opacity")}
       />
       <!-- Opacity preview -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-2">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2">
         {#each [
           { label: "muted", val: opacityMuted },
           { label: "disabled", val: opacityDisabled },
           { label: "pending", val: pendingOpacity },
         ] as row (row.label)}
           <div class="flex items-center gap-3">
-            <span class="text-[9px] text-slate-600 w-14">{row.label}</span>
+            <span class="text-[9px] text-slate-400 dark:text-slate-600 w-14">{row.label}</span>
             <div class="flex-1 h-4 bg-indigo-400 rounded" style={`opacity: ${row.val}`}></div>
             <span class="text-[9px] font-mono text-slate-500 w-8">{row.val}</span>
           </div>
@@ -133,7 +133,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCRIM -->
   <section class="space-y-4">
@@ -146,13 +146,13 @@
       <span class="text-[10px] text-slate-500">{showScrim ? "▲" : "▼"}</span>
     </button>
     {#if showScrim}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
-        Gradient overlay for hero images and media content. Used by the <code class="text-slate-400">.sf-scrim</code> macro.
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
+        Gradient overlay for hero images and media content. Used by the <code class="text-slate-600 dark:text-slate-400">.sf-scrim</code> macro.
       </p>
 
       <!-- Scrim color -->
       <div class="flex items-center gap-2">
-        <div class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">Color</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">Color</div>
         <ColorInput
           token="--sf-scrim-color"
           value={scrimColor}
@@ -164,15 +164,15 @@
       </div>
 
       <div>
-        <div class="text-[10px] font-semibold text-slate-400 mb-2">Direction</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-2">Direction</div>
         <div class="grid grid-cols-2 gap-1">
           {#each SCRIM_DIRECTIONS as d (d.value)}
             <button
               onclick={() => d.value === "to top" ? onReset("--sf-scrim-direction") : onSet("--sf-scrim-direction", d.value)}
               class={`py-2 px-3 rounded-lg text-[10px] border transition-all cursor-pointer text-left ${
                 scrimDir === d.value
-                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                  : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
               {d.label}
@@ -182,7 +182,7 @@
       </div>
 
       <!-- Scrim preview -->
-      <div class="rounded-xl overflow-hidden border border-white/8" style="height: 80px">
+      <div class="rounded-xl overflow-hidden border border-black/8 dark:border-white/8" style="height: 80px">
         <div
           class="w-full h-full relative"
           style="background: linear-gradient(135deg, oklch(0.3 0.15 264), oklch(0.25 0.1 300))"
@@ -197,7 +197,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCROLLBAR -->
   <section class="space-y-3">
@@ -215,7 +215,7 @@
         { label: "Track color", token: "--sf-scrollbar-track", val: scrollbarTrack },
       ] as row (row.token)}
         <div class="flex items-center gap-2">
-          <div class="text-[10px] font-semibold text-slate-400 w-20 shrink-0">{row.label}</div>
+          <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">{row.label}</div>
           <ColorInput
             token={row.token}
             value={row.val}
@@ -227,16 +227,16 @@
         </div>
       {/each}
       <!-- Scrollbar strip preview -->
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/4 border border-white/8">
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-black/4 dark:bg-white/4 border border-black/8 dark:border-white/8">
         <div class="w-16 h-3 rounded-full" style:background={scrollbarTrack || "rgba(255,255,255,0.08)"}>
           <div class="w-6 h-3 rounded-full" style:background={scrollbarThumb || "oklch(0.52 0.025 260)"}></div>
         </div>
-        <span class="text-[9px] text-slate-600">Scrollbar preview</span>
+        <span class="text-[9px] text-slate-400 dark:text-slate-600">Scrollbar preview</span>
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCROLL SHADOW -->
   <section class="space-y-3">
@@ -259,7 +259,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- TEXT SHADOW PRESETS -->
   <section class="space-y-3">
@@ -272,14 +272,14 @@
       <span class="text-[10px] text-slate-500">{showTextShadow ? "▲" : "▼"}</span>
     </button>
     {#if showTextShadow}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
-        Controls text legibility over images. Applied via <code class="text-slate-400">text-shadow: var(--sf-text-shadow-m)</code>.
-        Edit each token directly — use <code class="text-slate-400">none</code> to disable.
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
+        Controls text legibility over images. Applied via <code class="text-slate-600 dark:text-slate-400">text-shadow: var(--sf-text-shadow-m)</code>.
+        Edit each token directly — use <code class="text-slate-600 dark:text-slate-400">none</code> to disable.
       </p>
       <div class="space-y-2">
         {#each TEXT_SHADOW_TOKENS as t (t.token)}
           <div class="flex items-center gap-2">
-            <div class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">{t.label}</div>
+            <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">{t.label}</div>
             <input
               type="text"
               value={overrides[t.token] ?? ""}
@@ -289,10 +289,10 @@
                 const trimmed = v.trim();
                 trimmed ? onSet(t.token, trimmed) : onReset(t.token);
               }}
-              class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+              class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
             />
             {#if t.token in overrides}
-              <button onclick={() => onReset(t.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+              <button onclick={() => onReset(t.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
           </div>
         {/each}

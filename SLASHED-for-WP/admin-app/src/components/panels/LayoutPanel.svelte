@@ -90,7 +90,7 @@
       <!-- Compact pairs -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <div class="text-[9px] text-slate-600 mb-1">Narrow</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">Narrow</div>
           <SliderRow
             label="" value={containerNarrow} min={20} max={60} step={1} unit="rem"
             overridden={"--sf-container-narrow" in overrides}
@@ -99,7 +99,7 @@
           />
         </div>
         <div>
-          <div class="text-[9px] text-slate-600 mb-1">Prose</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">Prose</div>
           <SliderRow
             label="" value={containerProse} min={40} max={90} step={1} unit="ch"
             overridden={"--sf-container-prose" in overrides}
@@ -108,7 +108,7 @@
           />
         </div>
         <div>
-          <div class="text-[9px] text-slate-600 mb-1">Default</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">Default</div>
           <SliderRow
             label="" value={containerDefault} min={50} max={120} step={1} unit="rem"
             overridden={"--sf-container-default" in overrides}
@@ -117,7 +117,7 @@
           />
         </div>
         <div>
-          <div class="text-[9px] text-slate-600 mb-1">Wide</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">Wide</div>
           <SliderRow
             label="" value={containerWide} min={60} max={160} step={1} unit="rem"
             overridden={"--sf-container-wide" in overrides}
@@ -128,7 +128,7 @@
       </div>
 
       <!-- Visual width preview -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-2">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2">
         {#each [
           { label: "narrow",  value: containerNarrow,  max: containerWide, unit: "rem" },
           { label: "prose",   value: containerProse,   max: containerWide * 1.5, unit: "ch" },
@@ -136,8 +136,8 @@
           { label: "wide",    value: containerWide,    max: containerWide, unit: "rem" },
         ] as row (row.label)}
           <div class="flex items-center gap-2">
-            <span class="text-[9px] font-mono text-slate-600 w-12 text-right shrink-0">{row.label}</span>
-            <div class="flex-1 h-4 bg-white/5 rounded overflow-hidden">
+            <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-12 text-right shrink-0">{row.label}</span>
+            <div class="flex-1 h-4 bg-black/5 dark:bg-white/5 rounded overflow-hidden">
               <div
                 class="h-full bg-indigo-500/30 border-r border-indigo-400/40 rounded"
                 style={`width: ${Math.min((row.value / row.max) * 100, 100)}%`}
@@ -150,7 +150,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- CENTER WRAPPER -->
   <section class="space-y-3">
@@ -186,7 +186,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- AUTO GRID -->
   <section class="space-y-4">
@@ -208,7 +208,7 @@
       />
       <!-- Named grid size tokens -->
       <div>
-        <div class="text-[9px] text-slate-600 mb-1.5">Named sizes (grid-min-xs → 2xl)</div>
+        <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1.5">Named sizes (grid-min-xs → 2xl)</div>
         <div class="space-y-1.5">
           {#each [
             { label: "xs",  token: "--sf-grid-min-xs",  def: 10 },
@@ -227,21 +227,21 @@
           {/each}
         </div>
       </div>
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3">
-        <div class="text-[9px] text-slate-600 mb-2 font-mono">Preview at 360px panel width</div>
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
+        <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-2 font-mono">Preview at 360px panel width</div>
         <div
           class="grid gap-1"
           style={`grid-template-columns: repeat(auto-fill, minmax(${Math.min(gridMin * 16 * (360 / 1200), 120)}px, 1fr))`}
         >
           {#each Array.from({ length: 8 }) as _, i (i)}
-            <div class="h-8 bg-indigo-500/20 border border-indigo-500/20 rounded text-[8px] font-mono text-indigo-400/60 flex items-center justify-center">col</div>
+            <div class="h-8 bg-indigo-500/20 border border-indigo-500/20 rounded text-[8px] font-mono text-indigo-600/60 dark:text-indigo-400/60 flex items-center justify-center">col</div>
           {/each}
         </div>
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- HEADER -->
   <section class="space-y-4">
@@ -256,7 +256,7 @@
     {#if showHeaderHeight}
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <div class="text-[9px] text-slate-600 mb-1">Mobile</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">Mobile</div>
           <SliderRow
             label="" value={headerMobile} min={2} max={8} step={0.25} unit="rem"
             overridden={"--sf-header-height-mobile" in overrides}
@@ -265,7 +265,7 @@
           />
         </div>
         <div>
-          <div class="text-[9px] text-slate-600 mb-1">Desktop</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">Desktop</div>
           <SliderRow
             label="" value={headerDesktop} min={3} max={10} step={0.25} unit="rem"
             overridden={"--sf-header-height-desktop" in overrides}
@@ -274,24 +274,24 @@
           />
         </div>
       </div>
-      <div class="bg-white/4 rounded-xl border border-white/8 overflow-hidden">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 overflow-hidden">
         <div
-          class="flex items-center px-3 bg-indigo-500/10 border-b border-white/8"
+          class="flex items-center px-3 bg-indigo-500/10 border-b border-black/8 dark:border-white/8"
           style={`height: ${Math.min(headerMobile * 12, 64)}px`}
         >
           <div class="w-16 h-2 bg-indigo-400/40 rounded"></div>
           <div class="ml-auto flex gap-2">
             {#each [1, 2, 3] as i (i)}
-              <div class="w-8 h-1.5 bg-slate-600/60 rounded"></div>
+              <div class="w-8 h-1.5 bg-slate-400/60 dark:bg-slate-600/60 rounded"></div>
             {/each}
           </div>
         </div>
-        <div class="p-2 text-[9px] text-slate-600 font-mono">{headerMobile}rem mobile · {headerDesktop}rem desktop</div>
+        <div class="p-2 text-[9px] text-slate-400 dark:text-slate-600 font-mono">{headerMobile}rem mobile · {headerDesktop}rem desktop</div>
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- STICKY OFFSETS -->
   <section class="space-y-3">
@@ -304,10 +304,10 @@
       <span class="text-[10px] text-slate-500">{showStickyOffset ? "▲" : "▼"}</span>
     </button>
     {#if showStickyOffset}
-      <p class="text-[9px] text-slate-600">Offsets position:sticky elements below a fixed header. Defaults to header heights.</p>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600">Offsets position:sticky elements below a fixed header. Defaults to header heights.</p>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <div class="text-[9px] text-slate-600 mb-1">Mobile</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">Mobile</div>
           <SliderRow
             label="" value={stickyMobile} min={0} max={12} step={0.25} unit="rem"
             overridden={"--sf-sticky-offset-mobile" in overrides}
@@ -319,7 +319,7 @@
           />
         </div>
         <div>
-          <div class="text-[9px] text-slate-600 mb-1">Desktop</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">Desktop</div>
           <SliderRow
             label="" value={stickyDesktop} min={0} max={12} step={0.25} unit="rem"
             overridden={"--sf-sticky-offset-desktop" in overrides}
@@ -334,7 +334,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SIDEBAR -->
   <section class="space-y-4">
@@ -354,26 +354,26 @@
         onChange={(v) => onSet("--sf-sidebar-width", `${v}rem`)}
         onReset={() => onReset("--sf-sidebar-width")}
       />
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 flex gap-2 items-stretch" style="height: 60px">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 flex gap-2 items-stretch" style="height: 60px">
         <div
           class="bg-indigo-500/15 border border-indigo-500/20 rounded flex-shrink-0 flex items-center justify-center"
           style={`width: ${Math.min(sidebarWidth * 3.5, 100)}px`}
         >
-          <span class="text-[8px] font-mono text-indigo-400/60 rotate-90 whitespace-nowrap">{sidebarWidth}rem</span>
+          <span class="text-[8px] font-mono text-indigo-600/60 dark:text-indigo-400/60 rotate-90 whitespace-nowrap">{sidebarWidth}rem</span>
         </div>
-        <div class="flex-1 bg-white/4 rounded"></div>
+        <div class="flex-1 bg-black/4 dark:bg-white/4 rounded"></div>
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- BENTO GRID -->
   <div>
     <button
       onclick={() => { showBento = !showBento; }}
       aria-expanded={showBento}
-      class="w-full flex items-center justify-between text-[10px] font-semibold text-slate-400 hover:text-slate-200 transition-colors cursor-pointer py-1"
+      class="w-full flex items-center justify-between text-[10px] font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer py-1"
     >
       <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Bento grid</span>
       <span class="text-[10px] text-slate-500">{showBento ? "▲" : "▼"}</span>
@@ -393,7 +393,7 @@
     {/if}
   </div>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- MORE LAYOUT PRIMITIVES -->
   <div>
@@ -401,7 +401,7 @@
       onclick={() => { showMore = !showMore; }}
       aria-expanded={showMore}
       aria-controls="more-layout-primitives"
-      class="w-full flex items-center justify-between text-[10px] font-semibold text-slate-400 hover:text-slate-200 transition-colors cursor-pointer py-1"
+      class="w-full flex items-center justify-between text-[10px] font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer py-1"
     >
       <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">More layout primitives</span>
       <span class="text-[10px] text-slate-500">{showMore ? "▲" : "▼"}</span>
@@ -441,21 +441,21 @@
             { label: "Justify", token: "--sf-cluster-justify", def: "flex-start", opts: ["flex-start","center","flex-end","space-between","space-around"] },
           ] as row (row.token)}
             <div class="flex items-center gap-2">
-              <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">{row.label}</span>
+              <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">{row.label}</span>
               <select
                 value={overrides[row.token] ?? row.def}
                 onchange={(e) => {
                   const v = (e.target as HTMLSelectElement).value;
                   v === row.def ? onReset(row.token) : onSet(row.token, v);
                 }}
-                class="flex-1 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
               >
                 {#each row.opts as o (o)}
                   <option value={o} style="background:#16161e;">{o}</option>
                 {/each}
               </select>
               {#if row.token in overrides}
-                <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+                <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
               {/if}
             </div>
           {/each}
@@ -472,7 +472,7 @@
             onReset={() => onReset("--sf-equal-min-col")}
           />
           <div>
-            <div class="text-[9px] text-slate-600 mb-1.5">Named column counts (equal-min-col-2/3/4/6)</div>
+            <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1.5">Named column counts (equal-min-col-2/3/4/6)</div>
             <div class="space-y-1.5">
               {#each [
                 { label: "2-col", token: "--sf-equal-min-col-2", def: 28 },
@@ -506,15 +506,15 @@
         <!-- Frame ratio -->
         <section class="space-y-2">
           <div class="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">Frame ratio</div>
-          <p class="text-[9px] text-slate-600">--sf-frame-ratio — aspect ratio for .sf-frame</p>
+          <p class="text-[9px] text-slate-400 dark:text-slate-600">--sf-frame-ratio — aspect ratio for .sf-frame</p>
           <div class="grid grid-cols-5 gap-1">
             {#each FRAME_PRESETS as r (r)}
               <button
                 onclick={() => r === "16 / 9" ? onReset("--sf-frame-ratio") : onSet("--sf-frame-ratio", r)}
                 class={`py-1 rounded-lg text-[9px] border transition-all cursor-pointer font-mono ${
                   frameRatio.replace(/\s/g, "") === r.replace(/\s/g, "")
-                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                    : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                    : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >{r}</button>
             {/each}
@@ -524,21 +524,21 @@
         <!-- Reel -->
         <section class="space-y-2">
           <div class="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">Reel</div>
-          <p class="text-[9px] text-slate-600">--sf-reel-item-width — width of each item in a horizontal .sf-reel</p>
+          <p class="text-[9px] text-slate-400 dark:text-slate-600">--sf-reel-item-width — width of each item in a horizontal .sf-reel</p>
           <div class="grid grid-cols-4 gap-1">
             {#each REEL_PRESETS as p (p.value)}
               <button
                 onclick={() => p.value === "max-content" ? onReset("--sf-reel-item-width") : onSet("--sf-reel-item-width", p.value)}
                 class={`py-1 rounded-lg text-[9px] border transition-all cursor-pointer ${
                   reelItemWidth === p.value
-                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                    : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                    : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >{p.label}</button>
             {/each}
           </div>
           <div class="flex items-center gap-2 pt-0.5">
-            <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">Height</span>
+            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">Height</span>
             <input
               type="text"
               value={overrides["--sf-reel-height"] ?? ""}
@@ -547,10 +547,10 @@
                 const v = (e.target as HTMLInputElement).value.trim();
                 v ? onSet("--sf-reel-height", v) : onReset("--sf-reel-height");
               }}
-              class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+              class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
             />
             {#if "--sf-reel-height" in overrides}
-              <button onclick={() => onReset("--sf-reel-height")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+              <button onclick={() => onReset("--sf-reel-height")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
           </div>
         </section>
@@ -613,7 +613,7 @@
     {/if}
   </div>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- NAMED RATIOS -->
   <div>
@@ -627,7 +627,7 @@
     </button>
     {#if showNamedRatios}
       <div class="mt-2 space-y-2">
-        <p class="text-[9px] text-slate-600">Override the built-in named aspect ratios used by <span class="font-mono text-slate-400">.sf-ratio-*</span> utilities.</p>
+        <p class="text-[9px] text-slate-400 dark:text-slate-600">Override the built-in named aspect ratios used by <span class="font-mono text-slate-600 dark:text-slate-400">.sf-ratio-*</span> utilities.</p>
         {#each [
           { label: "Square",   token: "--sf-ratio-square",   def: "1"       },
           { label: "Portrait", token: "--sf-ratio-portrait", def: "3 / 4"   },
@@ -638,7 +638,7 @@
           { label: "Golden",   token: "--sf-ratio-golden",   def: "1.618 / 1" },
         ] as r (r.token)}
           <div class="flex items-center gap-2">
-            <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">{r.label}</span>
+            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">{r.label}</span>
             <input
               type="text"
               value={overrides[r.token] ?? ""}
@@ -647,10 +647,10 @@
                 const v = (e.target as HTMLInputElement).value.trim();
                 v ? onSet(r.token, v) : onReset(r.token);
               }}
-              class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+              class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
             />
             {#if r.token in overrides}
-              <button onclick={() => onReset(r.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+              <button onclick={() => onReset(r.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
           </div>
         {/each}
@@ -658,7 +658,7 @@
     {/if}
   </div>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- BACKGROUND LAYER -->
   <div>
@@ -672,27 +672,27 @@
     </button>
     {#if showBgLayer}
       <div class="mt-2 space-y-3">
-        <p class="text-[9px] text-slate-600">Default values for the <span class="font-mono text-slate-400">.sf-bg</span> full-bleed background utility.</p>
+        <p class="text-[9px] text-slate-400 dark:text-slate-600">Default values for the <span class="font-mono text-slate-600 dark:text-slate-400">.sf-bg</span> full-bleed background utility.</p>
         {#each [
           { label: "Fit",      token: "--sf-bg-fit",      placeholder: "cover",    opts: ["cover","contain","fill","none","scale-down"] },
           { label: "Position", token: "--sf-bg-position", placeholder: "50% 50%",  opts: ["50% 50%","top","bottom","left","right","center"] },
         ] as row (row.token)}
           <div class="flex items-center gap-2">
-            <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">{row.label}</span>
+            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">{row.label}</span>
             <select
               value={overrides[row.token] ?? row.placeholder}
               onchange={(e) => {
                 const v = (e.target as HTMLSelectElement).value;
                 v === row.placeholder ? onReset(row.token) : onSet(row.token, v);
               }}
-              class="flex-1 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
+              class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
             >
               {#each row.opts as o (o)}
                 <option value={o} style="background:#16161e;">{o}</option>
               {/each}
             </select>
             {#if row.token in overrides}
-              <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+              <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
           </div>
         {/each}

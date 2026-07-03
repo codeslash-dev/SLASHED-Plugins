@@ -69,15 +69,15 @@
   }
 
   const KIND_COLOR: Record<string, string> = {
-    layout: 'text-violet-400',
-    macro: 'text-sky-400',
-    state: 'text-amber-400',
-    accessibility: 'text-emerald-400',
+    layout: 'text-violet-600 dark:text-violet-400',
+    macro: 'text-sky-600 dark:text-sky-400',
+    state: 'text-amber-600 dark:text-amber-400',
+    accessibility: 'text-emerald-600 dark:text-emerald-400',
     motion: 'text-pink-400',
-    print: 'text-slate-400',
+    print: 'text-slate-600 dark:text-slate-400',
     form: 'text-orange-400',
-    component: 'text-indigo-400',
-    theme: 'text-teal-400',
+    component: 'text-indigo-600 dark:text-indigo-400',
+    theme: 'text-teal-600 dark:text-teal-400',
   };
 </script>
 
@@ -89,19 +89,19 @@
       type="search"
       bind:value={query}
       placeholder="Search classes, tokens, descriptions…"
-      class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[11px] text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+      class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2 text-[11px] text-slate-800 dark:text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
     />
     <!-- Tab switcher -->
-    <div class="flex bg-white/4 border border-white/8 rounded-lg p-0.5 gap-0.5">
+    <div class="flex bg-black/4 dark:bg-white/4 border border-black/8 dark:border-white/8 rounded-lg p-0.5 gap-0.5">
       <button
         onclick={() => { tab = 'classes'; }}
-        class={`flex-1 py-1.5 rounded text-[10px] font-bold transition-all cursor-pointer ${tab === 'classes' ? 'bg-indigo-600/30 text-indigo-200 border border-indigo-500/30' : 'text-slate-500 hover:text-slate-300'}`}
+        class={`flex-1 py-1.5 rounded text-[10px] font-bold transition-all cursor-pointer ${tab === 'classes' ? 'bg-indigo-600/30 text-indigo-800 dark:text-indigo-200 border border-indigo-500/30' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
       >
         CSS classes ({filteredClasses().length})
       </button>
       <button
         onclick={() => { tab = 'tokens'; }}
-        class={`flex-1 py-1.5 rounded text-[10px] font-bold transition-all cursor-pointer ${tab === 'tokens' ? 'bg-indigo-600/30 text-indigo-200 border border-indigo-500/30' : 'text-slate-500 hover:text-slate-300'}`}
+        class={`flex-1 py-1.5 rounded text-[10px] font-bold transition-all cursor-pointer ${tab === 'tokens' ? 'bg-indigo-600/30 text-indigo-800 dark:text-indigo-200 border border-indigo-500/30' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
       >
         CSS vars ({filteredTokens().length})
       </button>
@@ -112,27 +112,27 @@
   <div class="flex-1 min-h-0 overflow-y-auto px-4 pb-4">
     {#if tab === 'classes'}
       {#if filteredClasses().length === 0}
-        <div class="text-[11px] text-slate-600 py-8 text-center">No classes match "{query}"</div>
+        <div class="text-[11px] text-slate-400 dark:text-slate-600 py-8 text-center">No classes match "{query}"</div>
       {:else}
         {#each [...classGroups.entries()] as [cat, groups] (cat)}
           <div class="mt-4 mb-1">
-            <div class="text-[9px] font-bold text-slate-500 uppercase tracking-widest py-1 border-b border-white/6">{cat}</div>
+            <div class="text-[9px] font-bold text-slate-500 uppercase tracking-widest py-1 border-b border-black/6 dark:border-white/6">{cat}</div>
           </div>
           {#each [...groups.entries()] as [grp, items] (grp)}
             {#if grp}
-              <div class="text-[8px] text-slate-600 uppercase tracking-widest pt-2 pb-1 font-semibold">{grp}</div>
+              <div class="text-[8px] text-slate-400 dark:text-slate-600 uppercase tracking-widest pt-2 pb-1 font-semibold">{grp}</div>
             {/if}
             <div class="space-y-0.5">
               {#each items as cls (cls.name)}
-                <div class="flex items-start gap-2 group py-1 px-2 rounded-lg hover:bg-white/4 transition-colors">
+                <div class="flex items-start gap-2 group py-1 px-2 rounded-lg hover:bg-black/4 dark:hover:bg-white/4 transition-colors">
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-1.5 flex-wrap">
-                      <span class="font-mono text-[11px] font-semibold text-slate-200">{cls.selector}</span>
+                      <span class="font-mono text-[11px] font-semibold text-slate-800 dark:text-slate-200">{cls.selector}</span>
                       {#if cls.kind}
                         <span class={`text-[8px] font-bold uppercase ${KIND_COLOR[cls.kind] ?? 'text-slate-500'}`}>{cls.kind}</span>
                       {/if}
                       {#if cls.optional}
-                        <span class="text-[8px] text-slate-600 border border-white/10 px-1 rounded">optional</span>
+                        <span class="text-[8px] text-slate-400 dark:text-slate-600 border border-black/10 dark:border-white/10 px-1 rounded">optional</span>
                       {/if}
                     </div>
                     {#if cls.description}
@@ -142,10 +142,10 @@
                   <button
                     onclick={() => copyText(cls.selector)}
                     title="Copy selector"
-                    class="shrink-0 opacity-40 hover:opacity-100 transition-opacity cursor-pointer p-1 rounded hover:bg-white/8"
+                    class="shrink-0 opacity-40 hover:opacity-100 transition-opacity cursor-pointer p-1 rounded hover:bg-black/8 dark:hover:bg-white/8"
                   >
                     {#if copied === cls.selector}
-                      <Check class="w-3 h-3 text-emerald-400" />
+                      <Check class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                     {:else}
                       <Copy class="w-3 h-3 text-slate-500" />
                     {/if}
@@ -158,31 +158,31 @@
       {/if}
     {:else}
       {#if filteredTokens().length === 0}
-        <div class="text-[11px] text-slate-600 py-8 text-center">No tokens match "{query}"</div>
+        <div class="text-[11px] text-slate-400 dark:text-slate-600 py-8 text-center">No tokens match "{query}"</div>
       {:else}
         {#each [...tokenGroups.entries()] as [cat, groups] (cat)}
           <div class="mt-4 mb-1">
-            <div class="text-[9px] font-bold text-slate-500 uppercase tracking-widest py-1 border-b border-white/6">{cat}</div>
+            <div class="text-[9px] font-bold text-slate-500 uppercase tracking-widest py-1 border-b border-black/6 dark:border-white/6">{cat}</div>
           </div>
           {#each [...groups.entries()] as [grp, items] (grp)}
             {#if grp}
-              <div class="text-[8px] text-slate-600 uppercase tracking-widest pt-2 pb-1 font-semibold">{grp}</div>
+              <div class="text-[8px] text-slate-400 dark:text-slate-600 uppercase tracking-widest pt-2 pb-1 font-semibold">{grp}</div>
             {/if}
             <div class="space-y-0.5">
               {#each items as tok (tok.name)}
-                <div class="flex items-start gap-2 group py-1 px-2 rounded-lg hover:bg-white/4 transition-colors">
+                <div class="flex items-start gap-2 group py-1 px-2 rounded-lg hover:bg-black/4 dark:hover:bg-white/4 transition-colors">
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-1.5 flex-wrap">
-                      <span class="font-mono text-[10px] font-semibold text-slate-200">{tok.name}</span>
+                      <span class="font-mono text-[10px] font-semibold text-slate-800 dark:text-slate-200">{tok.name}</span>
                       {#if tok.role === 'knob'}
-                        <span class="text-[8px] font-bold text-indigo-400 uppercase">knob</span>
+                        <span class="text-[8px] font-bold text-indigo-600 dark:text-indigo-400 uppercase">knob</span>
                       {/if}
                       {#if tok.tier === 'PUBLIC-ADVANCED'}
-                        <span class="text-[8px] text-amber-500/80 border border-amber-500/20 px-1 rounded">advanced</span>
+                        <span class="text-[8px] text-amber-700/80 dark:text-amber-500/80 border border-amber-500/20 px-1 rounded">advanced</span>
                       {/if}
                     </div>
                     {#if tok.value}
-                      <div class="font-mono text-[9px] text-slate-600 mt-0.5">{tok.value}</div>
+                      <div class="font-mono text-[9px] text-slate-400 dark:text-slate-600 mt-0.5">{tok.value}</div>
                     {/if}
                     {#if tok.description}
                       <div class="text-[9px] text-slate-500 mt-0.5 leading-relaxed">{tok.description}</div>
@@ -191,10 +191,10 @@
                   <button
                     onclick={() => copyText(`var(${tok.name})`)}
                     title="Copy var()"
-                    class="shrink-0 opacity-40 hover:opacity-100 transition-opacity cursor-pointer p-1 rounded hover:bg-white/8"
+                    class="shrink-0 opacity-40 hover:opacity-100 transition-opacity cursor-pointer p-1 rounded hover:bg-black/8 dark:hover:bg-white/8"
                   >
                     {#if copied === `var(${tok.name})`}
-                      <Check class="w-3 h-3 text-emerald-400" />
+                      <Check class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                     {:else}
                       <Copy class="w-3 h-3 text-slate-500" />
                     {/if}

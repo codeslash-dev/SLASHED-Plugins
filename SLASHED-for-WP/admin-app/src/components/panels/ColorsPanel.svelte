@@ -465,22 +465,22 @@
   <!-- LIVE SEMANTIC PREVIEW -->
   <section class="space-y-2">
     <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Semantic colors</div>
-    <p class="text-[9px] text-slate-600 leading-relaxed">
+    <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
       Live preview — every semantic role on its on-color text, shown in light and dark. Resolved from the canvas, updates as you edit.
     </p>
     <div class="space-y-2.5">
       {#each SEMANTIC_PREVIEW as grp (grp.heading)}
         <div class="space-y-1">
-          <div class="text-[8px] font-semibold text-slate-600 uppercase tracking-widest">{grp.heading}</div>
+          <div class="text-[8px] font-semibold text-slate-400 dark:text-slate-600 uppercase tracking-widest">{grp.heading}</div>
           {#each ["light", "dark"] as side (side)}
             <div class="flex items-center gap-1">
-              <span class="text-[7px] text-slate-600 w-2.5 shrink-0 text-right select-none uppercase">{side === "light" ? "L" : "D"}</span>
+              <span class="text-[7px] text-slate-400 dark:text-slate-600 w-2.5 shrink-0 text-right select-none uppercase">{side === "light" ? "L" : "D"}</span>
               <div class="grid grid-cols-5 gap-1 flex-1">
                 {#each grp.items as it (it.name)}
                   {@const bg = paintTheme(`var(${it.name})`, side as "light" | "dark", "transparent")}
                   {@const fg = paintTheme(`var(${it.fg})`, side as "light" | "dark", "currentColor")}
                   <div
-                    class="rounded-md border border-white/10 px-1 py-1.5 flex flex-col items-center justify-center gap-0.5 min-h-[34px]"
+                    class="rounded-md border border-black/10 dark:border-white/10 px-1 py-1.5 flex flex-col items-center justify-center gap-0.5 min-h-[34px]"
                     style={`background:${bg}; color:${fg}`}
                     title={`${it.name} (${side}) — ${bg}`}
                   >
@@ -496,7 +496,7 @@
     </div>
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- BRAND SOURCES -->
   <section class="space-y-3">
@@ -509,7 +509,7 @@
       <span class="text-[10px] text-slate-500">{showBrandSources ? "▲" : "▼"}</span>
     </button>
     {#if showBrandSources}
-    <p class="text-[10px] text-slate-600 leading-relaxed">
+    <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
       OKLCH source values — all 200+ derived color steps are computed automatically. Tints (50–400) mix toward Base
       (the "Surface" color) and shades (600–950) mix toward Text (driven by Neutral) — so editing Base or Neutral below
       will shift every family's tints/shades too. That's expected, not a bug.
@@ -526,8 +526,8 @@
                 onclick={() => toggleDarkMode(light.colorKey, dark, light.name)}
                 class={`text-[8px] px-1.5 py-0.5 rounded border transition-all cursor-pointer ${
                   isAutoMode
-                    ? "border-indigo-500/40 bg-indigo-500/15 text-indigo-300"
-                    : "border-white/10 text-slate-500 hover:text-slate-300"
+                    ? "border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
+                    : "border-black/10 dark:border-white/10 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                 }`}
               >{isAutoMode ? "Auto dark" : "Manual dark"}</button>
             {/if}
@@ -552,12 +552,12 @@
             {@const dText = getDarkText()}
             <div class="mt-1 pl-1 space-y-px">
               <div class="flex items-center gap-1">
-                <span class="text-[7px] text-slate-600 w-2.5 shrink-0 text-right select-none">L</span>
+                <span class="text-[7px] text-slate-400 dark:text-slate-600 w-2.5 shrink-0 text-right select-none">L</span>
                 <div class="flex gap-0.5">
                   {#each SWATCH_STEPS as step (step)}
                     {@const resolved = paletteSwatch(light.colorKey, lightSrcVal, step, lSurface, lText)}
                     <div
-                      class="group relative w-5 h-3 rounded-t border-x border-t border-white/10"
+                      class="group relative w-5 h-3 rounded-t border-x border-t border-black/10 dark:border-white/10"
                       style:background={resolved}
                       title={`${light.colorKey}-${step} (light) — ${resolved}`}
                     >{@render swatchTip(`${light.colorKey}-${step}`)}</div>
@@ -565,12 +565,12 @@
                 </div>
               </div>
               <div class="flex items-center gap-1">
-                <span class="text-[7px] text-slate-600 w-2.5 shrink-0 text-right select-none">D</span>
+                <span class="text-[7px] text-slate-400 dark:text-slate-600 w-2.5 shrink-0 text-right select-none">D</span>
                 <div class="flex gap-0.5">
                   {#each SWATCH_STEPS as step (step)}
                     {@const resolved = paletteSwatch(light.colorKey, darkSrcVal, step, dSurface, dText)}
                     <div
-                      class="group relative w-5 h-3 rounded-b border-x border-b border-white/10"
+                      class="group relative w-5 h-3 rounded-b border-x border-b border-black/10 dark:border-white/10"
                       style:background={resolved}
                       title={`${light.colorKey}-${step} (dark) — ${resolved}`}
                     >{@render swatchTip(`${light.colorKey}-${step}`)}</div>
@@ -579,7 +579,7 @@
               </div>
             </div>
             {#if light.colorKey === "base"}
-              <p class="text-[8px] text-slate-600 leading-snug pl-1">
+              <p class="text-[8px] text-slate-400 dark:text-slate-600 leading-snug pl-1">
                 Absolute lightness ramp — each step pins L and inherits chroma + hue from the source. Not the brand mix curve.
                 Light and dark use the <em>same</em> L per step, so at the default near-zero chroma the two rows look almost
                 identical — add chroma above to see them diverge by hue.
@@ -597,9 +597,9 @@
             />
           {:else if dark && isAutoMode}
             {@const derivedDark = deriveDarkFromLight(sourceValue(light), light.colorKey)}
-            <div class="flex items-center gap-1.5 text-[9px] text-slate-600 pl-1">
+            <div class="flex items-center gap-1.5 text-[9px] text-slate-400 dark:text-slate-600 pl-1">
               <span
-                class="w-3.5 h-3.5 rounded border border-white/10 shrink-0"
+                class="w-3.5 h-3.5 rounded border border-black/10 dark:border-white/10 shrink-0"
                 style:background={paint(derivedDark, derivedDark)}
                 title={derivedDark}
               ></span>
@@ -612,7 +612,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- LUMLOCKER -->
   <section class="space-y-3">
@@ -625,7 +625,7 @@
       <span class="text-[10px] text-slate-500">{showLumlocker ? "▲" : "▼"}</span>
     </button>
     {#if showLumlocker}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Pins brand colors (primary, secondary, tertiary, action) to a fixed OKLCH
         lightness — useful for always-stable sections. Enable on canvas to preview.
       </p>
@@ -638,8 +638,8 @@
       />
 
       <!-- Before / after preview for every lockable color -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-2">
-        <div class="flex items-center text-[8px] font-mono text-slate-600 uppercase tracking-widest">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2">
+        <div class="flex items-center text-[8px] font-mono text-slate-400 dark:text-slate-600 uppercase tracking-widest">
           <span class="w-16 shrink-0">Color</span>
           <span class="flex-1 text-center">Current</span>
           <span class="flex-1 text-center">Locked</span>
@@ -649,10 +649,10 @@
             {@const cur = paintTheme(`var(--sf-color-${lk.key}-source-${side})`, side as "light" | "dark", "")}
             {@const locked = lockedColor(lk.key, side as "light" | "dark")}
             <div class="flex items-center gap-1">
-              <span class="text-[9px] text-slate-500 w-16 shrink-0">{lk.label} <span class="text-slate-600">{side === "light" ? "L" : "D"}</span></span>
-              <span class="flex-1 h-5 rounded border border-white/10" style={`background:${cur || `var(--sf-color-${lk.key})`}`}></span>
-              <span class="text-slate-600 text-[10px] px-1">→</span>
-              <span class="flex-1 h-5 rounded border border-white/10" style={`background:${paint(locked, locked)}`} title={locked}></span>
+              <span class="text-[9px] text-slate-500 w-16 shrink-0">{lk.label} <span class="text-slate-400 dark:text-slate-600">{side === "light" ? "L" : "D"}</span></span>
+              <span class="flex-1 h-5 rounded border border-black/10 dark:border-white/10" style={`background:${cur || `var(--sf-color-${lk.key})`}`}></span>
+              <span class="text-slate-400 dark:text-slate-600 text-[10px] px-1">→</span>
+              <span class="flex-1 h-5 rounded border border-black/10 dark:border-white/10" style={`background:${paint(locked, locked)}`} title={locked}></span>
             </div>
           {/each}
         {/each}
@@ -663,14 +663,14 @@
         onclick={() => { lumlockerPreview.value = !lumlockerPreview.value; }}
         class={`w-full py-2 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
           lumlockerPreview.value
-            ? "bg-indigo-600/25 border-indigo-500/40 text-indigo-200"
-            : "border-white/10 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+            ? "bg-indigo-600/25 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+            : "border-black/10 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
         }`}
       >{lumlockerPreview.value ? "✓ LumLocker active on canvas — click to disable" : "Preview LumLocker on live canvas"}</button>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- STATUS SOURCES -->
   <section class="space-y-3">
@@ -683,7 +683,7 @@
       <span class="text-[10px] text-slate-500">{showStatus ? "▲" : "▼"}</span>
     </button>
     {#if showStatus}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Dark mode is auto-derived from each light source by default. Switch to
         Manual dark to set a bespoke dark value.
       </p>
@@ -699,8 +699,8 @@
                   onclick={() => toggleDarkMode(light.colorKey, dark, light.name)}
                   class={`text-[8px] px-1.5 py-0.5 rounded border transition-all cursor-pointer ${
                     isAutoMode
-                      ? "border-indigo-500/40 bg-indigo-500/15 text-indigo-300"
-                      : "border-white/10 text-slate-500 hover:text-slate-300"
+                      ? "border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
+                      : "border-black/10 dark:border-white/10 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                   }`}
                 >{isAutoMode ? "Auto dark" : "Manual dark"}</button>
               {/if}
@@ -724,9 +724,9 @@
               />
             {:else if dark && isAutoMode}
               {@const derivedDark = deriveDarkFromLight(sourceValue(light), light.colorKey)}
-              <div class="flex items-center gap-1.5 text-[9px] text-slate-600 pl-1">
+              <div class="flex items-center gap-1.5 text-[9px] text-slate-400 dark:text-slate-600 pl-1">
                 <span
-                  class="w-3.5 h-3.5 rounded border border-white/10 shrink-0"
+                  class="w-3.5 h-3.5 rounded border border-black/10 dark:border-white/10 shrink-0"
                   style:background={paint(derivedDark, derivedDark)}
                   title={derivedDark}
                 ></span>
@@ -740,18 +740,18 @@
                 <span class="w-2.5 shrink-0"></span>
                 <div class="flex gap-0.5">
                   {#each STATUS_VARIANTS as v (v.label)}
-                    <span class="w-9 text-center text-[6px] font-mono text-slate-600 uppercase tracking-wide">{v.label}</span>
+                    <span class="w-9 text-center text-[6px] font-mono text-slate-400 dark:text-slate-600 uppercase tracking-wide">{v.label}</span>
                   {/each}
                 </div>
               </div>
               {#each [["L", "light"], ["D", "dark"]] as [tag, side] (tag)}
                 <div class="flex items-center gap-1">
-                  <span class="text-[7px] text-slate-600 w-2.5 shrink-0 text-right select-none">{tag}</span>
+                  <span class="text-[7px] text-slate-400 dark:text-slate-600 w-2.5 shrink-0 text-right select-none">{tag}</span>
                   <div class="flex gap-0.5">
                     {#each STATUS_VARIANTS as v (v.label)}
                       {@const resolved = paintTheme(v.expr(light.colorKey), side as "light" | "dark", "")}
                       <div
-                        class="group relative w-9 h-4 rounded-sm border border-white/10"
+                        class="group relative w-9 h-4 rounded-sm border border-black/10 dark:border-white/10"
                         style:background={resolved}
                         title={`${light.colorKey}-${v.label.toLowerCase()} (${side}) — ${resolved}`}
                       >{@render swatchTip(`${light.colorKey}-${v.label.toLowerCase()}`)}</div>
@@ -760,7 +760,7 @@
                 </div>
               {/each}
             </div>
-            <p class="text-[8px] text-slate-600 leading-snug pl-1">
+            <p class="text-[8px] text-slate-400 dark:text-slate-600 leading-snug pl-1">
               Status colors don't ride the brand mix curve — only the resolved color plus subtle/muted alpha washes and
               a strong shade are derived. There's no -50…-950 ramp for success/warning/info/danger.
             </p>
@@ -770,7 +770,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- TEXT CONTRAST -->
   <section class="space-y-4">
@@ -783,7 +783,7 @@
       <span class="text-[10px] text-slate-500">{showTextContrast ? "▲" : "▼"}</span>
     </button>
     {#if showTextContrast}
-    <p class="text-[10px] text-slate-600 leading-relaxed">
+    <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
       Controls whether text on brand-coloured surfaces is light or dark.
     </p>
     {#each contrastKnobs as k (k.name)}
@@ -795,18 +795,18 @@
     {/each}
 
     <!-- Live contrast summary (links to the full WCAG tool) -->
-    <div class="rounded-lg bg-white/4 border border-white/8 p-2.5 space-y-2">
+    <div class="rounded-lg bg-black/4 dark:bg-white/4 border border-black/8 dark:border-white/8 p-2.5 space-y-2">
       {#each KEY_CONTRAST_PAIRS as pair (pair.label)}
         {@const ratio = pairRatio(pair.fg, pair.bg)}
         {#if ratio !== null}
           <div class="flex items-center gap-2">
             <span
-              class="w-6 h-6 rounded border border-white/10 shrink-0 flex items-center justify-center text-[10px] font-bold"
+              class="w-6 h-6 rounded border border-black/10 dark:border-white/10 shrink-0 flex items-center justify-center text-[10px] font-bold"
               style={`background:${paint(pair.bg, pair.bg)}; color:${paint(pair.fg, pair.fg)}`}
             >Aa</span>
             <span class="text-[9px] text-slate-500 flex-1 truncate">{pair.label}</span>
-            <span class="text-[10px] font-mono font-bold text-slate-200">{ratio.toFixed(2)}:1</span>
-            <span class={`text-[9px] font-bold px-1.5 py-0.5 rounded ${ratio >= 4.5 ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"}`}>
+            <span class="text-[10px] font-mono font-bold text-slate-800 dark:text-slate-200">{ratio.toFixed(2)}:1</span>
+            <span class={`text-[9px] font-bold px-1.5 py-0.5 rounded ${ratio >= 4.5 ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/20 text-amber-700 dark:text-amber-300"}`}>
               {ratio >= 4.5 ? "AA" : ratio >= 3 ? "AA-L" : "✗"}
             </span>
           </div>
@@ -815,7 +815,7 @@
       {#if onSelectDomain}
         <button
           onclick={() => onSelectDomain?.("wcag")}
-          class="w-full mt-1 py-1.5 rounded-lg bg-indigo-600/15 border border-indigo-500/30 text-indigo-300 text-[10px] font-bold cursor-pointer hover:bg-indigo-600/25 transition-all"
+          class="w-full mt-1 py-1.5 rounded-lg bg-indigo-600/15 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold cursor-pointer hover:bg-indigo-600/25 transition-all"
         >Open contrast tool →</button>
       {/if}
     </div>
@@ -831,7 +831,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SHADE CURVE -->
   <section class="space-y-4">
@@ -854,7 +854,7 @@
     {@const _curveText = curvePreviewSide === "light" ? getLightText() : getDarkText()}
     {@const _miniSurface = curvePreviewSide === "light" ? getLightSurface() : getDarkSurface()}
     {@const _miniText = curvePreviewSide === "light" ? getLightText() : getDarkText()}
-    <p class="text-[10px] text-slate-600 leading-relaxed">
+    <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
       Controls how much color is mixed into each palette step. Step 500 is always the source color.
     </p>
 
@@ -864,8 +864,8 @@
           onclick={() => onBulkChange(p.patch as Record<string, string | null>)}
           class={`flex flex-col items-center gap-0.5 p-2.5 rounded-xl border transition-all cursor-pointer ${
             activeCurvePreset?.label === p.label
-              ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-              : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+              ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+              : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
           }`}
         >
           <span class="text-[11px] font-bold">{p.label}</span>
@@ -876,7 +876,7 @@
 
     <!-- Tints -->
     <div>
-      <div class="text-[10px] font-semibold text-slate-400 mb-2">Tints (50–400) — mixed toward surface</div>
+      <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-2">Tints (50–400) — mixed toward surface</div>
       <div class="space-y-2">
         {#each MIX_STEPS.filter((s) => s.step === "tint") as s (s.name)}
           <SliderRow
@@ -893,7 +893,7 @@
 
     <!-- Shades -->
     <div>
-      <div class="text-[10px] font-semibold text-slate-400 mb-2">Shades (600–950) — mixed toward text</div>
+      <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-2">Shades (600–950) — mixed toward text</div>
       <div class="space-y-2">
         {#each MIX_STEPS.filter((s) => s.step === "shade") as s (s.name)}
           <SliderRow
@@ -910,15 +910,15 @@
 
     <!-- Curve preview = live palette. Each step shows the real resolved swatch
          AND the mix amount as a height bar, so the curve doubles as a palette. -->
-    <div class="bg-white/4 rounded-xl border border-white/8 p-3">
+    <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
       <div class="flex items-center justify-between mb-2">
-        <span class="text-[9px] text-slate-600">Palette &amp; curve preview</span>
-        <div class="flex bg-white/5 border border-white/8 rounded p-0.5 gap-0.5">
+        <span class="text-[9px] text-slate-400 dark:text-slate-600">Palette &amp; curve preview</span>
+        <div class="flex bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded p-0.5 gap-0.5">
           {#each ["light", "dark"] as side (side)}
             <button
               onclick={() => { curvePreviewSide = side as "light" | "dark"; }}
               class={`px-1.5 py-0.5 rounded text-[8px] font-bold cursor-pointer transition-all ${
-                curvePreviewSide === side ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"
+                curvePreviewSide === side ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
               }`}
             >{side === "light" ? "Light" : "Dark"}</button>
           {/each}
@@ -930,29 +930,29 @@
           {@const step = s.label}
           {@const swatch = computePaletteSwatch(_curvePrimSrc, step, _curveSurface, _curveText)}
           <div class="flex-1 flex flex-col items-center gap-0.5 h-full justify-end">
-            <span class="text-[7px] font-mono text-slate-600">{Math.round(val)}</span>
+            <span class="text-[7px] font-mono text-slate-400 dark:text-slate-600">{Math.round(val)}</span>
             <div
-              class="group relative w-full rounded-sm border-x border-t border-white/10"
+              class="group relative w-full rounded-sm border-x border-t border-black/10 dark:border-white/10"
               style={`background:${swatch}; height: ${Math.max((val / 100) * 56, 6)}px`}
               title={`primary-${step} (${curvePreviewSide}) · mix ${Math.round(val)}%`}
             >{@render swatchTip(`primary-${step}`)}</div>
-            <span class="text-[7px] font-mono text-slate-600">{step}</span>
+            <span class="text-[7px] font-mono text-slate-400 dark:text-slate-600">{step}</span>
           </div>
         {/each}
       </div>
-      <p class="text-[8px] text-slate-600 mt-2">Bar height = mix amount · fill = the resolved primary palette swatch at each step</p>
+      <p class="text-[8px] text-slate-400 dark:text-slate-600 mt-2">Bar height = mix amount · fill = the resolved primary palette swatch at each step</p>
     </div>
 
     <!-- Mini palettes: all brand colors × all steps, reactive to light/dark toggle -->
-    <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-2">
+    <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2">
       <div class="flex items-center justify-between mb-1">
-        <span class="text-[9px] text-slate-600">Mini palettes — all brand colors</span>
-        <div class="flex bg-white/5 border border-white/8 rounded p-0.5 gap-0.5">
+        <span class="text-[9px] text-slate-400 dark:text-slate-600">Mini palettes — all brand colors</span>
+        <div class="flex bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded p-0.5 gap-0.5">
           {#each ["light", "dark"] as side (side)}
             <button
               onclick={() => { curvePreviewSide = side as "light" | "dark"; }}
               class={`px-1.5 py-0.5 rounded text-[8px] font-bold cursor-pointer transition-all ${
-                curvePreviewSide === side ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"
+                curvePreviewSide === side ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
               }`}
             >{side === "light" ? "Light" : "Dark"}</button>
           {/each}
@@ -966,12 +966,12 @@
           : (BRAND_SOURCES.find(s => s.name === miniDOvKey)?.default ?? deriveDarkFromLight(miniLSrc, colorKey)))}
         {@const miniSrc = curvePreviewSide === "light" ? miniLSrc : miniDSrc}
         <div class="flex items-center gap-1.5">
-          <span class="text-[7px] font-mono text-slate-600 w-12 shrink-0 truncate">{colorKey}</span>
+          <span class="text-[7px] font-mono text-slate-400 dark:text-slate-600 w-12 shrink-0 truncate">{colorKey}</span>
           <div class="flex gap-0.5 flex-1">
             {#each SWATCH_STEPS as step (step)}
               {@const swatch = computePaletteSwatch(miniSrc, step, _miniSurface, _miniText)}
               <div
-                class="group relative flex-1 h-4 rounded-sm border border-white/10"
+                class="group relative flex-1 h-4 rounded-sm border border-black/10 dark:border-white/10"
                 style={`background:${swatch}`}
                 title={`${colorKey}-${step} (${curvePreviewSide})`}
               >{@render swatchTip(`${colorKey}-${step}`)}</div>
@@ -983,7 +983,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- GRADIENTS -->
   <section class="space-y-3">
@@ -996,7 +996,7 @@
       <span class="text-[10px] text-slate-500">{showGradients ? "▲" : "▼"}</span>
     </button>
     {#if showGradients}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Auto-derived from your brand colors. Use the angle/direction and stop
         controls, or edit the raw value for full control.
       </p>
@@ -1006,13 +1006,13 @@
           {#each GRADIENT_TOKENS.filter((g) => g.group === grp) as g (g.name)}
             {@const expr = `var(${g.name})`}
             {@const e = gradEdit(g)}
-            <div class="rounded-lg border border-white/8 bg-white/3 overflow-hidden">
+            <div class="rounded-lg border border-black/8 dark:border-white/8 bg-black/3 dark:bg-white/3 overflow-hidden">
               <div class="h-9 w-full" style={`background:${paintBg(expr, expr)}`}></div>
               <div class="px-2 py-1.5 space-y-1.5">
                 <div class="flex items-center gap-2">
-                  <span class="text-[10px] font-semibold text-slate-300 flex-1">{g.label}</span>
+                  <span class="text-[10px] font-semibold text-slate-700 dark:text-slate-300 flex-1">{g.label}</span>
                   {#if g.name in overrides}
-                    <button onclick={() => { delete gradientEdits[g.name]; onReset(g.name); }} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+                    <button onclick={() => { delete gradientEdits[g.name]; onReset(g.name); }} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
                   {/if}
                 </div>
 
@@ -1024,7 +1024,7 @@
                       <button
                         onclick={() => setGradientPart(g, "dir", d)}
                         class={`flex-1 py-0.5 rounded text-[9px] border transition-all cursor-pointer capitalize ${
-                          e.dir === d ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200" : "border-white/8 text-slate-400 hover:bg-white/5"
+                          e.dir === d ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200" : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5"
                         }`}
                       >{d}</button>
                     {/each}
@@ -1037,7 +1037,7 @@
                       oninput={(ev) => setGradientPart(g, "angle", parseInt((ev.target as HTMLInputElement).value))}
                       class="flex-1 accent-indigo-500"
                     />
-                    <span class="text-[9px] font-mono text-slate-400 w-9 text-right shrink-0">{e.angle}°</span>
+                    <span class="text-[9px] font-mono text-slate-600 dark:text-slate-400 w-9 text-right shrink-0">{e.angle}°</span>
                   </div>
                 {/if}
 
@@ -1046,17 +1046,17 @@
                   <input
                     type="text" value={e.stop1}
                     onchange={(ev) => setGradientPart(g, "stop1", (ev.target as HTMLInputElement).value.trim())}
-                    class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-0.5 text-[8px] font-mono text-slate-300 focus:outline-none focus:border-indigo-500"
+                    class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-0.5 text-[8px] font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500"
                   />
                   <input
                     type="text" value={e.stop2}
                     onchange={(ev) => setGradientPart(g, "stop2", (ev.target as HTMLInputElement).value.trim())}
-                    class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-0.5 text-[8px] font-mono text-slate-300 focus:outline-none focus:border-indigo-500"
+                    class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-0.5 text-[8px] font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
                 <!-- Default formula reference -->
-                <div class="text-[8px] font-mono text-slate-600 leading-snug break-all">
+                <div class="text-[8px] font-mono text-slate-400 dark:text-slate-600 leading-snug break-all">
                   <span class="text-slate-500">default:</span> {g.formula}
                 </div>
 
@@ -1070,7 +1070,7 @@
                     delete gradientEdits[g.name];
                     v ? onSet(g.name, v) : onReset(g.name);
                   }}
-                  class="w-full bg-white/5 border border-white/10 rounded px-1.5 py-0.5 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+                  class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-0.5 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -1080,7 +1080,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- COLOR SCHEME -->
   <section class="space-y-3">
@@ -1093,8 +1093,8 @@
       <span class="text-[10px] text-slate-500">{showColorScheme ? "▲" : "▼"}</span>
     </button>
     {#if showColorScheme}
-      <p class="text-[9px] text-slate-600 leading-relaxed">
-        --sf-color-scheme — sets the CSS <span class="font-mono text-slate-400">color-scheme</span> property on the root, controlling browser UI (scrollbars, inputs) and default background.
+      <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
+        --sf-color-scheme — sets the CSS <span class="font-mono text-slate-600 dark:text-slate-400">color-scheme</span> property on the root, controlling browser UI (scrollbars, inputs) and default background.
       </p>
       <div class="flex gap-1">
         {#each [["light dark", "light dark (default)"], ["light", "Light only"], ["dark", "Dark only"]] as [val, label] (val)}
@@ -1103,8 +1103,8 @@
             onclick={() => val === "light dark" ? onReset("--sf-color-scheme") : onSet("--sf-color-scheme", val)}
             class={`flex-1 py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer ${
               current === val
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
             }`}
           >{label}</button>
         {/each}
@@ -1112,7 +1112,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SEMANTIC OVERRIDES -->
   <section class="space-y-3">
@@ -1125,14 +1125,14 @@
       <span class="text-[10px] text-slate-500">{showSemanticOverrides ? "▲" : "▼"}</span>
     </button>
     {#if showSemanticOverrides}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Direct color overrides for tokens the framework auto-derives. Use for edge cases.
       </p>
       <div class="space-y-2">
         {#each SEMANTIC_OVERRIDES as s (s.name)}
           {@const resolved = paint(`var(${s.name})`, "")}
           <div>
-            <div class="text-[10px] font-semibold text-slate-400 mb-1">{s.label}</div>
+            <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1">{s.label}</div>
             <ColorInput
               token={s.name}
               value={overrides[s.name] ?? ""}
@@ -1147,9 +1147,9 @@
     {/if}
   </section>
 
-  <div class="rounded-lg bg-white/3 border border-white/6 p-3">
+  <div class="rounded-lg bg-black/3 dark:bg-white/3 border border-black/6 dark:border-white/6 p-3">
     <p class="text-[10px] text-slate-500 leading-relaxed">
-      <span class="text-slate-400 font-semibold">All tokens tab</span> — override individual color steps (50–950), semantic aliases, or surface tokens directly.
+      <span class="text-slate-600 dark:text-slate-400 font-semibold">All tokens tab</span> — override individual color steps (50–950), semantic aliases, or surface tokens directly.
     </p>
   </div>
 </div>

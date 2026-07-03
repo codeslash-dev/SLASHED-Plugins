@@ -32,7 +32,7 @@
   let tools = $derived(NAV_ITEMS.filter((i) => i.group === "tools"));
 </script>
 
-<nav class="w-14 bg-[#0a0a0f] border-r border-white/8 flex flex-col items-center py-3 gap-1 shrink-0 overflow-y-auto overflow-x-hidden">
+<nav class="w-14 bg-slate-50 dark:bg-[#0a0a0f] border-r border-black/8 dark:border-white/8 flex flex-col items-center py-3 gap-1 shrink-0 overflow-y-auto overflow-x-hidden">
   <div class="flex flex-col items-center gap-1 w-full px-2">
     {#each tokens as item (item.id)}
       {@const isActive = activeId === item.id}
@@ -44,7 +44,7 @@
         class={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all cursor-pointer group ${
           isActive
             ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-            : "text-slate-500 hover:text-slate-200 hover:bg-white/8"
+            : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-black/8 dark:hover:bg-white/8"
         }`}
       >
         <Icon class="w-4 h-4" />
@@ -59,7 +59,7 @@
       </button>
     {/each}
   </div>
-  <div class="w-8 h-px bg-white/8 my-2"></div>
+  <div class="w-8 h-px bg-black/8 dark:bg-white/8 my-2"></div>
   <div class="flex flex-col items-center gap-1 w-full px-2">
     {#each tools as item (item.id)}
       {@const isActive = activeId === item.id}
@@ -71,7 +71,7 @@
         class={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all cursor-pointer group ${
           isActive
             ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-            : "text-slate-500 hover:text-slate-200 hover:bg-white/8"
+            : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-black/8 dark:hover:bg-white/8"
         }`}
       >
         <Icon class="w-4 h-4" />

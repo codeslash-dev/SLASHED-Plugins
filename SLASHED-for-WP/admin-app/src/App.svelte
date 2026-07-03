@@ -261,7 +261,7 @@
     onclick={() => { mobileView = view; }}
     aria-pressed={mobileView === view}
     class={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-bold transition-colors cursor-pointer ${
-      mobileView === view ? "text-indigo-300 bg-indigo-500/10" : "text-slate-500 hover:text-slate-300"
+      mobileView === view ? "text-indigo-700 dark:text-indigo-300 bg-indigo-500/10" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
     }`}
   >
     <Icon class="w-3.5 h-3.5" /> {label}
@@ -271,7 +271,7 @@
   </button>
 {/snippet}
 
-<div class="{embedded ? 'w-full h-full' : 'w-screen h-screen'} flex flex-col overflow-hidden bg-[#0a0a0f] text-slate-200 font-sans">
+<div class="{embedded ? 'w-full h-full' : 'w-screen h-screen'} flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-800 dark:text-slate-200 font-sans">
   <!-- Top header bar -->
   <StudioHeader
     {overridesCount}
@@ -290,7 +290,7 @@
   <!-- Mobile fold toggle: switch between the controls panel and the live
        preview. Lives right under the header (not at the bottom) so it's
        visible without scrolling and doesn't compete with the status bar. -->
-  <div class="md:hidden flex items-stretch border-b border-white/8 bg-[#0d0d14] shrink-0">
+  <div class="md:hidden flex items-stretch border-b border-black/8 dark:border-white/8 bg-slate-50 dark:bg-[#0d0d14] shrink-0">
     {@render foldToggleButton("controls", SlidersHorizontal, "Controls")}
     {@render foldToggleButton("preview", Eye, "Preview")}
   </div>
@@ -309,10 +309,10 @@
     <!-- Left domain panel — fills remaining row width on mobile (the icon
          rail above already claims its own space, so w-full here would mean
          100% of the whole row and overflow past it), fixed 360px on desktop -->
-    <div class={`flex-1 min-w-0 md:flex-none md:w-[360px] bg-[#0c0c15] border-r border-white/8 flex-col min-h-0 ${mobileView === "preview" ? "hidden md:flex" : "flex"}`}>
+    <div class={`flex-1 min-w-0 md:flex-none md:w-[360px] bg-slate-50 dark:bg-[#0c0c15] border-r border-black/8 dark:border-white/8 flex-col min-h-0 ${mobileView === "preview" ? "hidden md:flex" : "flex"}`}>
       <!-- Panel heading -->
-      <div class="h-9 flex items-center px-4 border-b border-white/6 shrink-0 gap-2">
-        <span data-testid="panel-heading" class="text-[11px] font-bold text-slate-300 uppercase tracking-widest flex-1">
+      <div class="h-9 flex items-center px-4 border-b border-black/6 dark:border-white/6 shrink-0 gap-2">
+        <span data-testid="panel-heading" class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest flex-1">
           {DOMAIN_LABELS[domain] ?? domain}
         </span>
         {#if domainOverridesCount > 0}
@@ -320,7 +320,7 @@
             onclick={handleResetDomain}
             data-testid="reset-category"
             title={`Reset ${domainOverridesCount} override${domainOverridesCount !== 1 ? "s" : ""} in ${DOMAIN_LABELS[domain] ?? domain}`}
-            class="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer shrink-0"
+            class="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer shrink-0"
           >
             <RotateCcw class="w-3 h-3" />
             Reset {domainOverridesCount}

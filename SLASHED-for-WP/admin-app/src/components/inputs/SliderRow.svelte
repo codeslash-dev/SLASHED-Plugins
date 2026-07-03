@@ -45,7 +45,7 @@
 <div class="group">
   <div class="flex items-center justify-between mb-1.5">
     {#if label}
-      <span class="text-[11px] font-semibold text-slate-200">{label}</span>
+      <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">{label}</span>
     {:else}
       <span></span>
     {/if}
@@ -56,15 +56,15 @@
           title={showRaw ? "Switch to slider" : "Enter raw CSS value"}
           class={`text-[9px] font-mono cursor-pointer transition-all px-0.5 ${
             showRaw
-              ? 'text-indigo-400'
-              : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 text-slate-500 hover:text-indigo-400'
+              ? 'text-indigo-600 dark:text-indigo-400'
+              : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400'
           }`}
         >&lt;/&gt;</button>
       {/if}
       {#if overridden}
         <button
           onclick={onReset}
-          class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 transition-colors"
+          class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100 transition-colors"
         >reset</button>
       {/if}
     </div>
@@ -85,16 +85,16 @@
         const v = rawDraft.trim();
         if (v && onRawSet) onRawSet(v);
       }}
-      class="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-[11px] font-mono text-slate-300 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
+      class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-2 py-1.5 text-[11px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
     />
   {:else}
     <RangeWithNumber {value} {min} {max} {step} {unit} {onChange} />
     {#if rawDefault && !overridden}
-      <p class="text-[9px] font-mono text-slate-700 mt-0.5 leading-none">default: {rawDefault}</p>
+      <p class="text-[9px] font-mono text-slate-300 dark:text-slate-700 mt-0.5 leading-none">default: {rawDefault}</p>
     {/if}
   {/if}
 
   {#if help}
-    <p class="text-[10px] text-slate-600 mt-1 leading-relaxed">{help}</p>
+    <p class="text-[10px] text-slate-400 dark:text-slate-600 mt-1 leading-relaxed">{help}</p>
   {/if}
 </div>

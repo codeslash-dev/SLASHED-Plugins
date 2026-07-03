@@ -103,13 +103,13 @@
         onSet={(v) => onSet("--sf-color-border", v)}
         onReset={() => onReset("--sf-color-border")}
       />
-      <p class="text-[9px] text-slate-600">
+      <p class="text-[9px] text-slate-400 dark:text-slate-600">
         Drives --sf-color-border--strong, --subtle, --translucent automatically.
       </p>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- BORDER SCALE -->
   <section class="space-y-3">
@@ -145,10 +145,10 @@
       />
 
       <!-- Width preview -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-2">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2">
         {#each [1, 2, 3, 4] as base (base)}
           <div class="flex items-center gap-3">
-            <span class="text-[9px] font-mono text-slate-600 w-10">{base}px →</span>
+            <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-10">{base}px →</span>
             <div
               class="flex-1 bg-indigo-400/50 rounded"
               style={`height: ${Math.max(base * borderScale, 0.5)}px`}
@@ -162,7 +162,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- LINE STYLES -->
   <section class="space-y-4">
@@ -189,8 +189,8 @@
                   onclick={() => s === row.default ? onReset(row.token) : onSet(row.token, s)}
                   class={`px-2 py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer text-center ${
                     current === s
-                      ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                      : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                      ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                      : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
                   }`}
                 >
                   <span class="block mx-auto mb-0.5" style={`width: 20px; height: 0; border-bottom: 2px ${s} currentColor; opacity: 0.7`}></span>
@@ -203,19 +203,19 @@
       </div>
 
       <!-- Combined border preview (width × style × color) -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-4 flex items-center justify-center gap-3">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center gap-3">
         <div
-          class="px-4 py-2 rounded-lg text-[11px] text-slate-300 bg-white/4"
+          class="px-4 py-2 rounded-lg text-[11px] text-slate-700 dark:text-slate-300 bg-black/4 dark:bg-white/4"
           style={`border: ${Math.max(borderScale, 0.5)}px ${borderStyle} ${borderColor || "var(--sf-color-border, #64748b)"}`}
         >
           Border sample
         </div>
-        <span class="text-[9px] font-mono text-slate-600">{(1 * borderScale).toFixed(1)}px · {borderStyle}</span>
+        <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600">{(1 * borderScale).toFixed(1)}px · {borderStyle}</span>
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- DIVIDERS -->
   <section class="space-y-3">
@@ -229,7 +229,7 @@
     </button>
     {#if showDividers}
       <div class="flex items-center gap-2">
-        <div class="text-[10px] font-semibold text-slate-400 w-24 shrink-0">Color</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Color</div>
         <ColorInput
           token="--sf-divider-color"
           value={dividerColor}
@@ -262,7 +262,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- FOCUS RING -->
   <section class="space-y-3">
@@ -290,7 +290,7 @@
         onReset={() => onReset("--sf-focus-ring-offset")}
       />
       <div class="flex items-center gap-2">
-        <div class="text-[10px] font-semibold text-slate-400 w-24 shrink-0">Ring color</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Ring color</div>
         <ColorInput
           token="--sf-focus-ring-color"
           value={focusRingColor}
@@ -301,9 +301,9 @@
         />
       </div>
       <!-- Focus ring preview -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-4 flex items-center justify-center">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center">
         <div
-          class="px-4 py-2 bg-indigo-600/30 rounded-lg text-[11px] text-indigo-200"
+          class="px-4 py-2 bg-indigo-600/30 rounded-lg text-[11px] text-indigo-800 dark:text-indigo-200"
           style={`outline: ${focusWidth}px solid ${focusRingColor || "oklch(0.7 0.2 235)"}; outline-offset: ${focusOffset}px`}
         >
           Focus preview
@@ -312,7 +312,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- RADIUS -->
   <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Radius</div>
@@ -322,13 +322,13 @@
     <button
       onclick={() => { showFineTune = !showFineTune; }}
       aria-expanded={showFineTune}
-      class="w-full flex items-center justify-between text-[10px] font-semibold text-slate-400 hover:text-slate-200 transition-colors cursor-pointer py-1"
+      class="w-full flex items-center justify-between text-[10px] font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer py-1"
     >
       <span>Fine-tune radius steps</span>
       <span class="text-[10px] text-slate-500">{showFineTune ? "▲" : "▼"}</span>
     </button>
     {#if showFineTune}
-      <div class="mt-2 space-y-2 pl-2 border-l border-white/10">
+      <div class="mt-2 space-y-2 pl-2 border-l border-black/10 dark:border-white/10">
         {#each RADIUS_FINE as r (r.name)}
           <SliderRow
             label={r.step}
@@ -360,7 +360,7 @@
       <span class="text-[10px] text-slate-500">{showRadiusPreview ? "▲" : "▼"}</span>
     </button>
     {#if showRadiusPreview}
-      <div class="bg-white/4 rounded-xl border border-white/8 p-4">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4">
         <div class="flex gap-3 flex-wrap">
           {#each RADIUS_STEPS as step (step)}
             {@const base = BASE_RADII[step] ?? 6}
@@ -370,7 +370,7 @@
                 class="w-10 h-10 bg-indigo-500/40 border border-indigo-500/30"
                 style={`border-radius: ${Math.min(computed, 9999)}px`}
               ></div>
-              <span class="text-[8px] font-mono text-slate-600">{step}</span>
+              <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600">{step}</span>
             </div>
           {/each}
         </div>
@@ -378,14 +378,14 @@
     {/if}
   </div>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- COMPONENT SHAPE -->
   <div>
     <button
       onclick={() => { showComponents = !showComponents; }}
       aria-expanded={showComponents}
-      class="w-full flex items-center justify-between text-[10px] font-semibold text-slate-400 hover:text-slate-200 transition-colors cursor-pointer py-1"
+      class="w-full flex items-center justify-between text-[10px] font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer py-1"
     >
       <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Component shape</span>
       <span class="text-[10px] text-slate-500">{showComponents ? "▲" : "▼"}</span>
@@ -408,14 +408,14 @@
     {/if}
   </div>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ADVANCED (power knob, de-emphasised, at end) -->
   <div>
     <button
       onclick={() => { showRadiusScale = !showRadiusScale; }}
       aria-expanded={showRadiusScale}
-      class="w-full flex items-center justify-between text-slate-600 hover:text-slate-400 transition-colors cursor-pointer"
+      class="w-full flex items-center justify-between text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors cursor-pointer"
     >
       <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
       <span class="text-[10px]">{showRadiusScale ? "▲" : "▼"}</span>

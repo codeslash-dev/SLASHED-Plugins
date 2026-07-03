@@ -1,6 +1,7 @@
 import { mount } from 'svelte';
 import './app.css';
 import App from './App.svelte';
+import { bindThemeRoot } from './lib/theme.svelte';
 
 // DOGFOOD: load SLASHED's own token + theme layers at :root so the configurator
 // chrome renders with the framework it edits. We load only token/theme layers —
@@ -21,6 +22,9 @@ const target =
 let app: ReturnType<typeof mount> | undefined;
 if (target) {
   target.innerHTML = '';
+  // Apply the persisted/OS-derived theme class before mounting so the first
+  // paint is never wrong-themed (no flash of the other mode).
+  bindThemeRoot(target);
   app = mount(App, { target });
 }
 export default app;
