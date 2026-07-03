@@ -2,6 +2,11 @@
   import { KNOBS_BY_DOMAIN } from '../../lib/powerKnobs';
   import PowerKnobRow from '../inputs/PowerKnobRow.svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
+  import { themeState } from '../../lib/theme.svelte';
+
+  // <option> only reliably accepts a background via inline style (no dark:
+  // variant support), so it's derived from the chrome theme directly.
+  let optionBg = $derived(themeState.value === 'dark' ? '#16161e' : '#ffffff');
 
   let { overrides, onSet, onReset, onBulkChange }: {
     overrides: Record<string, string>;
@@ -94,9 +99,9 @@
 <div class="p-4 space-y-5">
 
   <!-- Quick toggle -->
-  <div class="flex items-center justify-between p-3 rounded-xl bg-white/4 border border-white/8">
+  <div class="flex items-center justify-between p-3 rounded-xl bg-black/4 dark:bg-white/4 border border-black/8 dark:border-white/8">
     <div>
-      <div class="text-[11px] font-semibold text-slate-200">Disable motion</div>
+      <div class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">Disable motion</div>
       <div class="text-[9px] text-slate-500 mt-0.5">Respects prefers-reduced-motion</div>
     </div>
     <button
@@ -106,7 +111,7 @@
         else onSet("--sf-motion-scale", "0");
       }}
       class={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${
-        motionDisabled ? "bg-indigo-600" : "bg-white/10"
+        motionDisabled ? "bg-indigo-600" : "bg-black/10 dark:bg-white/10"
       }`}
     >
       <div class={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
@@ -117,7 +122,7 @@
 
   {#if motionDisabled}
     <div class="rounded-lg bg-amber-500/10 border border-amber-500/20 p-2.5">
-      <p class="text-[10px] text-amber-300">Motion is disabled — duration & easing have no effect while scale is 0.</p>
+      <p class="text-[10px] text-amber-700 dark:text-amber-300">Motion is disabled — duration & easing have no effect while scale is 0.</p>
     </div>
   {/if}
 
@@ -125,7 +130,7 @@
        easing/duration edit can be previewed immediately. -->
   <section class="space-y-3">
     <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live preview</div>
-    <div class="bg-white/4 rounded-xl border border-white/8 p-4 space-y-3">
+    <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 space-y-3">
       <div class="relative h-10 overflow-hidden rounded">
         <div
           class="absolute top-1 h-8 w-8 bg-indigo-500 rounded-lg"
@@ -137,32 +142,32 @@
           value={demoEase}
           aria-label="Preview easing"
           onchange={(e) => { demoEase = (e.target as HTMLSelectElement).value; }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[10px] text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[10px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
         >
           {#each EASINGS as e (e.token)}
-            <option value={e.token} style="background:#16161e;">{e.label}</option>
+            <option value={e.token} style={`background:${optionBg};`}>{e.label}</option>
           {/each}
         </select>
         <select
           value={demoDuration}
           aria-label="Preview duration"
           onchange={(e) => { demoDuration = (e.target as HTMLSelectElement).value; }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[10px] text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[10px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
         >
           {#each DURATIONS as d (d.token)}
-            <option value={d.token} style="background:#16161e;">{d.label}</option>
+            <option value={d.token} style={`background:${optionBg};`}>{d.label}</option>
           {/each}
         </select>
         <button
           onclick={playDemo}
           disabled={animating}
-          class="px-3 py-1.5 rounded-lg text-[10px] font-bold border border-indigo-500/40 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 transition-all cursor-pointer disabled:opacity-40 shrink-0"
+          class="px-3 py-1.5 rounded-lg text-[10px] font-bold border border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 transition-all cursor-pointer disabled:opacity-40 shrink-0"
         >{animating ? "…" : "▶ Play"}</button>
       </div>
     </div>
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- DURATIONS (with inline preview) -->
   <section class="space-y-3">
@@ -175,9 +180,9 @@
       <span class="text-[10px] text-slate-500">{showDurations ? "▲" : "▼"}</span>
     </button>
     {#if showDurations}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Named duration tokens. Drag to set an absolute ms value, overriding the global scale.
-        {#if motionDisabled}<span class="text-amber-400"> (No effect while motion is disabled.)</span>{/if}
+        {#if motionDisabled}<span class="text-amber-600 dark:text-amber-400"> (No effect while motion is disabled.)</span>{/if}
       </p>
       {#each DURATIONS as d (d.token)}
         {@const computed = getDuration(d.token, d.base)}
@@ -194,12 +199,12 @@
         />
       {/each}
       <!-- Duration preview, inside the group it refers to -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-4 space-y-3">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 space-y-3">
         {#each DURATIONS as d (d.label)}
           {@const actual = getDuration(d.token, d.base)}
           <div class="flex items-center gap-3">
             <span class="text-[10px] text-slate-500 w-14 shrink-0">{d.label}</span>
-            <div class="flex-1 h-1 bg-white/8 rounded-full overflow-hidden">
+            <div class="flex-1 h-1 bg-black/8 dark:bg-white/8 rounded-full overflow-hidden">
               <div class="h-full bg-indigo-500 rounded-full" style={`width: ${Math.min((actual / 1200) * 100, 100)}%`}></div>
             </div>
             <span class="text-[9px] font-mono text-slate-500 w-10 text-right">{actual}ms</span>
@@ -209,7 +214,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- EASING — editable -->
   <section class="space-y-3">
@@ -222,16 +227,16 @@
       <span class="text-[10px] text-slate-500">{showEasing ? "▲" : "▼"}</span>
     </button>
     {#if showEasing}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Edit the named easing tokens. Accepts any CSS timing function —
-        <span class="font-mono text-slate-400">cubic-bezier(…)</span> or
-        <span class="font-mono text-slate-400">linear(…)</span>. Use “Live preview” above to feel a curve.
+        <span class="font-mono text-slate-600 dark:text-slate-400">cubic-bezier(…)</span> or
+        <span class="font-mono text-slate-600 dark:text-slate-400">linear(…)</span>. Use “Live preview” above to feel a curve.
       </p>
       <div class="space-y-2">
         {#each EASINGS as e (e.token)}
           {@const isOverridden = e.token in overrides}
           <div class={`p-2.5 rounded-xl border transition-all ${
-            isOverridden ? "bg-indigo-500/10 border-indigo-500/30" : "border-white/8 bg-white/3"
+            isOverridden ? "bg-indigo-500/10 border-indigo-500/30" : "border-black/8 dark:border-white/8 bg-black/3 dark:bg-white/3"
           }`}>
             <div class="flex items-center gap-2.5">
               <svg width="40" height="28" viewBox="0 0 40 28" class="overflow-visible shrink-0">
@@ -239,14 +244,14 @@
               </svg>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between mb-1">
-                  <span class="text-[10px] font-semibold text-slate-300">{e.label}</span>
+                  <span class="text-[10px] font-semibold text-slate-700 dark:text-slate-300">{e.label}</span>
                   <div class="flex items-center gap-1.5">
                     <button
                       onclick={() => { demoEase = e.token; playDemo(); }}
-                      class="text-[8px] text-slate-500 hover:text-indigo-400 cursor-pointer"
+                      class="text-[8px] text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer"
                     >preview</button>
                     {#if isOverridden}
-                      <button onclick={() => onReset(e.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer">reset</button>
+                      <button onclick={() => onReset(e.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer">reset</button>
                     {/if}
                   </div>
                 </div>
@@ -258,7 +263,7 @@
                     const v = (ev.target as HTMLInputElement).value.trim();
                     v ? onSet(e.token, v) : onReset(e.token);
                   }}
-                  class="w-full bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+                  class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -268,7 +273,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- STAGGER -->
   <section class="space-y-3">
@@ -281,14 +286,14 @@
       <span class="text-[10px] text-slate-500">{showStagger ? "▲" : "▼"}</span>
     </button>
     {#if showStagger}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         One slider sets all five stagger delays (delay-1 through delay-5 are multiples of this base).
       </p>
       <div class="group">
         <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[11px] font-semibold text-slate-200">Stagger base</span>
+          <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">Stagger base</span>
           {#if STAGGER_TOKENS.some(t => t in overrides)}
-            <button onclick={resetStagger} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
+            <button onclick={resetStagger} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
           {/if}
         </div>
         <SliderRow
@@ -299,12 +304,12 @@
           onReset={resetStagger}
         />
       </div>
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-1">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-1">
         {#each [1,2,3,4,5] as n (n)}
           {@const delayMs = Math.round(staggerBase * n)}
           <div class="flex items-center gap-2">
-            <span class="text-[9px] font-mono text-slate-600 w-6">–{n}</span>
-            <div class="flex-1 h-1.5 bg-white/8 rounded-full">
+            <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-6">–{n}</span>
+            <div class="flex-1 h-1.5 bg-black/8 dark:bg-white/8 rounded-full">
               <div class="h-full bg-indigo-500 rounded-full" style={`width: ${Math.min((delayMs / 600) * 100, 100)}%`}></div>
             </div>
             <span class="text-[9px] font-mono text-slate-500 w-10 text-right">{delayMs}ms</span>
@@ -314,14 +319,14 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ADVANCED — global scale power knob, theme transition, scroll timeline -->
   <section class="space-y-4">
     <button
       onclick={() => { showAdvanced = !showAdvanced; }}
       aria-expanded={showAdvanced}
-      class="w-full flex items-center justify-between text-slate-600 hover:text-slate-400 transition-colors cursor-pointer"
+      class="w-full flex items-center justify-between text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors cursor-pointer"
     >
       <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
       <span class="text-[10px]">{showAdvanced ? "▲" : "▼"}</span>
@@ -349,16 +354,16 @@
 
       <!-- Scroll timeline range -->
       <div class="space-y-2">
-        <p class="text-[10px] text-slate-600 leading-relaxed">
+        <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
           Default animation-range for scroll-driven animations using the
-          <span class="font-mono text-slate-400">.sf-scroll-timeline</span> utility.
+          <span class="font-mono text-slate-600 dark:text-slate-400">.sf-scroll-timeline</span> utility.
         </p>
         {#each [
           { label: "Range start", token: "--sf-scroll-timeline-range-start", placeholder: "entry 0%" },
           { label: "Range end",   token: "--sf-scroll-timeline-range-end",   placeholder: "cover 30%" },
         ] as r (r.token)}
           <div class="flex items-center gap-2">
-            <div class="text-[10px] font-semibold text-slate-400 w-24 shrink-0">{r.label}</div>
+            <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">{r.label}</div>
             <input
               type="text"
               value={overrides[r.token] ?? ""}
@@ -367,10 +372,10 @@
                 const v = (e.target as HTMLInputElement).value.trim();
                 v ? onSet(r.token, v) : onReset(r.token);
               }}
-              class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+              class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
             />
             {#if r.token in overrides}
-              <button onclick={() => onReset(r.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+              <button onclick={() => onReset(r.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
           </div>
         {/each}

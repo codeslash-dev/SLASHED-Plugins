@@ -88,19 +88,19 @@
         onReset={() => onReset("--sf-touch-target")}
       />
       <!-- Preview -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 flex items-center gap-3">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 flex items-center gap-3">
         <div
-          class="bg-indigo-500/30 border border-indigo-500/30 rounded flex items-center justify-center text-[9px] font-mono text-indigo-400/70 shrink-0"
+          class="bg-indigo-500/30 border border-indigo-500/30 rounded flex items-center justify-center text-[9px] font-mono text-indigo-600/70 dark:text-indigo-400/70 shrink-0"
           style={`width: ${touchTarget}px; height: ${touchTarget}px`}
         >
           {touchTarget}px
         </div>
-        <p class="text-[9px] text-slate-600">Minimum interactive area — ensures accessibility on touch devices.</p>
+        <p class="text-[9px] text-slate-400 dark:text-slate-600">Minimum interactive area — ensures accessibility on touch devices.</p>
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCROLL BEHAVIOR -->
   <section class="space-y-3">
@@ -119,8 +119,8 @@
             onclick={() => b.value === "smooth" ? onReset("--sf-scroll-behavior") : onSet("--sf-scroll-behavior", b.value)}
             class={`flex-1 py-2 rounded-lg text-[10px] border transition-all cursor-pointer ${
               scrollBehavior === b.value
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
             }`}
           >
             {b.label}
@@ -130,7 +130,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- Z-INDEX -->
   <section class="space-y-3">
@@ -150,22 +150,22 @@
         onChange={(v) => onSet("--sf-z-base", String(v))}
         onReset={() => onReset("--sf-z-base")}
       />
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-1.5">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-1.5">
         {#each Z_INDEX_STEPS as z (z.token)}
           {@const isOverridden = z.token in overrides}
           <div class="flex items-center gap-2">
-            <div class={`w-1.5 h-1.5 rounded-full shrink-0 ${isOverridden ? "bg-amber-400" : "bg-white/20"}`}></div>
-            <span class="text-[9px] font-mono text-slate-400 w-20 shrink-0">{z.label}</span>
-            <span class="text-[8px] text-slate-600 flex-1">{z.note}</span>
+            <div class={`w-1.5 h-1.5 rounded-full shrink-0 ${isOverridden ? "bg-amber-400" : "bg-black/20 dark:bg-white/20"}`}></div>
+            <span class="text-[9px] font-mono text-slate-600 dark:text-slate-400 w-20 shrink-0">{z.label}</span>
+            <span class="text-[8px] text-slate-400 dark:text-slate-600 flex-1">{z.note}</span>
             <span class="text-[8px] font-mono text-slate-500">{z.token.replace("--sf-z-", "")}</span>
           </div>
         {/each}
       </div>
-      <p class="text-[9px] text-slate-600">Override individual z-index tokens in the "All tokens" tab.</p>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600">Override individual z-index tokens in the "All tokens" tab.</p>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SELECTION -->
   <section class="space-y-3">
@@ -180,7 +180,7 @@
     {#if showTextSelection}
       <div class="space-y-2">
         <div>
-          <div class="text-[10px] font-semibold text-slate-400 mb-1.5">Selection background</div>
+          <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Selection background</div>
           <ColorInput
             token="--sf-color-selection-bg"
             value={overrides["--sf-color-selection-bg"] ?? ""}
@@ -191,7 +191,7 @@
           />
         </div>
         <div>
-          <div class="text-[10px] font-semibold text-slate-400 mb-1.5">Selection text color</div>
+          <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Selection text color</div>
           <ColorInput
             token="--sf-color-selection-text"
             value={overrides["--sf-color-selection-text"] ?? ""}
@@ -202,9 +202,9 @@
           />
         </div>
         <!-- Selection preview -->
-        <div class="bg-white/4 rounded-xl border border-white/8 p-3">
+        <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
           <p
-            class="text-[11px] text-slate-200 select-all"
+            class="text-[11px] text-slate-800 dark:text-slate-200 select-all"
             style={`--sf-color-selection-bg: ${overrides["--sf-color-selection-bg"] ?? "#6366f1"}; --sf-color-selection-text: ${overrides["--sf-color-selection-text"] ?? "#ffffff"}`}
           >
             Select this text to preview the selection color.
@@ -214,7 +214,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- FOCUS RING STYLE -->
   <section class="space-y-3">
@@ -234,8 +234,8 @@
             onclick={() => style === "solid" ? onReset("--sf-focus-ring-style") : onSet("--sf-focus-ring-style", style)}
             class={`flex-1 py-2 rounded-lg text-[10px] border transition-all cursor-pointer capitalize ${
               current === style
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
             }`}
           >
             {style}
@@ -243,9 +243,9 @@
         {/each}
       </div>
       <!-- Focus ring style preview -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-4 flex items-center justify-center">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center">
         <div
-          class="px-4 py-2 bg-indigo-600/30 rounded-lg text-[11px] text-indigo-200"
+          class="px-4 py-2 bg-indigo-600/30 rounded-lg text-[11px] text-indigo-800 dark:text-indigo-200"
           style={`outline: 2px ${focusRingStyle} ${overrides["--sf-focus-ring-color"] || "oklch(0.7 0.2 235)"}; outline-offset: 2px`}
         >
           Focus ring · {focusRingStyle}
@@ -254,7 +254,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- COMPONENT SIZES -->
   <section class="space-y-3">
@@ -267,7 +267,7 @@
       <span class="text-[10px] text-slate-500">{showComponentSizes ? "▲" : "▼"}</span>
     </button>
     {#if showComponentSizes}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Controls the height / tap-target of all sized components (buttons, inputs, badges).
       </p>
       <div class="space-y-2">
@@ -283,7 +283,7 @@
         {/each}
       </div>
       <!-- Visual preview -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 flex items-end gap-2">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 flex items-end gap-2">
         {#each SIZE_TOKENS as s (s.token)}
           {@const val = getSizeValue(s)}
           <div class="flex flex-col items-center gap-1 flex-1">
@@ -291,14 +291,14 @@
               class="w-full bg-indigo-500/30 border border-indigo-500/30 rounded flex items-center justify-center"
               style={`height: ${Math.min(val * 14, 64)}px`}
             ></div>
-            <span class="text-[8px] font-mono text-slate-600">{s.label}</span>
+            <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600">{s.label}</span>
           </div>
         {/each}
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- CARET & LINKS -->
   <section class="space-y-3">
@@ -312,7 +312,7 @@
     </button>
     {#if showCaretLinks}
       <div>
-        <div class="text-[10px] font-semibold text-slate-400 mb-1.5">Caret color</div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Caret color</div>
         <ColorInput
           token="--sf-caret-color"
           value={caretColor}
@@ -331,9 +331,9 @@
       />
       <div class="group">
         <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[11px] font-semibold text-slate-200">Underline thickness</span>
+          <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">Underline thickness</span>
           {#if "--sf-link-underline-thickness" in overrides}
-            <button onclick={() => onReset("--sf-link-underline-thickness")} class="text-[9px] text-slate-500 hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
+            <button onclick={() => onReset("--sf-link-underline-thickness")} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
           {/if}
         </div>
         <div class="flex gap-1">
@@ -342,26 +342,26 @@
               onclick={() => val === "auto" ? onReset("--sf-link-underline-thickness") : onSet("--sf-link-underline-thickness", val)}
               class={`flex-1 py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer ${
                 underlineThickness === val
-                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
-                  : "border-white/8 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >{label}</button>
           {/each}
         </div>
       </div>
       <!-- Live sample: caret (type in the field) + underlined link -->
-      <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-2">
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2">
         <input
           type="text"
           placeholder="Click and type to see the caret…"
           style={`caret-color:${caretColor || "#6366f1"}`}
-          class="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-[11px] text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
         />
-        <p class="text-[11px] text-slate-300">
+        <p class="text-[11px] text-slate-700 dark:text-slate-300">
           A <a
             href="#sample-link"
             onclick={(e) => e.preventDefault()}
-            class="text-indigo-300"
+            class="text-indigo-700 dark:text-indigo-300"
             style={`text-decoration:underline;text-underline-offset:${underlineOffset}em;text-decoration-thickness:${underlineThickness}`}
           >sample link</a> with the current underline settings.
         </p>
@@ -369,7 +369,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ICON SIZES -->
   <section class="space-y-3">
@@ -382,8 +382,8 @@
       <span class="text-[10px] text-slate-500">{showIconSizes ? "▲" : "▼"}</span>
     </button>
     {#if showIconSizes}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
-        Icon scale tokens used by <span class="font-mono text-slate-400">.sf-icon-*</span> utilities. Values are in <span class="font-mono text-slate-400">em</span> units relative to surrounding text.
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
+        Icon scale tokens used by <span class="font-mono text-slate-600 dark:text-slate-400">.sf-icon-*</span> utilities. Values are in <span class="font-mono text-slate-600 dark:text-slate-400">em</span> units relative to surrounding text.
       </p>
       <div class="space-y-1.5">
         {#each [
@@ -412,7 +412,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- OBJECT FIT / POSITION -->
   <section class="space-y-3">
@@ -425,24 +425,24 @@
       <span class="text-[10px] text-slate-500">{showObjectFit ? "▲" : "▼"}</span>
     </button>
     {#if showObjectFit}
-      <p class="text-[9px] text-slate-600">Default values for <span class="font-mono text-slate-400">.sf-media</span> images and replaced elements.</p>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600">Default values for <span class="font-mono text-slate-600 dark:text-slate-400">.sf-media</span> images and replaced elements.</p>
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">Fit</span>
+        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">Fit</span>
         <div class="flex gap-1 flex-1">
           {#each ["cover","contain","fill","none"] as v (v)}
             {@const cur = overrides["--sf-object-fit"] ?? "cover"}
             <button
               onclick={() => v === "cover" ? onReset("--sf-object-fit") : onSet("--sf-object-fit", v)}
-              class={`flex-1 py-1.5 rounded-lg text-[9px] border transition-all cursor-pointer ${cur === v ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200" : "border-white/8 text-slate-400 hover:bg-white/5"}`}
+              class={`flex-1 py-1.5 rounded-lg text-[9px] border transition-all cursor-pointer ${cur === v ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200" : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5"}`}
             >{v}</button>
           {/each}
         </div>
         {#if "--sf-object-fit" in overrides}
-          <button onclick={() => onReset("--sf-object-fit")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer">reset</button>
+          <button onclick={() => onReset("--sf-object-fit")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer">reset</button>
         {/if}
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-semibold text-slate-400 w-16 shrink-0">Position</span>
+        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">Position</span>
         <input
           type="text"
           value={overrides["--sf-object-position"] ?? ""}
@@ -451,16 +451,16 @@
             const v = (e.target as HTMLInputElement).value.trim();
             v ? onSet("--sf-object-position", v) : onReset("--sf-object-position");
           }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
         />
         {#if "--sf-object-position" in overrides}
-          <button onclick={() => onReset("--sf-object-position")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          <button onclick={() => onReset("--sf-object-position")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SAFE AREA INSETS -->
   <section class="space-y-3">
@@ -473,8 +473,8 @@
       <span class="text-[10px] text-slate-500">{showSafeArea ? "▲" : "▼"}</span>
     </button>
     {#if showSafeArea}
-      <p class="text-[9px] text-slate-600 leading-relaxed">
-        Default to the device's <span class="font-mono text-slate-400">env(safe-area-inset-*)</span>. Override only if you need fixed padding regardless of notch/home-indicator.
+      <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
+        Default to the device's <span class="font-mono text-slate-600 dark:text-slate-400">env(safe-area-inset-*)</span>. Override only if you need fixed padding regardless of notch/home-indicator.
       </p>
       <div class="space-y-1.5">
         {#each [
@@ -484,7 +484,7 @@
           { label: "Left",   token: "--sf-safe-left",   placeholder: "env(safe-area-inset-left, 0px)" },
         ] as row (row.token)}
           <div class="flex items-center gap-2">
-            <span class="text-[10px] font-semibold text-slate-400 w-14 shrink-0">{row.label}</span>
+            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-14 shrink-0">{row.label}</span>
             <input
               type="text"
               value={overrides[row.token] ?? ""}
@@ -493,10 +493,10 @@
                 const v = (e.target as HTMLInputElement).value.trim();
                 v ? onSet(row.token, v) : onReset(row.token);
               }}
-              class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+              class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
             />
             {#if row.token in overrides}
-              <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+              <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
           </div>
         {/each}
@@ -504,7 +504,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- PRINT -->
   <section class="space-y-3">
@@ -517,15 +517,15 @@
       <span class="text-[10px] text-slate-500">{showPrint ? "▲" : "▼"}</span>
     </button>
     {#if showPrint}
-      <p class="text-[9px] text-slate-600">Applied inside <span class="font-mono text-slate-400">@media print</span> via <span class="font-mono text-slate-400">optional/print.css</span>.</p>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600">Applied inside <span class="font-mono text-slate-600 dark:text-slate-400">@media print</span> via <span class="font-mono text-slate-600 dark:text-slate-400">optional/print.css</span>.</p>
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-semibold text-slate-400 w-24 shrink-0">Page size</span>
+        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Page size</span>
         <div class="flex gap-1 flex-1">
           {#each ["a4","letter","legal","a3"] as v (v)}
             {@const cur = overrides["--sf-print-page-size"] ?? "a4"}
             <button
               onclick={() => v === "a4" ? onReset("--sf-print-page-size") : onSet("--sf-print-page-size", v)}
-              class={`flex-1 py-1.5 rounded-lg text-[9px] border transition-all cursor-pointer ${cur === v ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200" : "border-white/8 text-slate-400 hover:bg-white/5"}`}
+              class={`flex-1 py-1.5 rounded-lg text-[9px] border transition-all cursor-pointer ${cur === v ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200" : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5"}`}
             >{v}</button>
           {/each}
         </div>
@@ -535,7 +535,7 @@
         { label: "Page margin", token: "--sf-print-page-margin", placeholder: "2cm" },
       ] as row (row.token)}
         <div class="flex items-center gap-2">
-          <span class="text-[10px] font-semibold text-slate-400 w-24 shrink-0">{row.label}</span>
+          <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">{row.label}</span>
           <input
             type="text"
             value={overrides[row.token] ?? ""}
@@ -544,17 +544,17 @@
               const v = (e.target as HTMLInputElement).value.trim();
               v ? onSet(row.token, v) : onReset(row.token);
             }}
-            class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+            class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
           />
           {#if row.token in overrides}
-            <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+            <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
           {/if}
         </div>
       {/each}
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- STATE FLAGS -->
   <section class="space-y-3">
@@ -567,7 +567,7 @@
       <span class="text-[10px] text-slate-500">{showStateFlags ? "▲" : "▼"}</span>
     </button>
     {#if showStateFlags}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Boolean CSS custom property flags (0 = off, 1 = on). Components toggle these to activate state-specific styles.
         Overriding globally forces all matching elements into that state — useful for testing and demos.
       </p>
@@ -585,20 +585,20 @@
               aria-label={f.label}
               aria-pressed={cur === "1"}
               onclick={() => cur === "1" ? onReset(f.token) : onSet(f.token, "1")}
-              class={`w-8 h-4 rounded-full transition-colors relative cursor-pointer shrink-0 ${cur === "1" ? "bg-indigo-600" : "bg-white/10"}`}
+              class={`w-8 h-4 rounded-full transition-colors relative cursor-pointer shrink-0 ${cur === "1" ? "bg-indigo-600" : "bg-black/10 dark:bg-white/10"}`}
             >
               <div class={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${cur === "1" ? "translate-x-4" : "translate-x-0.5"}`}></div>
             </button>
-            <span class="text-[9px] font-mono text-slate-300 w-24 shrink-0">{f.label}</span>
-            <span class="text-[9px] text-slate-600 flex-1">{f.note}</span>
+            <span class="text-[9px] font-mono text-slate-700 dark:text-slate-300 w-24 shrink-0">{f.label}</span>
+            <span class="text-[9px] text-slate-400 dark:text-slate-600 flex-1">{f.note}</span>
             {#if f.token in overrides}
-              <button onclick={() => onReset(f.token)} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+              <button onclick={() => onReset(f.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
           </div>
         {/each}
       </div>
       <div class="flex items-center gap-2 pt-1">
-        <span class="text-[10px] font-semibold text-slate-400 w-24 shrink-0">Required marker</span>
+        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Required marker</span>
         <input
           type="text"
           value={overrides["--sf-field-required-marker"] ?? ""}
@@ -607,23 +607,23 @@
             const v = (e.target as HTMLInputElement).value;
             v ? onSet("--sf-field-required-marker", v) : onReset("--sf-field-required-marker");
           }}
-          class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
         />
         {#if "--sf-field-required-marker" in overrides}
-          <button onclick={() => onReset("--sf-field-required-marker")} class="text-[8px] text-slate-500 hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          <button onclick={() => onReset("--sf-field-required-marker")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- PREVIEW NOTE -->
-  <div class="rounded-lg bg-white/3 border border-white/6 p-3">
+  <div class="rounded-lg bg-black/3 dark:bg-white/3 border border-black/6 dark:border-white/6 p-3">
     <p class="text-[10px] text-slate-500 leading-relaxed">
       Selection colors, caret, links, focus ring, borders and sizes all render in the
-      live preview (try the <span class="text-slate-400 font-semibold">Components</span> template).
-      <span class="text-slate-400 font-semibold">Scroll behavior</span> applies to the page
+      live preview (try the <span class="text-slate-600 dark:text-slate-400 font-semibold">Components</span> template).
+      <span class="text-slate-600 dark:text-slate-400 font-semibold">Scroll behavior</span> applies to the page
       itself and can't be shown in the static canvas.
     </p>
   </div>

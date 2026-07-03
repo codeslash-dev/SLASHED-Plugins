@@ -6,6 +6,7 @@
 import './main.ts';
 import { mount } from 'svelte';
 import AppOverlay from './AppOverlay.svelte';
+import { forceTheme } from './lib/theme.svelte';
 
 // vite-env.d.ts (vendored, upstream configurator) already types
 // window.slashedApp generically ([key: string]: unknown), so it has no
@@ -39,6 +40,18 @@ function mountOverlay() {
   // optimiser): attachShadow() throws if called a second time on the same
   // element, so bail out early when a shadow root already exists.
   if (overlayTarget.shadowRoot) return;
+
+  // The overlay's shell is hardcoded to Tailwind's `dark` class (see
+  // AppOverlay.svelte) and never gets a light-mode pass. themeState defaults
+  // to the OS preference or a wp-admin visit's saved choice, so components
+  // that read it directly for styling native elements Tailwind's `dark:`
+  // variant can't reach (e.g. <option> backgrounds) would otherwise mismatch
+  // the always-dark shell. forceTheme() pins it without persisting to the
+  // admin Studio's own saved preference and stops following the OS, so a
+  // later prefers-color-scheme change can't flip it back while the overlay
+  // is open. bindThemeRoot() is never called in this context, so this
+  // doesn't fight the admin Studio's own theme toggle either.
+  forceTheme('dark');
 
   // Mount into a shadow root so Tailwind's global reset/base styles don't
   // bleed into the live-preview page. CSS custom properties (--sf-*) still

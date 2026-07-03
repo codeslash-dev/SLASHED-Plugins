@@ -109,25 +109,25 @@
     </div>
 
     <!-- Bottom tab bar -->
-    <div class="shrink-0 border-t border-white/8 bg-[#0a0a10] flex">
+    <div class="shrink-0 border-t border-black/8 dark:border-white/8 bg-slate-50 dark:bg-[#0a0a10] flex">
       <button
         onclick={() => { view = "controls"; }}
         class={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-bold transition-all cursor-pointer ${
           view === "controls"
-            ? "text-indigo-300 bg-indigo-600/10 border-t-2 border-t-indigo-500 -mt-px"
-            : "text-slate-500 hover:text-slate-300"
+            ? "text-indigo-700 dark:text-indigo-300 bg-indigo-600/10 border-t-2 border-t-indigo-500 -mt-px"
+            : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
         }`}
       >
         <SlidersHorizontal class="w-3 h-3" />
         Controls
       </button>
-      <div class="w-px bg-white/8"></div>
+      <div class="w-px bg-black/8 dark:bg-white/8"></div>
       <button
         onclick={() => { view = "tokens"; }}
         class={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-bold transition-all cursor-pointer ${
           view === "tokens"
-            ? "text-indigo-300 bg-indigo-600/10 border-t-2 border-t-indigo-500 -mt-px"
-            : "text-slate-500 hover:text-slate-300"
+            ? "text-indigo-700 dark:text-indigo-300 bg-indigo-600/10 border-t-2 border-t-indigo-500 -mt-px"
+            : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
         }`}
       >
         <List class="w-3 h-3" />

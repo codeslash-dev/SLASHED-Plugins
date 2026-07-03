@@ -595,17 +595,17 @@ ${BODIES[template]}
   }
 </script>
 
-<div class="flex flex-col flex-1 min-h-0 bg-[#09090e]">
+<div class="flex flex-col flex-1 min-h-0 bg-slate-100 dark:bg-[#09090e]">
   <!-- Preview toolbar — always a single row (scrolls horizontally instead of
        wrapping) so it can't eat a growing chunk of a short mobile viewport. -->
-  <div class="min-h-10 bg-[#0d0d14] border-b border-white/8 flex flex-nowrap items-center px-3 gap-2 overflow-x-auto shrink-0">
+  <div class="min-h-10 bg-slate-50 dark:bg-[#0d0d14] border-b border-black/8 dark:border-white/8 flex flex-nowrap items-center px-3 gap-2 overflow-x-auto shrink-0">
     <!-- Template tabs -->
-    <div class="shrink-0 flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5 max-w-full overflow-x-auto">
+    <div class="shrink-0 flex bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded-lg p-0.5 gap-0.5 max-w-full overflow-x-auto">
       {#each TEMPLATES as t (t.id)}
         <button
           onclick={() => onTemplateChange(t.id)}
           class={`shrink-0 px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-            previewTemplate === t.id ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"
+            previewTemplate === t.id ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
           }`}
         >
           {t.label}
@@ -613,15 +613,15 @@ ${BODIES[template]}
       {/each}
     </div>
 
-    <div class="w-px h-4 bg-white/10 mx-1"></div>
+    <div class="w-px h-4 bg-black/10 dark:bg-white/10 mx-1"></div>
 
     <!-- Width controls -->
-    <div class="shrink-0 flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5">
+    <div class="shrink-0 flex bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded-lg p-0.5 gap-0.5">
       {#each (["fluid", "desktop", "tablet", "mobile"] as const) as w (w)}
         <button
           onclick={() => onWidthChange(w)}
           title={w === "fluid" ? "Full width" : w === "desktop" ? "Desktop (1024px)" : w === "tablet" ? "Tablet (768px)" : "Mobile (390px)"}
-          class={`p-1 rounded-md transition-all cursor-pointer ${previewWidth === w ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"}`}
+          class={`p-1 rounded-md transition-all cursor-pointer ${previewWidth === w ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"}`}
         >
           {#if w === "mobile"}
             <Smartphone class="w-3 h-3" />
@@ -635,25 +635,25 @@ ${BODIES[template]}
     </div>
 
     <!-- Light/dark/split -->
-    <div class="shrink-0 flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5">
+    <div class="shrink-0 flex bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded-lg p-0.5 gap-0.5">
       <button
         onclick={() => { splitMode = false; onThemeChange("light"); }}
         title="Light mode"
-        class={`p-1 rounded-md transition-all cursor-pointer ${!splitMode && previewTheme === "light" ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"}`}
+        class={`p-1 rounded-md transition-all cursor-pointer ${!splitMode && previewTheme === "light" ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"}`}
       >
         <Sun class="w-3 h-3" />
       </button>
       <button
         onclick={() => { splitMode = false; onThemeChange("dark"); }}
         title="Dark mode"
-        class={`p-1 rounded-md transition-all cursor-pointer ${!splitMode && previewTheme === "dark" ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"}`}
+        class={`p-1 rounded-md transition-all cursor-pointer ${!splitMode && previewTheme === "dark" ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"}`}
       >
         <Moon class="w-3 h-3" />
       </button>
       <button
         onclick={() => { splitMode = !splitMode; }}
         title="Split: light + dark side by side"
-        class={`p-1 rounded-md transition-all cursor-pointer ${splitMode ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"}`}
+        class={`p-1 rounded-md transition-all cursor-pointer ${splitMode ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"}`}
       >
         <Columns2 class="w-3 h-3" />
       </button>
@@ -665,7 +665,7 @@ ${BODIES[template]}
     <select
       value={previewMotion}
       onchange={(e) => onMotionChange((e.target as HTMLSelectElement).value as "normal" | "slow" | "none")}
-      class="shrink-0 bg-white/5 border border-white/8 text-slate-400 rounded-lg px-2 py-0.5 text-[10px] font-bold focus:outline-none cursor-pointer"
+      class="shrink-0 bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 rounded-lg px-2 py-0.5 text-[10px] font-bold focus:outline-none cursor-pointer"
     >
       <option value="normal">Normal motion</option>
       <option value="slow">Slow motion</option>
@@ -676,7 +676,7 @@ ${BODIES[template]}
     <button
       onclick={() => { loadCount = 0; splitLightLoadCount = 0; splitDarkLoadCount = 0; refresh += 1; }}
       title="Reload preview"
-      class="shrink-0 p-1 rounded-md text-slate-500 hover:text-slate-300 hover:bg-white/8 transition-all cursor-pointer"
+      class="shrink-0 p-1 rounded-md text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-black/8 dark:hover:bg-white/8 transition-all cursor-pointer"
     >
       <RefreshCw class="w-3 h-3" />
     </button>
@@ -689,20 +689,20 @@ ${BODIES[template]}
         window.open(url, "_blank");
       }}
       title="Open in new tab"
-      class="shrink-0 p-1 rounded-md text-slate-500 hover:text-slate-300 hover:bg-white/8 transition-all cursor-pointer"
+      class="shrink-0 p-1 rounded-md text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-black/8 dark:hover:bg-white/8 transition-all cursor-pointer"
     >
       <ExternalLink class="w-3 h-3" />
     </button>
   </div>
 
   <!-- Preview area -->
-  <div class={`flex-1 min-h-0 flex overflow-auto ${isConstrained && !splitMode ? "items-center justify-center bg-[#06060a]" : ""}`}>
+  <div class={`flex-1 min-h-0 flex overflow-auto ${isConstrained && !splitMode ? "items-center justify-center bg-slate-100 dark:bg-[#06060a]" : ""}`}>
     {#if splitMode}
       <!-- Split view: light left, dark right -->
       <div class="flex-1 flex min-w-0 h-full">
-        <div class="flex-1 flex flex-col min-w-0 border-r border-white/8">
-          <div class="h-6 flex items-center justify-center bg-[#0d0d14] border-b border-white/6 shrink-0">
-            <span class="text-[9px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-1">
+        <div class="flex-1 flex flex-col min-w-0 border-r border-black/8 dark:border-white/8">
+          <div class="h-6 flex items-center justify-center bg-slate-50 dark:bg-[#0d0d14] border-b border-black/6 dark:border-white/6 shrink-0">
+            <span class="text-[9px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest flex items-center gap-1">
               <Sun class="w-2.5 h-2.5" /> Light
             </span>
           </div>
@@ -718,8 +718,8 @@ ${BODIES[template]}
           {/key}
         </div>
         <div class="flex-1 flex flex-col min-w-0">
-          <div class="h-6 flex items-center justify-center bg-[#0d0d14] border-b border-white/6 shrink-0">
-            <span class="text-[9px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-1">
+          <div class="h-6 flex items-center justify-center bg-slate-50 dark:bg-[#0d0d14] border-b border-black/6 dark:border-white/6 shrink-0">
+            <span class="text-[9px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest flex items-center gap-1">
               <Moon class="w-2.5 h-2.5" /> Dark
             </span>
           </div>

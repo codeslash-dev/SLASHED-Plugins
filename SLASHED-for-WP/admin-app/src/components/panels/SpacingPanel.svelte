@@ -51,7 +51,7 @@
   <!-- SPACE SCALE PREVIEW — category-wide, at the top -->
   <section>
     <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Space scale preview</div>
-    <div class="bg-white/4 rounded-xl border border-white/8 p-3 space-y-2">
+    <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2">
       {#each SPACE_STEPS as step, i (step)}
         {@const midBase = (baseMin + baseMax) / 2}
         {@const ratio = (ratioMin + ratioMax) / 2}
@@ -60,7 +60,7 @@
         {@const scaled = rawRem * spaceScale}
         {@const barWidth = Math.min(scaled * 28, 240)}
         <div class="flex items-center gap-2">
-          <span class="text-[9px] font-mono text-slate-600 w-6 text-right shrink-0">{step}</span>
+          <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-6 text-right shrink-0">{step}</span>
           <div class="bg-indigo-500/50 rounded shrink-0 h-3" style={`width: ${barWidth}px; min-width: 3px`}></div>
           <span class="text-[9px] font-mono text-slate-500 shrink-0">{scaled.toFixed(2)}rem</span>
         </div>
@@ -68,7 +68,7 @@
     </div>
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- GAP TOKENS — most used, at the top -->
   <section class="space-y-3">
@@ -81,7 +81,7 @@
       <span class="text-[10px] text-slate-500">{showLayoutGap ? "▲" : "▼"}</span>
     </button>
     {#if showLayoutGap}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         The two most-referenced spacing tokens. Referenced by every layout primitive (cluster, grid, stack, bento…).
       </p>
       <SliderRow
@@ -117,7 +117,7 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- FLUID SCALE -->
   <section class="space-y-4">
@@ -130,7 +130,7 @@
       <span class="text-[10px] text-slate-500">{showModularScale ? "▲" : "▼"}</span>
     </button>
     {#if showModularScale}
-      <p class="text-[10px] text-slate-600 leading-relaxed">
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Utopia-style fluid scale — viewport width, base unit and ratio per endpoint.
         The viewport range is shared with the type scale.
       </p>
@@ -165,14 +165,14 @@
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ADVANCED (power knobs, de-emphasised, at end) -->
   <section class="space-y-3">
     <button
       onclick={() => { showAdvanced = !showAdvanced; }}
       aria-expanded={showAdvanced}
-      class="w-full flex items-center justify-between text-slate-600 hover:text-slate-400 transition-colors cursor-pointer"
+      class="w-full flex items-center justify-between text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors cursor-pointer"
     >
       <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
       <span class="text-[10px]">{showAdvanced ? "▲" : "▼"}</span>

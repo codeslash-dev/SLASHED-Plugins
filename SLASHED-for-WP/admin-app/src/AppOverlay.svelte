@@ -320,7 +320,7 @@
   bar's own dropdown submenus (also 99999) stay clickable above the panel.
 -->
 <div
-  class="fixed right-0 z-[99998] pointer-events-auto flex flex-col bg-[#0a0a0f] text-slate-200 font-sans shadow-2xl shadow-black/60 border-l border-white/8 transition-transform duration-200 ease-in-out"
+  class="dark fixed right-0 z-[99998] pointer-events-auto flex flex-col bg-[#0a0a0f] text-slate-200 font-sans shadow-2xl shadow-black/60 border-l border-white/8 transition-transform duration-200 ease-in-out"
   class:translate-x-full={!isOpen}
   class:translate-x-0={isOpen}
   style:visibility={isOpen ? undefined : 'hidden'}

@@ -72,7 +72,7 @@
 <div class="p-4 space-y-4 overflow-y-auto flex-1 h-full">
   <div>
     <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Export</div>
-    <p class="text-[11px] text-slate-400 leading-relaxed">
+    <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
       {count > 0
         ? `${count} override${count !== 1 ? "s" : ""} ready to export.`
         : "No overrides yet. Customise tokens, then export."}
@@ -83,11 +83,11 @@
   <button
     onclick={handleCopyLink}
     disabled={count === 0}
-    class="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-white/8 bg-white/4 text-[11px] font-bold text-slate-300 hover:bg-white/8 hover:text-white transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+    class="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-black/8 dark:border-white/8 bg-black/4 dark:bg-white/4 text-[11px] font-bold text-slate-700 dark:text-slate-300 hover:bg-black/8 dark:hover:bg-white/8 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
   >
     {#if copiedLink}
-      <Check class="w-3 h-3 text-emerald-400" />
-      <span class="text-emerald-400">Link copied!</span>
+      <Check class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+      <span class="text-emerald-600 dark:text-emerald-400">Link copied!</span>
     {:else}
       <Link class="w-3 h-3" />
       Copy shareable link
@@ -97,16 +97,16 @@
   <!-- Output mode toggle -->
   <div>
     <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">CSS output</div>
-    <div class="flex bg-white/5 border border-white/8 rounded-lg p-0.5">
+    <div class="flex bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded-lg p-0.5">
       <button
         onclick={() => { outputMode = "layer"; }}
-        class={`flex-1 py-1.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${outputMode === "layer" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-slate-200"}`}
+        class={`flex-1 py-1.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${outputMode === "layer" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"}`}
       >
         @layer
       </button>
       <button
         onclick={() => { outputMode = "root"; }}
-        class={`flex-1 py-1.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${outputMode === "root" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-slate-200"}`}
+        class={`flex-1 py-1.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${outputMode === "root" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"}`}
       >
         :root
       </button>
@@ -115,22 +115,22 @@
 
   <!-- CSS output -->
   <div class="relative">
-    <pre class="bg-[#06060a] border border-white/8 rounded-xl p-4 text-[10px] font-mono text-slate-300 overflow-x-auto max-h-80 whitespace-pre-wrap">{css || "/* No overrides */"}</pre>
+    <pre class="bg-slate-100 dark:bg-[#06060a] border border-black/8 dark:border-white/8 rounded-xl p-4 text-[10px] font-mono text-slate-700 dark:text-slate-300 overflow-x-auto max-h-80 whitespace-pre-wrap">{css || "/* No overrides */"}</pre>
     <div class="absolute top-2 right-2 flex gap-1">
       <button
         onclick={handleCopy}
-        class="p-1.5 rounded-lg bg-white/5 hover:bg-white/12 text-slate-400 hover:text-white transition-all cursor-pointer border border-white/8"
+        class="p-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/12 dark:hover:bg-white/12 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer border border-black/8 dark:border-white/8"
         title="Copy to clipboard"
       >
         {#if copied}
-          <Check class="w-3 h-3 text-emerald-400" />
+          <Check class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
         {:else}
           <Copy class="w-3 h-3" />
         {/if}
       </button>
       <button
         onclick={handleDownload}
-        class="p-1.5 rounded-lg bg-white/5 hover:bg-white/12 text-slate-400 hover:text-white transition-all cursor-pointer border border-white/8"
+        class="p-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/12 dark:hover:bg-white/12 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer border border-black/8 dark:border-white/8"
         title="Download .css"
       >
         <Download class="w-3 h-3" />
@@ -142,15 +142,15 @@
   <button
     onclick={handleDownloadW3C}
     disabled={count === 0}
-    class="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-white/8 bg-white/4 text-[10px] font-bold text-slate-400 hover:bg-white/8 hover:text-slate-200 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+    class="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-black/8 dark:border-white/8 bg-black/4 dark:bg-white/4 text-[10px] font-bold text-slate-600 dark:text-slate-400 hover:bg-black/8 dark:hover:bg-white/8 hover:text-slate-800 dark:hover:text-slate-200 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
   >
     <Download class="w-3 h-3" />
     Download W3C Design Tokens (.json)
   </button>
 
   <div class="rounded-lg bg-indigo-500/8 border border-indigo-500/15 p-3 space-y-2">
-    <div class="text-[10px] font-bold text-indigo-300">Usage</div>
-    <div class="text-[10px] text-slate-400 leading-relaxed">
+    <div class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300">Usage</div>
+    <div class="text-[10px] text-slate-600 dark:text-slate-400 leading-relaxed">
       Paste this CSS into your project after the SLASHED import.
     </div>
     <pre class="text-[9px] font-mono text-slate-500 bg-black/30 rounded p-2 overflow-x-auto">{`@import 'slashed/slashed.full.css';

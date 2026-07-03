@@ -52,14 +52,14 @@
       placeholder="Search tokens…"
       value={query}
       oninput={(e) => { query = (e.target as HTMLInputElement).value; }}
-      class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+      class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
     />
     <div class="flex items-center gap-3">
       <button
         onclick={() => { onlyModified = !onlyModified; }}
-        class={`flex items-center gap-1 text-[9px] font-bold transition-colors cursor-pointer ${onlyModified ? "text-indigo-400" : "text-slate-600 hover:text-slate-400"}`}
+        class={`flex items-center gap-1 text-[9px] font-bold transition-colors cursor-pointer ${onlyModified ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400"}`}
       >
-        <div class={`w-2.5 h-2.5 rounded border flex items-center justify-center transition-colors ${onlyModified ? "bg-indigo-600 border-indigo-500" : "border-white/20"}`}>
+        <div class={`w-2.5 h-2.5 rounded border flex items-center justify-center transition-colors ${onlyModified ? "bg-indigo-600 border-indigo-500" : "border-black/20 dark:border-white/20"}`}>
           {#if onlyModified}
             <div class="w-1 h-1 bg-white rounded-sm"></div>
           {/if}
@@ -69,16 +69,16 @@
       <button
         onclick={() => { showInternal = !showInternal; }}
       aria-expanded={showInternal}
-        class={`flex items-center gap-1 text-[9px] font-bold transition-colors cursor-pointer ${showInternal ? "text-amber-400" : "text-slate-600 hover:text-slate-400"}`}
+        class={`flex items-center gap-1 text-[9px] font-bold transition-colors cursor-pointer ${showInternal ? "text-amber-600 dark:text-amber-400" : "text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400"}`}
       >
-        <div class={`w-2.5 h-2.5 rounded border flex items-center justify-center transition-colors ${showInternal ? "bg-amber-600 border-amber-500" : "border-white/20"}`}>
+        <div class={`w-2.5 h-2.5 rounded border flex items-center justify-center transition-colors ${showInternal ? "bg-amber-600 border-amber-500" : "border-black/20 dark:border-white/20"}`}>
           {#if showInternal}
             <div class="w-1 h-1 bg-white rounded-sm"></div>
           {/if}
         </div>
         Internal ({internalCount})
       </button>
-      <span class="ml-auto text-[9px] text-slate-700 font-mono">
+      <span class="ml-auto text-[9px] text-slate-300 dark:text-slate-700 font-mono">
         {filtered().length}/{domainTokens.length}
       </span>
     </div>
@@ -87,27 +87,27 @@
     <div class="flex gap-3">
       <div class="flex items-center gap-1">
         <div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div>
-        <span class="text-[8px] text-slate-600">Public ({publicCount})</span>
+        <span class="text-[8px] text-slate-400 dark:text-slate-600">Public ({publicCount})</span>
       </div>
       <div class="flex items-center gap-1">
         <div class="w-1.5 h-1.5 rounded-full bg-amber-600"></div>
-        <span class="text-[8px] text-slate-600">Advanced ({advancedCount})</span>
+        <span class="text-[8px] text-slate-400 dark:text-slate-600">Advanced ({advancedCount})</span>
       </div>
       {#if showInternal}
         <div class="flex items-center gap-1">
           <div class="w-1.5 h-1.5 rounded-full bg-rose-800"></div>
-          <span class="text-[8px] text-slate-600">Internal ({internalCount})</span>
+          <span class="text-[8px] text-slate-400 dark:text-slate-600">Internal ({internalCount})</span>
         </div>
       {/if}
     </div>
   </div>
 
-  <div class="w-full h-px bg-white/6 shrink-0"></div>
+  <div class="w-full h-px bg-black/6 dark:bg-white/6 shrink-0"></div>
 
   <!-- Token list -->
   <div class="flex-1 min-h-0 overflow-y-auto py-1">
     {#if filtered().length === 0}
-      <div class="text-center py-8 text-[11px] text-slate-600">
+      <div class="text-center py-8 text-[11px] text-slate-400 dark:text-slate-600">
         {onlyModified ? "No modified tokens in this domain" : "No tokens found"}
       </div>
     {:else}

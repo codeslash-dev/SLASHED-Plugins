@@ -5,6 +5,11 @@
     getRelativeLuminance, getContrastRatio,
   } from '../../lib/colorUtils';
   import { resolveColor, resolveRgb, previewVersion, getActiveTheme } from '../../lib/previewResolver.svelte';
+  import { themeState } from '../../lib/theme.svelte';
+
+  // <option> only reliably accepts a background via inline style (no dark:
+  // variant support), so it's derived from the chrome theme directly.
+  let optionBg = $derived(themeState.value === 'dark' ? '#16161e' : '#ffffff');
 
   let { overrides, onSet }: {
     tokens: SlashedToken[];
@@ -84,10 +89,10 @@
   }
 
   function levelOf(ratio: number): { tag: string; cls: string } {
-    if (ratio >= 7)   return { tag: "AAA",  cls: "bg-emerald-500/25 text-emerald-200" };
-    if (ratio >= 4.5) return { tag: "AA",   cls: "bg-emerald-500/15 text-emerald-300" };
-    if (ratio >= 3)   return { tag: "AA-L", cls: "bg-amber-500/20 text-amber-300" };
-    return { tag: "Fail", cls: "bg-rose-500/20 text-rose-300" };
+    if (ratio >= 7)   return { tag: "AAA",  cls: "bg-emerald-500/25 text-emerald-800 dark:text-emerald-200" };
+    if (ratio >= 4.5) return { tag: "AA",   cls: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" };
+    if (ratio >= 3)   return { tag: "AA-L", cls: "bg-amber-500/20 text-amber-700 dark:text-amber-300" };
+    return { tag: "Fail", cls: "bg-rose-500/20 text-rose-700 dark:text-rose-300" };
   }
 
   let pairRatio = $derived(ratioOf(fg.expr, bg.expr));
@@ -160,7 +165,7 @@
 <div class="p-4 space-y-6">
   <section class="space-y-1">
     <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Contrast checker</div>
-    <p class="text-[10px] text-slate-600 leading-relaxed">
+    <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
       Live WCAG ratios computed from the actual rendered preview colors — including derived steps and your overrides.
     </p>
   </section>
@@ -179,73 +184,73 @@
     <div class="grid grid-cols-[1fr_auto_1fr] gap-2 items-end">
       <div>
         <div class="text-[9px] text-slate-500 mb-1">Foreground</div>
-        <select bind:value={fgLabel} class="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
-          {#each ALL_OPTS as o (o.label)}<option value={o.label} style="background:#16161e;">{o.label}</option>{/each}
+        <select bind:value={fgLabel} class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
+          {#each ALL_OPTS as o (o.label)}<option value={o.label} style={`background:${optionBg};`}>{o.label}</option>{/each}
         </select>
       </div>
-      <button onclick={swap} title="Swap" class="mb-0.5 px-2 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-slate-200 hover:bg-white/5 cursor-pointer text-[12px]">⇄</button>
+      <button onclick={swap} title="Swap" class="mb-0.5 px-2 py-1.5 rounded-lg border border-black/10 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-[12px]">⇄</button>
       <div>
         <div class="text-[9px] text-slate-500 mb-1">Background</div>
-        <select bind:value={bgLabel} class="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
-          {#each ALL_OPTS as o (o.label)}<option value={o.label} style="background:#16161e;">{o.label}</option>{/each}
+        <select bind:value={bgLabel} class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
+          {#each ALL_OPTS as o (o.label)}<option value={o.label} style={`background:${optionBg};`}>{o.label}</option>{/each}
         </select>
       </div>
     </div>
 
     <!-- Sample + result -->
-    <div class="rounded-xl border border-white/8 overflow-hidden">
+    <div class="rounded-xl border border-black/8 dark:border-white/8 overflow-hidden">
       <div class="h-24 flex items-center justify-center" style={`background:${paint(bg.expr)}`}>
         <span class="text-[26px] font-bold" style={`color:${paint(fg.expr)}`}>Aa Bb Cc</span>
       </div>
       {#if pairRatio !== null}
         {@const lvl = levelOf(pairRatio)}
-        <div class="flex items-center gap-2 p-2.5 bg-white/4">
-          <span class="text-[15px] font-mono font-bold text-slate-100">{pairRatio.toFixed(2)}:1</span>
+        <div class="flex items-center gap-2 p-2.5 bg-black/4 dark:bg-white/4">
+          <span class="text-[15px] font-mono font-bold text-slate-900 dark:text-slate-100">{pairRatio.toFixed(2)}:1</span>
           <span class={`text-[10px] font-bold px-2 py-0.5 rounded ${lvl.cls}`}>{lvl.tag}</span>
           <div class="flex-1"></div>
           <div class="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[9px]">
-            <span class={pairRatio >= 4.5 ? "text-emerald-300" : "text-rose-300"}>{pairRatio >= 4.5 ? "✓" : "✗"} AA normal</span>
-            <span class={pairRatio >= 3 ? "text-emerald-300" : "text-rose-300"}>{pairRatio >= 3 ? "✓" : "✗"} AA large</span>
-            <span class={pairRatio >= 7 ? "text-emerald-300" : "text-rose-300"}>{pairRatio >= 7 ? "✓" : "✗"} AAA normal</span>
-            <span class={pairRatio >= 4.5 ? "text-emerald-300" : "text-rose-300"}>{pairRatio >= 4.5 ? "✓" : "✗"} AAA large</span>
+            <span class={pairRatio >= 4.5 ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"}>{pairRatio >= 4.5 ? "✓" : "✗"} AA normal</span>
+            <span class={pairRatio >= 3 ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"}>{pairRatio >= 3 ? "✓" : "✗"} AA large</span>
+            <span class={pairRatio >= 7 ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"}>{pairRatio >= 7 ? "✓" : "✗"} AAA normal</span>
+            <span class={pairRatio >= 4.5 ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"}>{pairRatio >= 4.5 ? "✓" : "✗"} AAA large</span>
           </div>
         </div>
       {:else}
-        <div class="p-2.5 bg-white/4 text-[10px] text-slate-500">Waiting for live preview…</div>
+        <div class="p-2.5 bg-black/4 dark:bg-white/4 text-[10px] text-slate-500">Waiting for live preview…</div>
       {/if}
     </div>
 
     <!-- Auto-fix -->
-    <div class="rounded-xl bg-white/4 border border-white/8 p-3 space-y-2">
+    <div class="rounded-xl bg-black/4 dark:bg-white/4 border border-black/8 dark:border-white/8 p-3 space-y-2">
       <div class="flex items-center justify-between">
-        <span class="text-[10px] font-bold text-slate-300">Auto-fix to pass <span class="text-slate-600 font-normal">(for {getActiveTheme()} mode)</span></span>
-        <div class="flex bg-white/5 border border-white/8 rounded-lg p-0.5 gap-0.5">
+        <span class="text-[10px] font-bold text-slate-700 dark:text-slate-300">Auto-fix to pass <span class="text-slate-400 dark:text-slate-600 font-normal">(for {getActiveTheme()} mode)</span></span>
+        <div class="flex bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded-lg p-0.5 gap-0.5">
           {#each ["AA", "AAA"] as t (t)}
-            <button onclick={() => { targetLevel = t as "AA" | "AAA"; }} class={`px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer ${targetLevel === t ? "bg-white/12 text-white" : "text-slate-500 hover:text-slate-300"}`}>{t}</button>
+            <button onclick={() => { targetLevel = t as "AA" | "AAA"; }} class={`px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer ${targetLevel === t ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"}`}>{t}</button>
           {/each}
         </div>
       </div>
       {#if !fg.editKey}
-        <p class="text-[9px] text-slate-600">Pick an editable brand/status <span class="font-mono">(base)</span> color as the foreground to enable auto-fix.</p>
+        <p class="text-[9px] text-slate-400 dark:text-slate-600">Pick an editable brand/status <span class="font-mono">(base)</span> color as the foreground to enable auto-fix.</p>
       {:else if pairRatio !== null && pairRatio >= (targetLevel === "AAA" ? 7 : 4.5)}
-        <p class="text-[9px] text-emerald-300">Already passes {targetLevel}. 🎉</p>
+        <p class="text-[9px] text-emerald-700 dark:text-emerald-300">Already passes {targetLevel}. 🎉</p>
       {:else if suggestion}
         <div class="flex items-center gap-2">
-          <span class="w-7 h-7 rounded border border-white/10 shrink-0" style={`background:${paint(suggestion.value)}`}></span>
+          <span class="w-7 h-7 rounded border border-black/10 dark:border-white/10 shrink-0" style={`background:${paint(suggestion.value)}`}></span>
           <div class="flex-1 min-w-0">
-            <div class="text-[9px] font-mono text-slate-400 truncate">{suggestion.value}</div>
-            <div class="text-[9px] text-emerald-300">→ {suggestion.ratio.toFixed(2)}:1 ({targetLevel} ✓)</div>
+            <div class="text-[9px] font-mono text-slate-600 dark:text-slate-400 truncate">{suggestion.value}</div>
+            <div class="text-[9px] text-emerald-700 dark:text-emerald-300">→ {suggestion.ratio.toFixed(2)}:1 ({targetLevel} ✓)</div>
           </div>
-          <button onclick={applyFix} class="px-2.5 py-1 rounded-lg bg-indigo-600/25 border border-indigo-500/40 text-indigo-200 text-[10px] font-bold cursor-pointer hover:bg-indigo-600/35 shrink-0">Apply</button>
+          <button onclick={applyFix} class="px-2.5 py-1 rounded-lg bg-indigo-600/25 border border-indigo-500/40 text-indigo-800 dark:text-indigo-200 text-[10px] font-bold cursor-pointer hover:bg-indigo-600/35 shrink-0">Apply</button>
         </div>
       {:else}
-        <p class="text-[9px] text-slate-600">No lightness of this hue reaches {targetLevel} on this background — try a different background or hue.</p>
+        <p class="text-[9px] text-slate-400 dark:text-slate-600">No lightness of this hue reaches {targetLevel} on this background — try a different background or hue.</p>
       {/if}
     </div>
     {/if}
   </section>
 
-  <div class="h-px bg-white/6"></div>
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- MATRIX -->
   <section class="space-y-2">
@@ -258,7 +263,7 @@
       <span class="text-[10px] text-slate-500">{showMatrix ? "▲" : "▼"}</span>
     </button>
     {#if showMatrix}
-    <p class="text-[10px] text-slate-600">Foreground (rows) × background (cols). Click a cell to load it above.</p>
+    <p class="text-[10px] text-slate-400 dark:text-slate-600">Foreground (rows) × background (cols). Click a cell to load it above.</p>
     <div class="overflow-x-auto">
       <table class="border-collapse text-[9px]">
         <thead>
@@ -285,7 +290,7 @@
                     >{r.toFixed(1)}</button>
                   </td>
                 {:else}
-                  <td class="p-0.5 text-slate-700 text-center">·</td>
+                  <td class="p-0.5 text-slate-300 dark:text-slate-700 text-center">·</td>
                 {/if}
               {/each}
             </tr>
