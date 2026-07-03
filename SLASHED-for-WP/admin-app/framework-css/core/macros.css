@@ -336,6 +336,12 @@
     font-variant-numeric: var(--sf-font-numeric, tabular-nums);
   }
 
+  /* filter: drop-shadow() utilities — unlike box-shadow, follows the element's
+     actual alpha shape (SVG icons, PNG cutouts, transparent logos). */
+  .sf-drop-shadow-s { filter: var(--sf-drop-shadow-s); }
+  .sf-drop-shadow-m { filter: var(--sf-drop-shadow-m); }
+  .sf-drop-shadow-l { filter: var(--sf-drop-shadow-l); }
+
   .sf-link--subtle:link,
   .sf-link--subtle:visited {
     text-decoration-line: none;

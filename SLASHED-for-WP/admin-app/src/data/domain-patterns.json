@@ -8,7 +8,7 @@
   "spacing":    ["space", "section", "gutter", "content-gap", "component-pad"],
   "layout":     ["container", "layout", "grid", "breakpoint", "measure", "column",
                  "header-height", "touch-target", "bento", "cluster",
-                 "cover-min", "equal-min", "frame", "ratio-", "reel", "safe-", "sidebar",
+                 "cover-min", "equal-min", "equal-rule", "frame", "ratio-", "reel", "safe-", "sidebar",
                  "switcher", "-bg-"],
   "borders":    ["radius", "border-width", "border-scale", "border-style", "divider"],
   "shadows":    ["shadow"],

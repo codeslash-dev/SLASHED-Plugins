@@ -1,7 +1,10 @@
 <script lang="ts">
   import type { SlashedToken } from '../../types';
   import SliderRow from '../inputs/SliderRow.svelte';
+  import ColorInput from '../inputs/ColorInput.svelte';
   import { themeState } from '../../lib/theme.svelte';
+
+  const COLUMN_RULE_STYLES = ["solid", "dashed", "dotted"];
 
   // <option> only reliably accepts a background via inline style (no dark:
   // variant support), so it's derived from the chrome theme directly.
@@ -62,6 +65,8 @@
   let switcherThreshold = $derived(parseRem(overrides["--sf-switcher-threshold"], 30));
   let sidebarMinWidth   = $derived(parseRem(overrides["--sf-sidebar-min-width"], 50));
   let equalMinCol       = $derived(parseRem(overrides["--sf-equal-min-col"], 16));
+  let equalRuleWidth    = $derived(parseRem(overrides["--sf-equal-rule-width"], 0));
+  let equalRuleColor    = $derived(overrides["--sf-equal-rule-color"] ?? "");
   let coverMinHeight    = $derived(parseRem(overrides["--sf-cover-min-height"], 100));
   let imposterMargin    = $derived(parseRem(overrides["--sf-imposter-margin"], 1));
   let breakoutWidth     = $derived(parseRem(overrides["--sf-breakout-width"], 90));
@@ -466,33 +471,52 @@
           {/each}
         </section>
 
-        <!-- Equal grid -->
+        <!-- Equal columns (flowing CSS multi-column, not a grid) -->
         <section class="space-y-2">
-          <div class="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">Equal grid</div>
+          <div class="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">Equal columns (flowing)</div>
+          <div class="text-[9px] text-slate-400 dark:text-slate-600">Content flows between columns like a newspaper — use .sf-grid for discrete grid cells instead.</div>
           <SliderRow
-            label="Min column" value={equalMinCol} min={6} max={36} step={0.5} unit="rem"
-            help="--sf-equal-min-col — minimum column width for .sf-equal"
+            label="Min column width" value={equalMinCol} min={6} max={36} step={0.5} unit="rem"
+            help="--sf-equal-min-col — column-width floor for .sf-equal"
             overridden={"--sf-equal-min-col" in overrides}
             onChange={(v) => onSet("--sf-equal-min-col", `${v}rem`)}
             onReset={() => onReset("--sf-equal-min-col")}
           />
-          <div>
-            <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1.5">Named column counts (equal-min-col-2/3/4/6)</div>
-            <div class="space-y-1.5">
-              {#each [
-                { label: "2-col", token: "--sf-equal-min-col-2", def: 28 },
-                { label: "3-col", token: "--sf-equal-min-col-3", def: 15 },
-                { label: "4-col", token: "--sf-equal-min-col-4", def: 16 },
-                { label: "6-col", token: "--sf-equal-min-col-6", def: 10 },
-              ] as c (c.token)}
-                <SliderRow
-                  label={c.label} value={parseRem(overrides[c.token], c.def)} min={4} max={36} step={0.5} unit="rem"
-                  overridden={c.token in overrides}
-                  onChange={(v) => onSet(c.token, `${v}rem`)}
-                  onReset={() => onReset(c.token)}
-                />
+          <SliderRow
+            label="Rule width" value={equalRuleWidth} min={0} max={4} step={0.5} unit="px"
+            help="--sf-equal-rule-width — column-rule width between flowing columns, 0 = off"
+            overridden={"--sf-equal-rule-width" in overrides}
+            onChange={(v) => onSet("--sf-equal-rule-width", `${v}px`)}
+            onReset={() => onReset("--sf-equal-rule-width")}
+          />
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Rule style</span>
+            <select
+              value={overrides["--sf-equal-rule-style"] ?? "solid"}
+              onchange={(e) => {
+                const v = (e.target as HTMLSelectElement).value;
+                v === "solid" ? onReset("--sf-equal-rule-style") : onSet("--sf-equal-rule-style", v);
+              }}
+              class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
+            >
+              {#each COLUMN_RULE_STYLES as s (s)}
+                <option value={s} style={`background:${optionBg};`}>{s}</option>
               {/each}
-            </div>
+            </select>
+            {#if "--sf-equal-rule-style" in overrides}
+              <button onclick={() => onReset("--sf-equal-rule-style")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+            {/if}
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Rule color</span>
+            <ColorInput
+              token="--sf-equal-rule-color"
+              value={equalRuleColor}
+              placeholder="inherits border"
+              isOverridden={"--sf-equal-rule-color" in overrides}
+              onSet={(v) => onSet("--sf-equal-rule-color", v)}
+              onReset={() => onReset("--sf-equal-rule-color")}
+            />
           </div>
         </section>
 

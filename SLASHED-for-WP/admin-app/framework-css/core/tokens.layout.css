@@ -58,16 +58,19 @@
     --sf-grid-min-2xl:     28rem;
 
     /* ----------------------------------------------------------
-       Equal columns (intrinsically responsive RAM)
-       min-col-N: minimum column width for the N-column preset.
-       Exact column count emerges from container ÷ min-col.
+       Equal columns — CSS multi-column flowing layout (not grid).
+       Content flows between columns like a newspaper: fills one
+       column top-to-bottom, continues at the top of the next.
+       Use for FAQ lists, prose, anything that should distribute
+       evenly without being pinned to discrete grid cells — reach
+       for .sf-grid/.sf-grid--fit instead when items need their own
+       fixed cell.
        ---------------------------------------------------------- */
-    --sf-equal-min-col:   16rem;
-    --sf-equal-min-col-2: 28rem;
-    --sf-equal-min-col-3: 15rem;
-    --sf-equal-min-col-4: 16rem;
-    --sf-equal-min-col-6: 10rem;
+    --sf-equal-min-col:    16rem;
     --sf-equal-gap:        var(--sf-gap);
+    --sf-equal-rule-width: 0;
+    --sf-equal-rule-style: solid;
+    --sf-equal-rule-color: var(--sf-color-border);
 
     /* ----------------------------------------------------------
        Cover

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedBy": "scripts/gen-token-registry.js",
-    "nextId": 701
+    "nextId": 704
   },
   "tokens": [
     {
@@ -1470,19 +1470,23 @@
     },
     {
       "id": 362,
-      "name": "--sf-equal-min-col-2"
+      "name": "--sf-equal-min-col-2",
+      "removed": true
     },
     {
       "id": 363,
-      "name": "--sf-equal-min-col-3"
+      "name": "--sf-equal-min-col-3",
+      "removed": true
     },
     {
       "id": 364,
-      "name": "--sf-equal-min-col-4"
+      "name": "--sf-equal-min-col-4",
+      "removed": true
     },
     {
       "id": 365,
-      "name": "--sf-equal-min-col-6"
+      "name": "--sf-equal-min-col-6",
+      "removed": true
     },
     {
       "id": 366,
@@ -2823,6 +2827,18 @@
     {
       "id": 700,
       "name": "--sf-btn-radius"
+    },
+    {
+      "id": 701,
+      "name": "--sf-equal-rule-color"
+    },
+    {
+      "id": 702,
+      "name": "--sf-equal-rule-style"
+    },
+    {
+      "id": 703,
+      "name": "--sf-equal-rule-width"
     }
   ]
 }

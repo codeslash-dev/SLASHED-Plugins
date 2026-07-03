@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.21
+Stable tag: 0.4.22
 Requires PHP: 7.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -129,6 +129,15 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.22 =
+* Added: Sync Studio light-mode support into the admin-app
+* Fixed: Use real forceTheme and fix vendored dark-mode contrast bugs
+* Fixed: Stylelint failure and overlay theme mismatch on Studio sync
+* Fixed: Correct status color count to four
+* Fixed: Restore brand-color dark-value coverage in wp.org copy
+* Fixed: Sync draft wp.org readme version metadata to actual 0.4.21
+* Fixed: Undo scope leak from stale-branch file checkout
 
 = 0.4.21 =
 * Added: Add --check mode to sync-core.mjs and a check orchestrator

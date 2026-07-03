@@ -975,6 +975,36 @@
       "layer": "slashed.layout"
     },
     {
+      "name": "sf-drop-shadow-l",
+      "selector": ".sf-drop-shadow-l",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-drop-shadow-m",
+      "selector": ".sf-drop-shadow-m",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-drop-shadow-s",
+      "selector": ".sf-drop-shadow-s",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
       "name": "sf-entrance--fade",
       "selector": ".sf-entrance--fade",
       "kind": "motion",
@@ -1040,7 +1070,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "Equal columns (intrinsically responsive)",
-      "description": "Auto-fill equal-columns grid. Columns fill the row and wrap when they hit --sf-equal-min-col. No breakpoints needed.",
+      "description": "Flowing CSS multi-column layout (not a grid) — content distributes across columns like a newspaper instead of sitting in fixed cells. Reach for .sf-grid/.sf-grid--fit for discrete grid cells instead.",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -1050,7 +1080,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "Equal columns (intrinsically responsive)",
-      "description": "Equal-columns variant locked to 2 columns using --sf-equal-min-col-2.",
+      "description": "Equal-columns variant locked to column-count: 2.",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -1060,7 +1090,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "Equal columns (intrinsically responsive)",
-      "description": "Equal-columns variant locked to 3 columns using --sf-equal-min-col-3.",
+      "description": "Equal-columns variant locked to column-count: 3.",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -1070,7 +1100,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "Equal columns (intrinsically responsive)",
-      "description": "Equal-columns variant locked to 4 columns using --sf-equal-min-col-4.",
+      "description": "Equal-columns variant locked to column-count: 4.",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -1080,7 +1110,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "Equal columns (intrinsically responsive)",
-      "description": "Equal-columns variant locked to 6 columns using --sf-equal-min-col-6.",
+      "description": "Equal-columns variant locked to column-count: 6.",
       "optional": false,
       "layer": "slashed.layout"
     },

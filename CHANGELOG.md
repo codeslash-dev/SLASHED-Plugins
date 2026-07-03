@@ -9,6 +9,36 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.22] - 2026-07-03
+
+### Added
+
+- Sync Studio light-mode support into the admin-app
+
+### Fixed
+
+- Use real forceTheme and fix vendored dark-mode contrast bugs
+- Stylelint failure and overlay theme mismatch on Studio sync
+- Correct status color count to four
+- Restore brand-color dark-value coverage in wp.org copy
+- Sync draft wp.org readme version metadata to actual 0.4.21
+- Undo scope leak from stale-branch file checkout
+
+## [0.4.22] - 2026-07-03
+
+### Added
+
+- Sync Studio light-mode support into the admin-app
+
+### Fixed
+
+- Use real forceTheme and fix vendored dark-mode contrast bugs
+- Stylelint failure and overlay theme mismatch on Studio sync
+- Correct status color count to four
+- Restore brand-color dark-value coverage in wp.org copy
+- Sync draft wp.org readme version metadata to actual 0.4.21
+- Undo scope leak from stale-branch file checkout
+
 ## [0.4.21] - 2026-07-02
 
 ### Added

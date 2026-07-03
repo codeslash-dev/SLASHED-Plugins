@@ -436,14 +436,16 @@
   }
 
   .sf-equal {
-    display:               grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(var(--sf-equal-min-col), 100%), 1fr));
-    gap:                   var(--sf-equal-gap);
+    column-width: var(--sf-equal-min-col);
+    column-gap:   var(--sf-equal-gap);
+    column-rule:  var(--sf-equal-rule-width) var(--sf-equal-rule-style) var(--sf-equal-rule-color);
   }
-  .sf-equal--2 { --sf-equal-min-col: var(--sf-equal-min-col-2); }
-  .sf-equal--3 { --sf-equal-min-col: var(--sf-equal-min-col-3); }
-  .sf-equal--4 { --sf-equal-min-col: var(--sf-equal-min-col-4); }
-  .sf-equal--6 { --sf-equal-min-col: var(--sf-equal-min-col-6); }
+  .sf-equal > * { break-inside: avoid; }
+
+  .sf-equal--2 { column-count: 2; }
+  .sf-equal--3 { column-count: 3; }
+  .sf-equal--4 { column-count: 4; }
+  .sf-equal--6 { column-count: 6; }
 
   
   .sf-content-grid {
