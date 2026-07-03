@@ -1,10 +1,10 @@
 {
   "name": "slashed-for-wp",
-  "version": "0.4.21",
+  "version": "0.4.20",
   "type": "module",
   "private": true,
   "description": "SLASHED for WordPress — Bricks Builder and Gutenberg integrations for the SLASHED cascade-layer CSS framework.",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "author": "jackgranatowski",
   "repository": {
     "type": "git",
@@ -27,7 +27,6 @@
     "version-sync": "node scripts/version-sync.js",
     "changelog": "node scripts/changelog-release.js",
     "verify": "node scripts/verify-sync.js",
-    "check": "node scripts/check.js",
     "lint:css": "stylelint \"SLASHED-for-WP/**/*.css\"",
     "lint:css:fix": "stylelint \"SLASHED-for-WP/**/*.css\" --fix",
     "lint:php": "node scripts/lint-php.js",

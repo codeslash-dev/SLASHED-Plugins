@@ -2,7 +2,7 @@
   "name": "codeslash-dev/slashed-for-wp",
   "description": "Dev tooling (static analysis + coding standards) for the SLASHED for WordPress plugin.",
   "type": "wordpress-plugin",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "require": {
     "php": ">=7.4"
   },
@@ -13,21 +13,16 @@
     "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
     "phpstan/phpstan": "^2.1",
     "szepeviktor/phpstan-wordpress": "^2.0",
-    "php-stubs/wordpress-stubs": "^6.7",
-    "phpunit/phpunit": "^9.6"
+    "php-stubs/wordpress-stubs": "^6.7"
   },
   "scripts": {
     "phpcs": "phpcs",
     "phpcbf": "phpcbf",
-    "phpstan": "phpstan analyse --memory-limit=1G",
-    "phpunit": "phpunit"
+    "phpstan": "phpstan analyse --memory-limit=1G"
   },
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
-    },
-    "platform": {
-      "php": "7.4"
     }
   }
 }

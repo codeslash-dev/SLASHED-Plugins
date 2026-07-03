@@ -3,11 +3,11 @@
  * Plugin Name: SLASHED for Gutenberg
  * Plugin URI: https://github.com/codeslash-dev/SLASHED
  * Description: Integrates the SLASHED cascade-layer CSS framework with the WordPress block editor — CSS loading, color palette sync, and dark-mode bridging.
- * Version: 0.4.21
+ * Version: 0.4.20
  * Author: Jack Granatowski
  * Author URI: https://codeslash.net
- * License: GPL-2.0-or-later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * License: GPL-3.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * Requires PHP: 7.4
  * Requires at least: 6.4
  * Text Domain: slashed-gutenberg
@@ -26,10 +26,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * plugin they are not yet set and are defined here as usual.
  */
 if ( ! defined( 'SLASHED_GUTENBERG_VERSION' ) ) {
-	define( 'SLASHED_GUTENBERG_VERSION', '0.4.21' );
+	define( 'SLASHED_GUTENBERG_VERSION', '0.4.20' );
 	define( 'SLASHED_GUTENBERG_PATH', plugin_dir_path( __FILE__ ) );
 	define( 'SLASHED_GUTENBERG_URL', plugin_dir_url( __FILE__ ) );
-	define( 'SLASHED_GUTENBERG_CSS_REF', 'v0.6.34' );
+	define( 'SLASHED_GUTENBERG_CSS_REF', 'v0.6.33' );
 }
 
 define( 'SLASHED_GUTENBERG_ALLOWED_BUNDLES', array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' ) );
@@ -169,7 +169,6 @@ if ( ! defined( 'SLASHED_VERSION' ) ) {
  */
 function slashed_gutenberg_require_data_classes() {
 	require_once SLASHED_GUTENBERG_PATH . '../../includes/class-css-parser.php';
-	require_once SLASHED_GUTENBERG_PATH . '../../includes/class-color-math.php';
 	require_once SLASHED_GUTENBERG_PATH . '../../includes/class-color-resolver.php';
 	require_once SLASHED_GUTENBERG_PATH . 'includes/class-inventory.php';
 }

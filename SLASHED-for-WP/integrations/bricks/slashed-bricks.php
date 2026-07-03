@@ -3,11 +3,11 @@
  * Plugin Name: SLASHED for Bricks
  * Plugin URI: https://github.com/codeslash-dev/SLASHED
  * Description: Integrates the SLASHED cascade-layer CSS framework with Bricks Builder - providing CSS variables, utility classes, and color palette synchronization.
- * Version: 0.4.21
+ * Version: 0.4.20
  * Author: Jack Granatowski
  * Author URI: https://codeslash.net
- * License: GPL-2.0-or-later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * License: GPL-3.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * Requires PHP: 7.4
  * Requires at least: 6.4
  * Text Domain: slashed-bricks
@@ -26,10 +26,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the standalone Bricks plugin and the unified SLASHED plugin are active.
  */
 if ( ! defined( 'SLASHED_BRICKS_VERSION' ) ) {
-	define( 'SLASHED_BRICKS_VERSION', '0.4.21' );
+	define( 'SLASHED_BRICKS_VERSION', '0.4.20' );
 	define( 'SLASHED_BRICKS_PATH', plugin_dir_path( __FILE__ ) );
 	define( 'SLASHED_BRICKS_URL', plugin_dir_url( __FILE__ ) );
-	define( 'SLASHED_BRICKS_CSS_REF', 'v0.6.34' );
+	define( 'SLASHED_BRICKS_CSS_REF', 'v0.6.33' );
 }
 
 /**
@@ -251,7 +251,6 @@ add_action( 'rest_api_init', 'slashed_bricks_rest_routes_init' );
  */
 function slashed_bricks_require_data_classes() {
 	require_once SLASHED_BRICKS_PATH . 'includes/class-css-parser.php';
-	require_once SLASHED_BRICKS_PATH . '../../includes/class-color-math.php';
 	require_once SLASHED_BRICKS_PATH . 'includes/class-color-resolver.php';
 	require_once SLASHED_BRICKS_PATH . 'includes/class-inventory.php';
 	require_once SLASHED_BRICKS_PATH . 'includes/class-elements.php';
