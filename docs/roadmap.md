@@ -30,6 +30,25 @@ Bricks Builder and Gutenberg integrations. Framework-level items live in the
 - Per-page CSS bundle override — covered by the `slashed_bricks/css_bundle_url`
   filter.
 
+The following are **permanently excluded** — deliberate architectural decisions
+that mirror the framework's stance, not backlog. They should not be re-proposed
+or picked up by accident:
+
+- **A SCSS / preprocessor authoring field** — the plugin will not ship a "custom
+  SCSS" input with mixins or functions. The framework is pure CSS with no compile
+  step; configuration is done through token overrides plus a plain custom-CSS field,
+  and native CSS features are the substitute.
+- **Prefix-based automatic component styling** — the plugin will not auto-style
+  arbitrary classes by name pattern. Components are surfaced as builder presets that
+  apply explicit, named framework classes (the reserved `.sf-*` namespace, authored
+  BEM-style); there is deliberately no "style anything matching this prefix" mechanism.
+- **Viewport-breakpoint utility / mixin generation** — layout adapts through container
+  queries and breakpoint-free techniques. Emitting a media-query breakpoint utility or
+  mixin system is out of scope.
+- **Generating a full utility-class library** — the plugin stays token- and
+  primitive-first. Small, opt-in, token-backed helpers may be surfaced on demand, but
+  emitting a broad utility-class surface is out of scope.
+
 ---
 
 ## Shipped (no longer tracked here)
