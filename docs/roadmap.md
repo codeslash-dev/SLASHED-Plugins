@@ -39,9 +39,9 @@ or picked up by accident:
   step; configuration is done through token overrides plus a plain custom-CSS field,
   and native CSS features are the substitute.
 - **Prefix-based automatic component styling** — the plugin will not auto-style
-  arbitrary classes by name pattern. Components are explicit BEM classes (`.sf-*`)
-  surfaced as builder presets; there is deliberately no "style anything matching this
-  prefix" mechanism.
+  arbitrary classes by name pattern. Components are surfaced as builder presets that
+  apply explicit, named framework classes (the reserved `.sf-*` namespace, authored
+  BEM-style); there is deliberately no "style anything matching this prefix" mechanism.
 - **Viewport-breakpoint utility / mixin generation** — layout adapts through container
   queries and breakpoint-free techniques. Emitting a media-query breakpoint utility or
   mixin system is out of scope.
