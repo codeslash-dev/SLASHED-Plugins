@@ -147,7 +147,11 @@ function syncAdminAppCore() {
   execFileSync('node', [path.join('scripts', 'sync-core.mjs')], {
     cwd: adminApp,
     stdio: 'inherit',
-    env: { ...process.env, SLASHED_CONFIGURATOR_SRC: cfgSrc },
+    // update-framework is an explicit maintenance action: re-vendoring is the
+    // whole point, so never inherit a SLASHED_SKIP_SYNC=1 opt-out from the
+    // caller's environment (which would silently skip it and leave the repo
+    // on a mixed framework ref).
+    env: { ...process.env, SLASHED_CONFIGURATOR_SRC: cfgSrc, SLASHED_SKIP_SYNC: '0' },
   });
   log('vendored admin-app configurator core from framework clone');
 }

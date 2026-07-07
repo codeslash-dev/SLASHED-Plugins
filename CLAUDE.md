@@ -112,8 +112,7 @@ release.
 | `npm run build:apps` | Build admin SPA + Bricks editor app |
 | `npm test` | Run test suite |
 | `npm run verify` | Verify version metadata is in sync |
-| `npm run check` | Verify generated artifacts (class hints, variables hints, vendored admin-app core) aren't stale — exits non-zero on drift, never writes |
-| `npm run check:hints` | Self-contained subset of `check` (class + variables hints only, no framework repo needed) — the per-PR CI gate |
+| `npm run check` | Verify generated artifacts (class hints, variables hints, vendored admin-app core) aren't stale — exits non-zero on drift, never writes. Needs the framework source (sibling checkout, `.framework`, or `SLASHED_FRAMEWORK_DIR`); CI clones it at the pinned `SLASHED_CSS_REF` and runs this as the per-PR drift gate |
 | `composer phpunit` | Run the PHP unit suite (`tests-php/`) |
 
 `tests/` is `node --test` specs, run automatically by `npm test`, with one

@@ -30,7 +30,6 @@
     "changelog": "node scripts/changelog-release.js",
     "verify": "node scripts/verify-sync.js",
     "check": "node scripts/check.js",
-    "check:hints": "node scripts/gen-class-hints.js --check && node scripts/gen-variables-hints.js --check",
     "lint:css": "stylelint \"SLASHED-for-WP/**/*.css\"",
     "lint:css:fix": "stylelint \"SLASHED-for-WP/**/*.css\" --fix",
     "lint:php": "node scripts/lint-php.js",
