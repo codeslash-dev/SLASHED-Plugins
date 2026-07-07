@@ -1,0 +1,309 @@
+/* SLASHED — optional/components.css
+   @layer slashed.components
+   Component class surface: button and card.
+
+   .sf-btn and .sf-card are LIVE since v0.7.0. These are the only two
+   components SLASHED ships — the framework stays BEM-first and token-first
+   and does not carry a broad component library.
+   Imports optional component tokens. */
+
+@import "./tokens.components.css";
+
+@layer slashed.components {
+
+  /* ============================================================
+   * .sf-btn
+   * Interactive call-to-action element. Apply to <button> or <a>.
+   * Style variants:    --secondary | --ghost | --outline
+   * Semantic variants: --primary | --neutral | --success | --warning |
+   *                    --info | --danger
+   * Sizes:  --xs | --s | (default m) | --l | --xl
+   * Width:  intrinsic by default (like every other framework). --block
+   *         forces full width everywhere; --block-cq opts into full width
+   *         only inside a query container narrower than 20rem (needs a
+   *         container ancestor — the layout primitives or .sf-cq provide
+   *         one). No @media breakpoints.
+   * States: :disabled / .sf-is-disabled | .sf-is-loading
+   *
+   * Colour model: every variant sets three rule-local custom properties
+   * — --sf-btn-color (family base), --sf-btn-color--hover, and
+   * --sf-btn-on-color (readable foreground) — and the fill / --secondary /
+   * --ghost / --outline treatments all derive from them. This keeps the
+   * --outline modifier orthogonal: it composes with any colour family
+   * (e.g. .sf-btn--outline.sf-btn--danger). Base .sf-btn uses the default
+   * action colour. Semantic hover: brand colours use the --hover token;
+   * status colours (success/warning/info/danger) use the direction-aware
+   * -strong triplet.
+   *
+   * Focus: the global core/accessibility.css :focus-visible rule already
+   * applies the WCAG ring to every focusable element, so .sf-btn needs no
+   * component-level focus outline of its own.
+   * ============================================================ */
+  .sf-btn {
+    /* Rule-local colour family — variants override these three. */
+    --sf-btn-color:        var(--sf-color-action);
+    --sf-btn-color--hover: var(--sf-color-action--hover);
+    --sf-btn-on-color:     var(--sf-color-text--on-action);
+
+    display:          inline-flex;
+    align-items:      center;
+    justify-content:  center;
+    gap:              var(--sf-btn-gap, var(--sf-space-2xs));
+    padding-block:    var(--sf-btn-padding-block);
+    padding-inline:   var(--sf-btn-padding-inline);
+    min-block-size:   var(--sf-btn-min-height, var(--sf-touch-target));
+    font-family:      inherit;
+    font-size:        var(--sf-btn-font-size, var(--sf-text-m));
+    font-weight:      var(--sf-btn-font-weight, var(--sf-font-weight-interactive));
+    line-height:      var(--sf-leading-tight);
+    text-decoration:  none;
+    white-space:      nowrap;
+    border:           var(--sf-btn-border-width, var(--sf-border-width-1)) solid var(--sf-btn-color);
+    border-radius:    var(--sf-btn-radius);
+    cursor:           pointer;
+    user-select:      none;
+    appearance:       none;
+    transition:       var(--sf-transition-form-field);
+    background:       var(--sf-btn-color);
+    color:            var(--sf-btn-on-color);
+  }
+  .sf-btn:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background:   var(--sf-btn-color--hover);
+    border-color: var(--sf-btn-color--hover);
+  }
+
+  /* --- Semantic colour families: set the three locals only --- */
+  .sf-btn--primary {
+    --sf-btn-color:        var(--sf-color-primary);
+    --sf-btn-color--hover: var(--sf-color-primary--hover);
+    --sf-btn-on-color:     var(--sf-color-text--on-primary);
+  }
+  .sf-btn--neutral {
+    --sf-btn-color:        var(--sf-color-neutral);
+    --sf-btn-color--hover: var(--sf-color-neutral--hover);
+    --sf-btn-on-color:     var(--sf-color-text--on-neutral);
+  }
+  .sf-btn--success {
+    --sf-btn-color:        var(--sf-color-success);
+    --sf-btn-color--hover: var(--sf-color-success-strong);
+    --sf-btn-on-color:     var(--sf-color-text--on-success);
+  }
+  .sf-btn--warning {
+    --sf-btn-color:        var(--sf-color-warning);
+    --sf-btn-color--hover: var(--sf-color-warning-strong);
+    --sf-btn-on-color:     var(--sf-color-text--on-warning);
+  }
+  .sf-btn--info {
+    --sf-btn-color:        var(--sf-color-info);
+    --sf-btn-color--hover: var(--sf-color-info-strong);
+    --sf-btn-on-color:     var(--sf-color-text--on-info);
+  }
+  .sf-btn--danger {
+    --sf-btn-color:        var(--sf-color-danger);
+    --sf-btn-color--hover: var(--sf-color-danger-strong);
+    --sf-btn-on-color:     var(--sf-color-text--on-danger);
+  }
+
+  /* --- Style treatments (compose with any colour family) --- */
+  .sf-btn--secondary {
+    background:   transparent;
+    color:        var(--sf-btn-color);
+    border-color: var(--sf-btn-color);
+  }
+  .sf-btn--secondary:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background:   color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
+    border-color: var(--sf-btn-color);
+  }
+
+  .sf-btn--ghost {
+    background:   transparent;
+    color:        var(--sf-btn-color);
+    border-color: transparent;
+  }
+  .sf-btn--ghost:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background: color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
+  }
+
+  /* Outline: transparent to start, fills with the family colour on hover. */
+  .sf-btn--outline {
+    background:   transparent;
+    color:        var(--sf-btn-color);
+    border-color: var(--sf-btn-color);
+  }
+  .sf-btn--outline:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background:   var(--sf-btn-color);
+    color:        var(--sf-btn-on-color);
+    border-color: var(--sf-btn-color);
+  }
+
+  /* --- Sizes (m is the default; override the sizing tokens) --- */
+  .sf-btn--xs {
+    --sf-btn-padding-block:  var(--sf-space-3xs, 0.125rem);
+    --sf-btn-padding-inline: var(--sf-space-xs);
+    --sf-btn-font-size:      var(--sf-text-xs);
+    --sf-btn-min-height:     var(--sf-size-xs);
+  }
+  .sf-btn--s {
+    --sf-btn-padding-block:  var(--sf-space-2xs);
+    --sf-btn-padding-inline: var(--sf-space-s);
+    --sf-btn-font-size:      var(--sf-text-s);
+    --sf-btn-min-height:     var(--sf-size-s);
+  }
+  .sf-btn--l {
+    --sf-btn-padding-block:  var(--sf-space-s);
+    --sf-btn-padding-inline: var(--sf-space-l);
+    --sf-btn-font-size:      var(--sf-text-l);
+    --sf-btn-min-height:     var(--sf-size-xl);
+  }
+  .sf-btn--xl {
+    --sf-btn-padding-block:  var(--sf-space-m);
+    --sf-btn-padding-inline: var(--sf-space-xl);
+    --sf-btn-font-size:      var(--sf-text-xl);
+    --sf-btn-min-height:     calc(var(--sf-size-xl) + var(--sf-space-s));
+  }
+
+  /* --- States --- */
+  .sf-btn:disabled,
+  .sf-btn.sf-is-disabled {
+    opacity:        var(--sf-opacity-disabled);
+    cursor:         not-allowed;
+    pointer-events: none;
+  }
+
+  .sf-btn.sf-is-loading {
+    cursor:   wait;
+    position: relative;
+  }
+  .sf-btn.sf-is-loading > * {
+    visibility: hidden;
+  }
+  .sf-btn.sf-is-loading::after {
+    content:                  '';
+    position:                 absolute;
+    inset:                    0;
+    margin:                   auto;
+    inline-size:              1em;
+    block-size:               1em;
+    border:                   2px solid currentcolor;
+    border-block-start-color: transparent;
+    border-radius:            var(--sf-radius-full);
+  }
+  /* Spinner only animates when motion is welcome; otherwise the ring is
+     shown static so the loading state is still visible. */
+  @media (prefers-reduced-motion: no-preference) {
+    .sf-btn.sf-is-loading::after {
+      animation: sf-spin var(--sf-duration-slower) linear infinite;
+    }
+  }
+
+  /* --- Width --- */
+  .sf-btn--block {
+    inline-size: 100%;
+  }
+
+  @container (max-width: 20rem) {
+    .sf-btn--block-cq {
+      inline-size: 100%;
+    }
+  }
+
+  /* ============================================================
+   * .sf-card
+   * Padded content container with optional header/body/footer.
+   * Modifiers: --bordered (flat, outlined, no shadow) |
+   *            --elevated (floating shadow, no border) |
+   *            --interactive (pointer + hover/focus lift)
+   * Concentric radius: --sf-card-radius-outer on the card,
+   * --sf-card-radius on inner elements (mirrors the math in
+   * tokens.components.css).
+   * Subcomponents: __media (16/9 cover image), __avatar (round),
+   * __title (unified heading size). Nested .sf-btn shrinks to
+   * --sf-card-btn-font-size.
+   * ============================================================ */
+  .sf-card {
+    display:       block;
+    padding:       var(--sf-card-padding, var(--sf-space-l));
+    background:    var(--sf-card-bg, var(--sf-color-surface));
+    border:        var(--sf-card-border-width, var(--sf-border-width-1)) solid var(--sf-card-border-color, var(--sf-color-border));
+    border-radius: var(--sf-card-radius-outer, calc(var(--sf-radius-m) + var(--sf-space-l)));
+    box-shadow:    var(--sf-card-shadow, var(--sf-shadow-s));
+  }
+
+  .sf-card__header,
+  .sf-card__body,
+  .sf-card__footer {
+    display: block;
+  }
+
+  .sf-card__header {
+    padding-block-end: var(--sf-card-gap, var(--sf-space-m));
+    border-block-end:  var(--sf-border-subtle);
+    margin-block-end:  var(--sf-card-gap, var(--sf-space-m));
+  }
+
+  .sf-card__footer {
+    padding-block-start: var(--sf-card-gap, var(--sf-space-m));
+    border-block-start:  var(--sf-border-subtle);
+    margin-block-start:  var(--sf-card-gap, var(--sf-space-m));
+  }
+
+  .sf-card__media {
+    display:       block;
+    inline-size:   100%;
+    aspect-ratio:  var(--sf-card-media-ratio, var(--sf-ratio-video));
+    object-fit:    cover;
+    border-radius: var(--sf-card-media-radius, var(--sf-card-radius, var(--sf-radius-m)));
+    overflow:      clip;
+  }
+
+  .sf-card__avatar {
+    inline-size:   var(--sf-avatar-size, 2.5rem);
+    block-size:    var(--sf-avatar-size, 2.5rem);
+    aspect-ratio:  1;
+    object-fit:    cover;
+    border-radius: var(--sf-radius-full);
+    flex-shrink:   0;
+  }
+
+  .sf-card__title {
+    font-size: var(--sf-card-heading-size, var(--sf-text-xl));
+    color:     var(--sf-color-heading);
+  }
+
+  .sf-card .sf-btn {
+    --sf-btn-font-size: var(--sf-card-btn-font-size, var(--sf-text-s));
+  }
+
+  /* --- Modifiers --- */
+  /* Flat, outlined card: keep the border, drop the shadow. */
+  .sf-card--bordered {
+    box-shadow: none;
+  }
+
+  /* Floating card: lean on the shadow, hide the border. */
+  .sf-card--elevated {
+    border-color: transparent;
+    box-shadow:   var(--sf-card-shadow--elevated, var(--sf-shadow-l));
+  }
+
+  /* Whole-card affordance: pointer + lift on hover/keyboard focus.
+     Pair with .sf-clickable-parent when the entire card is a link. */
+  .sf-card--interactive {
+    cursor:     pointer;
+    transition: var(--sf-transition-shadow);
+  }
+  .sf-card--interactive:hover,
+  .sf-card--interactive:focus-within {
+    box-shadow: var(--sf-card-shadow--hover, var(--sf-shadow-l));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sf-card--interactive {
+      transition: var(--sf-transition-shadow), var(--sf-transition-transform);
+    }
+    .sf-card--interactive:hover,
+    .sf-card--interactive:focus-within {
+      transform: translateY(calc(-1 * var(--sf-space-2xs)));
+    }
+  }
+
+}

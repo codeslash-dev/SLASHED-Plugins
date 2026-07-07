@@ -28,6 +28,7 @@ const CLASS_FILES = [
   'optional/forms.css',
   'optional/components.css',
   'optional/theme-example.css',
+  'optional/utilities.css',
 ];
 
 export { TOKEN_FILES, CLASS_FILES };

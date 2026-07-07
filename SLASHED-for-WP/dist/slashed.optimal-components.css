@@ -1,4 +1,4 @@
-/* SLASHED v0.6.34 — slashed.optimal-components.css */
+/*! SLASHED v0.7.1 — slashed.optimal-components.css | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -139,7 +139,7 @@
   /* @property — INTERACTION STATE FLAGS */
   /* PUBLIC hooks for Style Queries — safe to set from consumer code, unlike
      --sf-is-dark above. Allow components to react to states toggled on
-     ancestors via .is-* classes. */
+     ancestors via .sf-is-* classes. */
   @property --sf-is-active  { syntax: "<integer>"; inherits: true; initial-value: 0; }
   @property --sf-is-current { syntax: "<integer>"; inherits: true; initial-value: 0; }
   @property --sf-is-pressed { syntax: "<integer>"; inherits: true; initial-value: 0; }
@@ -161,6 +161,13 @@
        --sf-text-display-base-min / -max       --sf-text-display-s endpoints.
        --sf-space-ratio-min / -max             modular ratio of the SPACE scale.
        --sf-space-base-min / -max              --sf-space-m endpoints (rem, unitless).
+       --sf-fluid-width                        the length every fluid clamp()
+                                               interpolates against. Defaults to
+                                               100vw (viewport-relative). Override
+                                               to 100cqi on a container scope to make
+                                               the type + space + display scales
+                                               container-relative — see .sf-fluid-cq
+                                               in core/layout.css (issue #497).
 
      Registered as <number> so they can be used as pow() exponents/operands
      and multiplied by 1rem in calc(). Requires CSS pow() (Chrome 125+,
@@ -181,6 +188,15 @@
   @property --sf-space-base-min        { syntax: "<number>"; inherits: true; initial-value: 1; }
   @property --sf-space-base-max        { syntax: "<number>"; inherits: true; initial-value: 2; }
 
+  /* Fluid interpolation driver — the length term every fluid clamp() below
+     measures against. Universal syntax ("*") not "<length>": a registered
+     <length> requires a computationally-independent initial-value, and 100vw
+     (viewport-dependent) is not one. The real default lives on :root; an
+     opt-in scope (e.g. .sf-fluid-cq) overrides it to 100cqi so the whole
+     generative scale becomes container-relative without duplicating a single
+     formula. */
+  @property --sf-fluid-width           { syntax: "*"; inherits: true; }
+
   /* ── Output token @property registrations ──────────────────────────────────
      Radius + space: <length> syntax enables CSS transitions on layout values —
      border-radius/padding/gap etc. now interpolate instead of snapping.
@@ -200,6 +216,7 @@
   @property --sf-radius-full  { syntax: "<length>"; inherits: true; initial-value: 9999px; }
   @property --sf-radius-pill  { syntax: "<length>"; inherits: true; initial-value: 9999px; }
   @property --sf-radius-outer { syntax: "<length>"; inherits: true; initial-value: 0; }
+  @property --sf-media-radius { syntax: "<length>"; inherits: true; initial-value: 0; }
 
   @property --sf-space-none       { syntax: "<length>"; inherits: true; initial-value: 0; }
   @property --sf-space-px         { syntax: "<length>"; inherits: true; initial-value: 1px; }
@@ -233,17 +250,22 @@
   @property --sf-shadow-2xl       { syntax: "*"; inherits: true; }
   @property --sf-shadow-inner     { syntax: "*"; inherits: true; }
   @property --sf-text-shadow-none { syntax: "*"; inherits: true; }
+  @property --sf-text-shadow-xs   { syntax: "*"; inherits: true; }
   @property --sf-text-shadow-s    { syntax: "*"; inherits: true; }
   @property --sf-text-shadow-m    { syntax: "*"; inherits: true; }
   @property --sf-text-shadow-l    { syntax: "*"; inherits: true; }
+  @property --sf-text-shadow-xl   { syntax: "*"; inherits: true; }
+  @property --sf-drop-shadow-xs   { syntax: "*"; inherits: true; }
   @property --sf-drop-shadow-s    { syntax: "*"; inherits: true; }
   @property --sf-drop-shadow-m    { syntax: "*"; inherits: true; }
   @property --sf-drop-shadow-l    { syntax: "*"; inherits: true; }
+  @property --sf-drop-shadow-xl   { syntax: "*"; inherits: true; }
   @property --sf-shadow-glow      { syntax: "*"; inherits: true; }
 
   :root {
     --sf-fluid-min-vw:          22.5;
     --sf-fluid-max-vw:          90;
+    --sf-fluid-width:           100vw;  /* interpolation driver; 100cqi on a container scope → container-relative fluid (#497) */
     --sf-text-ratio-min:        1.25;
     --sf-text-ratio-max:        1.333;
     --sf-text-base-min:         1;
@@ -515,6 +537,17 @@
         oklch(from var(--sf-color-action-source-light) l c h / 0.28),
         oklch(from var(--sf-color-action-source-dark) clamp(0.62, calc(0.93 - l * 0.4), 0.78) c h / 0.55)
       );
+
+      /* Alt selection — the opposite scheme's treatment, for a surface
+         that deliberately inverts colours relative to the page (e.g. a
+         dark card on a light page) where the default pairing above
+         would land with poor contrast. Consumed by .sf-selection--alt
+         (optional/utilities.css). */
+      --sf-color-selection-bg--alt: light-dark(
+        oklch(from var(--sf-color-action-source-dark) clamp(0.62, calc(0.93 - l * 0.4), 0.78) c h / 0.55),
+        oklch(from var(--sf-color-action-source-light) l c h / 0.28)
+      );
+      --sf-color-selection-text--alt: inherit;
 
       /* ----------------------------------------------------------
          Status triplets — strong (direction-dependent, uses light-dark)
@@ -982,7 +1015,7 @@
     --sf-font-weight-interactive: var(--sf-font-weight-semibold);  /* buttons, badges, nav */
     --sf-font-weight-strong:      var(--sf-font-weight-bold);      /* <strong> / emphasis  */
 
-    /* State token — consumed by .is-current in states.css.
+    /* State token — consumed by .sf-is-current in states.css.
        Override to match your nav design (e.g. semibold for thin fonts). */
     --sf-current-font-weight: var(--sf-font-weight-bold);
 
@@ -996,20 +1029,20 @@
        to --sf-text-m (N=0): 2xs=-3 … 4xl=5. Override the inputs above to
        reshape the whole scale; override an individual --sf-text-* to pin one.
        ---------------------------------------------------------- */
-    --sf-text-2xs: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -3) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -3) * 1rem)) * var(--sf-text-scale));
-    --sf-text-xs:  calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -2) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -2) * 1rem)) * var(--sf-text-scale));
-    --sf-text-s:   calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -1) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -1) * 1rem)) * var(--sf-text-scale));
-    --sf-text-m:   calc(clamp(calc(var(--sf-text-base-min) * 1rem), calc((var(--sf-text-base-max) - var(--sf-text-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * 1rem), calc(var(--sf-text-base-max) * 1rem)) * var(--sf-text-scale));
-    --sf-text-l:   calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 1) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 1) * 1rem)) * var(--sf-text-scale));
-    --sf-text-xl:  calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 2) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 2) * 1rem)) * var(--sf-text-scale));
-    --sf-text-2xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 3) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 3) * 1rem)) * var(--sf-text-scale));
-    --sf-text-3xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 4) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 4) * 1rem)) * var(--sf-text-scale));
-    --sf-text-4xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 5) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 5) * 1rem)) * var(--sf-text-scale));
+    --sf-text-2xs: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -3) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -3) * 1rem)) * var(--sf-text-scale));
+    --sf-text-xs:  calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -2) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -2) * 1rem)) * var(--sf-text-scale));
+    --sf-text-s:   calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -1) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -1) * 1rem)) * var(--sf-text-scale));
+    --sf-text-m:   calc(clamp(calc(var(--sf-text-base-min) * 1rem), calc((var(--sf-text-base-max) - var(--sf-text-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * 1rem), calc(var(--sf-text-base-max) * 1rem)) * var(--sf-text-scale));
+    --sf-text-l:   calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 1) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 1) * 1rem)) * var(--sf-text-scale));
+    --sf-text-xl:  calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 2) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 2) * 1rem)) * var(--sf-text-scale));
+    --sf-text-2xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 3) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 3) * 1rem)) * var(--sf-text-scale));
+    --sf-text-3xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 4) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 4) * 1rem)) * var(--sf-text-scale));
+    --sf-text-4xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 5) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 5) * 1rem)) * var(--sf-text-scale));
 
     /* Display — reuses the type ratios with its own larger base (s=0, m=1, l=2). */
-    --sf-text-display-s: calc(clamp(calc(var(--sf-text-display-base-min) * 1rem), calc((var(--sf-text-display-base-max) - var(--sf-text-display-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * 1rem), calc(var(--sf-text-display-base-max) * 1rem)) * var(--sf-text-display-scale));
-    --sf-text-display-m: calc(clamp(calc(var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc((var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 1) - var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc(var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 1) * 1rem)) * var(--sf-text-display-scale));
-    --sf-text-display-l: calc(clamp(calc(var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc((var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 2) - var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc(var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 2) * 1rem)) * var(--sf-text-display-scale));
+    --sf-text-display-s: calc(clamp(calc(var(--sf-text-display-base-min) * 1rem), calc((var(--sf-text-display-base-max) - var(--sf-text-display-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * 1rem), calc(var(--sf-text-display-base-max) * 1rem)) * var(--sf-text-display-scale));
+    --sf-text-display-m: calc(clamp(calc(var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc((var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 1) - var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc(var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 1) * 1rem)) * var(--sf-text-display-scale));
+    --sf-text-display-l: calc(clamp(calc(var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc((var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 2) - var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc(var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 2) * 1rem)) * var(--sf-text-display-scale));
 
     /* ----------------------------------------------------------
        Line heights & letter spacing
@@ -1134,15 +1167,15 @@
     /* Spacing — fluid (generative). Same engine as type; space uses base_max=2
        (more dramatic growth than type's 1.25). Step exponent N relative to
        --sf-space-m (N=0): 2xs=-3 … 4xl=5. */
-    --sf-space-2xs: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -3) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -3) * 1rem)) * var(--sf-space-scale));
-    --sf-space-xs:  calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -2) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -2) * 1rem)) * var(--sf-space-scale));
-    --sf-space-s:   calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -1) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -1) * 1rem)) * var(--sf-space-scale));
-    --sf-space-m:   calc(clamp(calc(var(--sf-space-base-min) * 1rem), calc((var(--sf-space-base-max) - var(--sf-space-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * 1rem), calc(var(--sf-space-base-max) * 1rem)) * var(--sf-space-scale));
-    --sf-space-l:   calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 1) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 1) * 1rem)) * var(--sf-space-scale));
-    --sf-space-xl:  calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 2) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 2) * 1rem)) * var(--sf-space-scale));
-    --sf-space-2xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 3) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 3) * 1rem)) * var(--sf-space-scale));
-    --sf-space-3xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 4) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 4) * 1rem)) * var(--sf-space-scale));
-    --sf-space-4xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) * 1rem)) * var(--sf-space-scale));
+    --sf-space-2xs: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -3) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -3) * 1rem)) * var(--sf-space-scale));
+    --sf-space-xs:  calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -2) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -2) * 1rem)) * var(--sf-space-scale));
+    --sf-space-s:   calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -1) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -1) * 1rem)) * var(--sf-space-scale));
+    --sf-space-m:   calc(clamp(calc(var(--sf-space-base-min) * 1rem), calc((var(--sf-space-base-max) - var(--sf-space-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * 1rem), calc(var(--sf-space-base-max) * 1rem)) * var(--sf-space-scale));
+    --sf-space-l:   calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 1) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 1) * 1rem)) * var(--sf-space-scale));
+    --sf-space-xl:  calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 2) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 2) * 1rem)) * var(--sf-space-scale));
+    --sf-space-2xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 3) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 3) * 1rem)) * var(--sf-space-scale));
+    --sf-space-3xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 4) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 4) * 1rem)) * var(--sf-space-scale));
+    --sf-space-4xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) * 1rem)) * var(--sf-space-scale));
 
     /* ----------------------------------------------------------
        UI sizes
@@ -1259,6 +1292,13 @@
        Maths: outer = inner + padding ⇒ aligned curves at corners. */
     --sf-radius-outer: calc(var(--sf-radius-m) + var(--sf-component-pad));
 
+    /* Opt-in global media radius — 0 by default (off). Set to a
+       --sf-radius-* value to round <img>/<figure> globally:
+         :root { --sf-media-radius: var(--sf-radius-m); }
+       Applied via :where() in core/base.css so it never fights
+       .sf-bg-layer or a component's own radius. */
+    --sf-media-radius: 0;
+
     /* ----------------------------------------------------------
        Shadows — BEM consumer API
        Use in your own classes: .card { box-shadow: var(--sf-shadow-m); }
@@ -1311,6 +1351,10 @@
     --sf-animation-slide-in-right: sf-slide-in-right var(--sf-duration-normal) var(--sf-ease-out)       both;
     --sf-animation-scale-up:       sf-scale-up       var(--sf-duration-normal) var(--sf-ease-overshoot) both;
     --sf-animation-scale-down:     sf-scale-down     var(--sf-duration-normal) var(--sf-ease-in)        both;
+    --sf-animation-slide-out-up:    sf-slide-out-up    var(--sf-duration-normal) var(--sf-ease-in) both;
+    --sf-animation-slide-out-down:  sf-slide-out-down  var(--sf-duration-normal) var(--sf-ease-in) both;
+    --sf-animation-slide-out-left:  sf-slide-out-left  var(--sf-duration-normal) var(--sf-ease-in) both;
+    --sf-animation-slide-out-right: sf-slide-out-right var(--sf-duration-normal) var(--sf-ease-in) both;
     --sf-animation-color-pulse:    sf-color-pulse    var(--sf-duration-slow)   var(--sf-ease-in-out)    infinite;
     --sf-animation-ping:           sf-ping           var(--sf-duration-slow)   var(--sf-ease-out)       infinite;
     --sf-animation-blink:          sf-blink          calc(1s * var(--sf-motion-scale)) steps(1, end) infinite;
@@ -1334,6 +1378,11 @@
        ---------------------------------------------------------- */
     --sf-scroll-timeline-range-start: entry 0%;
     --sf-scroll-timeline-range-end:   cover 30%;
+
+    /* Exit counterpart — element is well into view before starting to
+       leave, finishing exactly as it scrolls fully out. */
+    --sf-scroll-timeline-range-exit-start: cover 70%;
+    --sf-scroll-timeline-range-exit-end:   exit 100%;
 
     /* ----------------------------------------------------------
        Mask scrim — edge-fade stops for scroll reels / overflow.
@@ -1479,14 +1528,18 @@
          Text shadows — share --sf-shadow-color / --sf-shadow-strength
          ---------------------------------------------------------- */
       --sf-text-shadow-none: none;
-      --sf-text-shadow-s: 0 1px 2px oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 1.5), 0.7));
-      --sf-text-shadow-m: 0 2px 4px oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 2),   0.7));
-      --sf-text-shadow-l: 0 4px 8px oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 2.5), 0.7));
-  
+      --sf-text-shadow-xs: 0 0.5px 1px oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 1),   0.7));
+      --sf-text-shadow-s:  0 1px 2px   oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 1.5), 0.7));
+      --sf-text-shadow-m:  0 2px 4px   oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 2),   0.7));
+      --sf-text-shadow-l:  0 4px 8px   oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 2.5), 0.7));
+      --sf-text-shadow-xl: 0 8px 16px  oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 3),   0.7));
+
       /* Drop shadows — for filter: drop-shadow() (respects alpha edges) */
-      --sf-drop-shadow-s: drop-shadow(0 1px 2px oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 1.5), 0.7)));
-      --sf-drop-shadow-m: drop-shadow(0 4px 6px oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 2),   0.7)));
-      --sf-drop-shadow-l: drop-shadow(0 8px 16px oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 2.5), 0.7)));
+      --sf-drop-shadow-xs: drop-shadow(0 0.5px 1px  oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 1),   0.7)));
+      --sf-drop-shadow-s:  drop-shadow(0 1px 2px    oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 1.5), 0.7)));
+      --sf-drop-shadow-m:  drop-shadow(0 4px 6px    oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 2),   0.7)));
+      --sf-drop-shadow-l:  drop-shadow(0 8px 16px   oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 2.5), 0.7)));
+      --sf-drop-shadow-xl: drop-shadow(0 16px 32px  oklch(from var(--sf-shadow-color) l c h / clamp(0, calc(var(--sf-shadow-strength) * 3),   0.7)));
 
     }
   }
@@ -1575,6 +1628,11 @@
        link text. Override with your own glyph (include leading space
        if you want one): `:root { --sf-link-external-marker: " →" }`. */
     --sf-link-external-marker: " \2197";  /* " ↗" — consumed by .sf-link-external */
+    /* Accessible name for the marker glyph, via the CSS alt-text syntax
+       (`content: <value> / <string>`) — read by screen readers in place
+       of the glyph, appended after the link's own text. Localise or
+       disable (together with the marker) per-site. */
+    --sf-link-external-label: "opens in a new window or external site";
 
     /* ----------------------------------------------------------
        Section padding
@@ -1737,16 +1795,19 @@
     --sf-grid-min-2xl:     28rem;
 
     /* ----------------------------------------------------------
-       Equal columns (intrinsically responsive RAM)
-       min-col-N: minimum column width for the N-column preset.
-       Exact column count emerges from container ÷ min-col.
+       Equal columns — CSS multi-column flowing layout (not grid).
+       Content flows between columns like a newspaper: fills one
+       column top-to-bottom, continues at the top of the next.
+       Use for FAQ lists, prose, anything that should distribute
+       evenly without being pinned to discrete grid cells — reach
+       for .sf-grid/.sf-grid--fit instead when items need their own
+       fixed cell.
        ---------------------------------------------------------- */
-    --sf-equal-min-col:   16rem;
-    --sf-equal-min-col-2: 28rem;
-    --sf-equal-min-col-3: 15rem;
-    --sf-equal-min-col-4: 16rem;
-    --sf-equal-min-col-6: 10rem;
+    --sf-equal-min-col:    16rem;
     --sf-equal-gap:        var(--sf-gap);
+    --sf-equal-rule-width: 0;
+    --sf-equal-rule-style: solid;
+    --sf-equal-rule-color: var(--sf-color-border);
 
     /* ----------------------------------------------------------
        Cover
@@ -1760,15 +1821,20 @@
     --sf-frame-ratio: 16 / 9;    /* literal <ratio>, valid in aspect-ratio */
 
     /* ----------------------------------------------------------
-       Background layer (.sf-bg) — cover media behind sibling content.
+       Background layer (.sf-bg-layer) — cover media behind sibling content.
        inset is a single length applied to every edge; the layer size is
        derived from it, so a non-zero inset still fills correctly.
        ---------------------------------------------------------- */
-    --sf-bg-inset:    0;
-    --sf-bg-fit:      cover;
-    --sf-bg-position: 50% 50%;
-    --sf-bg-radius:   0;
-    --sf-bg-z:        -2;        /* behind content; above the parent background */
+    /* 0px, not bare 0 — .sf-bg-layer's inline-size/block-size multiply this by 2
+       inside a calc() alongside a percentage; a unitless 0 makes that
+       calc() a <number>/<percentage> type mismatch (invalid at
+       computed-value time), silently collapsing .sf-bg-layer to its intrinsic
+       size. */
+    --sf-bg-layer-inset:    0px;
+    --sf-bg-layer-fit:      cover;
+    --sf-bg-layer-position: 50% 50%;
+    --sf-bg-layer-radius:   0;
+    --sf-bg-layer-z:        -2;        /* behind content; above the parent background */
 
     /* ----------------------------------------------------------
        Icon (boxed variant) — extras for .sf-icon--boxed.
@@ -1917,6 +1983,49 @@
     /* Text-on-image legibility WITHOUT darkening the picture — a soft
        shadow halo behind glyphs, consumed by .sf-text-protect. */
     --sf-scrim-text-shadow: 0 1px 3px oklch(0 0 0 / 0.6);
+
+    /* ----------------------------------------------------------
+       Named background surface preset — input set for the .sf-surface-bg
+       macro (issue #523). One reusable, named background bundling a base
+       colour fallback + image/gradient/pattern + sizing + an optional
+       overlay + an optional animation. Define a preset by setting these
+       on a scope, then apply .sf-surface-bg to compose them:
+         .hero-surface {
+           --sf-surface-bg-image:   url("/hero.avif");
+           --sf-surface-bg-overlay: var(--sf-scrim-gradient);  // reuse the scrim
+           --sf-surface-bg-animation: sf-pan 40s linear infinite;
+         }
+         <section class="hero-surface sf-surface-bg">…</section>
+       -overlay layers ABOVE -image (first background-image layer). Builds on
+       the existing scrim + gradient tokens rather than new infra; for a
+       blurred backdrop compose .sf-scrim / a filter on top. Inert by default
+       (image/overlay/animation = none) so the bare class is a no-op until a
+       preset feeds it. ---------------------------------------------------- */
+    --sf-surface-bg-color:      transparent;
+    --sf-surface-bg-image:      none;
+    --sf-surface-bg-overlay:    none;
+    --sf-surface-bg-size:       cover;
+    --sf-surface-bg-position:   center;
+    --sf-surface-bg-repeat:     no-repeat;
+    --sf-surface-bg-attachment: scroll;
+    --sf-surface-bg-animation:  none;
+
+    /* ----------------------------------------------------------
+       Concave corner — radius and corner position for .sf-corner-scoop.
+       Override per element: style="--sf-corner-scoop-size: var(--sf-radius-3xl)"
+       (cut radius) or style="--sf-corner-scoop-at: 0 0" (which corner).
+       ---------------------------------------------------------- */
+    --sf-corner-scoop-size: var(--sf-radius-2xl);
+    --sf-corner-scoop-at:   100% 0;
+
+    /* ----------------------------------------------------------
+       Overlap recipe — how far .sf-overlap pulls into the adjacent
+       element. .sf-overlap-host's padding compensation defaults to this
+       same value via a var() fallback in the rule itself (not aliased
+       here — see core/macros.css), so one override on the host tunes
+       both unless --sf-overlap-host-pad is set independently.
+       ---------------------------------------------------------- */
+    --sf-overlap-pull: var(--sf-space-xl);
 
   }
 }
@@ -2129,6 +2238,12 @@
     block-size:      auto;
   }
 
+  /* Zero-specificity so .sf-bg-layer, .sf-frame > img, and any component's own
+     radius (later layer or higher specificity) always win. */
+  :where(img, figure) {
+    border-radius: var(--sf-media-radius);
+  }
+
   img, video {
     object-fit:      var(--sf-object-fit);
     object-position: var(--sf-object-position);
@@ -2220,7 +2335,7 @@
 /* SLASHED — core/themes.css
    @layer slashed.themes
    Light/dark activation, scoped theme color inheritance, LumLocker, and scheme-aware color adjustments.
-   Uses data-theme and token overrides. */
+   Uses data-theme, .sf-theme-light/.sf-theme-dark aliases, and token overrides. */
 
 @layer slashed.themes {
 
@@ -2231,10 +2346,10 @@
     }
   }
 
-  [data-theme="light"] { color-scheme: light; --sf-is-dark: 0; }
-  [data-theme="dark"]  { color-scheme: dark;  --sf-is-dark: 1; }
+  :is([data-theme="light"], .sf-theme-light) { color-scheme: light; --sf-is-dark: 0; }
+  :is([data-theme="dark"], .sf-theme-dark)  { color-scheme: dark;  --sf-is-dark: 1; }
 
-  :where([data-theme]:not(:root, html)) {
+  :where([data-theme]:not(:root, html), .sf-theme-light:not(:root, html), .sf-theme-dark:not(:root, html)) {
     background-color: var(--sf-color-bg);
     color:            var(--sf-color-text);
   }
@@ -2261,13 +2376,13 @@
     );
   }
 
-  :root[data-lumlocker] [data-theme="dark"] {
+  :root[data-lumlocker] :is([data-theme="dark"], .sf-theme-dark) {
     --sf-color-primary:   oklch(from var(--sf-color-primary-source-dark,   var(--sf-color-primary-source-light))   var(--sf-lumlocker) c h);
     --sf-color-secondary: oklch(from var(--sf-color-secondary-source-dark, var(--sf-color-secondary-source-light)) var(--sf-lumlocker) c h);
     --sf-color-tertiary:  oklch(from var(--sf-color-tertiary-source-dark,  var(--sf-color-tertiary-source-light))  var(--sf-lumlocker) c h);
     --sf-color-action:    oklch(from var(--sf-color-action-source-dark,    var(--sf-color-action-source-light))    var(--sf-lumlocker) c h);
   }
-  :root[data-lumlocker] [data-theme="light"] {
+  :root[data-lumlocker] :is([data-theme="light"], .sf-theme-light) {
     --sf-color-primary:   oklch(from var(--sf-color-primary-source-light)   var(--sf-lumlocker) c h);
     --sf-color-secondary: oklch(from var(--sf-color-secondary-source-light) var(--sf-lumlocker) c h);
     --sf-color-tertiary:  oklch(from var(--sf-color-tertiary-source-light)  var(--sf-lumlocker) c h);
@@ -2298,7 +2413,7 @@
       --sf-color-danger-source-dark:    oklch(from var(--sf-color-danger-source-light)    clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
     }
 
-        [data-theme="dark"] {
+        :is([data-theme="dark"], .sf-theme-dark) {
 
       --sf-color-primary:   var(--sf-color-primary-source-dark);
       --sf-color-secondary: var(--sf-color-secondary-source-dark);
@@ -2341,9 +2456,22 @@
       --sf-color-warning-strong: oklch(from var(--sf-color-warning) clamp(0.70, calc(l + 0.05), 1) c h);
       --sf-color-info-strong:    oklch(from var(--sf-color-info)    clamp(0.70, calc(l + 0.15), 1) c h);
       --sf-color-danger-strong:  oklch(from var(--sf-color-danger)  clamp(0.70, calc(l + 0.15), 1) c h);
+
+      /* :root-only aliases from tokens.css — var() resolves on the declaring
+         element, so without these re-declarations a nested [data-theme]
+         section inherits the :root-resolved (wrong-scheme) values (#496). */
+      --sf-color-code-bg:        var(--sf-color-inset);
+      --sf-color-bg--disabled:   var(--sf-color-inset);
+      --sf-color-link--disabled: var(--sf-color-text--disabled);
+      --sf-scrollbar-thumb:      var(--sf-color-neutral);
+      /* Non-sign() fallback: keeps inline code readable in engines with
+         oklch(from) but not sign() — the sign()-gated auto-contrast block
+         below overrides this with a proper per-background contrast calc
+         wherever sign() is supported. */
+      --sf-color-code-text:      var(--sf-color-text);
     }
 
-        [data-theme="light"] {
+        :is([data-theme="light"], .sf-theme-light) {
 
       --sf-color-primary:   var(--sf-color-primary-source-light);
       --sf-color-secondary: var(--sf-color-secondary-source-light);
@@ -2386,12 +2514,20 @@
       --sf-color-warning-strong: oklch(from var(--sf-color-warning-source-light) calc(l - 0.25) c h);
       --sf-color-info-strong:    oklch(from var(--sf-color-info-source-light)    calc(l - 0.1)  c h);
       --sf-color-danger-strong:  oklch(from var(--sf-color-danger-source-light)  calc(l - 0.1)  c h);
+
+      /* :root-only aliases — see the matching note in the dark block (#496). */
+      --sf-color-code-bg:        var(--sf-color-inset);
+      --sf-color-bg--disabled:   var(--sf-color-inset);
+      --sf-color-link--disabled: var(--sf-color-text--disabled);
+      --sf-scrollbar-thumb:      var(--sf-color-neutral);
+      /* Non-sign() fallback — see matching note in the dark block (#496). */
+      --sf-color-code-text:      var(--sf-color-text);
     }
 
   }
 
   @supports (color: oklch(from red l c h)) and (width: calc(1px * sign(1))) {
-    [data-theme="dark"] {
+    :is([data-theme="dark"], .sf-theme-dark) {
       --sf-color-text--on-primary:   oklch(from var(--sf-color-primary)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-secondary: oklch(from var(--sf-color-secondary) clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-tertiary:  oklch(from var(--sf-color-tertiary)  clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
@@ -2402,8 +2538,12 @@
       --sf-color-text--on-info:      oklch(from var(--sf-color-info)      clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-danger:    oklch(from var(--sf-color-danger)    clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-inverse:   oklch(from var(--sf-color-inverse)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      /* Auto-contrast code text re-derived in-scope so it tracks the
+         per-scope --sf-color-code-bg above (#496). Same formula as
+         core/tokens.css — keep in sync. */
+      --sf-color-code-text:          oklch(from var(--sf-color-code-bg)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
     }
-    [data-theme="light"] {
+    :is([data-theme="light"], .sf-theme-light) {
       --sf-color-text--on-primary:   oklch(from var(--sf-color-primary)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-secondary: oklch(from var(--sf-color-secondary) clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-tertiary:  oklch(from var(--sf-color-tertiary)  clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
@@ -2414,6 +2554,8 @@
       --sf-color-text--on-info:      oklch(from var(--sf-color-info)      clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-danger:    oklch(from var(--sf-color-danger)    clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-inverse:   oklch(from var(--sf-color-inverse)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      /* See matching note in the dark block (#496). */
+      --sf-color-code-text:          oklch(from var(--sf-color-code-bg)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
     }
   }
 
@@ -2464,6 +2606,17 @@
 
   .sf-section-group > .sf-section + .sf-section { padding-block-start: 0; }
 
+  /* Header — block padding on the standard spacing scale. Headers usually
+     want lighter vertical rhythm than .sf-section, so these map to
+     --sf-space-* directly. Only block padding is set; any inline gutter
+     (from .sf-section--guttered, a container, or the element itself) is
+     left intact. */
+  .sf-header--xs { padding-block: var(--sf-space-xs); }
+  .sf-header--s  { padding-block: var(--sf-space-s); }
+  .sf-header--m  { padding-block: var(--sf-space-m); }
+  .sf-header--l  { padding-block: var(--sf-space-l); }
+  .sf-header--xl { padding-block: var(--sf-space-xl); }
+
   /* Collapse modifier */
   .sf-section--collapse:has(+ .sf-section--collapse) {
     padding-block-end: calc(var(--sf-section-pad) / 2);
@@ -2496,7 +2649,18 @@
     background:    linear-gradient(to right, transparent, var(--sf-divider-color), transparent);
   }
 
-  
+  /* Divide — rules between direct children, reusing .sf-divider's tokens.
+     Unlike .sf-divider (a standalone separator element), .sf-divide is
+     applied to the container and needs no extra markup per gap. */
+  .sf-divide > * + * {
+    border-block-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
+  }
+  .sf-divide--vertical > * + * {
+    border-block-start:  none;
+    border-inline-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
+  }
+
+
   /* Container */
   .sf-container {
     container:      sf-layout / inline-size;
@@ -2516,7 +2680,62 @@
     container-type: inline-size;
   }
 
+  /* Overlay — absolute-fill layout helper for overlays/backdrops. */
+  .sf-overlay {
+    position: absolute;
+    inset:    0;
+  }
+
   
+  /* .sf-fluid-cq: opt a subtree into a CONTAINER-relative fluid scale (issue
+     #497). By default --sf-text-* / --sf-space-* interpolate against 100vw (the
+     viewport); inside .sf-fluid-cq they interpolate against 100cqi (this box's
+     inline size), so type + spacing track the container the way the layout
+     primitives (.sf-grid-cols-*, .sf-content-grid, .sf-bento) already do. Use
+     on nested / narrow contexts (sidebars, cards, 1/3 columns) where a
+     viewport-driven scale would size text as if it spanned the full page.
+
+     Why the tokens are RE-DECLARED (not just --sf-fluid-width flipped): the
+     --sf-text-* / --sf-space-* tokens are computed at :root, so their
+     var(--sf-fluid-width) is substituted there (100vw) and the *resolved*
+     length inherits down — overriding --sf-fluid-width lower in the tree can't
+     retroactively rewrite an already-computed inherited value. The scale is
+     therefore re-declared in-scope so var(--sf-fluid-width) re-resolves to
+     100cqi. It is re-declared on the direct children, not the element itself:
+     a query container's own cq units resolve against its ANCESTOR container, so
+     the re-computation must happen one level in — children compute against
+     .sf-fluid-cq and deeper descendants inherit that resolved value.
+
+     The formulas below are character-identical to their :root twins in
+     core/tokens.css (both read var(--sf-fluid-width)); keep the two copies in
+     sync if the generative formula ever changes (cf. themes.css SL-001). */
+  .sf-fluid-cq { container-type: inline-size; }
+  .sf-fluid-cq > * {
+      --sf-fluid-width: 100cqi;
+      --sf-text-2xs: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -3) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -3) * 1rem)) * var(--sf-text-scale));
+      --sf-text-xs: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -2) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -2) * 1rem)) * var(--sf-text-scale));
+      --sf-text-s: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -1) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -1) * 1rem)) * var(--sf-text-scale));
+      --sf-text-m: calc(clamp(calc(var(--sf-text-base-min) * 1rem), calc((var(--sf-text-base-max) - var(--sf-text-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * 1rem), calc(var(--sf-text-base-max) * 1rem)) * var(--sf-text-scale));
+      --sf-text-l: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 1) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 1) * 1rem)) * var(--sf-text-scale));
+      --sf-text-xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 2) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 2) * 1rem)) * var(--sf-text-scale));
+      --sf-text-2xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 3) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 3) * 1rem)) * var(--sf-text-scale));
+      --sf-text-3xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 4) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 4) * 1rem)) * var(--sf-text-scale));
+      --sf-text-4xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 5) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 5) * 1rem)) * var(--sf-text-scale));
+      --sf-text-display-s: calc(clamp(calc(var(--sf-text-display-base-min) * 1rem), calc((var(--sf-text-display-base-max) - var(--sf-text-display-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * 1rem), calc(var(--sf-text-display-base-max) * 1rem)) * var(--sf-text-display-scale));
+      --sf-text-display-m: calc(clamp(calc(var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc((var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 1) - var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc(var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 1) * 1rem)) * var(--sf-text-display-scale));
+      --sf-text-display-l: calc(clamp(calc(var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc((var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 2) - var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc(var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 2) * 1rem)) * var(--sf-text-display-scale));
+      --sf-space-2xs: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -3) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -3) * 1rem)) * var(--sf-space-scale));
+      --sf-space-xs: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -2) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -2) * 1rem)) * var(--sf-space-scale));
+      --sf-space-s: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -1) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -1) * 1rem)) * var(--sf-space-scale));
+      --sf-space-m: calc(clamp(calc(var(--sf-space-base-min) * 1rem), calc((var(--sf-space-base-max) - var(--sf-space-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * 1rem), calc(var(--sf-space-base-max) * 1rem)) * var(--sf-space-scale));
+      --sf-space-l: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 1) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 1) * 1rem)) * var(--sf-space-scale));
+      --sf-space-xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 2) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 2) * 1rem)) * var(--sf-space-scale));
+      --sf-space-2xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 3) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 3) * 1rem)) * var(--sf-space-scale));
+      --sf-space-3xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 4) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 4) * 1rem)) * var(--sf-space-scale));
+      --sf-space-4xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) * 1rem)) * var(--sf-space-scale));
+  }
+
+
   /* Stack & gap */
   .sf-stack {
     display:        flex;
@@ -2656,6 +2875,32 @@
 
   .sf-grid--dense { grid-auto-flow: dense; }
 
+  /* Grid-flex — flexbox alternative to .sf-grid for item counts that
+     don't divide evenly: leftover last-row items stretch to fill the
+     row by default, or stay fixed-width and centered with --center.
+     CSS Grid keeps orphans pinned to their track; flex does not. */
+  .sf-grid-flex {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       var(--sf-grid-gap);
+  }
+  .sf-grid-flex > * {
+    flex: 1 1 min(var(--sf-grid-min), 100%);
+  }
+
+  .sf-grid-flex--center { justify-content: center; }
+  .sf-grid-flex--center > * {
+    flex-grow:  0;
+    flex-basis: min(var(--sf-grid-min), 100%);
+  }
+
+  .sf-grid-flex--xs  { --sf-grid-min: var(--sf-grid-min-xs); }
+  .sf-grid-flex--s   { --sf-grid-min: var(--sf-grid-min-s); }
+  .sf-grid-flex--m   { --sf-grid-min: var(--sf-grid-min-m); }
+  .sf-grid-flex--l   { --sf-grid-min: var(--sf-grid-min-l); }
+  .sf-grid-flex--xl  { --sf-grid-min: var(--sf-grid-min-xl); }
+  .sf-grid-flex--2xl { --sf-grid-min: var(--sf-grid-min-2xl); }
+
   .sf-icon {
     display:        inline-block;
     inline-size:    var(--sf-icon-size, var(--sf-icon-m));
@@ -2728,41 +2973,41 @@
 
   /* Background layer — absolutely-positioned cover media that sits behind a
      parent's content. The parent is auto-promoted to a positioned, isolated
-     stacking context via :has(), so .sf-bg composes natively under .sf-scrim
-     (background → scrim gradient → content). Works as a bare <img class="sf-bg">
+     stacking context via :has(), so .sf-bg-layer composes natively under .sf-scrim
+     (background → scrim gradient → content). Works as a bare <img class="sf-bg-layer">
      or as a wrapper with a nested > img / > video. */
-  :where(:has(> .sf-bg)) {
+  :where(:has(> .sf-bg-layer)) {
     position:  relative;
     isolation: isolate;
   }
 
-  .sf-bg {
+  .sf-bg-layer {
     position:        absolute;
-    inset:           var(--sf-bg-inset);
-    inline-size:     calc(100% - 2 * var(--sf-bg-inset));
-    block-size:      calc(100% - 2 * var(--sf-bg-inset));
-    object-fit:      var(--sf-bg-fit);
-    object-position: var(--sf-bg-position);
-    border-radius:   var(--sf-bg-radius);
-    z-index:         var(--sf-bg-z);
+    inset:           var(--sf-bg-layer-inset);
+    inline-size:     calc(100% - 2 * var(--sf-bg-layer-inset));
+    block-size:      calc(100% - 2 * var(--sf-bg-layer-inset));
+    object-fit:      var(--sf-bg-layer-fit);
+    object-position: var(--sf-bg-layer-position);
+    border-radius:   var(--sf-bg-layer-radius);
+    z-index:         var(--sf-bg-layer-z);
     pointer-events:  none;
   }
 
-  .sf-bg > :is(img, video, picture) {
+  .sf-bg-layer > :is(img, video, picture) {
     inline-size:     100%;
     block-size:      100%;
-    object-fit:      var(--sf-bg-fit);
-    object-position: var(--sf-bg-position);
-    border-radius:   var(--sf-bg-radius);
+    object-fit:      var(--sf-bg-layer-fit);
+    object-position: var(--sf-bg-layer-position);
+    border-radius:   var(--sf-bg-layer-radius);
     pointer-events:  none;
   }
 
-  .sf-bg > picture > img {
+  .sf-bg-layer > picture > img {
     inline-size:     100%;
     block-size:      100%;
-    object-fit:      var(--sf-bg-fit);
-    object-position: var(--sf-bg-position);
-    border-radius:   var(--sf-bg-radius);
+    object-fit:      var(--sf-bg-layer-fit);
+    object-position: var(--sf-bg-layer-position);
+    border-radius:   var(--sf-bg-layer-radius);
     pointer-events:  none;
   }
 
@@ -2877,14 +3122,16 @@
   }
 
   .sf-equal {
-    display:               grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(var(--sf-equal-min-col), 100%), 1fr));
-    gap:                   var(--sf-equal-gap);
+    column-width: var(--sf-equal-min-col);
+    column-gap:   var(--sf-equal-gap);
+    column-rule:  var(--sf-equal-rule-width) var(--sf-equal-rule-style) var(--sf-equal-rule-color);
   }
-  .sf-equal--2 { --sf-equal-min-col: var(--sf-equal-min-col-2); }
-  .sf-equal--3 { --sf-equal-min-col: var(--sf-equal-min-col-3); }
-  .sf-equal--4 { --sf-equal-min-col: var(--sf-equal-min-col-4); }
-  .sf-equal--6 { --sf-equal-min-col: var(--sf-equal-min-col-6); }
+  .sf-equal > * { break-inside: avoid; }
+
+  .sf-equal--2 { column-count: 2; }
+  .sf-equal--3 { column-count: 3; }
+  .sf-equal--4 { column-count: 4; }
+  .sf-equal--6 { column-count: 6; }
 
   
   .sf-content-grid {
@@ -2907,7 +3154,6 @@
   .sf-content-grid > .sf-breakout   { grid-column: breakout; }
   .sf-content-grid > .sf-full-bleed { grid-column: full; }
 
-  
   .sf-bento {
     display:               grid;
     grid-template-columns: repeat(var(--sf-bento-cols, var(--sf-bento-cols-default)), 1fr);
@@ -3259,6 +3505,22 @@
   .sf-scrim--bottom { --sf-scrim-direction: to top; }
   .sf-scrim--full   { --sf-scrim-gradient: var(--sf-scrim-color); }
 
+  /* Named background surface preset (issue #523). Composes the
+     --sf-surface-bg-* token set (see tokens.macros.css) into one reusable,
+     named background: base colour + image/gradient/pattern, sizing, an
+     optional overlay layered above the image, and an optional animation.
+     Inert until a preset feeds the tokens. The overlay is the first
+     background-image layer so it paints ABOVE the image. */
+  .sf-surface-bg {
+    background-color:      var(--sf-surface-bg-color);
+    background-image:      var(--sf-surface-bg-overlay), var(--sf-surface-bg-image);
+    background-size:       var(--sf-surface-bg-size);
+    background-position:   var(--sf-surface-bg-position);
+    background-repeat:     var(--sf-surface-bg-repeat);
+    background-attachment: var(--sf-surface-bg-attachment);
+    animation:             var(--sf-surface-bg-animation);
+  }
+
   .sf-text-protect {
     text-shadow: var(--sf-scrim-text-shadow);
   }
@@ -3275,6 +3537,14 @@
     font-size:       0.85em;
     text-decoration: none;
   }
+  /* Alt-text form (accessible name for the glyph) — gated so a UA that
+     rejects the "value / string" grammar keeps the plain marker above
+     instead of dropping the whole declaration. */
+  @supports (content: "x" / "y") {
+    .sf-link-external::after {
+      content: var(--sf-link-external-marker) / var(--sf-link-external-label);
+    }
+  }
 
   .sf-content-auto {
     content-visibility:     auto;
@@ -3284,6 +3554,14 @@
   .sf-tabular-nums {
     font-variant-numeric: var(--sf-font-numeric, tabular-nums);
   }
+
+  /* filter: drop-shadow() utilities — unlike box-shadow, follows the element's
+     actual alpha shape (SVG icons, PNG cutouts, transparent logos). */
+  .sf-drop-shadow-xs { filter: var(--sf-drop-shadow-xs); }
+  .sf-drop-shadow-s  { filter: var(--sf-drop-shadow-s); }
+  .sf-drop-shadow-m  { filter: var(--sf-drop-shadow-m); }
+  .sf-drop-shadow-l  { filter: var(--sf-drop-shadow-l); }
+  .sf-drop-shadow-xl { filter: var(--sf-drop-shadow-xl); }
 
   .sf-link--subtle:link,
   .sf-link--subtle:visited {
@@ -3304,35 +3582,85 @@
     text-decoration-line: none;
   }
 
+  /* Concave corner — a corner that curves AWAY from the box (revealing
+     whatever sits behind it), via a radial-gradient mask. Physical corner
+     names (mask geometry has no logical form, same rationale as
+     .sf-overflow-fade's physical directions). Cuts the element's full
+     paint at that corner — box-shadow/border don't survive the cut there;
+     put shadows on a wrapper if needed. Named to mirror the future
+     `corner-shape: scoop` keyword for an easy @supports migration. */
+  .sf-corner-scoop {
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 18 */
+    -webkit-mask-image: radial-gradient(circle at var(--sf-corner-scoop-at),
+      transparent var(--sf-corner-scoop-size),
+      black calc(var(--sf-corner-scoop-size) + 0.5px));
+    mask-image: radial-gradient(circle at var(--sf-corner-scoop-at),
+      transparent var(--sf-corner-scoop-size),
+      black calc(var(--sf-corner-scoop-size) + 0.5px));
+  }
+  .sf-corner-scoop--top-left     { --sf-corner-scoop-at: 0 0; }
+  .sf-corner-scoop--top-right    { --sf-corner-scoop-at: 100% 0; }
+  .sf-corner-scoop--bottom-left  { --sf-corner-scoop-at: 0 100%; }
+  .sf-corner-scoop--bottom-right { --sf-corner-scoop-at: 100% 100%; }
+
+  /* Overlap recipe — one element intentionally overlapping the previous
+     one (e.g. an image pulled up over the card below it), via a negative
+     logical margin + a raised stacking context. Directional variants are
+     standalone (margins are distinct properties, not a re-pointable knob). */
+  .sf-overlap,
+  .sf-overlap--down,
+  .sf-overlap--start,
+  .sf-overlap--end {
+    position: relative;
+    z-index:  var(--sf-z-raised);
+  }
+  .sf-overlap        { margin-block-start:  calc(-1 * var(--sf-overlap-pull)); }
+  .sf-overlap--down  { margin-block-end:    calc(-1 * var(--sf-overlap-pull)); }
+  .sf-overlap--start { margin-inline-start: calc(-1 * var(--sf-overlap-pull)); }
+  .sf-overlap--end   { margin-inline-end:   calc(-1 * var(--sf-overlap-pull)); }
+
+  /* Card-container recipe — the receiving side of an overlap: an isolated
+     stacking context with block-start padding compensation so in-flow
+     content clears an element intruding from above. The padding knob
+     defaults to the pull knob so one override tunes both. */
+  .sf-overlap-host {
+    position:  relative;
+    isolation: isolate;
+    /* var() fallback resolved on this element, not pre-baked at :root —
+       so a local --sf-overlap-pull override (even without setting
+       --sf-overlap-host-pad) is honored (#496-class pitfall). */
+    padding-block-start: var(--sf-overlap-host-pad, var(--sf-overlap-pull));
+  }
+
 }
 
 /* ─── core/states.css ─── */
 /* SLASHED — core/states.css
    @layer slashed.states
    Generic runtime states toggled by JS or ARIA: visibility, interactivity, selection, busy/current.
-   Prefix: .is-*; not utilities or component-specific variants. */
+   Prefix: .sf-is-*; not utilities or component-specific variants. */
 
 @layer slashed.states {
 
-  /* VISIBILITY */
+  /* -- VISIBILITY -- */
 
-  .is-hidden {
+  .sf-is-hidden {
     display: none !important;
   }
 
-  .is-invisible {
+  .sf-is-invisible {
     visibility: hidden;
   }
 
-  .is-visible {
+  .sf-is-visible {
     visibility: visible;
   }
 
-  /* INTERACTIVITY */
+  /* -- INTERACTIVITY -- */
 
   /* cursor: not-allowed inherits to children with pointer-events: auto —
-     intentional, part of the .is-disabled API surface. */
-  .is-disabled {
+     intentional, part of the .sf-is-disabled API surface. */
+  .sf-is-disabled {
     opacity:        var(--sf-opacity-disabled);
     pointer-events: none;
 
@@ -3340,24 +3668,24 @@
     user-select:    none;
   }
 
-  .is-readonly {
+  .sf-is-readonly {
     pointer-events: none;
     user-select:    none;
   }
 
-  /* LOADING / ASYNC FEEDBACK */
+  /* -- LOADING / ASYNC FEEDBACK -- */
 
-  .is-loading {
+  .sf-is-loading {
     color:          transparent !important;
     pointer-events: none;
     position:       relative;
   }
 
-  .is-loading > * {
+  .sf-is-loading > * {
     opacity: 0 !important;
   }
 
-  .is-loading::after {
+  .sf-is-loading::after {
     content:             "";
     position:            absolute;
     inset-block-start:   50%;
@@ -3373,22 +3701,22 @@
     animation: var(--sf-animation-spin);
   }
 
-  .is-busy {
+  .sf-is-busy {
     cursor: progress;
   }
 
-  .is-pending {
+  .sf-is-pending {
 
     opacity: var(--sf-state-pending-opacity);
     cursor:  progress;
   }
 
-  img.is-skeleton,
-  .is-skeleton img {
+  img.sf-is-skeleton,
+  .sf-is-skeleton img {
     opacity: 0 !important;
   }
 
-  .is-skeleton {
+  .sf-is-skeleton {
     color:           transparent !important;
     background:      linear-gradient(
                        90deg,
@@ -3403,168 +3731,95 @@
     user-select:     none;
   }
 
-  /* ACTIVE / SELECTED / CURRENT */
+  /* -- ACTIVE / SELECTED / CURRENT -- */
 
-  .is-active {
+  .sf-is-active {
 
     --sf-is-active: 1;
   }
 
-  .is-selected {
+  .sf-is-selected {
     background-color: var(--sf-color-bg--selected);
   }
 
-  .is-current {
+  .sf-is-current {
 
     --sf-is-current: 1;
     font-weight: var(--sf-current-font-weight, var(--sf-font-weight-bold));
   }
 
-  .is-highlighted {
+  .sf-is-highlighted {
     background-color: var(--sf-color-bg--focus);
   }
 
-  .is-pressed {
+  .sf-is-pressed {
 
     --sf-is-pressed: 1;
     background-color: var(--sf-color-bg--selected);
   }
 
-  /* OPEN / CLOSED */
+  /* -- OPEN / CLOSED -- */
 
-  .is-open {
+  .sf-is-open {
     --sf-is-open: 1;
   }
 
-  .is-collapsed {
+  .sf-is-collapsed {
     --sf-is-open: 0;
   }
 
-  .is-expanded {
+  .sf-is-expanded {
     --sf-is-open: 1;
   }
 
-  /* VALIDATION / FEEDBACK */
+  /* -- VALIDATION / FEEDBACK -- */
 
-  .is-valid,
-  .is-success {
+  .sf-is-valid,
+  .sf-is-success {
     --sf-field-border-color: var(--sf-color-success);
     --sf-field-text-color:   var(--sf-color-success-strong);
   }
 
-  .is-invalid,
-  .is-error {
+  .sf-is-invalid,
+  .sf-is-error {
     --sf-field-border-color: var(--sf-color-danger);
     --sf-field-text-color:   var(--sf-color-danger-strong);
   }
 
-  .is-warning {
+  .sf-is-warning {
     --sf-field-border-color: var(--sf-color-warning);
     --sf-field-text-color:   var(--sf-color-warning-strong);
   }
 
-  .is-info {
+  .sf-is-info {
     --sf-field-border-color: var(--sf-color-info);
     --sf-field-text-color:   var(--sf-color-info-strong);
   }
 
-  .is-danger {
+  .sf-is-danger {
     --sf-field-border-color: var(--sf-color-danger);
     --sf-field-text-color:   var(--sf-color-danger-strong);
   }
 
-  /* POSITION / STICKINESS */
+  /* -- DRAG & DROP -- */
 
-  .is-sticky {
-    position:         sticky;
-    inset-block-start: var(--sf-sticky-offset, 0);
-    z-index:           var(--sf-z-sticky);
-  }
-
-  .is-pinned {
-    position:         sticky;
-    inset-block-start: 0;
-    z-index:           var(--sf-z-fixed);
-  }
-
-  .is-fixed {
-
-    position: fixed;
-  }
-
-  .is-fullscreen {
-
-    position: fixed;
-    inset:    0;
-    z-index:  var(--sf-z-overlay);
-  }
-
-  .is-resizable {
-    resize:          both;
-    overflow:        auto;
-    min-inline-size: var(--sf-space-xl, 3.55rem);
-    min-block-size:  var(--sf-space-xl, 3.55rem);
-  }
-
-  /* OVERFLOW / CLIPPING */
-
-  .is-clipped {
-    overflow: hidden !important;
-  }
-
-  .is-scrollable {
-    overflow: auto;
-    overscroll-behavior: contain;
-  }
-
-  .is-truncated {
-    overflow:      hidden;
-    text-overflow: ellipsis;
-    white-space:   nowrap;
-  }
-
-  /* DRAG & DROP */
-
-  .is-dragging {
+  .sf-is-dragging {
     opacity: var(--sf-opacity-muted);
     cursor:  grabbing;
   }
 
-  .is-drop-target {
+  .sf-is-drop-target {
     outline:        var(--sf-focus-ring-width) dashed var(--sf-color-action);
     outline-offset: var(--sf-focus-ring-offset);
   }
 
-  .is-draggable {
+  .sf-is-draggable {
     cursor: grab;
   }
 
-  /* OVERLAY / BACKDROP */
+  /* -- EMPTY STATE -- */
 
-  .is-overlay {
-    position: absolute;
-    inset:    0;
-  }
-
-  /* FOCUS / INTERACTION MODIFIERS */
-
-  .is-clickable {
-    cursor:  pointer;
-  }
-
-  .is-unselectable {
-    user-select: none;
-  }
-
-  .is-focused {
-
-    outline:        var(--sf-focus-ring-width) var(--sf-focus-ring-style, solid) var(--sf-focus-ring-color);
-    outline-offset: var(--sf-focus-ring-offset);
-  }
-
-  /* EMPTY STATE */
-
-  .is-empty:empty {
+  .sf-is-empty:empty {
     display: none;
   }
 
@@ -3589,8 +3844,8 @@
     a, button, input, select, textarea, summary {
       transition-property:
         color, background-color, border-color, text-decoration-color,
-        fill, stroke, opacity, box-shadow, transform, filter,
-        backdrop-filter;
+        fill, stroke, opacity, box-shadow, transform, scale, translate,
+        filter, backdrop-filter;
       transition-duration:        var(--sf-duration-fast);
       transition-timing-function: var(--sf-ease-out);
     }
@@ -3646,6 +3901,35 @@
     .sf-entrance--fade-right  { animation-name: sf-slide-in-right; }
     .sf-entrance--scale-up    { animation-name: sf-scale-up; }
 
+
+    /* Exit counterpart of .sf-entrance--*: fires as the element scrolls
+       out of view. Every declaration below lives inside @supports —
+       unlike entrance (where a non-scroll fallback still ends visible),
+       an unconditional exit animation would leave content permanently
+       hidden on engines without animation-timeline: view() support, so
+       there is deliberately no fallback declaration outside @supports. */
+    @supports (animation-timeline: view()) {
+      .sf-exit--fade,
+      .sf-exit--fade-up,
+      .sf-exit--fade-down,
+      .sf-exit--fade-left,
+      .sf-exit--fade-right,
+      .sf-exit--scale-down {
+        animation-duration:        var(--sf-duration-slow);
+        animation-timing-function: var(--sf-ease-in);
+        animation-fill-mode:       both;
+        animation-timeline: view();
+        animation-range:    var(--sf-scroll-timeline-range-exit-start, cover 70%)
+                            var(--sf-scroll-timeline-range-exit-end,   exit 100%);
+      }
+      .sf-exit--fade        { animation-name: sf-fade-out; }
+      .sf-exit--fade-up     { animation-name: sf-slide-out-up; }
+      .sf-exit--fade-down   { animation-name: sf-slide-out-down; }
+      .sf-exit--fade-left   { animation-name: sf-slide-out-left; }
+      .sf-exit--fade-right  { animation-name: sf-slide-out-right; }
+      .sf-exit--scale-down  { animation-name: sf-scale-down; }
+    }
+
   }
 
   @keyframes sf-fade-in   { from { opacity: 0; } to { opacity: 1; } }
@@ -3656,6 +3940,11 @@
   @keyframes sf-slide-in-right { from { opacity: 0; translate: -1rem 0; } to { opacity: 1; translate: 0 0; } }
   @keyframes sf-scale-up   { from { opacity: 0; scale: 0.92; } to { opacity: 1; scale: 1; } }
   @keyframes sf-scale-down { from { opacity: 1; scale: 1; } to { opacity: 0; scale: 0.92; } }
+
+  @keyframes sf-slide-out-up    { from { opacity: 1; translate: 0 0; } to { opacity: 0; translate: 0 -1rem; } }
+  @keyframes sf-slide-out-down  { from { opacity: 1; translate: 0 0; } to { opacity: 0; translate: 0 1rem;  } }
+  @keyframes sf-slide-out-left  { from { opacity: 1; translate: 0 0; } to { opacity: 0; translate: -1rem 0; } }
+  @keyframes sf-slide-out-right { from { opacity: 1; translate: 0 0; } to { opacity: 0; translate: 1rem 0;  } }
 
   @keyframes sf-spin    { to { rotate: 360deg; } }
   @keyframes sf-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
@@ -3921,7 +4210,7 @@
       color:                    CanvasText !important;
     }
 
-    .is-loading::after {
+    .sf-is-loading::after {
       border-color:             ButtonText !important;
       border-block-start-color: Highlight !important;
     }
@@ -3988,6 +4277,16 @@
       break-after: avoid;
 
     }
+
+    /* Fluid --sf-h*-size tokens resolve via 100vw clamp()s, which have no
+       reliable meaning on a print page box. Pin print heading sizes to
+       static pt values instead. */
+    h1 { font-size: 24pt; }
+    h2 { font-size: 20pt; }
+    h3 { font-size: 16pt; }
+    h4 { font-size: 14pt; }
+    h5 { font-size: 12pt; }
+    h6 { font-size: 11pt; }
 
     p {
       orphans: 3;
@@ -4308,8 +4607,8 @@
 /* ─── optional/tokens.components.css ─── */
 /* SLASHED — optional/tokens.components.css
    @layer slashed.tokens
-   Reserved component token surface for the optional component module.
-   Prefix: --sf-*; declarations stay commented until matching classes ship. */
+   Component token surface for the optional component module: card, field,
+   and button knobs. Prefix: --sf-*. */
 
 @layer slashed.tokens {
   :root {
@@ -4317,29 +4616,31 @@
     /* ============================================================
      * CARD TOKENS
      * ============================================================
-     *
      * Concentric radius math: outer = inner + padding. Keeps inner
      * elements that use the global --sf-radius-m visually
-     * proportional inside a padded card.
-     *
-     * --sf-card-padding:        var(--sf-space-l);
-     * --sf-card-gap:            var(--sf-space-m);
-     * --sf-card-radius:         var(--sf-radius-m);
-     * --sf-card-radius-outer:   calc(var(--sf-card-radius) + var(--sf-card-padding));
-     * --sf-card-bg:             var(--sf-color-surface);
-     * --sf-card-border-width:   var(--sf-border-width-1);
-     * --sf-card-border-color:   var(--sf-color-border);
-     * --sf-card-shadow:         var(--sf-shadow-s);
-     *
-     * Smart-card subcomponents (.sf-card__media / __avatar / __title and the
+     * proportional inside a padded card. */
+    --sf-card-padding:        var(--sf-space-l);
+    --sf-card-gap:            var(--sf-space-m);
+    --sf-card-radius:         var(--sf-radius-m);
+    --sf-card-radius-outer:   calc(var(--sf-card-radius) + var(--sf-card-padding));
+    --sf-card-bg:             var(--sf-color-surface);
+    --sf-card-border-width:   var(--sf-border-width-1);
+    --sf-card-border-color:   var(--sf-color-border);
+    --sf-card-shadow:         var(--sf-shadow-s);
+    /* Shadow escalation for the --elevated and --interactive modifiers.
+     * Both default to the same --sf-shadow-l step (elevated's resting shadow
+     * and interactive's hover shadow read as the same "lifted" level) — two
+     * tokens so each modifier can still be tuned independently. */
+    --sf-card-shadow--elevated: var(--sf-shadow-l);
+    --sf-card-shadow--hover:    var(--sf-shadow-l);
+
+    /* Smart-card subcomponents (.sf-card__media / __avatar / __title and the
      * scoped button font-size override). Media defaults to the 16/9 ratio
-     * token; inner media radius mirrors the card's inner radius.
-     *
-     * --sf-card-media-ratio:    var(--sf-ratio-video);
-     * --sf-card-media-radius:   var(--sf-card-radius, var(--sf-radius-m));
-     * --sf-card-heading-size:   var(--sf-text-xl);
-     * --sf-card-btn-font-size:  var(--sf-text-s);
-     */
+     * token; inner media radius mirrors the card's inner radius. */
+    --sf-card-media-ratio:    var(--sf-ratio-video);
+    --sf-card-media-radius:   var(--sf-card-radius, var(--sf-radius-m));
+    --sf-card-heading-size:   var(--sf-text-xl);
+    --sf-card-btn-font-size:  var(--sf-text-s);
 
     /* ============================================================
      * FIELD TOKENS
@@ -4358,12 +4659,15 @@
     --sf-btn-radius:         var(--sf-radius-m);
     --sf-btn-padding-block:  var(--sf-space-xs);
     --sf-btn-padding-inline: var(--sf-space-m);
+    --sf-btn-gap:            var(--sf-space-2xs);
+    --sf-btn-font-size:      var(--sf-text-m);
+    --sf-btn-font-weight:    var(--sf-font-weight-interactive);
+    --sf-btn-min-height:     var(--sf-touch-target);
+    --sf-btn-border-width:   var(--sf-border-width-1);
     /*
-     * --sf-btn-gap:          var(--sf-space-2xs);
-     * --sf-btn-font-size:    var(--sf-text-m);
-     * --sf-btn-font-weight:  var(--sf-font-weight-interactive);
-     * --sf-btn-min-height:   var(--sf-touch-target);
-     * --sf-btn-border-width: var(--sf-border-width-1);
+     * Size modifiers (.sf-btn--xs/--s/--l/--xl) and the colour family
+     * (--sf-btn-color / --sf-btn-color--hover / --sf-btn-on-color) are
+     * rule-local overrides set in optional/components.css, not global knobs.
      *
      * Full-width: .sf-btn--block is unconditional; .sf-btn--block-cq
      * stretches to 100% only inside a query container narrower than 20rem
@@ -4372,117 +4676,18 @@
      * there is no token for it.
      */
 
-    /* ============================================================
-     * BADGE TOKENS
-     * ============================================================
-     *
-     * --sf-badge-pad-x:         var(--sf-space-2xs);
-     * --sf-badge-pad-y:         var(--sf-space-3xs, 0.125rem);
-     * --sf-badge-radius:        var(--sf-radius-pill, 9999px);
-     * --sf-badge-font-size:     var(--sf-text-2xs);
-     * --sf-badge-font-weight:   var(--sf-font-weight-interactive);
-     * --sf-badge-line-height:   var(--sf-leading-tight);
-     */
-
-    /* ============================================================
-     * TAG TOKENS
-     * ============================================================
-     *
-     * --sf-tag-pad-x:           var(--sf-space-xs);
-     * --sf-tag-pad-y:           var(--sf-space-3xs, 0.125rem);
-     * --sf-tag-radius:          var(--sf-radius-s);
-     * --sf-tag-gap:             var(--sf-space-2xs);
-     * --sf-tag-font-size:       var(--sf-text-xs);
-     * --sf-tag-bg:              var(--sf-color-inset);
-     * --sf-tag-border-width:    var(--sf-border-width-1);
-     * --sf-tag-border-color:    var(--sf-color-border);
-     */
-
-    /* ============================================================
-     * ALERT TOKENS
-     * ============================================================
-     *
-     * --sf-alert-pad:           var(--sf-space-m);
-     * --sf-alert-radius:        var(--sf-radius-m);
-     * --sf-alert-gap:           var(--sf-space-s);
-     * --sf-alert-border-width:  var(--sf-border-width-1);
-     * --sf-alert-icon-size:     var(--sf-icon-m);
-     */
-
-    /* ============================================================
-     * AVATAR TOKENS
-     * ============================================================
-     *
-     * --sf-avatar-size:         2.5rem;
-     * --sf-avatar-radius:       var(--sf-radius-full, 50%);
-     * --sf-avatar-bg:           var(--sf-color-inset);
-     * --sf-avatar-font-weight:  var(--sf-font-weight-semibold);
-     * --sf-avatar-border-width: 0;
-     * --sf-avatar-border-color: var(--sf-color-border);
-     */
-
-    /* ============================================================
-     * MODAL TOKENS
-     * ============================================================
-     *
-     * --sf-modal-pad:           var(--sf-space-l);
-     * --sf-modal-gap:           var(--sf-space-m);
-     * --sf-modal-radius:        var(--sf-radius-l);
-     * --sf-modal-max-inline:    min(90vw, 32rem);
-     * --sf-modal-bg:            var(--sf-color-surface);
-     * --sf-modal-shadow:        var(--sf-shadow-xl);
-     * --sf-modal-backdrop-bg:   color-mix(in oklab, var(--sf-color-neutral) 60%, transparent);
-     * --sf-modal-z:             var(--sf-z-modal);
-     */
-
-    /* ============================================================
-     * SKELETON TOKENS
-     * ============================================================
-     *
-     * --sf-skeleton-bg:         var(--sf-color-inset);
-     * --sf-skeleton-shimmer:    var(--sf-color-raised);
-     * --sf-skeleton-radius:     var(--sf-radius-s);
-     * --sf-skeleton-duration:   1.5s;
-     * --sf-skeleton-line-height: 0.8em;
-     */
-
-    /* ============================================================
-     * FORM LAYOUT HELPER TOKENS
-     * Gap tokens for .sf-field, .sf-form-row, .sf-form-col,
-     * and .sf-form-inline declared in optional/components.css.
-     * ============================================================
-     *
-     * --sf-field-gap:          var(--sf-space-2xs);
-     * --sf-form-row-gap:       var(--sf-space-m);
-     * --sf-form-col-gap:       var(--sf-space-s);
-     * --sf-form-inline-gap:    var(--sf-space-s);
-     */
-
-    /* ============================================================
-     * TABLE TOKENS
-     * Sizing tokens for .sf-table declared in
-     * optional/components.css.
-     * ============================================================
-     *
-     * --sf-table-cell-pad-block:  var(--sf-space-xs);
-     * --sf-table-cell-pad-inline: var(--sf-space-s);
-     * --sf-table-border-color:    var(--sf-color-border);
-     * --sf-table-stripe-bg:       var(--sf-color-inset);
-     * --sf-table-header-weight:   var(--sf-font-weight-semibold);
-     * --sf-table-compact-pad:     var(--sf-space-3xs, 0.125rem);
-     */
-
   }
 }
 
 /* ─── optional/components.css ─── */
 /* SLASHED — optional/components.css
    @layer slashed.components
-   Reserved component class surface for button, card, badge, tag, alert,
-   avatar, modal, skeleton, form layout helpers, and table.
+   Component class surface: button and card.
 
-   STAGED — all definitions are commented out until v0.8.
-   Imports optional component tokens (tokens are live where noted). */
+   .sf-btn and .sf-card are LIVE since v0.7.0. These are the only two
+   components SLASHED ships — the framework stays BEM-first and token-first
+   and does not carry a broad component library.
+   Imports optional component tokens. */
 
 
 @layer slashed.components {
@@ -4490,21 +4695,37 @@
   /* ============================================================
    * .sf-btn
    * Interactive call-to-action element. Apply to <button> or <a>.
-   * Style variants:    --secondary | --ghost
+   * Style variants:    --secondary | --ghost | --outline
    * Semantic variants: --primary | --neutral | --success | --warning |
    *                    --info | --danger
+   * Sizes:  --xs | --s | (default m) | --l | --xl
    * Width:  intrinsic by default (like every other framework). --block
    *         forces full width everywhere; --block-cq opts into full width
    *         only inside a query container narrower than 20rem (needs a
    *         container ancestor — the layout primitives or .sf-cq provide
    *         one). No @media breakpoints.
-   * States: :disabled / .is-disabled | .is-loading
-   * Base .sf-btn uses --sf-color-action (the default action color).
-   * Semantic hover: brand colors use the --hover token; status colors
-   * (success/warning/info/danger) use the direction-aware -strong triplet.
+   * States: :disabled / .sf-is-disabled | .sf-is-loading
+   *
+   * Colour model: every variant sets three rule-local custom properties
+   * — --sf-btn-color (family base), --sf-btn-color--hover, and
+   * --sf-btn-on-color (readable foreground) — and the fill / --secondary /
+   * --ghost / --outline treatments all derive from them. This keeps the
+   * --outline modifier orthogonal: it composes with any colour family
+   * (e.g. .sf-btn--outline.sf-btn--danger). Base .sf-btn uses the default
+   * action colour. Semantic hover: brand colours use the --hover token;
+   * status colours (success/warning/info/danger) use the direction-aware
+   * -strong triplet.
+   *
+   * Focus: the global core/accessibility.css :focus-visible rule already
+   * applies the WCAG ring to every focusable element, so .sf-btn needs no
+   * component-level focus outline of its own.
    * ============================================================ */
-  /*
   .sf-btn {
+    /* Rule-local colour family — variants override these three. */
+    --sf-btn-color:        var(--sf-color-action);
+    --sf-btn-color--hover: var(--sf-color-action--hover);
+    --sf-btn-on-color:     var(--sf-color-text--on-action);
+
     display:          inline-flex;
     align-items:      center;
     justify-content:  center;
@@ -4518,125 +4739,145 @@
     line-height:      var(--sf-leading-tight);
     text-decoration:  none;
     white-space:      nowrap;
-    border:           var(--sf-btn-border-width, var(--sf-border-width-1)) solid var(--sf-color-action);
+    border:           var(--sf-btn-border-width, var(--sf-border-width-1)) solid var(--sf-btn-color);
     border-radius:    var(--sf-btn-radius);
     cursor:           pointer;
     user-select:      none;
     appearance:       none;
     transition:       var(--sf-transition-form-field);
-    background:       var(--sf-color-action);
-    color:            var(--sf-color-text--on-action);
+    background:       var(--sf-btn-color);
+    color:            var(--sf-btn-on-color);
   }
-  .sf-btn:hover:not(:disabled, .is-disabled, .is-loading) {
-    background:   var(--sf-color-action--hover);
-    border-color: var(--sf-color-action--hover);
+  .sf-btn:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background:   var(--sf-btn-color--hover);
+    border-color: var(--sf-btn-color--hover);
   }
 
+  /* --- Semantic colour families: set the three locals only --- */
+  .sf-btn--primary {
+    --sf-btn-color:        var(--sf-color-primary);
+    --sf-btn-color--hover: var(--sf-color-primary--hover);
+    --sf-btn-on-color:     var(--sf-color-text--on-primary);
+  }
+  .sf-btn--neutral {
+    --sf-btn-color:        var(--sf-color-neutral);
+    --sf-btn-color--hover: var(--sf-color-neutral--hover);
+    --sf-btn-on-color:     var(--sf-color-text--on-neutral);
+  }
+  .sf-btn--success {
+    --sf-btn-color:        var(--sf-color-success);
+    --sf-btn-color--hover: var(--sf-color-success-strong);
+    --sf-btn-on-color:     var(--sf-color-text--on-success);
+  }
+  .sf-btn--warning {
+    --sf-btn-color:        var(--sf-color-warning);
+    --sf-btn-color--hover: var(--sf-color-warning-strong);
+    --sf-btn-on-color:     var(--sf-color-text--on-warning);
+  }
+  .sf-btn--info {
+    --sf-btn-color:        var(--sf-color-info);
+    --sf-btn-color--hover: var(--sf-color-info-strong);
+    --sf-btn-on-color:     var(--sf-color-text--on-info);
+  }
+  .sf-btn--danger {
+    --sf-btn-color:        var(--sf-color-danger);
+    --sf-btn-color--hover: var(--sf-color-danger-strong);
+    --sf-btn-on-color:     var(--sf-color-text--on-danger);
+  }
+
+  /* --- Style treatments (compose with any colour family) --- */
   .sf-btn--secondary {
     background:   transparent;
-    color:        var(--sf-color-action);
-    border-color: var(--sf-color-action);
+    color:        var(--sf-btn-color);
+    border-color: var(--sf-btn-color);
   }
-  .sf-btn--secondary:hover:not(:disabled, .is-disabled, .is-loading) {
-    background: color-mix(in oklab, var(--sf-color-action) 8%, transparent);
+  .sf-btn--secondary:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background:   color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
+    border-color: var(--sf-btn-color);
   }
 
   .sf-btn--ghost {
     background:   transparent;
-    color:        var(--sf-color-action);
+    color:        var(--sf-btn-color);
     border-color: transparent;
   }
-  .sf-btn--ghost:hover:not(:disabled, .is-disabled, .is-loading) {
-    background: color-mix(in oklab, var(--sf-color-action) 8%, transparent);
+  .sf-btn--ghost:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background: color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
   }
 
-  .sf-btn--primary {
-    background:   var(--sf-color-primary);
-    color:        var(--sf-color-text--on-primary);
-    border-color: var(--sf-color-primary);
+  /* Outline: transparent to start, fills with the family colour on hover. */
+  .sf-btn--outline {
+    background:   transparent;
+    color:        var(--sf-btn-color);
+    border-color: var(--sf-btn-color);
   }
-  .sf-btn--primary:hover:not(:disabled, .is-disabled, .is-loading) {
-    background:   var(--sf-color-primary--hover);
-    border-color: var(--sf-color-primary--hover);
-  }
-
-  .sf-btn--neutral {
-    background:   var(--sf-color-neutral);
-    color:        var(--sf-color-text--on-neutral);
-    border-color: var(--sf-color-neutral);
-  }
-  .sf-btn--neutral:hover:not(:disabled, .is-disabled, .is-loading) {
-    background:   var(--sf-color-neutral--hover);
-    border-color: var(--sf-color-neutral--hover);
+  .sf-btn--outline:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background:   var(--sf-btn-color);
+    color:        var(--sf-btn-on-color);
+    border-color: var(--sf-btn-color);
   }
 
-  .sf-btn--success {
-    background:   var(--sf-color-success);
-    color:        var(--sf-color-text--on-success);
-    border-color: var(--sf-color-success);
+  /* --- Sizes (m is the default; override the sizing tokens) --- */
+  .sf-btn--xs {
+    --sf-btn-padding-block:  var(--sf-space-3xs, 0.125rem);
+    --sf-btn-padding-inline: var(--sf-space-xs);
+    --sf-btn-font-size:      var(--sf-text-xs);
+    --sf-btn-min-height:     var(--sf-size-xs);
   }
-  .sf-btn--success:hover:not(:disabled, .is-disabled, .is-loading) {
-    background:   var(--sf-color-success-strong);
-    border-color: var(--sf-color-success-strong);
+  .sf-btn--s {
+    --sf-btn-padding-block:  var(--sf-space-2xs);
+    --sf-btn-padding-inline: var(--sf-space-s);
+    --sf-btn-font-size:      var(--sf-text-s);
+    --sf-btn-min-height:     var(--sf-size-s);
   }
-
-  .sf-btn--warning {
-    background:   var(--sf-color-warning);
-    color:        var(--sf-color-text--on-warning);
-    border-color: var(--sf-color-warning);
+  .sf-btn--l {
+    --sf-btn-padding-block:  var(--sf-space-s);
+    --sf-btn-padding-inline: var(--sf-space-l);
+    --sf-btn-font-size:      var(--sf-text-l);
+    --sf-btn-min-height:     var(--sf-size-xl);
   }
-  .sf-btn--warning:hover:not(:disabled, .is-disabled, .is-loading) {
-    background:   var(--sf-color-warning-strong);
-    border-color: var(--sf-color-warning-strong);
-  }
-
-  .sf-btn--info {
-    background:   var(--sf-color-info);
-    color:        var(--sf-color-text--on-info);
-    border-color: var(--sf-color-info);
-  }
-  .sf-btn--info:hover:not(:disabled, .is-disabled, .is-loading) {
-    background:   var(--sf-color-info-strong);
-    border-color: var(--sf-color-info-strong);
+  .sf-btn--xl {
+    --sf-btn-padding-block:  var(--sf-space-m);
+    --sf-btn-padding-inline: var(--sf-space-xl);
+    --sf-btn-font-size:      var(--sf-text-xl);
+    --sf-btn-min-height:     calc(var(--sf-size-xl) + var(--sf-space-s));
   }
 
-  .sf-btn--danger {
-    background:   var(--sf-color-danger);
-    color:        var(--sf-color-text--on-danger);
-    border-color: var(--sf-color-danger);
-  }
-  .sf-btn--danger:hover:not(:disabled, .is-disabled, .is-loading) {
-    background:   var(--sf-color-danger-strong);
-    border-color: var(--sf-color-danger-strong);
-  }
-
+  /* --- States --- */
   .sf-btn:disabled,
-  .sf-btn.is-disabled {
+  .sf-btn.sf-is-disabled {
     opacity:        var(--sf-opacity-disabled);
     cursor:         not-allowed;
     pointer-events: none;
   }
 
-  .sf-btn.is-loading {
+  .sf-btn.sf-is-loading {
     cursor:   wait;
     position: relative;
   }
-  .sf-btn.is-loading > * {
+  .sf-btn.sf-is-loading > * {
     visibility: hidden;
   }
-  .sf-btn.is-loading::after {
+  .sf-btn.sf-is-loading::after {
     content:                  '';
     position:                 absolute;
     inset:                    0;
     margin:                   auto;
     inline-size:              1em;
     block-size:               1em;
-    border:                   2px solid currentColor;
+    border:                   2px solid currentcolor;
     border-block-start-color: transparent;
     border-radius:            var(--sf-radius-full);
-    animation:                sf-spin var(--sf-duration-slower) linear infinite;
+  }
+  /* Spinner only animates when motion is welcome; otherwise the ring is
+     shown static so the loading state is still visible. */
+  @media (prefers-reduced-motion: no-preference) {
+    .sf-btn.sf-is-loading::after {
+      animation: sf-spin var(--sf-duration-slower) linear infinite;
+    }
   }
 
+  /* --- Width --- */
   .sf-btn--block {
     inline-size: 100%;
   }
@@ -4646,11 +4887,13 @@
       inline-size: 100%;
     }
   }
-  */
 
   /* ============================================================
    * .sf-card
    * Padded content container with optional header/body/footer.
+   * Modifiers: --bordered (flat, outlined, no shadow) |
+   *            --elevated (floating shadow, no border) |
+   *            --interactive (pointer + hover/focus lift)
    * Concentric radius: --sf-card-radius-outer on the card,
    * --sf-card-radius on inner elements (mirrors the math in
    * tokens.components.css).
@@ -4658,7 +4901,6 @@
    * __title (unified heading size). Nested .sf-btn shrinks to
    * --sf-card-btn-font-size.
    * ============================================================ */
-  /*
   .sf-card {
     display:       block;
     padding:       var(--sf-card-padding, var(--sf-space-l));
@@ -4712,301 +4954,37 @@
   .sf-card .sf-btn {
     --sf-btn-font-size: var(--sf-card-btn-font-size, var(--sf-text-s));
   }
-  */
 
-  /* ============================================================
-   * .sf-badge
-   * Inline status indicator. Solid color variants for semantic
-   * meaning. Apply to <span> or any inline element.
-   * Variants: --primary | --success | --warning | --danger |
-   *           --info | --neutral
-   * ============================================================ */
-  /*
-  .sf-badge {
-    display:       inline-flex;
-    align-items:   center;
-    gap:           var(--sf-badge-gap, var(--sf-space-2xs));
-    padding-block:  var(--sf-badge-pad-y, var(--sf-space-3xs, 0.125rem));
-    padding-inline: var(--sf-badge-pad-x, var(--sf-space-2xs));
-    font-size:      var(--sf-badge-font-size, var(--sf-text-2xs));
-    font-weight:    var(--sf-badge-font-weight, var(--sf-font-weight-interactive));
-    line-height:    var(--sf-badge-line-height, var(--sf-leading-tight));
-    border-radius:  var(--sf-badge-radius, var(--sf-radius-pill));
-    white-space:    nowrap;
-    background:     var(--sf-color-inset);
-    color:          var(--sf-color-text--secondary);
+  /* --- Modifiers --- */
+  /* Flat, outlined card: keep the border, drop the shadow. */
+  .sf-card--bordered {
+    box-shadow: none;
   }
 
-  .sf-badge--primary {
-    background: var(--sf-color-primary);
-    color:      var(--sf-color-text--on-primary);
-  }
-  .sf-badge--success {
-    background: var(--sf-color-success);
-    color:      var(--sf-color-text--on-success);
-  }
-  .sf-badge--warning {
-    background: var(--sf-color-warning);
-    color:      var(--sf-color-text--on-warning);
-  }
-  .sf-badge--danger {
-    background: var(--sf-color-danger);
-    color:      var(--sf-color-text--on-danger);
-  }
-  .sf-badge--info {
-    background: var(--sf-color-info);
-    color:      var(--sf-color-text--on-info);
-  }
-  .sf-badge--neutral {
-    background: var(--sf-color-neutral);
-    color:      var(--sf-color-text--on-neutral);
-  }
-  */
-
-  /* ============================================================
-   * .sf-tag
-   * Category / keyword label with a border. Lighter than a badge.
-   * Color variants tint the border and text; bg stays neutral.
-   * --removable adds space for a dismiss button inside the tag.
-   * Variants: --primary | --success | --warning | --danger | --info
-   * ============================================================ */
-  /*
-  .sf-tag {
-    display:        inline-flex;
-    align-items:    center;
-    gap:            var(--sf-tag-gap, var(--sf-space-2xs));
-    padding-block:  var(--sf-tag-pad-y, var(--sf-space-3xs, 0.125rem));
-    padding-inline: var(--sf-tag-pad-x, var(--sf-space-xs));
-    font-size:      var(--sf-tag-font-size, var(--sf-text-xs));
-    line-height:    var(--sf-leading-tight);
-    white-space:    nowrap;
-    background:     var(--sf-tag-bg, var(--sf-color-inset));
-    border:         var(--sf-tag-border-width, var(--sf-border-width-1)) solid var(--sf-tag-border-color, var(--sf-color-border));
-    border-radius:  var(--sf-tag-radius, var(--sf-radius-s));
-    color:          var(--sf-color-text);
+  /* Floating card: lean on the shadow, hide the border. */
+  .sf-card--elevated {
+    border-color: transparent;
+    box-shadow:   var(--sf-card-shadow--elevated, var(--sf-shadow-l));
   }
 
-  .sf-tag--primary {
-    color:        var(--sf-color-action);
-    border-color: var(--sf-color-action);
-    background:   color-mix(in oklab, var(--sf-color-action) 8%, var(--sf-color-surface));
+  /* Whole-card affordance: pointer + lift on hover/keyboard focus.
+     Pair with .sf-clickable-parent when the entire card is a link. */
+  .sf-card--interactive {
+    cursor:     pointer;
+    transition: var(--sf-transition-shadow);
   }
-  .sf-tag--success {
-    color:        var(--sf-color-success);
-    border-color: var(--sf-color-success);
-    background:   color-mix(in oklab, var(--sf-color-success) 8%, var(--sf-color-surface));
+  .sf-card--interactive:hover,
+  .sf-card--interactive:focus-within {
+    box-shadow: var(--sf-card-shadow--hover, var(--sf-shadow-l));
   }
-  .sf-tag--warning {
-    color:        var(--sf-color-warning);
-    border-color: var(--sf-color-warning);
-    background:   color-mix(in oklab, var(--sf-color-warning) 8%, var(--sf-color-surface));
-  }
-  .sf-tag--danger {
-    color:        var(--sf-color-danger);
-    border-color: var(--sf-color-danger);
-    background:   color-mix(in oklab, var(--sf-color-danger) 8%, var(--sf-color-surface));
-  }
-  .sf-tag--info {
-    color:        var(--sf-color-info);
-    border-color: var(--sf-color-info);
-    background:   color-mix(in oklab, var(--sf-color-info) 8%, var(--sf-color-surface));
-  }
-
-  .sf-tag--removable {
-    padding-inline-end: var(--sf-space-2xs);
-  }
-  .sf-tag__remove {
-    display:        inline-flex;
-    align-items:    center;
-    justify-content: center;
-    flex-shrink:    0;
-    inline-size:    1em;
-    block-size:     1em;
-    margin-inline-start: var(--sf-space-3xs, 0.125rem);
-    border:         none;
-    background:     transparent;
-    cursor:         pointer;
-    padding:        0;
-    color:          inherit;
-    opacity:        0.6;
-    line-height:    1;
-    font-size:      1.1em;
-  }
-  .sf-tag__remove:hover {
-    opacity: 1;
-  }
-  */
-
-  /* ============================================================
-   * .sf-skeleton
-   * Loading placeholder with shimmer animation. Use --text,
-   * --line, --avatar, or --card shape modifiers to set default
-   * dimensions. Keyframe sf-shimmer is in core/motion.css.
-   * ============================================================ */
-  /*
-  .sf-skeleton {
-    display:       block;
-    border-radius: var(--sf-skeleton-radius, var(--sf-radius-s));
-    background:    var(--sf-skeleton-bg, var(--sf-color-inset));
-  }
-
   @media (prefers-reduced-motion: no-preference) {
-    .sf-skeleton {
-      --sf-shimmer-base:      var(--sf-skeleton-bg, var(--sf-color-inset));
-      --sf-shimmer-highlight: var(--sf-skeleton-shimmer, var(--sf-color-raised));
-      background: linear-gradient(
-        90deg,
-        var(--sf-shimmer-base)      0%,
-        var(--sf-shimmer-highlight) 50%,
-        var(--sf-shimmer-base)      100%
-      );
-      background-size: 200% 100%;
-      animation: sf-shimmer var(--sf-skeleton-duration, 1.5s) var(--sf-ease-in-out) infinite;
+    .sf-card--interactive {
+      transition: var(--sf-transition-shadow), var(--sf-transition-transform);
+    }
+    .sf-card--interactive:hover,
+    .sf-card--interactive:focus-within {
+      transform: translateY(calc(-1 * var(--sf-space-2xs)));
     }
   }
-
-  .sf-skeleton--text {
-    block-size:    var(--sf-skeleton-line-height, 0.8em);
-    inline-size:   100%;
-  }
-  .sf-skeleton--line {
-    block-size:    var(--sf-skeleton-line-height, 0.8em);
-    inline-size:   60%;
-  }
-  .sf-skeleton--avatar {
-    inline-size:   var(--sf-avatar-size, 2.5rem);
-    block-size:    var(--sf-avatar-size, 2.5rem);
-    border-radius: var(--sf-radius-full);
-    flex-shrink:   0;
-  }
-  .sf-skeleton--card {
-    inline-size:  100%;
-    block-size:   var(--sf-space-xl);
-    border-radius: var(--sf-card-radius, var(--sf-radius-m));
-  }
-  */
-
-  /* ============================================================
-   * FORM LAYOUT HELPERS
-   * Structural opt-in classes to complement optional/forms.css,
-   * which provides classless field styling.
-   *
-   * .sf-field        — vertical label + control + hint/error stack
-   * .sf-form-row     — multi-column horizontal form row
-   * .sf-form-col     — column within a .sf-form-row
-   * .sf-form-inline  — label and control on the same line
-   * ============================================================ */
-  /*
-  .sf-field {
-    display:        grid;
-    gap:            var(--sf-field-gap, var(--sf-space-2xs));
-    align-content:  start;
-  }
-
-  .sf-field__label {
-    display:     block;
-    font-size:   var(--sf-text-s);
-    font-weight: var(--sf-font-weight-interactive);
-    color:       var(--sf-color-text);
-  }
-
-  .sf-field__hint {
-    display:   block;
-    font-size: var(--sf-text-xs);
-    color:     var(--sf-color-text--secondary);
-  }
-
-  .sf-field__error {
-    display:   block;
-    font-size: var(--sf-text-xs);
-    color:     var(--sf-color-danger);
-  }
-
-  .sf-form-row {
-    display:   flex;
-    flex-wrap: wrap;
-    gap:       var(--sf-form-row-gap, var(--sf-space-m));
-    align-items: start;
-  }
-
-  .sf-form-col {
-    display:  grid;
-    gap:      var(--sf-form-col-gap, var(--sf-space-s));
-    flex:     1 1 0;
-    min-inline-size: 0;
-  }
-
-  .sf-form-inline {
-    display:     flex;
-    flex-wrap:   wrap;
-    align-items: center;
-    gap:         var(--sf-form-inline-gap, var(--sf-space-s));
-  }
-  .sf-form-inline .sf-field__label {
-    flex-shrink: 0;
-  }
-  */
-
-  /* ============================================================
-   * .sf-table / .sf-table-scroll
-   * Class-scoped table styles that do not touch the global
-   * <table> element or .sf-prose table behaviour.
-   *
-   * Wrap with .sf-table-scroll for horizontal overflow handling.
-   * Modifiers: --striped | --bordered | --compact
-   *
-   * <div class="sf-table-scroll">
-   *   <table class="sf-table sf-table--striped">…</table>
-   * </div>
-   * ============================================================ */
-  /*
-  .sf-table-scroll {
-    display:    block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .sf-table {
-    inline-size:     100%;
-    border-collapse: collapse;
-    border-spacing:  0;
-    font-size:       var(--sf-text-m);
-    text-align:      start;
-  }
-
-  .sf-table :is(th, td) {
-    padding-block:  var(--sf-table-cell-pad-block, var(--sf-space-xs));
-    padding-inline: var(--sf-table-cell-pad-inline, var(--sf-space-s));
-    border-block-end: var(--sf-border-width-1) solid var(--sf-table-border-color, var(--sf-color-border));
-    text-align:     inherit;
-    vertical-align: middle;
-  }
-
-  .sf-table thead th {
-    font-weight:      var(--sf-table-header-weight, var(--sf-font-weight-semibold));
-    color:            var(--sf-color-heading);
-    border-block-end: var(--sf-border-width-2) solid var(--sf-table-border-color, var(--sf-color-border));
-  }
-
-  .sf-table tbody tr:last-child :is(th, td) {
-    border-block-end: none;
-  }
-
-  .sf-table--striped tbody tr:nth-child(even) :is(th, td) {
-    background: var(--sf-table-stripe-bg, var(--sf-color-inset));
-  }
-
-  .sf-table--bordered :is(th, td) {
-    border: var(--sf-border-width-1) solid var(--sf-table-border-color, var(--sf-color-border));
-  }
-  .sf-table--bordered thead th {
-    border-block-end-width: var(--sf-border-width-2);
-  }
-
-  .sf-table--compact :is(th, td) {
-    padding-block:  var(--sf-table-compact-pad, var(--sf-space-3xs, 0.125rem));
-    padding-inline: var(--sf-space-xs);
-  }
-  */
 
 }

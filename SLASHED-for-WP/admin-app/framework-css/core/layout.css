@@ -23,6 +23,17 @@
 
   .sf-section-group > .sf-section + .sf-section { padding-block-start: 0; }
 
+  /* Header — block padding on the standard spacing scale. Headers usually
+     want lighter vertical rhythm than .sf-section, so these map to
+     --sf-space-* directly. Only block padding is set; any inline gutter
+     (from .sf-section--guttered, a container, or the element itself) is
+     left intact. */
+  .sf-header--xs { padding-block: var(--sf-space-xs); }
+  .sf-header--s  { padding-block: var(--sf-space-s); }
+  .sf-header--m  { padding-block: var(--sf-space-m); }
+  .sf-header--l  { padding-block: var(--sf-space-l); }
+  .sf-header--xl { padding-block: var(--sf-space-xl); }
+
   /* Collapse modifier */
   .sf-section--collapse:has(+ .sf-section--collapse) {
     padding-block-end: calc(var(--sf-section-pad) / 2);
@@ -55,7 +66,18 @@
     background:    linear-gradient(to right, transparent, var(--sf-divider-color), transparent);
   }
 
-  
+  /* Divide — rules between direct children, reusing .sf-divider's tokens.
+     Unlike .sf-divider (a standalone separator element), .sf-divide is
+     applied to the container and needs no extra markup per gap. */
+  .sf-divide > * + * {
+    border-block-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
+  }
+  .sf-divide--vertical > * + * {
+    border-block-start:  none;
+    border-inline-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
+  }
+
+
   /* Container */
   .sf-container {
     container:      sf-layout / inline-size;
@@ -75,7 +97,62 @@
     container-type: inline-size;
   }
 
+  /* Overlay — absolute-fill layout helper for overlays/backdrops. */
+  .sf-overlay {
+    position: absolute;
+    inset:    0;
+  }
+
   
+  /* .sf-fluid-cq: opt a subtree into a CONTAINER-relative fluid scale (issue
+     #497). By default --sf-text-* / --sf-space-* interpolate against 100vw (the
+     viewport); inside .sf-fluid-cq they interpolate against 100cqi (this box's
+     inline size), so type + spacing track the container the way the layout
+     primitives (.sf-grid-cols-*, .sf-content-grid, .sf-bento) already do. Use
+     on nested / narrow contexts (sidebars, cards, 1/3 columns) where a
+     viewport-driven scale would size text as if it spanned the full page.
+
+     Why the tokens are RE-DECLARED (not just --sf-fluid-width flipped): the
+     --sf-text-* / --sf-space-* tokens are computed at :root, so their
+     var(--sf-fluid-width) is substituted there (100vw) and the *resolved*
+     length inherits down — overriding --sf-fluid-width lower in the tree can't
+     retroactively rewrite an already-computed inherited value. The scale is
+     therefore re-declared in-scope so var(--sf-fluid-width) re-resolves to
+     100cqi. It is re-declared on the direct children, not the element itself:
+     a query container's own cq units resolve against its ANCESTOR container, so
+     the re-computation must happen one level in — children compute against
+     .sf-fluid-cq and deeper descendants inherit that resolved value.
+
+     The formulas below are character-identical to their :root twins in
+     core/tokens.css (both read var(--sf-fluid-width)); keep the two copies in
+     sync if the generative formula ever changes (cf. themes.css SL-001). */
+  .sf-fluid-cq { container-type: inline-size; }
+  .sf-fluid-cq > * {
+      --sf-fluid-width: 100cqi;
+      --sf-text-2xs: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -3) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -3) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -3) * 1rem)) * var(--sf-text-scale));
+      --sf-text-xs: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -2) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -2) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -2) * 1rem)) * var(--sf-text-scale));
+      --sf-text-s: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -1) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), -1) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), -1) * 1rem)) * var(--sf-text-scale));
+      --sf-text-m: calc(clamp(calc(var(--sf-text-base-min) * 1rem), calc((var(--sf-text-base-max) - var(--sf-text-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * 1rem), calc(var(--sf-text-base-max) * 1rem)) * var(--sf-text-scale));
+      --sf-text-l: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 1) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 1) * 1rem)) * var(--sf-text-scale));
+      --sf-text-xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 2) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 2) * 1rem)) * var(--sf-text-scale));
+      --sf-text-2xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 3) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 3) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 3) * 1rem)) * var(--sf-text-scale));
+      --sf-text-3xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 4) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 4) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 4) * 1rem)) * var(--sf-text-scale));
+      --sf-text-4xl: calc(clamp(calc(var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5) * 1rem), calc((var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 5) - var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-base-min) * pow(var(--sf-text-ratio-min), 5) * 1rem), calc(var(--sf-text-base-max) * pow(var(--sf-text-ratio-max), 5) * 1rem)) * var(--sf-text-scale));
+      --sf-text-display-s: calc(clamp(calc(var(--sf-text-display-base-min) * 1rem), calc((var(--sf-text-display-base-max) - var(--sf-text-display-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * 1rem), calc(var(--sf-text-display-base-max) * 1rem)) * var(--sf-text-display-scale));
+      --sf-text-display-m: calc(clamp(calc(var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc((var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 1) - var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 1) * 1rem), calc(var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 1) * 1rem)) * var(--sf-text-display-scale));
+      --sf-text-display-l: calc(clamp(calc(var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc((var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 2) - var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-text-display-base-min) * pow(var(--sf-text-ratio-min), 2) * 1rem), calc(var(--sf-text-display-base-max) * pow(var(--sf-text-ratio-max), 2) * 1rem)) * var(--sf-text-display-scale));
+      --sf-space-2xs: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -3) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -3) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -3) * 1rem)) * var(--sf-space-scale));
+      --sf-space-xs: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -2) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -2) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -2) * 1rem)) * var(--sf-space-scale));
+      --sf-space-s: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -1) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), -1) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), -1) * 1rem)) * var(--sf-space-scale));
+      --sf-space-m: calc(clamp(calc(var(--sf-space-base-min) * 1rem), calc((var(--sf-space-base-max) - var(--sf-space-base-min)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * 1rem), calc(var(--sf-space-base-max) * 1rem)) * var(--sf-space-scale));
+      --sf-space-l: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 1) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 1) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 1) * 1rem)) * var(--sf-space-scale));
+      --sf-space-xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 2) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 2) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 2) * 1rem)) * var(--sf-space-scale));
+      --sf-space-2xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 3) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 3) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 3) * 1rem)) * var(--sf-space-scale));
+      --sf-space-3xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 4) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 4) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 4) * 1rem)) * var(--sf-space-scale));
+      --sf-space-4xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) * 1rem)) * var(--sf-space-scale));
+  }
+
+
   /* Stack & gap */
   .sf-stack {
     display:        flex;
@@ -215,6 +292,32 @@
 
   .sf-grid--dense { grid-auto-flow: dense; }
 
+  /* Grid-flex — flexbox alternative to .sf-grid for item counts that
+     don't divide evenly: leftover last-row items stretch to fill the
+     row by default, or stay fixed-width and centered with --center.
+     CSS Grid keeps orphans pinned to their track; flex does not. */
+  .sf-grid-flex {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       var(--sf-grid-gap);
+  }
+  .sf-grid-flex > * {
+    flex: 1 1 min(var(--sf-grid-min), 100%);
+  }
+
+  .sf-grid-flex--center { justify-content: center; }
+  .sf-grid-flex--center > * {
+    flex-grow:  0;
+    flex-basis: min(var(--sf-grid-min), 100%);
+  }
+
+  .sf-grid-flex--xs  { --sf-grid-min: var(--sf-grid-min-xs); }
+  .sf-grid-flex--s   { --sf-grid-min: var(--sf-grid-min-s); }
+  .sf-grid-flex--m   { --sf-grid-min: var(--sf-grid-min-m); }
+  .sf-grid-flex--l   { --sf-grid-min: var(--sf-grid-min-l); }
+  .sf-grid-flex--xl  { --sf-grid-min: var(--sf-grid-min-xl); }
+  .sf-grid-flex--2xl { --sf-grid-min: var(--sf-grid-min-2xl); }
+
   .sf-icon {
     display:        inline-block;
     inline-size:    var(--sf-icon-size, var(--sf-icon-m));
@@ -287,41 +390,41 @@
 
   /* Background layer — absolutely-positioned cover media that sits behind a
      parent's content. The parent is auto-promoted to a positioned, isolated
-     stacking context via :has(), so .sf-bg composes natively under .sf-scrim
-     (background → scrim gradient → content). Works as a bare <img class="sf-bg">
+     stacking context via :has(), so .sf-bg-layer composes natively under .sf-scrim
+     (background → scrim gradient → content). Works as a bare <img class="sf-bg-layer">
      or as a wrapper with a nested > img / > video. */
-  :where(:has(> .sf-bg)) {
+  :where(:has(> .sf-bg-layer)) {
     position:  relative;
     isolation: isolate;
   }
 
-  .sf-bg {
+  .sf-bg-layer {
     position:        absolute;
-    inset:           var(--sf-bg-inset);
-    inline-size:     calc(100% - 2 * var(--sf-bg-inset));
-    block-size:      calc(100% - 2 * var(--sf-bg-inset));
-    object-fit:      var(--sf-bg-fit);
-    object-position: var(--sf-bg-position);
-    border-radius:   var(--sf-bg-radius);
-    z-index:         var(--sf-bg-z);
+    inset:           var(--sf-bg-layer-inset);
+    inline-size:     calc(100% - 2 * var(--sf-bg-layer-inset));
+    block-size:      calc(100% - 2 * var(--sf-bg-layer-inset));
+    object-fit:      var(--sf-bg-layer-fit);
+    object-position: var(--sf-bg-layer-position);
+    border-radius:   var(--sf-bg-layer-radius);
+    z-index:         var(--sf-bg-layer-z);
     pointer-events:  none;
   }
 
-  .sf-bg > :is(img, video, picture) {
+  .sf-bg-layer > :is(img, video, picture) {
     inline-size:     100%;
     block-size:      100%;
-    object-fit:      var(--sf-bg-fit);
-    object-position: var(--sf-bg-position);
-    border-radius:   var(--sf-bg-radius);
+    object-fit:      var(--sf-bg-layer-fit);
+    object-position: var(--sf-bg-layer-position);
+    border-radius:   var(--sf-bg-layer-radius);
     pointer-events:  none;
   }
 
-  .sf-bg > picture > img {
+  .sf-bg-layer > picture > img {
     inline-size:     100%;
     block-size:      100%;
-    object-fit:      var(--sf-bg-fit);
-    object-position: var(--sf-bg-position);
-    border-radius:   var(--sf-bg-radius);
+    object-fit:      var(--sf-bg-layer-fit);
+    object-position: var(--sf-bg-layer-position);
+    border-radius:   var(--sf-bg-layer-radius);
     pointer-events:  none;
   }
 
@@ -468,7 +571,6 @@
   .sf-content-grid > .sf-breakout   { grid-column: breakout; }
   .sf-content-grid > .sf-full-bleed { grid-column: full; }
 
-  
   .sf-bento {
     display:               grid;
     grid-template-columns: repeat(var(--sf-bento-cols, var(--sf-bento-cols-default)), 1fr);

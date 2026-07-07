@@ -4,6 +4,7 @@
   import PowerKnobRow from '../inputs/PowerKnobRow.svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
   import ClampField from '../inputs/ClampField.svelte';
+  import { SPACE_SCALE } from '../../lib/variableScales';
 
   let { overrides, onSet, onReset }: {
     tokens: SlashedToken[];
@@ -91,6 +92,7 @@
         onChange={(v) => onSet("--sf-gap", `${v}rem`)}
         onReset={() => onReset("--sf-gap")}
         rawDefault="var(--sf-space-m)"
+        variableOptions={SPACE_SCALE}
         currentRaw={overrides["--sf-gap"]}
         onRawSet={(v) => onSet("--sf-gap", v)}
       />
@@ -101,6 +103,7 @@
         onChange={(v) => onSet("--sf-content-gap", `${v}rem`)}
         onReset={() => onReset("--sf-content-gap")}
         rawDefault="var(--sf-space-s)"
+        variableOptions={SPACE_SCALE}
         currentRaw={overrides["--sf-content-gap"]}
         onRawSet={(v) => onSet("--sf-content-gap", v)}
       />
@@ -111,6 +114,7 @@
         onChange={(v) => onSet("--sf-gutter", `${v}rem`)}
         onReset={() => onReset("--sf-gutter")}
         rawDefault="var(--sf-space-l)"
+        variableOptions={SPACE_SCALE}
         currentRaw={overrides["--sf-gutter"]}
         onRawSet={(v) => onSet("--sf-gutter", v)}
       />

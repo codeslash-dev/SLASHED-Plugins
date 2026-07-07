@@ -592,6 +592,24 @@
         <button onclick={() => onReset("--sf-link-external-marker")} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
       {/if}
     </div>
+
+    <!-- Link external label (screen-reader text for the marker glyph) -->
+    <div class="flex items-center gap-2">
+      <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">External label</span>
+      <input
+        type="text"
+        value={overrides["--sf-link-external-label"] ?? ""}
+        placeholder={'"opens in a new window or external site"'}
+        oninput={(e) => {
+          const v = (e.target as HTMLInputElement).value;
+          v ? onSet("--sf-link-external-label", v) : onReset("--sf-link-external-label");
+        }}
+        class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[11px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+      />
+      {#if "--sf-link-external-label" in overrides}
+        <button onclick={() => onReset("--sf-link-external-label")} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+      {/if}
+    </div>
     {/if}
   </section>
 

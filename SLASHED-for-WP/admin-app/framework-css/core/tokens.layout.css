@@ -84,15 +84,20 @@
     --sf-frame-ratio: 16 / 9;    /* literal <ratio>, valid in aspect-ratio */
 
     /* ----------------------------------------------------------
-       Background layer (.sf-bg) — cover media behind sibling content.
+       Background layer (.sf-bg-layer) — cover media behind sibling content.
        inset is a single length applied to every edge; the layer size is
        derived from it, so a non-zero inset still fills correctly.
        ---------------------------------------------------------- */
-    --sf-bg-inset:    0;
-    --sf-bg-fit:      cover;
-    --sf-bg-position: 50% 50%;
-    --sf-bg-radius:   0;
-    --sf-bg-z:        -2;        /* behind content; above the parent background */
+    /* 0px, not bare 0 — .sf-bg-layer's inline-size/block-size multiply this by 2
+       inside a calc() alongside a percentage; a unitless 0 makes that
+       calc() a <number>/<percentage> type mismatch (invalid at
+       computed-value time), silently collapsing .sf-bg-layer to its intrinsic
+       size. */
+    --sf-bg-layer-inset:    0px;
+    --sf-bg-layer-fit:      cover;
+    --sf-bg-layer-position: 50% 50%;
+    --sf-bg-layer-radius:   0;
+    --sf-bg-layer-z:        -2;        /* behind content; above the parent background */
 
     /* ----------------------------------------------------------
        Icon (boxed variant) — extras for .sf-icon--boxed.

@@ -79,6 +79,22 @@
     "description": "Slide-in from below. Use for bottom sheets, toasts, and floating action buttons.",
     "category": "Core tokens"
   },
+  "sf-animation-slide-out-down": {
+    "description": "pair keyframes (core/motion.css) with duration + easing. Use directly: animation: var(--sf-animation-fade-in);",
+    "category": "Core tokens"
+  },
+  "sf-animation-slide-out-left": {
+    "description": "pair keyframes (core/motion.css) with duration + easing. Use directly: animation: var(--sf-animation-fade-in);",
+    "category": "Core tokens"
+  },
+  "sf-animation-slide-out-right": {
+    "description": "pair keyframes (core/motion.css) with duration + easing. Use directly: animation: var(--sf-animation-fade-in);",
+    "category": "Core tokens"
+  },
+  "sf-animation-slide-out-up": {
+    "description": "pair keyframes (core/motion.css) with duration + easing. Use directly: animation: var(--sf-animation-fade-in);",
+    "category": "Core tokens"
+  },
   "sf-animation-spin": {
     "description": "Continuous rotation loop. Use for loading spinners and progress indicators.",
     "category": "Core tokens"
@@ -105,6 +121,26 @@
   },
   "sf-bento-row-tall": {
     "description": "Tall row height for visually prominent or hero bento cells.",
+    "category": "Layout tokens"
+  },
+  "sf-bg-layer-fit": {
+    "description": "object-fit applied to .sf-bg-layer when used as a bare media element, and to .sf-bg-layer > img / video / picture children. Defaults to cover.",
+    "category": "Layout tokens"
+  },
+  "sf-bg-layer-inset": {
+    "description": "Inset from every edge of the parent. A single length applied uniformly; the layer size is derived from it so a non-zero inset still fills correctly.",
+    "category": "Layout tokens"
+  },
+  "sf-bg-layer-position": {
+    "description": "object-position controlling where the media is anchored within the layer. Defaults to center (50% 50%).",
+    "category": "Layout tokens"
+  },
+  "sf-bg-layer-radius": {
+    "description": "border-radius applied to the .sf-bg-layer layer and its img/video/picture children. Defaults to 0; set to match the parent's radius when clipping is needed.",
+    "category": "Layout tokens"
+  },
+  "sf-bg-layer-z": {
+    "description": "z-index of the background layer. Defaults to -2 so it sits behind sibling content but above the parent's own background.",
     "category": "Layout tokens"
   },
   "sf-blur": {
@@ -199,16 +235,92 @@
     "description": "Width of full-bleed breakout elements inside a content grid.",
     "category": "Layout tokens"
   },
-  "sf-button-padding-block": {
-    "description": "Vertical (block) inner padding for buttons.",
+  "sf-btn-border-width": {
+    "description": "Border thickness for .sf-btn (used by all fill, outline, and secondary treatments).",
     "category": "Component tokens"
   },
-  "sf-button-padding-inline": {
-    "description": "Horizontal (inline) inner padding for buttons.",
+  "sf-btn-font-size": {
+    "description": "Label font-size for .sf-btn. The size modifiers (--xs/--s/--l/--xl) override this per button.",
     "category": "Component tokens"
   },
-  "sf-button-radius": {
-    "description": "Border radius for buttons. Defaults to --sf-radius-m; override to fully pill-round or square all buttons at once.",
+  "sf-btn-font-weight": {
+    "description": "Label font-weight for .sf-btn. Defaults to the interactive weight.",
+    "category": "Component tokens"
+  },
+  "sf-btn-gap": {
+    "description": "Gap between an icon and the label inside .sf-btn.",
+    "category": "Component tokens"
+  },
+  "sf-btn-min-height": {
+    "description": "Minimum target height for .sf-btn. Defaults to --sf-touch-target so buttons meet the WCAG 2.2 target-size minimum.",
+    "category": "Component tokens"
+  },
+  "sf-btn-padding-block": {
+    "description": "Vertical (block) padding inside .sf-btn.",
+    "category": "Component tokens"
+  },
+  "sf-btn-padding-inline": {
+    "description": "Horizontal (inline) padding inside .sf-btn.",
+    "category": "Component tokens"
+  },
+  "sf-btn-radius": {
+    "description": "Corner radius for .sf-btn. Defaults to --sf-radius-m; gives buttons a distinct radius from form fields without touching global tokens.",
+    "category": "Component tokens"
+  },
+  "sf-card-bg": {
+    "description": "Background surface for .sf-card. Defaults to --sf-color-surface.",
+    "category": "Component tokens"
+  },
+  "sf-card-border-color": {
+    "description": "Border colour for .sf-card. Defaults to --sf-color-border.",
+    "category": "Component tokens"
+  },
+  "sf-card-border-width": {
+    "description": "Border thickness for .sf-card.",
+    "category": "Component tokens"
+  },
+  "sf-card-btn-font-size": {
+    "description": "Font-size a .sf-btn shrinks to when nested inside a .sf-card. Defaults to --sf-text-s.",
+    "category": "Component tokens"
+  },
+  "sf-card-gap": {
+    "description": "Divider spacing for .sf-card__header / __footer (padding + margin around the rule).",
+    "category": "Component tokens"
+  },
+  "sf-card-heading-size": {
+    "description": "Font-size for .sf-card__title. Defaults to --sf-text-xl.",
+    "category": "Component tokens"
+  },
+  "sf-card-media-radius": {
+    "description": "Corner radius for .sf-card__media. Mirrors the card's inner radius by default.",
+    "category": "Component tokens"
+  },
+  "sf-card-media-ratio": {
+    "description": "Aspect ratio for .sf-card__media. Defaults to --sf-ratio-video (16/9).",
+    "category": "Component tokens"
+  },
+  "sf-card-padding": {
+    "description": "Inner padding for .sf-card. Also feeds the concentric-radius math (outer = inner radius + padding).",
+    "category": "Component tokens"
+  },
+  "sf-card-radius": {
+    "description": "Inner radius for .sf-card children such as __media. Combined with padding to derive the outer radius.",
+    "category": "Component tokens"
+  },
+  "sf-card-radius-outer": {
+    "description": "Outer corner radius of .sf-card. Concentric with the inner radius: calc(--sf-card-radius + --sf-card-padding).",
+    "category": "Component tokens"
+  },
+  "sf-card-shadow": {
+    "description": "Base drop shadow for .sf-card. Defaults to --sf-shadow-s.",
+    "category": "Component tokens"
+  },
+  "sf-card-shadow--elevated": {
+    "description": "Drop shadow applied by the .sf-card--elevated modifier (border hidden, larger shadow).",
+    "category": "Component tokens"
+  },
+  "sf-card-shadow--hover": {
+    "description": "Drop shadow applied on hover/focus by the .sf-card--interactive modifier.",
     "category": "Component tokens"
   },
   "sf-caret-color": {
@@ -253,70 +365,66 @@
   },
   "sf-color-action-100": {
     "description": "Very light action shade. Hover fills on white surfaces, badge backgrounds.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-200": {
     "description": "Light action shade. Subtle fills and outlined badge backgrounds.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-300": {
     "description": "Light-mid action shade. Borders on light backgrounds, low-emphasis fills.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-400": {
     "description": "Mid-light action shade. Disabled state fills, decorative accents.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-50": {
     "description": "Lightest action tint. Background fill for subtle action-tinted surfaces.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-500": {
     "description": "Mid action shade — the 'pure' hue. Accessible on both light and dark backgrounds.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-600": {
     "description": "Mid-dark action shade. Text on light surfaces, icon fills.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-700": {
     "description": "Dark action shade. Strong text and icon fills on light backgrounds.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-800": {
     "description": "Very dark action shade. High-contrast text on white.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-900": {
     "description": "Near-black action shade. Extreme contrast on white surfaces.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-950": {
     "description": "Darkest action tint. Near-black for dark-theme surface accents.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-a10": {
     "description": "10% opacity action tint. Subtle hover or selected-row background.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-a30": {
     "description": "30% opacity action tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-a5": {
     "description": "5% opacity action tint. Barely-there hover highlight.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-a50": {
     "description": "50% opacity action tint. Mid-transparency badge or overlay.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-action-a80": {
     "description": "80% opacity action tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-action-dark": {
-    "description": "Registered <color> dark counterpart of --sf-color-action. Enables smooth CSS transitions when toggling between light and dark mode; without <color> registration the browser cannot interpolate and transitions snap at 50%.",
     "category": "Core tokens"
   },
   "sf-color-action-darker": {
@@ -327,16 +435,20 @@
     "description": "Near-transparent action tint for ghost-button hover backgrounds.",
     "category": "Core tokens"
   },
-  "sf-color-action-light": {
-    "description": "OKLCH lightness source for the action color. Animate this to smoothly transition between light and dark brand themes.",
-    "category": "Core tokens"
-  },
   "sf-color-action-lighter": {
     "description": "Light action shade for soft accents.",
     "category": "Core tokens"
   },
   "sf-color-action-muted": {
     "description": "Medium action fill — outlined button hover backgrounds.",
+    "category": "Core tokens"
+  },
+  "sf-color-action-source-dark": {
+    "description": "Registered <color> dark counterpart of --sf-color-action. Enables smooth CSS transitions when toggling between light and dark mode; without <color> registration the browser cannot interpolate and transitions snap at 50%.",
+    "category": "Core tokens"
+  },
+  "sf-color-action-source-light": {
+    "description": "OKLCH lightness source for the action color. Animate this to smoothly transition between light and dark brand themes.",
     "category": "Core tokens"
   },
   "sf-color-action-subtle": {
@@ -360,123 +472,99 @@
     "category": "Core tokens"
   },
   "sf-color-base": {
-    "description": "Secondary interactive color for supporting actions and secondary buttons.",
+    "description": "Mode-adaptive base surface color. Drives the page canvas and the surface elevation family; not an interactive/brand role.",
     "category": "Core tokens"
   },
   "sf-color-base--active": {
-    "description": "Base color at pressed/active brightness.",
+    "description": "Pressed/active surface derived from --sf-color-base for subtle background interactions.",
     "category": "Core tokens"
   },
   "sf-color-base--hover": {
-    "description": "Base color at hover brightness.",
+    "description": "Hover-state surface derived from --sf-color-base for subtle background interactions.",
     "category": "Core tokens"
   },
   "sf-color-base-100": {
-    "description": "Very light base shade. Hover fills, badge backgrounds.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-200": {
-    "description": "Light base shade.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-300": {
-    "description": "Light-mid base shade. Borders on light backgrounds.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-400": {
-    "description": "Mid-light base shade. Disabled fills.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-50": {
-    "description": "Lightest base tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-500": {
-    "description": "Mid base shade — the 'pure' hue.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-600": {
-    "description": "Mid-dark base shade. Text on light surfaces.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-700": {
-    "description": "Dark base shade.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-800": {
-    "description": "Very dark base shade.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-900": {
-    "description": "Near-black base shade.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-950": {
-    "description": "Darkest base tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-a10": {
-    "description": "10% opacity base tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-a30": {
-    "description": "30% opacity base tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-a5": {
-    "description": "5% opacity base tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-a50": {
-    "description": "50% opacity base tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-a80": {
-    "description": "80% opacity base tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-base-dark": {
-    "description": "Registered <color> dark counterpart of --sf-color-base.",
+    "description": "Very light base-surface level.",
     "category": "Core tokens"
   },
-  "sf-color-base-darker": {
-    "description": "Deep base shade.",
+  "sf-color-base-200": {
+    "description": "Light base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-300": {
+    "description": "Light-mid base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-400": {
+    "description": "Mid-light base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-50": {
+    "description": "Lightest base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-500": {
+    "description": "Mid base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-600": {
+    "description": "Mid-dark base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-700": {
+    "description": "Dark base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-800": {
+    "description": "Very dark base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-900": {
+    "description": "Near-black base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-950": {
+    "description": "Darkest base-surface level.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-a10": {
+    "description": "10% opacity base-surface tint.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-a30": {
+    "description": "30% opacity base-surface tint.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-a5": {
+    "description": "5% opacity base-surface tint.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-a50": {
+    "description": "50% opacity base-surface tint.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-a80": {
+    "description": "80% opacity base-surface tint.",
     "category": "Core tokens"
   },
   "sf-color-base-ghost": {
-    "description": "Near-transparent base tint for ghost-button hover backgrounds.",
-    "category": "Core tokens"
-  },
-  "sf-color-base-light": {
-    "description": "OKLCH lightness source for the base color.",
-    "category": "Core tokens"
-  },
-  "sf-color-base-lighter": {
-    "description": "Light base shade.",
+    "description": "Near-transparent base-surface tint for ghost backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-base-muted": {
-    "description": "Medium base fill.",
+    "description": "Medium base-surface fill for muted containers or overlays.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-source-dark": {
+    "description": "Registered <color> dark counterpart of --sf-color-base. Keep near-black for dark-mode surfaces and elevation offsets.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-source-light": {
+    "description": "OKLCH source color for the light-mode base surface. Keep near-white so --sf-color-bg, --sf-color-surface, and raised/inset levels have room to separate.",
     "category": "Core tokens"
   },
   "sf-color-base-subtle": {
-    "description": "Lightest base tint.",
-    "category": "Core tokens"
-  },
-  "sf-color-base-superdark": {
-    "description": "Near-black base shade.",
-    "category": "Core tokens"
-  },
-  "sf-color-base-superlight": {
-    "description": "Near-white base shade.",
-    "category": "Core tokens"
-  },
-  "sf-color-base-xdark": {
-    "description": "Extra-dark base shade.",
-    "category": "Core tokens"
-  },
-  "sf-color-base-xlight": {
-    "description": "Extra-light base shade.",
+    "description": "Subtle base-surface tint for low-emphasis backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-bg": {
@@ -543,16 +631,16 @@
     "description": "Destructive / danger state color. Used for delete actions, error alerts, and critical warnings.",
     "category": "Core tokens"
   },
-  "sf-color-danger-dark": {
+  "sf-color-danger-muted": {
+    "description": "Medium danger fill for icon backgrounds and badge fills.",
+    "category": "Core tokens"
+  },
+  "sf-color-danger-source-dark": {
     "description": "Registered <color> dark counterpart of --sf-color-danger.",
     "category": "Core tokens"
   },
-  "sf-color-danger-light": {
-    "description": "OKLCH lightness source for the danger status color.",
-    "category": "Core tokens"
-  },
-  "sf-color-danger-muted": {
-    "description": "Medium danger fill for icon backgrounds and badge fills.",
+  "sf-color-danger-source-light": {
+    "description": "OKLCH lightness source for the danger status color (covers destructive actions and form validation errors).",
     "category": "Core tokens"
   },
   "sf-color-danger-strong": {
@@ -567,30 +655,6 @@
     "description": "Backdrop overlay color for modals, drawers, and lightboxes.",
     "category": "Core tokens"
   },
-  "sf-color-error": {
-    "description": "Form validation error color. Typically same hue as danger but can be tuned independently.",
-    "category": "Core tokens"
-  },
-  "sf-color-error-dark": {
-    "description": "Registered <color> dark counterpart of --sf-color-error.",
-    "category": "Core tokens"
-  },
-  "sf-color-error-light": {
-    "description": "OKLCH lightness source for the error status color.",
-    "category": "Core tokens"
-  },
-  "sf-color-error-muted": {
-    "description": "Medium error fill for icons and inline badges.",
-    "category": "Core tokens"
-  },
-  "sf-color-error-strong": {
-    "description": "High-contrast error color for validation message text.",
-    "category": "Core tokens"
-  },
-  "sf-color-error-subtle": {
-    "description": "Light error tint for validation field backgrounds.",
-    "category": "Core tokens"
-  },
   "sf-color-heading": {
     "description": "Heading text color. Slightly stronger contrast than body text for visual hierarchy.",
     "category": "Core tokens"
@@ -599,16 +663,16 @@
     "description": "Informational color for neutral tips, hints, and non-urgent notices.",
     "category": "Core tokens"
   },
-  "sf-color-info-dark": {
+  "sf-color-info-muted": {
+    "description": "Medium info fill for info icons and hint chips.",
+    "category": "Core tokens"
+  },
+  "sf-color-info-source-dark": {
     "description": "Registered <color> dark counterpart of --sf-color-info.",
     "category": "Core tokens"
   },
-  "sf-color-info-light": {
+  "sf-color-info-source-light": {
     "description": "OKLCH lightness source for the info status color.",
-    "category": "Core tokens"
-  },
-  "sf-color-info-muted": {
-    "description": "Medium info fill for info icons and hint chips.",
     "category": "Core tokens"
   },
   "sf-color-info-strong": {
@@ -673,70 +737,66 @@
   },
   "sf-color-neutral-100": {
     "description": "Very light neutral shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-200": {
     "description": "Light neutral shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-300": {
     "description": "Light-mid neutral shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-400": {
     "description": "Mid-light neutral shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-50": {
     "description": "Lightest neutral tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-500": {
     "description": "Mid neutral shade — the 'pure' hue.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-600": {
     "description": "Mid-dark neutral shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-700": {
     "description": "Dark neutral shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-800": {
     "description": "Very dark neutral shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-900": {
     "description": "Near-black neutral shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-950": {
     "description": "Darkest neutral tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-a10": {
     "description": "10% opacity neutral tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-a30": {
     "description": "30% opacity neutral tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-a5": {
     "description": "5% opacity neutral tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-a50": {
     "description": "50% opacity neutral tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-neutral-a80": {
     "description": "80% opacity neutral tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-neutral-dark": {
-    "description": "Registered <color> dark counterpart of --sf-color-neutral.",
     "category": "Core tokens"
   },
   "sf-color-neutral-darker": {
@@ -747,16 +807,20 @@
     "description": "Near-transparent neutral tint for ghost-button hover backgrounds.",
     "category": "Core tokens"
   },
-  "sf-color-neutral-light": {
-    "description": "OKLCH lightness source for the neutral color.",
-    "category": "Core tokens"
-  },
   "sf-color-neutral-lighter": {
     "description": "Light neutral shade.",
     "category": "Core tokens"
   },
   "sf-color-neutral-muted": {
     "description": "Muted neutral fill for low-emphasis contexts.",
+    "category": "Core tokens"
+  },
+  "sf-color-neutral-source-dark": {
+    "description": "Registered <color> dark counterpart of --sf-color-neutral.",
+    "category": "Core tokens"
+  },
+  "sf-color-neutral-source-light": {
+    "description": "OKLCH lightness source for the neutral color.",
     "category": "Core tokens"
   },
   "sf-color-neutral-subtle": {
@@ -784,7 +848,7 @@
     "category": "Core tokens"
   },
   "sf-color-primary": {
-    "description": "Raw primary palette token aliased from the action role by default. Override to decouple primary from action.",
+    "description": "Primary brand palette color. Independent from --sf-color-action by default; override either source token to couple or separate brand and action roles.",
     "category": "Core tokens"
   },
   "sf-color-primary--active": {
@@ -797,70 +861,66 @@
   },
   "sf-color-primary-100": {
     "description": "Very light primary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-200": {
     "description": "Light primary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-300": {
     "description": "Light-mid primary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-400": {
     "description": "Mid-light primary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-50": {
     "description": "Lightest primary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-500": {
     "description": "Mid primary shade — the 'pure' hue.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-600": {
     "description": "Mid-dark primary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-700": {
     "description": "Dark primary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-800": {
     "description": "Very dark primary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-900": {
     "description": "Near-black primary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-950": {
     "description": "Darkest primary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-a10": {
     "description": "10% opacity primary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-a30": {
     "description": "30% opacity primary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-a5": {
     "description": "5% opacity primary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-a50": {
     "description": "50% opacity primary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-primary-a80": {
     "description": "80% opacity primary tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-primary-dark": {
-    "description": "Registered <color> dark counterpart of --sf-color-primary.",
     "category": "Core tokens"
   },
   "sf-color-primary-darker": {
@@ -871,16 +931,20 @@
     "description": "Near-transparent primary tint for ghost-button hover backgrounds.",
     "category": "Core tokens"
   },
-  "sf-color-primary-light": {
-    "description": "OKLCH lightness source for the primary color.",
-    "category": "Core tokens"
-  },
   "sf-color-primary-lighter": {
     "description": "Light primary shade.",
     "category": "Core tokens"
   },
   "sf-color-primary-muted": {
     "description": "Muted primary fill.",
+    "category": "Core tokens"
+  },
+  "sf-color-primary-source-dark": {
+    "description": "Registered <color> dark counterpart of --sf-color-primary.",
+    "category": "Core tokens"
+  },
+  "sf-color-primary-source-light": {
+    "description": "OKLCH lightness source for the primary color.",
     "category": "Core tokens"
   },
   "sf-color-primary-subtle": {
@@ -925,70 +989,66 @@
   },
   "sf-color-secondary-100": {
     "description": "Very light secondary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-200": {
     "description": "Light secondary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-300": {
     "description": "Light-mid secondary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-400": {
     "description": "Mid-light secondary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-50": {
     "description": "Lightest secondary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-500": {
     "description": "Mid secondary shade — the 'pure' hue.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-600": {
     "description": "Mid-dark secondary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-700": {
     "description": "Dark secondary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-800": {
     "description": "Very dark secondary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-900": {
     "description": "Near-black secondary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-950": {
     "description": "Darkest secondary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-a10": {
     "description": "10% opacity secondary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-a30": {
     "description": "30% opacity secondary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-a5": {
     "description": "5% opacity secondary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-a50": {
     "description": "50% opacity secondary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-secondary-a80": {
     "description": "80% opacity secondary tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-secondary-dark": {
-    "description": "Registered <color> dark counterpart of --sf-color-secondary.",
     "category": "Core tokens"
   },
   "sf-color-secondary-darker": {
@@ -999,16 +1059,20 @@
     "description": "Near-transparent secondary tint for ghost-button hover backgrounds.",
     "category": "Core tokens"
   },
-  "sf-color-secondary-light": {
-    "description": "OKLCH lightness source for the secondary color.",
-    "category": "Core tokens"
-  },
   "sf-color-secondary-lighter": {
     "description": "Light secondary shade.",
     "category": "Core tokens"
   },
   "sf-color-secondary-muted": {
     "description": "Muted secondary fill.",
+    "category": "Core tokens"
+  },
+  "sf-color-secondary-source-dark": {
+    "description": "Registered <color> dark counterpart of --sf-color-secondary.",
+    "category": "Core tokens"
+  },
+  "sf-color-secondary-source-light": {
+    "description": "OKLCH lightness source for the secondary color.",
     "category": "Core tokens"
   },
   "sf-color-secondary-subtle": {
@@ -1035,24 +1099,32 @@
     "description": "Background color applied to browser text selections.",
     "category": "Core tokens"
   },
+  "sf-color-selection-bg--alt": {
+    "description": "Alt selection — the opposite scheme's treatment, for a surface that deliberately inverts colours relative to the page (e.g. a dark card on a light page) where the default pairing above would land with poor contrast. Consumed by .sf-selection--alt (optional/utilities.css).",
+    "category": "Core tokens"
+  },
   "sf-color-selection-text": {
     "description": "Text color inside browser text selections.",
+    "category": "Core tokens"
+  },
+  "sf-color-selection-text--alt": {
+    "description": "Alt selection — the opposite scheme's treatment, for a surface that deliberately inverts colours relative to the page (e.g. a dark card on a light page) where the default pairing above would land with poor contrast. Consumed by .sf-selection--alt (optional/utilities.css).",
     "category": "Core tokens"
   },
   "sf-color-success": {
     "description": "Positive / success color for confirmation messages and completed-state indicators.",
     "category": "Core tokens"
   },
-  "sf-color-success-dark": {
+  "sf-color-success-muted": {
+    "description": "Medium success fill for success icons and status chips.",
+    "category": "Core tokens"
+  },
+  "sf-color-success-source-dark": {
     "description": "Registered <color> dark counterpart of --sf-color-success.",
     "category": "Core tokens"
   },
-  "sf-color-success-light": {
+  "sf-color-success-source-light": {
     "description": "OKLCH lightness source for the success status color.",
-    "category": "Core tokens"
-  },
-  "sf-color-success-muted": {
-    "description": "Medium success fill for success icons and status chips.",
     "category": "Core tokens"
   },
   "sf-color-success-strong": {
@@ -1064,7 +1136,7 @@
     "category": "Core tokens"
   },
   "sf-color-surface": {
-    "description": "Elevated surface color (e.g. card background one step above page background).",
+    "description": "Default component surface color. Alias of --sf-color-base; use --sf-color-raised for an elevated card/background level.",
     "category": "Core tokens"
   },
   "sf-color-tertiary": {
@@ -1081,70 +1153,66 @@
   },
   "sf-color-tertiary-100": {
     "description": "Very light tertiary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-200": {
     "description": "Light tertiary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-300": {
     "description": "Light-mid tertiary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-400": {
     "description": "Mid-light tertiary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-50": {
     "description": "Lightest tertiary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-500": {
     "description": "Mid tertiary shade — the 'pure' hue.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-600": {
     "description": "Mid-dark tertiary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-700": {
     "description": "Dark tertiary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-800": {
     "description": "Very dark tertiary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-900": {
     "description": "Near-black tertiary shade.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-950": {
     "description": "Darkest tertiary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-a10": {
     "description": "10% opacity tertiary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-a30": {
     "description": "30% opacity tertiary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-a5": {
     "description": "5% opacity tertiary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-a50": {
     "description": "50% opacity tertiary tint.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-color-tertiary-a80": {
     "description": "80% opacity tertiary tint.",
-    "category": "Palette tokens"
-  },
-  "sf-color-tertiary-dark": {
-    "description": "Registered <color> dark counterpart of --sf-color-tertiary.",
     "category": "Core tokens"
   },
   "sf-color-tertiary-darker": {
@@ -1155,16 +1223,20 @@
     "description": "Near-transparent tertiary tint for ghost-button hover backgrounds.",
     "category": "Core tokens"
   },
-  "sf-color-tertiary-light": {
-    "description": "OKLCH lightness source for the tertiary color.",
-    "category": "Core tokens"
-  },
   "sf-color-tertiary-lighter": {
     "description": "Light tertiary shade.",
     "category": "Core tokens"
   },
   "sf-color-tertiary-muted": {
     "description": "Muted tertiary fill.",
+    "category": "Core tokens"
+  },
+  "sf-color-tertiary-source-dark": {
+    "description": "Registered <color> dark counterpart of --sf-color-tertiary.",
+    "category": "Core tokens"
+  },
+  "sf-color-tertiary-source-light": {
+    "description": "OKLCH lightness source for the tertiary color.",
     "category": "Core tokens"
   },
   "sf-color-tertiary-subtle": {
@@ -1215,10 +1287,6 @@
     "description": "Accessible foreground for text on danger-colored backgrounds.",
     "category": "Core tokens"
   },
-  "sf-color-text--on-error": {
-    "description": "Accessible foreground for text on error-colored backgrounds.",
-    "category": "Core tokens"
-  },
   "sf-color-text--on-info": {
     "description": "Accessible foreground for text on info-colored backgrounds.",
     "category": "Core tokens"
@@ -1263,16 +1331,16 @@
     "description": "Warning / caution color for non-critical alerts and degraded-state indicators.",
     "category": "Core tokens"
   },
-  "sf-color-warning-dark": {
+  "sf-color-warning-muted": {
+    "description": "Medium warning fill for icons and caution chips.",
+    "category": "Core tokens"
+  },
+  "sf-color-warning-source-dark": {
     "description": "Registered <color> dark counterpart of --sf-color-warning.",
     "category": "Core tokens"
   },
-  "sf-color-warning-light": {
+  "sf-color-warning-source-light": {
     "description": "OKLCH lightness source for the warning status color.",
-    "category": "Core tokens"
-  },
-  "sf-color-warning-muted": {
-    "description": "Medium warning fill for icons and caution chips.",
     "category": "Core tokens"
   },
   "sf-color-warning-strong": {
@@ -1331,6 +1399,14 @@
     "description": "OKLCH lightness crossover for auto-contrast on colored surfaces. Colors with L above this get dark text; below get light text. Default 0.6.",
     "category": "Core tokens"
   },
+  "sf-corner-scoop-at": {
+    "description": "radius and corner position for .sf-corner-scoop. Override per element: style=\"--sf-corner-scoop-size: var(--sf-radius-3xl)\" (cut radius) or style=\"--sf-corner-scoop-at: 0 0\" (which corner).",
+    "category": "Macro tokens"
+  },
+  "sf-corner-scoop-size": {
+    "description": "radius and corner position for .sf-corner-scoop. Override per element: style=\"--sf-corner-scoop-size: var(--sf-radius-3xl)\" (cut radius) or style=\"--sf-corner-scoop-at: 0 0\" (which corner).",
+    "category": "Macro tokens"
+  },
   "sf-cover-min-height": {
     "description": "Minimum height of the cover layout (typically 100svh).",
     "category": "Layout tokens"
@@ -1381,6 +1457,14 @@
   },
   "sf-drop-shadow-s": {
     "description": "Small CSS filter: drop-shadow. Use filter (not box-shadow) for elements with transparent areas — SVGs, PNGs, cutout images.",
+    "category": "Core tokens"
+  },
+  "sf-drop-shadow-xl": {
+    "description": "Extra-large CSS filter: drop-shadow for hero-scale illustrated or cut-out elements.",
+    "category": "Core tokens"
+  },
+  "sf-drop-shadow-xs": {
+    "description": "Extra-small CSS filter: drop-shadow, for the subtlest depth on small icons and cutout images.",
     "category": "Core tokens"
   },
   "sf-duration-fast": {
@@ -1444,23 +1528,19 @@
     "category": "Layout tokens"
   },
   "sf-equal-min-col": {
-    "description": "Minimum column width for the default auto-fill equal-columns layout. Columns fill the row until this width is reached, then wrap to the next line.",
+    "description": "column-width floor for .sf-equal's flowing CSS multi-column layout (not a grid) — the browser won't go narrower than this.",
     "category": "Layout tokens"
   },
-  "sf-equal-min-col-2": {
-    "description": "Minimum column width for the 2-column equal preset.",
+  "sf-equal-rule-color": {
+    "description": "column-rule color between .sf-equal's flowing columns.",
     "category": "Layout tokens"
   },
-  "sf-equal-min-col-3": {
-    "description": "Minimum column width for the 3-column equal preset.",
+  "sf-equal-rule-style": {
+    "description": "column-rule style between .sf-equal's flowing columns.",
     "category": "Layout tokens"
   },
-  "sf-equal-min-col-4": {
-    "description": "Minimum column width for the 4-column equal preset.",
-    "category": "Layout tokens"
-  },
-  "sf-equal-min-col-6": {
-    "description": "Minimum column width for the 6-column equal preset.",
+  "sf-equal-rule-width": {
+    "description": "column-rule width between .sf-equal's flowing columns. 0 (default) means no rule.",
     "category": "Layout tokens"
   },
   "sf-field-block": {
@@ -1493,6 +1573,10 @@
   },
   "sf-fluid-min-vw": {
     "description": "Minimum viewport width (in rem) at which the fluid scale clamps to its smallest values. Default 22.5rem (~360px). Part of the fluid scale engine.",
+    "category": "Core tokens"
+  },
+  "sf-fluid-width": {
+    "description": "Fluid interpolation driver — the length term every fluid clamp() below measures against. Universal syntax (\"*\") not \"<length>\": a registered <length> requires a computationally-independent initial-value, and 100vw (viewport-dependent) is not one. The real default lives on…",
     "category": "Core tokens"
   },
   "sf-focus-ring-color": {
@@ -1864,11 +1948,11 @@
     "category": "Layout tokens"
   },
   "sf-is-active": {
-    "description": "Integer state flag for the active state. Set to 1 (via JS or .is-active) to drive branching calc() expressions. 0 = default (inactive).",
+    "description": "Integer state flag for the active state. Set to 1 (via JS or .sf-is-active) to drive branching calc() expressions. 0 = default (inactive).",
     "category": "Core tokens"
   },
   "sf-is-current": {
-    "description": "Integer state flag for the current/selected state. Set to 1 (via .is-current) to drive branching calc() expressions. 0 = default.",
+    "description": "Integer state flag for the current/selected state. Set to 1 (via .sf-is-current) to drive branching calc() expressions. 0 = default.",
     "category": "Core tokens"
   },
   "sf-is-dark": {
@@ -1876,11 +1960,11 @@
     "category": "Core tokens"
   },
   "sf-is-open": {
-    "description": "Integer state flag for the open/expanded state. Set to 1 (via .is-open) to drive branching calc() expressions. 0 = default (closed).",
+    "description": "Integer state flag for the open/expanded state. Set to 1 (via .sf-is-open) to drive branching calc() expressions. 0 = default (closed).",
     "category": "Core tokens"
   },
   "sf-is-pressed": {
-    "description": "Integer state flag for the pressed state. Set to 1 (via .is-pressed) to drive branching calc() expressions. 0 = default.",
+    "description": "Integer state flag for the pressed state. Set to 1 (via .sf-is-pressed) to drive branching calc() expressions. 0 = default.",
     "category": "Core tokens"
   },
   "sf-leading-normal": {
@@ -1896,7 +1980,7 @@
     "category": "Core tokens"
   },
   "sf-leading-taper": {
-    "description": "Progressive leading tightener: each step up the type scale subtracts step-index × taper from its per-size line-height token (tokens.sizes-extended). Default 0 keeps the curated defaults.",
+    "description": "Progressive leading tightener: each step up the type scale subtracts step-index × taper from its per-size line-height token. Default 0 keeps the curated defaults.",
     "category": "Core tokens"
   },
   "sf-leading-tight": {
@@ -1906,6 +1990,10 @@
   "sf-line-clamp": {
     "description": "Number of visible lines before text is clipped with an ellipsis.",
     "category": "Macro tokens"
+  },
+  "sf-link-external-label": {
+    "description": "Accessible name for the .sf-link-external marker glyph, read by screen readers via the CSS content alt-text syntax. Localise or clear alongside --sf-link-external-marker.",
+    "category": "Core tokens"
   },
   "sf-link-external-marker": {
     "description": "CSS content value appended to external links (e.g. \" ↗\"). Used by the .external-link pseudo-element pattern.",
@@ -1929,6 +2017,10 @@
   },
   "sf-mask-scrim-start": {
     "description": "Start stop for edge-fade mask gradients on scroll reels / overflow containers. Use in mask-image: linear-gradient(..., transparent var(--sf-mask-scrim-start)) to fade content near the leading edge.",
+    "category": "Core tokens"
+  },
+  "sf-media-radius": {
+    "description": "Radius + space: <length> syntax enables CSS transitions on layout values — border-radius/padding/gap etc. now interpolate instead of snapping. Shadow: syntax:\"*\" (no <shadow> type in spec); inherits:true so :root values cascade normally; registers the properties formally for…",
     "category": "Core tokens"
   },
   "sf-motion-scale": {
@@ -1955,45 +2047,49 @@
     "description": "CSS font-optical-sizing value. 'auto' lets the browser optimize letterforms for the rendered size. Set 'none' to disable optical sizing.",
     "category": "Core tokens"
   },
+  "sf-overlap-pull": {
+    "description": "how far .sf-overlap pulls into the adjacent element. .sf-overlap-host's padding compensation defaults to this same value via a var() fallback in the rule itself (not aliased here — see core/macros.css), so one override on the host tunes both unless --sf-overlap-host-pad is set…",
+    "category": "Macro tokens"
+  },
   "sf-palette-mix-100": {
     "description": "Color-mix percentage for palette step 100. Controls blend depth toward the surface. Default 8%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-palette-mix-200": {
     "description": "Color-mix percentage for palette step 200. Controls blend depth toward the surface. Default 20%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-palette-mix-300": {
     "description": "Color-mix percentage for palette step 300. Controls blend depth toward the surface. Default 40%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-palette-mix-400": {
     "description": "Color-mix percentage for palette step 400 (near-mid tint). Controls blend depth. Default 65%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-palette-mix-50": {
     "description": "Color-mix percentage for the lightest palette step (50). Controls how far step 50 blends toward the surface. Default 4%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-palette-mix-600": {
     "description": "Color-mix percentage for palette step 600 (near-mid shade). Controls blend depth toward the text color. Default 82%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-palette-mix-700": {
     "description": "Color-mix percentage for palette step 700. Controls blend depth toward the text color. Default 62%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-palette-mix-800": {
     "description": "Color-mix percentage for palette step 800 (dark shade). Controls blend depth toward text. Default 38%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-palette-mix-900": {
     "description": "Color-mix percentage for palette step 900 (very dark shade). Controls blend depth toward text. Default 18%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-palette-mix-950": {
     "description": "Color-mix percentage for the darkest palette step (950). Controls how far step 950 blends toward the text color. Default 8%.",
-    "category": "Palette tokens"
+    "category": "Core tokens"
   },
   "sf-print-base-size": {
     "description": "Base font size for @media print stylesheets. Default 11pt. Override on :root to adjust printed body text size.",
@@ -2197,6 +2293,14 @@
   },
   "sf-scroll-timeline-range-end": {
     "description": "animation-range end value for scroll-driven entrance effects. Default 'cover 30%'. Override on an element to control when its entrance animation finishes.",
+    "category": "Core tokens"
+  },
+  "sf-scroll-timeline-range-exit-end": {
+    "description": "Exit counterpart — element is well into view before starting to leave, finishing exactly as it scrolls fully out.",
+    "category": "Core tokens"
+  },
+  "sf-scroll-timeline-range-exit-start": {
+    "description": "Exit counterpart — element is well into view before starting to leave, finishing exactly as it scrolls fully out.",
     "category": "Core tokens"
   },
   "sf-scroll-timeline-range-start": {
@@ -2411,6 +2515,38 @@
     "description": "Sticky offset at mobile breakpoints.",
     "category": "Core tokens"
   },
+  "sf-surface-bg-animation": {
+    "description": "input set for the .sf-surface-bg macro (issue #523). One reusable, named background bundling a base colour fallback + image/gradient/pattern + sizing + an optional overlay + an optional animation. Define a preset by setting these on a scope, then apply .sf-surface-bg to compose…",
+    "category": "Macro tokens"
+  },
+  "sf-surface-bg-attachment": {
+    "description": "input set for the .sf-surface-bg macro (issue #523). One reusable, named background bundling a base colour fallback + image/gradient/pattern + sizing + an optional overlay + an optional animation. Define a preset by setting these on a scope, then apply .sf-surface-bg to compose…",
+    "category": "Macro tokens"
+  },
+  "sf-surface-bg-color": {
+    "description": "input set for the .sf-surface-bg macro (issue #523). One reusable, named background bundling a base colour fallback + image/gradient/pattern + sizing + an optional overlay + an optional animation. Define a preset by setting these on a scope, then apply .sf-surface-bg to compose…",
+    "category": "Macro tokens"
+  },
+  "sf-surface-bg-image": {
+    "description": "input set for the .sf-surface-bg macro (issue #523). One reusable, named background bundling a base colour fallback + image/gradient/pattern + sizing + an optional overlay + an optional animation. Define a preset by setting these on a scope, then apply .sf-surface-bg to compose…",
+    "category": "Macro tokens"
+  },
+  "sf-surface-bg-overlay": {
+    "description": "input set for the .sf-surface-bg macro (issue #523). One reusable, named background bundling a base colour fallback + image/gradient/pattern + sizing + an optional overlay + an optional animation. Define a preset by setting these on a scope, then apply .sf-surface-bg to compose…",
+    "category": "Macro tokens"
+  },
+  "sf-surface-bg-position": {
+    "description": "input set for the .sf-surface-bg macro (issue #523). One reusable, named background bundling a base colour fallback + image/gradient/pattern + sizing + an optional overlay + an optional animation. Define a preset by setting these on a scope, then apply .sf-surface-bg to compose…",
+    "category": "Macro tokens"
+  },
+  "sf-surface-bg-repeat": {
+    "description": "input set for the .sf-surface-bg macro (issue #523). One reusable, named background bundling a base colour fallback + image/gradient/pattern + sizing + an optional overlay + an optional animation. Define a preset by setting these on a scope, then apply .sf-surface-bg to compose…",
+    "category": "Macro tokens"
+  },
+  "sf-surface-bg-size": {
+    "description": "input set for the .sf-surface-bg macro (issue #523). One reusable, named background bundling a base colour fallback + image/gradient/pattern + sizing + an optional overlay + an optional animation. Define a preset by setting these on a scope, then apply .sf-surface-bg to compose…",
+    "category": "Macro tokens"
+  },
   "sf-surface-color": {
     "description": "Input for the generic .sf-surface macro. Set any color (including palette shades); the macro derives background, auto-contrast foreground, and the contextual token set from it.",
     "category": "Macro tokens"
@@ -2429,19 +2565,19 @@
   },
   "sf-text-2xl-font-weight": {
     "description": "Font weight for 2×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-2xl-letter-spacing": {
     "description": "Letter-spacing for 2×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-2xl-line-height": {
     "description": "Line height for 2×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-2xl-max-width": {
     "description": "Optimal line length for 2×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-2xs": {
     "description": "Extra-extra-small font size (~11px). Fine print, badges.",
@@ -2449,19 +2585,19 @@
   },
   "sf-text-2xs-font-weight": {
     "description": "Font weight for 2×-extra-small text. Override to deviate from the global weight at this size.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-2xs-letter-spacing": {
     "description": "Letter-spacing for 2×-extra-small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-2xs-line-height": {
     "description": "Line height for 2×-extra-small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-2xs-max-width": {
     "description": "Optimal line length (max-width in ch) for 2×-extra-small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-3xl": {
     "description": "3× large font size (~30px). Major headings.",
@@ -2469,19 +2605,19 @@
   },
   "sf-text-3xl-font-weight": {
     "description": "Font weight for 3×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-3xl-letter-spacing": {
     "description": "Letter-spacing for 3×-large text. Typically negative to tighten large headings.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-3xl-line-height": {
     "description": "Line height for 3×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-3xl-max-width": {
     "description": "Optimal line length for 3×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-4xl": {
     "description": "4× large font size (~36px). Display-level headings.",
@@ -2489,19 +2625,19 @@
   },
   "sf-text-4xl-font-weight": {
     "description": "Font weight for 4×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-4xl-letter-spacing": {
     "description": "Letter-spacing for 4×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-4xl-line-height": {
     "description": "Line height for 4×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-4xl-max-width": {
     "description": "Optimal line length for 4×-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-base-max": {
     "description": "Maximum base font size (rem) at the widest viewport. End point for the fluid type scale at wide screens. Part of the fluid scale engine.",
@@ -2541,19 +2677,19 @@
   },
   "sf-text-l-font-weight": {
     "description": "Font weight for large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-l-letter-spacing": {
     "description": "Letter-spacing for large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-l-line-height": {
     "description": "Line height for large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-l-max-width": {
     "description": "Optimal line length for large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-m": {
     "description": "Medium / base font size (~16px). Typical body text.",
@@ -2561,19 +2697,19 @@
   },
   "sf-text-m-font-weight": {
     "description": "Font weight for medium (body) text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-m-letter-spacing": {
     "description": "Letter-spacing for medium text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-m-line-height": {
     "description": "Line height for medium text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-m-max-width": {
     "description": "Optimal reading line length for medium text (~65–75ch).",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-ratio-max": {
     "description": "Modular type scale ratio at the widest viewport. Controls step-to-step size growth. Default 1.333. Part of the fluid scale engine.",
@@ -2589,19 +2725,19 @@
   },
   "sf-text-s-font-weight": {
     "description": "Font weight for small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-s-letter-spacing": {
     "description": "Letter-spacing for small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-s-line-height": {
     "description": "Line height for small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-s-max-width": {
     "description": "Optimal line length for small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-scale": {
     "description": "Global type-size multiplier. Scales the entire fluid type scale. 1.08 gives noticeably larger body text without breaking layout.",
@@ -2623,25 +2759,33 @@
     "description": "Small text-shadow for subtle depth on display headings.",
     "category": "Core tokens"
   },
+  "sf-text-shadow-xl": {
+    "description": "Extra-large text-shadow for maximum legibility over busy or high-contrast image backgrounds.",
+    "category": "Core tokens"
+  },
+  "sf-text-shadow-xs": {
+    "description": "Extra-small text-shadow for the subtlest depth on body text.",
+    "category": "Core tokens"
+  },
   "sf-text-xl": {
     "description": "Extra-large font size (~20px). Sub-headings, callout text.",
     "category": "Core tokens"
   },
   "sf-text-xl-font-weight": {
     "description": "Font weight for extra-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-xl-letter-spacing": {
     "description": "Letter-spacing for extra-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-xl-line-height": {
     "description": "Line height for extra-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-xl-max-width": {
     "description": "Optimal line length for extra-large text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-xs": {
     "description": "Extra-small font size (~12px). Labels, captions, metadata.",
@@ -2649,19 +2793,19 @@
   },
   "sf-text-xs-font-weight": {
     "description": "Font weight for extra-small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-xs-letter-spacing": {
     "description": "Letter-spacing for extra-small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-xs-line-height": {
     "description": "Line height for extra-small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-text-xs-max-width": {
     "description": "Optimal line length for extra-small text.",
-    "category": "Sizes-extended tokens"
+    "category": "Core tokens"
   },
   "sf-theme-transition-duration": {
     "description": "Duration of the .sf-theme-transition animated color-scheme crossfade. Scales with --sf-motion-scale so reduced-motion preferences are respected. Default 300ms.",

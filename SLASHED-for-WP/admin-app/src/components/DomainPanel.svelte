@@ -13,6 +13,7 @@
   import EffectsPanel from './panels/EffectsPanel.svelte';
   import MacrosPanel from './panels/MacrosPanel.svelte';
   import MiscPanel from './panels/MiscPanel.svelte';
+  import ComponentsPanel from './panels/ComponentsPanel.svelte';
   import ThemesPanel from './panels/ThemesPanel.svelte';
   import ExportPanel from './panels/ExportPanel.svelte';
   import CheatsheetPanel from './panels/CheatsheetPanel.svelte';
@@ -93,6 +94,8 @@
             <MacrosPanel {overrides} {onSet} {onReset} />
           {:else if domain === "misc"}
             <MiscPanel {overrides} {onSet} {onReset} {onBulkChange} />
+          {:else if domain === "components"}
+            <ComponentsPanel {overrides} {onSet} {onReset} />
           {:else}
             <GenericTokenPanel {domain} {tokens} {overrides} {onSet} {onReset} />
           {/if}

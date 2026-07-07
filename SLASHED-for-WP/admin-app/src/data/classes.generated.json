@@ -5,406 +5,6 @@
   },
   "classes": [
     {
-      "name": "is-active",
-      "selector": ".is-active",
-      "kind": "state",
-      "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
-      "description": "Active state — applied to the currently interacted-with element (e.g. pressed button, active menu item). Sets --sf-is-active to 1 for calc() branching.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-busy",
-      "selector": ".is-busy",
-      "kind": "state",
-      "category": "State classes",
-      "group": "LOADING / ASYNC FEEDBACK",
-      "description": "Busy state — shows a progress cursor to indicate background processing. Does not mask content; use is-loading when content should be hidden during loading.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-clickable",
-      "selector": ".is-clickable",
-      "kind": "state",
-      "category": "State classes",
-      "group": "FOCUS / INTERACTION MODIFIERS",
-      "description": "Makes the element appear interactive (pointer cursor). Use when an element has a click handler but no native button or link role.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-clipped",
-      "selector": ".is-clipped",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OVERFLOW / CLIPPING",
-      "description": "Clips overflowing content (overflow: hidden). Use to constrain media or tooltips within a container boundary.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-collapsed",
-      "selector": ".is-collapsed",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OPEN / CLOSED",
-      "description": "Collapsed state for disclosure widgets — hides the expandable region. Pair with is-expanded or is-open. Components add transitions.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-current",
-      "selector": ".is-current",
-      "kind": "state",
-      "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
-      "description": "Current/selected state — marks the active page in navigation or the selected item in a list. Sets --sf-is-current to 1 for calc() branching.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-danger",
-      "selector": ".is-danger",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VALIDATION / FEEDBACK",
-      "description": "Danger status state — applies danger color tokens for destructive actions (e.g. a delete confirmation dialog) and form validation errors.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-disabled",
-      "selector": ".is-disabled",
-      "kind": "state",
-      "category": "State classes",
-      "group": "INTERACTIVITY",
-      "description": "Disabled state — dims the element (--sf-opacity-disabled), removes pointer events, and sets cursor: not-allowed. Inherited by child elements that re-enable pointer events.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-draggable",
-      "selector": ".is-draggable",
-      "kind": "state",
-      "category": "State classes",
-      "group": "DRAG & DROP",
-      "description": "Draggable state — shows a grab cursor to indicate the element can be dragged. Apply before a drag interaction begins.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-dragging",
-      "selector": ".is-dragging",
-      "kind": "state",
-      "category": "State classes",
-      "group": "DRAG & DROP",
-      "description": "Active drag state — shows a grabbing cursor while the element is being dragged. Apply during the drag event.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-drop-target",
-      "selector": ".is-drop-target",
-      "kind": "state",
-      "category": "State classes",
-      "group": "DRAG & DROP",
-      "description": "Drop-target state — applies a visual highlight to indicate a valid drag-and-drop destination. Toggle on drag-over events.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-empty",
-      "selector": ".is-empty",
-      "kind": "state",
-      "category": "State classes",
-      "group": "EMPTY STATE",
-      "description": "Empty state — hides the element when it has no child nodes (:empty). Used for dynamic lists or containers that may render empty.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-error",
-      "selector": ".is-error",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VALIDATION / FEEDBACK",
-      "description": "Error state — alias for is-danger. Applies danger color tokens to indicate a validation failure or system error. Visual styling is identical to is-invalid.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-expanded",
-      "selector": ".is-expanded",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OPEN / CLOSED",
-      "description": "Expanded state for disclosure widgets — shows the expandable region. Inverse of is-collapsed. Components add transitions.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-fixed",
-      "selector": ".is-fixed",
-      "kind": "state",
-      "category": "State classes",
-      "group": "POSITION / STICKINESS",
-      "description": "Fixed positioning state — removes the element from the document flow and positions it relative to the viewport. Respects writing-mode (logical variant of fixed positioning).",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-focused",
-      "selector": ".is-focused",
-      "kind": "state",
-      "category": "State classes",
-      "group": "FOCUS / INTERACTION MODIFIERS",
-      "description": "Programmatic focus state — applies the focus ring to an element that should appear focused. Use when :focus-visible alone is insufficient (e.g. custom select).",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-fullscreen",
-      "selector": ".is-fullscreen",
-      "kind": "state",
-      "category": "State classes",
-      "group": "POSITION / STICKINESS",
-      "description": "Fullscreen positioning state — stretches the element to cover the viewport. Bare positioning only; consumers supply inset values.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-hidden",
-      "selector": ".is-hidden",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VISIBILITY",
-      "description": "Hidden state — removes the element from layout and accessibility tree (display: none !important).",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-highlighted",
-      "selector": ".is-highlighted",
-      "kind": "state",
-      "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
-      "description": "Highlighted state — applies a highlight background. Useful for search result highlighting and keyboard-navigated lists.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-info",
-      "selector": ".is-info",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VALIDATION / FEEDBACK",
-      "description": "Info status state — applies info color tokens. Use for neutral informational messages and hints.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-invalid",
-      "selector": ".is-invalid",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VALIDATION / FEEDBACK",
-      "description": "Invalid state — applies danger color tokens to form fields with validation failures. Identical visual output to is-error; the name signals form-field context.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-invisible",
-      "selector": ".is-invisible",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VISIBILITY",
-      "description": "Invisible state — hides the element visually but keeps it in the layout and accessibility tree (visibility: hidden).",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-loading",
-      "selector": ".is-loading",
-      "kind": "state",
-      "category": "State classes",
-      "group": "LOADING / ASYNC FEEDBACK",
-      "description": "Loading state — hides the element's text (color: transparent), removes pointer events, and renders a spinner via ::after. Use for buttons and containers awaiting async results.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-open",
-      "selector": ".is-open",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OPEN / CLOSED",
-      "description": "Open/shown state for modals, dropdowns, and drawers — counterpart to is-collapsed/is-hidden. Sets --sf-is-open to 1 for calc() branching.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-overlay",
-      "selector": ".is-overlay",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OVERLAY / BACKDROP",
-      "description": "Overlay positioning state — renders the element as a full-screen fixed overlay with a backdrop scrim. Use for modal backgrounds.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-pending",
-      "selector": ".is-pending",
-      "kind": "state",
-      "category": "State classes",
-      "group": "LOADING / ASYNC FEEDBACK",
-      "description": "Pending state for optimistic UI — content remains visible but dimmed while an async request is in flight. Differs from is-loading (which hides content entirely).",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-pinned",
-      "selector": ".is-pinned",
-      "kind": "state",
-      "category": "State classes",
-      "group": "POSITION / STICKINESS",
-      "description": "Pinned / sticky state — applies a visual affordance (e.g. border or shadow) to indicate the element is in its stuck (sticky) position. Toggle via IntersectionObserver.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-pressed",
-      "selector": ".is-pressed",
-      "kind": "state",
-      "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
-      "description": "Pressed/toggled-on state for toggle buttons. Sets --sf-is-pressed to 1 for calc() branching and signals the selected state to components.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-readonly",
-      "selector": ".is-readonly",
-      "kind": "state",
-      "category": "State classes",
-      "group": "INTERACTIVITY",
-      "description": "Readonly state — removes pointer events and text selection. Use for fields that display data but cannot be edited.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-resizable",
-      "selector": ".is-resizable",
-      "kind": "state",
-      "category": "State classes",
-      "group": "POSITION / STICKINESS",
-      "description": "Resizable state — enables user resize handle on the element (resize: both). Typically applied to textareas or panels.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-scrollable",
-      "selector": ".is-scrollable",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OVERFLOW / CLIPPING",
-      "description": "Makes the element scrollable (overflow: auto) when its content overflows. Applies to both axes.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-selected",
-      "selector": ".is-selected",
-      "kind": "state",
-      "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
-      "description": "Selected state — marks an item as selected in a list, table row, or grid cell. Visual specifics (background, border) are applied by component styles.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-skeleton",
-      "selector": ".is-skeleton",
-      "kind": "state",
-      "category": "State classes",
-      "group": "LOADING / ASYNC FEEDBACK",
-      "description": "Skeleton loading placeholder state. Applies a shimmer animation over the element to indicate that content is loading. Works on both img and non-media elements.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-sticky",
-      "selector": ".is-sticky",
-      "kind": "state",
-      "category": "State classes",
-      "group": "POSITION / STICKINESS",
-      "description": "Sticky positioning state — sets position: sticky with a top offset from --sf-sticky-offset. Useful for sticky headers and sidebar sub-menus.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-success",
-      "selector": ".is-success",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VALIDATION / FEEDBACK",
-      "description": "Success status state — applies success color tokens. Use for confirmation messages, completed form steps, and positive feedback.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-truncated",
-      "selector": ".is-truncated",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OVERFLOW / CLIPPING",
-      "description": "Single-line truncation state — clips overflowing text with an ellipsis (overflow: hidden, text-overflow: ellipsis, white-space: nowrap).",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-unselectable",
-      "selector": ".is-unselectable",
-      "kind": "state",
-      "category": "State classes",
-      "group": "FOCUS / INTERACTION MODIFIERS",
-      "description": "Prevents text selection (user-select: none) on the element. Use on interactive drag handles, labels, and UI chrome that shouldn't be selected.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-valid",
-      "selector": ".is-valid",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VALIDATION / FEEDBACK",
-      "description": "Valid state — applies success color tokens to form fields that have passed validation. Visual styling is identical to is-success; the name signals form-field context.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-visible",
-      "selector": ".is-visible",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VISIBILITY",
-      "description": "Visible state — forces the element to be visible (visibility: visible). Use to un-hide an element that inherited visibility: hidden from a parent.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "is-warning",
-      "selector": ".is-warning",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VALIDATION / FEEDBACK",
-      "description": "Warning status state — applies warning color tokens. Use for cautionary messages and non-critical alerts.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
       "name": "no-motion",
       "selector": ".no-motion",
       "kind": "accessibility",
@@ -575,12 +175,12 @@
       "layer": "slashed.layout"
     },
     {
-      "name": "sf-bg",
-      "selector": ".sf-bg",
+      "name": "sf-bg-layer",
+      "selector": ".sf-bg-layer",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Background",
-      "description": "Background layer — absolutely-positioned cover media that sits behind a parent's content. The parent is auto-promoted to a positioned, isolated stacking context via :has(), so .sf-bg composes natively under .sf-scrim (background → scrim gradient → content). Works as a bare <img class=\"sf-bg\"> or as a wrapper with a nested > img / > video / > picture.",
+      "group": "",
+      "description": "Background layer — absolutely-positioned cover media that sits behind a parent's content. The parent is auto-promoted to a positioned, isolated stacking context via :has(), so .sf-bg-layer composes natively under .sf-scrim (background → scrim gradient → content). Works as a bare <img class=\"sf-bg-layer\"> or as a wrapper with a nested > img / > video / > picture.",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -603,6 +203,266 @@
       "description": "Breaks a child element out of a parent sf-content-grid, spanning full bleed (or a named grid area) regardless of the parent column. Useful for full-width sections inside constrained prose.",
       "optional": false,
       "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-btn",
+      "selector": ".sf-btn",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Interactive call-to-action button. Apply to <button> or <a>. Intrinsic width by default; owns its own styling (excluded from the classless <button> look). Combine a colour family, a style treatment, and a size modifier.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--block",
+      "selector": ".sf-btn--block",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Full-width button (100% inline size) everywhere.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--block-cq",
+      "selector": ".sf-btn--block-cq",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Full-width button only inside a query container narrower than 20rem; intrinsic otherwise.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--danger",
+      "selector": ".sf-btn--danger",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Button in the danger (destructive) colour family.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--ghost",
+      "selector": ".sf-btn--ghost",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Borderless, transparent button; tints on hover. The lightest button treatment.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--info",
+      "selector": ".sf-btn--info",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Button in the info colour family.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--l",
+      "selector": ".sf-btn--l",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Large button size.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--neutral",
+      "selector": ".sf-btn--neutral",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Button in the neutral colour family.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--outline",
+      "selector": ".sf-btn--outline",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Outlined button (coloured border/text, transparent fill) that fills with the family colour on hover. Composes with any colour family.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--primary",
+      "selector": ".sf-btn--primary",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Button in the primary brand colour family.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--s",
+      "selector": ".sf-btn--s",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Small button size.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--secondary",
+      "selector": ".sf-btn--secondary",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Transparent-fill button with a coloured border and text; subtle tint on hover.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--success",
+      "selector": ".sf-btn--success",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Button in the success (positive) colour family.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--warning",
+      "selector": ".sf-btn--warning",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Button in the warning (caution) colour family.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--xl",
+      "selector": ".sf-btn--xl",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Extra-large button size.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--xs",
+      "selector": ".sf-btn--xs",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Extra-small button size.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card",
+      "selector": ".sf-card",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Padded content container with optional __header/__body/__footer and __media/__avatar/__title subcomponents. Uses concentric radius math so inner corners stay proportional.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card__avatar",
+      "selector": ".sf-card__avatar",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Circular avatar image inside a card.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card__body",
+      "selector": ".sf-card__body",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Card body slot.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card__footer",
+      "selector": ".sf-card__footer",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Card footer slot with a top divider.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card__header",
+      "selector": ".sf-card__header",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Card header slot with a bottom divider.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card__media",
+      "selector": ".sf-card__media",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Full-width cover image/video for a card, cropped to --sf-card-media-ratio (16/9 by default).",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card__title",
+      "selector": ".sf-card__title",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Card title heading, sized via --sf-card-heading-size.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card--bordered",
+      "selector": ".sf-card--bordered",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Flat, outlined card: keeps the border, drops the shadow.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card--elevated",
+      "selector": ".sf-card--elevated",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Floating card: hides the border, applies a larger shadow.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-card--interactive",
+      "selector": ".sf-card--interactive",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-card",
+      "description": "Adds a pointer cursor and a shadow/translate lift on hover or keyboard focus. Pair with .sf-clickable-parent for a fully clickable card. Lift is suppressed under prefers-reduced-motion.",
+      "optional": true,
+      "layer": "slashed.components"
     },
     {
       "name": "sf-center",
@@ -835,6 +695,56 @@
       "layer": "slashed.layout"
     },
     {
+      "name": "sf-corner-scoop",
+      "selector": ".sf-corner-scoop",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-corner-scoop--bottom-left",
+      "selector": ".sf-corner-scoop--bottom-left",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-corner-scoop--bottom-right",
+      "selector": ".sf-corner-scoop--bottom-right",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-corner-scoop--top-left",
+      "selector": ".sf-corner-scoop--top-left",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-corner-scoop--top-right",
+      "selector": ".sf-corner-scoop--top-right",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
       "name": "sf-cover",
       "selector": ".sf-cover",
       "kind": "layout",
@@ -901,6 +811,26 @@
       "category": "Layout primitives",
       "group": "Container query context",
       "description": "Assigns an inline-size container context to any element. Children can then use @container rules or container-query-aware tokens.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-divide",
+      "selector": ".sf-divide",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Divide",
+      "description": "Divide — rules between direct children, reusing .sf-divider's tokens. Unlike .sf-divider (a standalone separator element), .sf-divide is applied to the container and needs no extra markup per gap.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-divide--vertical",
+      "selector": ".sf-divide--vertical",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Divide",
+      "description": "Divide — rules between direct children, reusing .sf-divider's tokens. Unlike .sf-divider (a standalone separator element), .sf-divide is applied to the container and needs no extra markup per gap.",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -997,6 +927,26 @@
     {
       "name": "sf-drop-shadow-s",
       "selector": ".sf-drop-shadow-s",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-drop-shadow-xl",
+      "selector": ".sf-drop-shadow-xl",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-drop-shadow-xs",
+      "selector": ".sf-drop-shadow-xs",
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
@@ -1125,6 +1075,66 @@
       "layer": "slashed.macros"
     },
     {
+      "name": "sf-exit--fade",
+      "selector": ".sf-exit--fade",
+      "kind": "motion",
+      "category": "Motion / animation",
+      "group": "",
+      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "optional": false,
+      "layer": "slashed.motion"
+    },
+    {
+      "name": "sf-exit--fade-down",
+      "selector": ".sf-exit--fade-down",
+      "kind": "motion",
+      "category": "Motion / animation",
+      "group": "",
+      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "optional": false,
+      "layer": "slashed.motion"
+    },
+    {
+      "name": "sf-exit--fade-left",
+      "selector": ".sf-exit--fade-left",
+      "kind": "motion",
+      "category": "Motion / animation",
+      "group": "",
+      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "optional": false,
+      "layer": "slashed.motion"
+    },
+    {
+      "name": "sf-exit--fade-right",
+      "selector": ".sf-exit--fade-right",
+      "kind": "motion",
+      "category": "Motion / animation",
+      "group": "",
+      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "optional": false,
+      "layer": "slashed.motion"
+    },
+    {
+      "name": "sf-exit--fade-up",
+      "selector": ".sf-exit--fade-up",
+      "kind": "motion",
+      "category": "Motion / animation",
+      "group": "",
+      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "optional": false,
+      "layer": "slashed.motion"
+    },
+    {
+      "name": "sf-exit--scale-down",
+      "selector": ".sf-exit--scale-down",
+      "kind": "motion",
+      "category": "Motion / animation",
+      "group": "",
+      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "optional": false,
+      "layer": "slashed.motion"
+    },
+    {
       "name": "sf-fade-in",
       "selector": ".sf-fade-in",
       "kind": "motion",
@@ -1153,6 +1163,16 @@
       "description": "Applies --sf-flow-space as margin-block-start to all direct children except the first. Establishes consistent vertical rhythm in prose-like containers.",
       "optional": false,
       "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-fluid-cq",
+      "selector": ".sf-fluid-cq",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "",
+      "description": ".sf-fluid-cq: opt a subtree into a CONTAINER-relative fluid scale (issue #497). By default --sf-text-* / --sf-space-* interpolate against 100vw (the viewport); inside .sf-fluid-cq they interpolate against 100cqi (this box's inline size), so type + spacing track the container…",
+      "optional": false,
+      "layer": "slashed.layout"
     },
     {
       "name": "sf-focus-parent",
@@ -1515,6 +1535,256 @@
       "layer": "slashed.layout"
     },
     {
+      "name": "sf-grid-flex",
+      "selector": ".sf-grid-flex",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Grid (flex)",
+      "description": "Flexbox alternative to .sf-grid for item counts that don't divide evenly: leftover last-row items stretch to fill the row by default, or stay fixed-width and centered with --center.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-grid-flex--2xl",
+      "selector": ".sf-grid-flex--2xl",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Grid (flex)",
+      "description": "Grid-flex variant with a 2xl minimum item width.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-grid-flex--center",
+      "selector": ".sf-grid-flex--center",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Grid (flex)",
+      "description": "Grid-flex variant that keeps last-row leftover items fixed-width and centered instead of stretching.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-grid-flex--l",
+      "selector": ".sf-grid-flex--l",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Grid (flex)",
+      "description": "Grid-flex variant with a large (l) minimum item width.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-grid-flex--m",
+      "selector": ".sf-grid-flex--m",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Grid (flex)",
+      "description": "Grid-flex variant with a medium (m) minimum item width.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-grid-flex--s",
+      "selector": ".sf-grid-flex--s",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Grid (flex)",
+      "description": "Grid-flex variant with a small (s) minimum item width.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-grid-flex--xl",
+      "selector": ".sf-grid-flex--xl",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Grid (flex)",
+      "description": "Grid-flex variant with an xl minimum item width.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-grid-flex--xs",
+      "selector": ".sf-grid-flex--xs",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "Grid (flex)",
+      "description": "Grid-flex variant with an xs minimum item width.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-h1",
+      "selector": ".sf-h1",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HEADING HELPER CLASSES (.sf-h1",
+      "description": "Applies h1-level typography (size, line-height, weight, tracking, max-width) to any element without changing its semantic level.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-h2",
+      "selector": ".sf-h2",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HEADING HELPER CLASSES (.sf-h1",
+      "description": "Applies h2-level typography to any element without changing its semantic level.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-h3",
+      "selector": ".sf-h3",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HEADING HELPER CLASSES (.sf-h1",
+      "description": "Applies h3-level typography to any element without changing its semantic level.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-h4",
+      "selector": ".sf-h4",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HEADING HELPER CLASSES (.sf-h1",
+      "description": "Applies h4-level typography to any element without changing its semantic level.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-h5",
+      "selector": ".sf-h5",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HEADING HELPER CLASSES (.sf-h1",
+      "description": "Applies h5-level typography to any element without changing its semantic level.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-h6",
+      "selector": ".sf-h6",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HEADING HELPER CLASSES (.sf-h1",
+      "description": "Applies h6-level typography to any element without changing its semantic level.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-header--l",
+      "selector": ".sf-header--l",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "",
+      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-header--m",
+      "selector": ".sf-header--m",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "",
+      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-header--s",
+      "selector": ".sf-header--s",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "",
+      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-header--xl",
+      "selector": ".sf-header--xl",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "",
+      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-header--xs",
+      "selector": ".sf-header--xs",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "",
+      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-hover-float",
+      "selector": ".sf-hover-float",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HOVER-TRANSFORM UTILITIES (.sf-hover-*)",
+      "description": "Hover-triggered transform: translates the element up slightly on hover.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-hover-grow",
+      "selector": ".sf-hover-grow",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HOVER-TRANSFORM UTILITIES (.sf-hover-*)",
+      "description": "Hover-triggered transform: scales the element up slightly on hover.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-hover-shrink",
+      "selector": ".sf-hover-shrink",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HOVER-TRANSFORM UTILITIES (.sf-hover-*)",
+      "description": "Hover-triggered transform: scales the element down slightly on hover.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-hover-sink",
+      "selector": ".sf-hover-sink",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HOVER-TRANSFORM UTILITIES (.sf-hover-*)",
+      "description": "Hover-triggered transform: translates the element down slightly on hover.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-hover-slide-end",
+      "selector": ".sf-hover-slide-end",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HOVER-TRANSFORM UTILITIES (.sf-hover-*)",
+      "description": "Hover-triggered transform: translates the element toward the inline-end on hover.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-hover-slide-start",
+      "selector": ".sf-hover-slide-start",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "HOVER-TRANSFORM UTILITIES (.sf-hover-*)",
+      "description": "Hover-triggered transform: translates the element toward the inline-start on hover.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
       "name": "sf-icon",
       "selector": ".sf-icon",
       "kind": "layout",
@@ -1625,6 +1895,286 @@
       "layer": "slashed.layout"
     },
     {
+      "name": "sf-is-active",
+      "selector": ".sf-is-active",
+      "kind": "state",
+      "category": "State classes",
+      "group": "ACTIVE / SELECTED / CURRENT",
+      "description": "Active state — applied to the currently interacted-with element (e.g. pressed button, active menu item). Sets --sf-is-active to 1 for calc() branching.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-busy",
+      "selector": ".sf-is-busy",
+      "kind": "state",
+      "category": "State classes",
+      "group": "LOADING / ASYNC FEEDBACK",
+      "description": "Busy state — shows a progress cursor to indicate background processing. Does not mask content; use sf-is-loading when content should be hidden during loading.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-collapsed",
+      "selector": ".sf-is-collapsed",
+      "kind": "state",
+      "category": "State classes",
+      "group": "OPEN / CLOSED",
+      "description": "Collapsed state for disclosure widgets — hides the expandable region. Pair with sf-is-expanded or sf-is-open. Components add transitions.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-current",
+      "selector": ".sf-is-current",
+      "kind": "state",
+      "category": "State classes",
+      "group": "ACTIVE / SELECTED / CURRENT",
+      "description": "Current/selected state — marks the active page in navigation or the selected item in a list. Sets --sf-is-current to 1 for calc() branching.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-danger",
+      "selector": ".sf-is-danger",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VALIDATION / FEEDBACK",
+      "description": "Danger status state — applies danger color tokens for destructive actions (e.g. a delete confirmation dialog) and form validation errors.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-disabled",
+      "selector": ".sf-is-disabled",
+      "kind": "state",
+      "category": "State classes",
+      "group": "INTERACTIVITY",
+      "description": "Disabled state — dims the element (--sf-opacity-disabled), removes pointer events, and sets cursor: not-allowed. Inherited by child elements that re-enable pointer events.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-draggable",
+      "selector": ".sf-is-draggable",
+      "kind": "state",
+      "category": "State classes",
+      "group": "DRAG & DROP",
+      "description": "Draggable state — shows a grab cursor to indicate the element can be dragged. Apply before a drag interaction begins.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-dragging",
+      "selector": ".sf-is-dragging",
+      "kind": "state",
+      "category": "State classes",
+      "group": "DRAG & DROP",
+      "description": "Active drag state — shows a grabbing cursor while the element is being dragged. Apply during the drag event.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-drop-target",
+      "selector": ".sf-is-drop-target",
+      "kind": "state",
+      "category": "State classes",
+      "group": "DRAG & DROP",
+      "description": "Drop-target state — applies a visual highlight to indicate a valid drag-and-drop destination. Toggle on drag-over events.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-empty",
+      "selector": ".sf-is-empty",
+      "kind": "state",
+      "category": "State classes",
+      "group": "EMPTY STATE",
+      "description": "Empty state — hides the element when it has no child nodes (:empty). Used for dynamic lists or containers that may render empty.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-error",
+      "selector": ".sf-is-error",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VALIDATION / FEEDBACK",
+      "description": "Error state — alias for sf-is-danger. Applies danger color tokens to indicate a validation failure or system error. Visual styling is identical to sf-is-invalid.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-expanded",
+      "selector": ".sf-is-expanded",
+      "kind": "state",
+      "category": "State classes",
+      "group": "OPEN / CLOSED",
+      "description": "Expanded state for disclosure widgets — shows the expandable region. Inverse of sf-is-collapsed. Components add transitions.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-hidden",
+      "selector": ".sf-is-hidden",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VISIBILITY",
+      "description": "Hidden state — removes the element from layout and accessibility tree (display: none !important).",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-highlighted",
+      "selector": ".sf-is-highlighted",
+      "kind": "state",
+      "category": "State classes",
+      "group": "ACTIVE / SELECTED / CURRENT",
+      "description": "Highlighted state — applies a highlight background. Useful for search result highlighting and keyboard-navigated lists.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-info",
+      "selector": ".sf-is-info",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VALIDATION / FEEDBACK",
+      "description": "Info status state — applies info color tokens. Use for neutral informational messages and hints.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-invalid",
+      "selector": ".sf-is-invalid",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VALIDATION / FEEDBACK",
+      "description": "Invalid state — applies danger color tokens to form fields with validation failures. Identical visual output to sf-is-error; the name signals form-field context.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-invisible",
+      "selector": ".sf-is-invisible",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VISIBILITY",
+      "description": "Invisible state — hides the element visually but keeps it in the layout and accessibility tree (visibility: hidden).",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-loading",
+      "selector": ".sf-is-loading",
+      "kind": "state",
+      "category": "State classes",
+      "group": "LOADING / ASYNC FEEDBACK",
+      "description": "Loading state — hides the element's text (color: transparent), removes pointer events, and renders a spinner via ::after. Use for buttons and containers awaiting async results.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-open",
+      "selector": ".sf-is-open",
+      "kind": "state",
+      "category": "State classes",
+      "group": "OPEN / CLOSED",
+      "description": "Open/shown state for modals, dropdowns, and drawers — counterpart to sf-is-collapsed/sf-is-hidden. Sets --sf-is-open to 1 for calc() branching.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-pending",
+      "selector": ".sf-is-pending",
+      "kind": "state",
+      "category": "State classes",
+      "group": "LOADING / ASYNC FEEDBACK",
+      "description": "Pending state for optimistic UI — content remains visible but dimmed while an async request is in flight. Differs from sf-is-loading (which hides content entirely).",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-pressed",
+      "selector": ".sf-is-pressed",
+      "kind": "state",
+      "category": "State classes",
+      "group": "ACTIVE / SELECTED / CURRENT",
+      "description": "Pressed/toggled-on state for toggle buttons. Sets --sf-is-pressed to 1 for calc() branching and signals the selected state to components.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-readonly",
+      "selector": ".sf-is-readonly",
+      "kind": "state",
+      "category": "State classes",
+      "group": "INTERACTIVITY",
+      "description": "Readonly state — removes pointer events and text selection. Use for fields that display data but cannot be edited.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-selected",
+      "selector": ".sf-is-selected",
+      "kind": "state",
+      "category": "State classes",
+      "group": "ACTIVE / SELECTED / CURRENT",
+      "description": "Selected state — marks an item as selected in a list, table row, or grid cell. Visual specifics (background, border) are applied by component styles.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-skeleton",
+      "selector": ".sf-is-skeleton",
+      "kind": "state",
+      "category": "State classes",
+      "group": "LOADING / ASYNC FEEDBACK",
+      "description": "Skeleton loading placeholder state. Applies a shimmer animation over the element to indicate that content is loading. Works on both img and non-media elements.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-success",
+      "selector": ".sf-is-success",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VALIDATION / FEEDBACK",
+      "description": "Success status state — applies success color tokens. Use for confirmation messages, completed form steps, and positive feedback.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-valid",
+      "selector": ".sf-is-valid",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VALIDATION / FEEDBACK",
+      "description": "Valid state — applies success color tokens to form fields that have passed validation. Visual styling is identical to sf-is-success; the name signals form-field context.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-visible",
+      "selector": ".sf-is-visible",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VISIBILITY",
+      "description": "Visible state — forces the element to be visible (visibility: visible). Use to un-hide an element that inherited visibility: hidden from a parent.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-warning",
+      "selector": ".sf-is-warning",
+      "kind": "state",
+      "category": "State classes",
+      "group": "VALIDATION / FEEDBACK",
+      "description": "Warning status state — applies warning color tokens. Use for cautionary messages and non-critical alerts.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
       "name": "sf-line-clamp-2",
       "selector": ".sf-line-clamp-2",
       "kind": "macro",
@@ -1683,6 +2233,56 @@
       "description": "Automatically appends an external-link icon (via ::after content) to indicate the link opens in a new tab or goes to an external domain.",
       "optional": false,
       "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-list-none",
+      "selector": ".sf-list-none",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "LIST RESET (.sf-list-none)",
+      "description": "Drops marker + inline start-padding in one class, on any <ul>/<ol> (or element with list-style applied).",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-marker--action",
+      "selector": ".sf-marker--action",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "LIST MARKER COLOUR (.sf-marker--*)",
+      "description": "Colour the ::marker of an arbitrary list. Brand/action families only — for any other colour set `::marker { color }` yourself. The :not(.sf-prose *) guard keeps this utility from reaching into a .sf-prose subtree, which owns its markers via --sf-prose-marker-color (utilities…",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-marker--primary",
+      "selector": ".sf-marker--primary",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "LIST MARKER COLOUR (.sf-marker--*)",
+      "description": "Colour the ::marker of an arbitrary list. Brand/action families only — for any other colour set `::marker { color }` yourself. The :not(.sf-prose *) guard keeps this utility from reaching into a .sf-prose subtree, which owns its markers via --sf-prose-marker-color (utilities…",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-marker--secondary",
+      "selector": ".sf-marker--secondary",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "LIST MARKER COLOUR (.sf-marker--*)",
+      "description": "Colour the ::marker of an arbitrary list. Brand/action families only — for any other colour set `::marker { color }` yourself. The :not(.sf-prose *) guard keeps this utility from reaching into a .sf-prose subtree, which owns its markers via --sf-prose-marker-color (utilities…",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-marker--tertiary",
+      "selector": ".sf-marker--tertiary",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "LIST MARKER COLOUR (.sf-marker--*)",
+      "description": "Colour the ::marker of an arbitrary list. Brand/action families only — for any other colour set `::marker { color }` yourself. The :not(.sf-prose *) guard keeps this utility from reaching into a .sf-prose subtree, which owns its markers via --sf-prose-marker-color (utilities…",
+      "optional": true,
+      "layer": "slashed.utilities"
     },
     {
       "name": "sf-no-tap-highlight",
@@ -1775,6 +2375,66 @@
       "layer": "slashed.macros"
     },
     {
+      "name": "sf-overlap",
+      "selector": ".sf-overlap",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Overlap recipe — one element intentionally overlapping the previous one (e.g. an image pulled up over the card below it), via a negative logical margin + a raised stacking context. Directional variants are standalone (margins are distinct properties, not a re-pointable knob).",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-overlap--down",
+      "selector": ".sf-overlap--down",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Overlap recipe — one element intentionally overlapping the previous one (e.g. an image pulled up over the card below it), via a negative logical margin + a raised stacking context. Directional variants are standalone (margins are distinct properties, not a re-pointable knob).",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-overlap--end",
+      "selector": ".sf-overlap--end",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Overlap recipe — one element intentionally overlapping the previous one (e.g. an image pulled up over the card below it), via a negative logical margin + a raised stacking context. Directional variants are standalone (margins are distinct properties, not a re-pointable knob).",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-overlap--start",
+      "selector": ".sf-overlap--start",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Overlap recipe — one element intentionally overlapping the previous one (e.g. an image pulled up over the card below it), via a negative logical margin + a raised stacking context. Directional variants are standalone (margins are distinct properties, not a re-pointable knob).",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-overlap-host",
+      "selector": ".sf-overlap-host",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Card-container recipe — the receiving side of an overlap: an isolated stacking context with block-start padding compensation so in-flow content clears an element intruding from above. The padding knob defaults to the pull knob so one override tunes both.",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-overlay",
+      "selector": ".sf-overlay",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "",
+      "description": "Overlay layout helper — absolutely fills its positioned parent (`position: absolute; inset: 0`) for overlays, backdrops, and media scrims.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
       "name": "sf-pancake",
       "selector": ".sf-pancake",
       "kind": "layout",
@@ -1789,7 +2449,7 @@
       "selector": ".sf-prose",
       "kind": "macro",
       "category": "Macro classes",
-      "group": "Prose",
+      "group": "LIST MARKER COLOUR (.sf-marker--*)",
       "description": "Opinionated typographic defaults for long-form content: heading hierarchy, paragraph spacing, blockquote, code, and list styling. Override with sf-not-prose.",
       "optional": false,
       "layer": "slashed.macros"
@@ -1995,6 +2655,16 @@
       "layer": "slashed.layout"
     },
     {
+      "name": "sf-selection--alt",
+      "selector": ".sf-selection--alt",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "ALTERNATE SELECTION COLOUR (.sf-selection--alt)",
+      "description": "Overrides the ::selection custom properties (core/base.css) on the element and its descendants, for surfaces where the default selection colours land with poor contrast (e.g. a dark card on a light page). Backed by --sf-color-selection-*--alt (core/tokens.css).",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
       "name": "sf-sidebar",
       "selector": ".sf-sidebar",
       "kind": "layout",
@@ -2175,6 +2845,46 @@
       "layer": "slashed.layout"
     },
     {
+      "name": "sf-sticky",
+      "selector": ".sf-sticky",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "STICKY POSITIONING (.sf-sticky)",
+      "description": "The sticky mechanism — position: sticky at the header-aware --sf-sticky-offset. Offset modifiers (--s/-m/-l) add extra gap on top of that fluid offset. (position: sticky is already conditional by nature, so there is no separate runtime-toggled state class.)",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-sticky--l",
+      "selector": ".sf-sticky--l",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "STICKY POSITIONING (.sf-sticky)",
+      "description": "The sticky mechanism — position: sticky at the header-aware --sf-sticky-offset. Offset modifiers (--s/-m/-l) add extra gap on top of that fluid offset. (position: sticky is already conditional by nature, so there is no separate runtime-toggled state class.)",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-sticky--m",
+      "selector": ".sf-sticky--m",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "STICKY POSITIONING (.sf-sticky)",
+      "description": "The sticky mechanism — position: sticky at the header-aware --sf-sticky-offset. Offset modifiers (--s/-m/-l) add extra gap on top of that fluid offset. (position: sticky is already conditional by nature, so there is no separate runtime-toggled state class.)",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-sticky--s",
+      "selector": ".sf-sticky--s",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "STICKY POSITIONING (.sf-sticky)",
+      "description": "The sticky mechanism — position: sticky at the header-aware --sf-sticky-offset. Offset modifiers (--s/-m/-l) add extra gap on top of that fluid offset. (position: sticky is already conditional by nature, so there is no separate runtime-toggled state class.)",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
       "name": "sf-subgrid",
       "selector": ".sf-subgrid",
       "kind": "layout",
@@ -2305,6 +3015,16 @@
       "layer": "slashed.macros"
     },
     {
+      "name": "sf-surface-bg",
+      "selector": ".sf-surface-bg",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Named background surface preset (issue #523). Composes the --sf-surface-bg-* token set (see tokens.macros.css) into one reusable, named background: base colour + image/gradient/pattern, sizing, an optional overlay layered above the image, and an optional animation. Inert until…",
+      "optional": false,
+      "layer": "slashed.macros"
+    },
+    {
       "name": "sf-switcher",
       "selector": ".sf-switcher",
       "kind": "layout",
@@ -2345,6 +3065,46 @@
       "layer": "slashed.macros"
     },
     {
+      "name": "sf-text-2xl",
+      "selector": ".sf-text-2xl",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "TEXT-SIZE UTILITIES (.sf-text-2xs",
+      "description": "Applies the 2xl text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-text-2xs",
+      "selector": ".sf-text-2xs",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "TEXT-SIZE UTILITIES (.sf-text-2xs",
+      "description": "Applies the 2xs text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-text-3xl",
+      "selector": ".sf-text-3xl",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "TEXT-SIZE UTILITIES (.sf-text-2xs",
+      "description": "Applies the 3xl text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-text-4xl",
+      "selector": ".sf-text-4xl",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "TEXT-SIZE UTILITIES (.sf-text-2xs",
+      "description": "Applies the 4xl text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
       "name": "sf-text-gradient",
       "selector": ".sf-text-gradient",
       "kind": "macro",
@@ -2355,6 +3115,26 @@
       "layer": "slashed.macros"
     },
     {
+      "name": "sf-text-l",
+      "selector": ".sf-text-l",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "TEXT-SIZE UTILITIES (.sf-text-2xs",
+      "description": "Applies the l text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-text-m",
+      "selector": ".sf-text-m",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "TEXT-SIZE UTILITIES (.sf-text-2xs",
+      "description": "Applies the m (body) text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
       "name": "sf-text-protect",
       "selector": ".sf-text-protect",
       "kind": "macro",
@@ -2363,6 +3143,56 @@
       "description": "Wraps text in a translucent dark gradient overlay to ensure legibility when placed over a light or variable background image.",
       "optional": false,
       "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-text-s",
+      "selector": ".sf-text-s",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "TEXT-SIZE UTILITIES (.sf-text-2xs",
+      "description": "Applies the s text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-text-xl",
+      "selector": ".sf-text-xl",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "TEXT-SIZE UTILITIES (.sf-text-2xs",
+      "description": "Applies the xl text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-text-xs",
+      "selector": ".sf-text-xs",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "TEXT-SIZE UTILITIES (.sf-text-2xs",
+      "description": "Applies the xs text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+      "optional": true,
+      "layer": "slashed.utilities"
+    },
+    {
+      "name": "sf-theme-dark",
+      "selector": ".sf-theme-dark",
+      "kind": "theme",
+      "category": "Theme utilities",
+      "group": "",
+      "description": "",
+      "optional": false,
+      "layer": "slashed.themes"
+    },
+    {
+      "name": "sf-theme-light",
+      "selector": ".sf-theme-light",
+      "kind": "theme",
+      "category": "Theme utilities",
+      "group": "",
+      "description": "",
+      "optional": false,
+      "layer": "slashed.themes"
     },
     {
       "name": "sf-theme-transition",

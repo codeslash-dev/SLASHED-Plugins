@@ -15,6 +15,14 @@ import '@framework-css/core/themes.css';
 // Layout + macro primitives — only .sf-* class selectors, safe alongside chrome.
 import '@framework-css/core/layout.css';
 import '@framework-css/core/macros.css';
+// .sf-btn / .sf-card only (the rest of optional/components.css is still
+// commented out upstream) — BEM class selectors, disjoint from the Studio
+// shell's own Tailwind utility classes, so safe to load alongside chrome
+// without needing core/reset.css or core/base.css first. Enables real
+// .sf-btn / .sf-card markup in ComponentsPanel's in-panel live preview and
+// in PreviewPanel's demo templates. components.css itself @imports
+// tokens.components.css, so that's not imported separately here.
+import '@framework-css/optional/components.css';
 
 // Standalone mounts into #app; the WP plugin renders #slashed-admin-app.
 const target =

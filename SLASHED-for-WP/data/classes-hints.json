@@ -1,4 +1,64 @@
 {
+  "sf-is-disabled": {
+    "description": ".sf-is-hidden {",
+    "category": "States"
+  },
+  "sf-is-readonly": {
+    "description": ".sf-is-hidden {",
+    "category": "States"
+  },
+  "sf-is-active": {
+    "description": ".sf-is-loading {",
+    "category": "States"
+  },
+  "sf-is-selected": {
+    "description": ".sf-is-loading {",
+    "category": "States"
+  },
+  "sf-is-current": {
+    "description": ".sf-is-loading {",
+    "category": "States"
+  },
+  "sf-is-highlighted": {
+    "description": ".sf-is-loading {",
+    "category": "States"
+  },
+  "sf-is-pressed": {
+    "description": ".sf-is-loading {",
+    "category": "States"
+  },
+  "sf-is-valid": {
+    "description": ".sf-is-open {",
+    "category": "States"
+  },
+  "sf-is-success": {
+    "description": ".sf-is-open {",
+    "category": "States"
+  },
+  "sf-is-invalid": {
+    "description": ".sf-is-open {",
+    "category": "States"
+  },
+  "sf-is-error": {
+    "description": ".sf-is-open {",
+    "category": "States"
+  },
+  "sf-is-warning": {
+    "description": ".sf-is-open {",
+    "category": "States"
+  },
+  "sf-is-info": {
+    "description": ".sf-is-open {",
+    "category": "States"
+  },
+  "sf-is-danger": {
+    "description": ".sf-is-open {",
+    "category": "States"
+  },
+  "sf-is-empty": {
+    "description": ".sf-is-dragging {",
+    "category": "States"
+  },
   "is-hidden": {
     "description": "Hides the element (display: none). Toggled by JS or ARIA.",
     "category": "States"

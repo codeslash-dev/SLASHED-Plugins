@@ -17,9 +17,10 @@ export default defineConfig({
   resolve: {
     alias: {
       // Framework CSS vendored by scripts/sync-core.mjs (chrome layers under
-      // core/, full bundle under badges/ for the preview iframe). Mirrors the
-      // configurator's own @framework-css alias so main.ts / PreviewPanel.svelte
-      // are byte-for-byte identical to upstream.
+      // core/, optional layers under optional/, full bundle under dist/ for
+      // the preview iframe). Mirrors the configurator's own @framework-css
+      // alias so main.ts / PreviewPanel.svelte are byte-for-byte identical to
+      // upstream.
       '@framework-css': resolve(import.meta.dirname, 'framework-css'),
     },
   },
