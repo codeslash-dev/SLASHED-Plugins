@@ -113,8 +113,22 @@
     else onSet(token, `var(--sf-${prefix}-${step})`);
   }
 
-  let cardRadius = $derived(getVal(CARD_TOKENS[2]));
-  let cardPadding = $derived(getVal(CARD_TOKENS[0]));
+  function isVarShaped(raw: string | undefined): boolean {
+    return !!raw && /^(var|calc|clamp)\(/.test(raw.trim());
+  }
+
+  const CARD_RADIUS_TOKEN = CARD_TOKENS.find((t) => t.token === "--sf-card-radius")!;
+  const CARD_PADDING_TOKEN = CARD_TOKENS.find((t) => t.token === "--sf-card-padding")!;
+
+  let cardRadius = $derived(getVal(CARD_RADIUS_TOKEN));
+  let cardPadding = $derived(getVal(CARD_PADDING_TOKEN));
+  // getVal() falls back to the token's documented default whenever the
+  // override is a var()/calc()/clamp() raw (it can't resolve those to a
+  // number), so the computed sum below would silently show a stale value
+  // once either token is set via the variable-scale dropdown.
+  let outerRadiusUnknown = $derived(
+    isVarShaped(overrides[CARD_RADIUS_TOKEN.token]) || isVarShaped(overrides[CARD_PADDING_TOKEN.token])
+  );
 </script>
 
 <div class="p-4 space-y-5">
@@ -300,7 +314,7 @@
 
         <div class="flex items-center gap-2 text-[10px] text-slate-500">
           <span class="font-semibold">Radius (outer, computed)</span>
-          <span class="font-mono">{(cardRadius + cardPadding).toFixed(2)}rem</span>
+          <span class="font-mono">{outerRadiusUnknown ? "depends on variable" : `${(cardRadius + cardPadding).toFixed(2)}rem`}</span>
         </div>
         <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
           --sf-card-radius-outer = radius + padding (concentric math) — not independently overridable, always computed from the two sliders above.

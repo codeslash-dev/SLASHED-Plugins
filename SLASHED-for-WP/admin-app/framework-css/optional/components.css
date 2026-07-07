@@ -252,7 +252,7 @@
     inline-size:   100%;
     aspect-ratio:  var(--sf-card-media-ratio, var(--sf-ratio-video));
     object-fit:    cover;
-    border-radius: var(--sf-card-media-radius, var(--sf-card-radius, var(--sf-radius-m)));
+    border-radius: var(--sf-card-media-radius);
     overflow:      clip;
   }
 
