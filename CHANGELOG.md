@@ -9,6 +9,24 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.25] - 2026-07-07
+
+### Fixed
+
+- Repair CI drift gate and admin-app type-check
+- Sync share base URL validation from framework
+- Close CI drift gaps, pin vendoring ref, repair update-framework pipeline
+- Sync configurator header fixes (mobile toolbar, share link)
+
+## [0.4.25] - 2026-07-07
+
+### Fixed
+
+- Repair CI drift gate and admin-app type-check
+- Sync share base URL validation from framework
+- Close CI drift gaps, pin vendoring ref, repair update-framework pipeline
+- Sync configurator header fixes (mobile toolbar, share link)
+
 ## [0.4.24] - 2026-07-07
 
 ### Fixed
