@@ -2,10 +2,13 @@
   import { tick } from 'svelte';
   import { Undo2, Redo2, Trash2, Share2, FolderOpen, Check, Save, Loader2, AlertTriangle, Sun, Moon } from '@lucide/svelte';
   import { themeState, toggleTheme } from '../../lib/theme.svelte';
+  import { buildShareUrl } from '../../lib/codec';
+  import { getShareBaseUrl } from '../../lib/persistence';
 
   const version = typeof __SLASHED_VERSION__ !== "undefined" ? __SLASHED_VERSION__ : "";
 
-  let { overridesCount, canUndo, canRedo, hasPendingChanges, saveState, onUndo, onRedo, onResetAll, onImport, onExport, onSave }: {
+  let { overrides, overridesCount, canUndo, canRedo, hasPendingChanges, saveState, onUndo, onRedo, onResetAll, onImport, onExport, onSave }: {
+    overrides: Record<string, string>;
     overridesCount: number;
     canUndo: boolean;
     canRedo: boolean;
@@ -32,7 +35,8 @@
 
   async function handleShare() {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      const url = buildShareUrl(overrides, getShareBaseUrl());
+      await navigator.clipboard.writeText(url);
       shareFeedback = true;
       setTimeout(() => { shareFeedback = false; }, 2000);
     } catch {
@@ -83,13 +87,13 @@
 
   <div class="flex-1"></div>
 
-  <div class="flex items-center gap-1.5">
+  <div class="flex items-center gap-1.5 min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
     <button
       onclick={onSave}
       disabled={!hasPendingChanges || saveState === 'saving'}
       title={saveState === 'error' ? "Save failed — click to retry" : hasPendingChanges ? "Save changes (Ctrl+S)" : "No unsaved changes"}
       class={[
-        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors cursor-pointer",
+        "flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors cursor-pointer shrink-0",
         saveState === 'error'
           ? "bg-red-100 dark:bg-red-900/40 border border-red-500/30 text-red-700 dark:text-red-300"
           : saveState === 'saved'
@@ -100,17 +104,17 @@
       ].join(' ')}
     >
       {#if saveState === 'saving'}
-        <Loader2 class="w-3.5 h-3.5 animate-spin" />
-        Saving…
+        <Loader2 class="w-3.5 h-3.5 animate-spin shrink-0" />
+        <span class="hidden sm:inline">Saving…</span>
       {:else if saveState === 'saved'}
-        <Check class="w-3.5 h-3.5" />
-        Saved
+        <Check class="w-3.5 h-3.5 shrink-0" />
+        <span class="hidden sm:inline">Saved</span>
       {:else if saveState === 'error'}
-        <AlertTriangle class="w-3.5 h-3.5" />
-        Save failed
+        <AlertTriangle class="w-3.5 h-3.5 shrink-0" />
+        <span class="hidden sm:inline">Save failed</span>
       {:else}
-        <Save class="w-3.5 h-3.5" />
-        Save
+        <Save class="w-3.5 h-3.5 shrink-0" />
+        <span class="hidden sm:inline">Save</span>
       {/if}
     </button>
 
@@ -118,7 +122,7 @@
       onclick={onUndo}
       disabled={!canUndo}
       title="Undo (Ctrl+Z)"
-      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
+      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0"
     >
       <Undo2 class="w-3.5 h-3.5" />
     </button>
@@ -126,17 +130,17 @@
       onclick={onRedo}
       disabled={!canRedo}
       title="Redo (Ctrl+Shift+Z)"
-      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
+      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0"
     >
       <Redo2 class="w-3.5 h-3.5" />
     </button>
 
-    <div class="w-px h-4 bg-black/10 dark:bg-white/10 mx-1"></div>
+    <div class="w-px h-4 bg-black/10 dark:bg-white/10 mx-1 shrink-0"></div>
 
     <button
       onclick={handleShare}
       title="Copy share link"
-      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 transition-all cursor-pointer"
+      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 transition-all cursor-pointer shrink-0"
     >
       {#if shareFeedback}
         <Check class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -148,7 +152,7 @@
     <button
       onclick={onImport}
       title="Import CSS overrides"
-      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 transition-all cursor-pointer"
+      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 transition-all cursor-pointer shrink-0"
     >
       <FolderOpen class="w-3.5 h-3.5" />
     </button>
@@ -157,19 +161,19 @@
       onclick={handleResetAllClick}
       disabled={overridesCount === 0}
       title="Reset all overrides"
-      class="p-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-500/10 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer"
+      class="p-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-500/10 disabled:opacity-25 disabled:pointer-events-none transition-all cursor-pointer shrink-0"
     >
       <Trash2 class="w-3.5 h-3.5" />
     </button>
 
-    <div class="w-px h-4 bg-black/10 dark:bg-white/10 mx-1"></div>
+    <div class="w-px h-4 bg-black/10 dark:bg-white/10 mx-1 shrink-0"></div>
 
     <button
       onclick={toggleTheme}
       title={themeState.value === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       aria-label={themeState.value === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={themeState.value === "dark"}
-      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 transition-all cursor-pointer"
+      class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 transition-all cursor-pointer shrink-0"
     >
       {#if themeState.value === "dark"}
         <Sun class="w-3.5 h-3.5" />

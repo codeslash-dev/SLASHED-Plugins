@@ -173,6 +173,7 @@ export function computeDerivedOverrides(ov: Record<string, string>, { reduceMoti
 interface SlashedAppBoot {
   rest?: { url?: string; nonce?: string };
   overrides?: Record<string, string>;
+  pluginSettings?: { configurator_url?: string };
 }
 
 function wpBoot(): SlashedAppBoot | null {
@@ -183,6 +184,39 @@ function wpBoot(): SlashedAppBoot | null {
 /** Whether the configurator is running embedded in WordPress (REST persistence). */
 export function isEmbedded(): boolean {
   return Boolean(wpBoot()?.rest?.url);
+}
+
+/**
+ * Base URL share links should point at. Embedded hosts (e.g. the WP plugin)
+ * persist overrides server-side rather than in the URL hash (see
+ * saveStandalone() below, which the WP save path skips entirely), so the
+ * current page's URL is a logged-in admin screen, not something worth
+ * sharing — use the host's public standalone configurator URL instead.
+ * Returns undefined in standalone mode, where buildShareUrl()'s own
+ * window.location.href fallback is already correct.
+ *
+ * The value is host-controlled boot data, so validate it before handing it to
+ * buildShareUrl()'s `new URL(baseUrl)`: a relative/malformed string would throw
+ * (silently swallowed by the share/copy handlers, so nothing gets copied and
+ * the user gets no feedback), and a non-http(s) scheme (javascript:, data:…)
+ * would be faithfully propagated into a copied "share link". On any of those,
+ * return undefined so buildShareUrl() falls back to the current page URL.
+ */
+export function getShareBaseUrl(): string | undefined {
+  const raw = wpBoot()?.pluginSettings?.configurator_url;
+  const trimmed = raw?.trim();
+  if (!trimmed) return undefined;
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      console.warn(`[slashed] ignoring configurator_url with unsupported scheme: ${parsed.protocol}`);
+      return undefined;
+    }
+    return trimmed;
+  } catch {
+    console.warn(`[slashed] ignoring invalid configurator_url: ${trimmed}`);
+    return undefined;
+  }
 }
 
 /**

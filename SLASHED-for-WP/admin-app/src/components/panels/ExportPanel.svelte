@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Check, Copy, Download, Link } from '@lucide/svelte';
   import { generateCSS, buildShareUrl } from '../../lib/codec';
+  import { getShareBaseUrl } from '../../lib/persistence';
 
   let { overrides }: {
     overrides: Record<string, string>;
@@ -23,7 +24,7 @@
 
   async function handleCopyLink() {
     try {
-      const url = buildShareUrl(overrides);
+      const url = buildShareUrl(overrides, getShareBaseUrl());
       await navigator.clipboard.writeText(url);
       copiedLink = true;
       setTimeout(() => { copiedLink = false; }, 2000);
