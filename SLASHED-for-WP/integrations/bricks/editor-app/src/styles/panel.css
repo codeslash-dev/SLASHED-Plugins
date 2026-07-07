@@ -797,17 +797,19 @@ li[data-id]:focus-within > .rebemer-badge-host {
   }
 }
 
-/* ✕ overlay injected inside .bricks-control-preview when an --sf-color-*
-   token is the active value. We hide the native transparency-pattern span
-   (it would show a static hex snapshot of an adaptive light-dark() token)
-   and overlay a red ✕ so users instantly know the swatch cannot represent
-   the adaptive value accurately. */
+/* ✕ label injected inside .bricks-control-preview when an --sf-color-*
+   token is the active value. Do not set positioning on
+   .bricks-control-preview here: Bricks uses its own positioning to keep the
+   native swatch at the right side of the input row. */
+.bricks-control-preview:has(.slashed-sf-preview-label) .bricks-control-transparency-pattern {
+  display: none;
+}
 .slashed-sf-preview-label {
-  position: absolute;
-  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
   font: 700 11px/1 system-ui, sans-serif;
   color: #ff4040;
   pointer-events: none;
