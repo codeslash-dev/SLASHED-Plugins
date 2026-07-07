@@ -3,7 +3,7 @@
  * with the WordPress frontend overlay feature. This file is NOT synced from
  * upstream — add all WP plugin–specific wiring here, not in main.ts.
  */
-import './main.ts';
+import './main';
 import { mount } from 'svelte';
 import AppOverlay from './AppOverlay.svelte';
 import { forceTheme } from './lib/theme.svelte';

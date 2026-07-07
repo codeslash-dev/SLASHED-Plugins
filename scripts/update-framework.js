@@ -128,9 +128,32 @@ function syncRegistrySources() {
 function regenerateData() {
   syncRegistrySources();
   const env = { ...process.env, SLASHED_FRAMEWORK_DIR: FRAMEWORK_DIR };
-  for (const script of ['gen-bricks-inventory.js', 'gen-class-hints.js']) {
+  for (const script of ['gen-bricks-inventory.js', 'gen-class-hints.js', 'gen-variables-hints.js']) {
     execFileSync('node', [path.join('scripts', script)], { cwd: ROOT, stdio: 'inherit', env });
   }
+}
+
+// Re-vendor the admin-app configurator core from the framework clone so the
+// vendored UI moves to the same release as the bundled CSS in one step —
+// otherwise `npm run check` fails right after a version bump because
+// admin-app/src/ still reflects the previous release.
+function syncAdminAppCore() {
+  const adminApp = path.join(ROOT, 'SLASHED-for-WP', 'admin-app');
+  const cfgSrc = path.join(FRAMEWORK_DIR, 'configurator', 'src');
+  if (!fs.existsSync(path.join(cfgSrc, 'App.svelte'))) {
+    log('WARN: framework clone has no configurator/src — skipping admin-app vendoring');
+    return;
+  }
+  execFileSync('node', [path.join('scripts', 'sync-core.mjs')], {
+    cwd: adminApp,
+    stdio: 'inherit',
+    // update-framework is an explicit maintenance action: re-vendoring is the
+    // whole point, so never inherit a SLASHED_SKIP_SYNC=1 opt-out from the
+    // caller's environment (which would silently skip it and leave the repo
+    // on a mixed framework ref).
+    env: { ...process.env, SLASHED_CONFIGURATOR_SRC: cfgSrc, SLASHED_SKIP_SYNC: '0' },
+  });
+  log('vendored admin-app configurator core from framework clone');
 }
 
 function stampCssRef(tag) {
@@ -155,6 +178,7 @@ async function main() {
   await downloadReleaseBundles(tag);
   cloneFrameworkSource(tag);
   regenerateData();
+  syncAdminAppCore();
   stampCssRef(tag);
 
   const { errors, info } = runChecks();
