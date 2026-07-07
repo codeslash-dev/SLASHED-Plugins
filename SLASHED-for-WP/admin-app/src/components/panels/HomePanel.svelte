@@ -1,10 +1,11 @@
 <script lang="ts">
   import {
     Sparkles, Palette, Type, Ruler, Layout, Square, Layers, Zap,
-    Puzzle, Blocks, SwatchBook, ShieldCheck, Package, BookOpen, Save,
+    Puzzle, Blocks, Component, SwatchBook, ShieldCheck, Package, BookOpen, Save,
   } from '@lucide/svelte';
   import type { SavedSlot } from '../../types';
   import { listSavedThemes, saveTheme } from '../../lib/savedThemes';
+  import { domainOf } from '../../lib/domains';
 
   let { overrides, onSelect, onApplyTheme, onResetAll }: {
     overrides: Record<string, string>;
@@ -22,8 +23,9 @@
     { id: "shadows",    icon: Layers,   label: "Shadows",    desc: "Elevation & depth control" },
     { id: "motion",     icon: Zap,      label: "Motion",     desc: "Duration & easing curves" },
     { id: "effects",    icon: Sparkles, label: "Effects",    desc: "Blur, opacity & scrollbars" },
-    { id: "macros",     icon: Blocks,   label: "Macros",     desc: "Flow, prose, aspect & scrim" },
-    { id: "misc",       icon: Puzzle,   label: "Misc",       desc: "Z-index & remaining tokens" },
+    { id: "macros",     icon: Blocks,    label: "Macros",     desc: "Flow, prose, aspect & scrim" },
+    { id: "misc",       icon: Puzzle,    label: "Misc",       desc: "Z-index & remaining tokens" },
+    { id: "components", icon: Component, label: "Components", desc: "Button & card component tokens" },
   ] as const;
 
   const TOOLS = [
@@ -33,24 +35,14 @@
     { id: "cheatsheet", icon: BookOpen,    label: "Classes", desc: "Utility class reference" },
   ] as const;
 
-  // Patterns to count per-domain overrides (mirrors the sidebar badge logic loosely).
-  const DOMAIN_MATCH: Record<string, string[]> = {
-    colors: ["color", "contrast", "focus-ring"],
-    typography: ["text", "font", "leading", "tracking", "h1", "h2", "h3", "h4", "h5", "h6", "body"],
-    spacing: ["space", "gap", "gutter", "section"],
-    layout: ["container", "grid", "sidebar", "bento", "reel", "cluster", "stack", "frame"],
-    borders: ["radius", "border", "divider", "btn-", "field-"],
-    shadows: ["shadow"],
-    motion: ["motion", "duration", "ease", "animation", "transition"],
-    effects: ["blur", "opacity", "scrollbar", "scrim", "backdrop"],
-    macros: ["flow", "prose", "aspect", "scroll-shadow", "line-clamp"],
-    misc: ["z-"],
-  };
-
+  // Per-domain override counts for the Home screen tiles — uses the same
+  // canonical, ordered domainOf() classification as the sidebar badges and
+  // App.svelte's "Reset N" button, so counts can't disagree or double-count
+  // (unlike independent substring-per-domain matching, where e.g.
+  // --sf-btn-radius could match both "components" and a loose "radius"
+  // pattern in another domain's own list).
   function domainCount(id: string): number {
-    const pats = DOMAIN_MATCH[id];
-    if (!pats) return 0;
-    return Object.keys(overrides).filter((k) => pats.some((p) => k.includes(p))).length;
+    return Object.keys(overrides).filter((k) => domainOf(k) === id).length;
   }
 
   let overridesCount = $derived(Object.keys(overrides).length);

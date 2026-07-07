@@ -17,7 +17,7 @@
   const DOMAIN_LABELS: Record<string, string> = {
     colors: "Colors", typography: "Typography", spacing: "Spacing", layout: "Layout",
     borders: "Borders", shadows: "Shadows", motion: "Motion", effects: "Effects",
-    macros: "Macros", misc: "Misc",
+    macros: "Macros", misc: "Misc", components: "Components",
   };
 
   let results = $derived((() => {

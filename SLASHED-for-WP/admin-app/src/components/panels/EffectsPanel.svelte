@@ -16,10 +16,14 @@
   ];
 
   const TEXT_SHADOW_TOKENS = [
-    { label: "Small",  token: "--sf-text-shadow-s", default: "0 1px 2px oklch(…)" },
-    { label: "Medium", token: "--sf-text-shadow-m", default: "0 2px 4px oklch(…)" },
-    { label: "Large",  token: "--sf-text-shadow-l", default: "0 4px 8px oklch(…)" },
+    { label: "Extra small", token: "--sf-text-shadow-xs", default: "0 0.5px 1px oklch(…)" },
+    { label: "Small",       token: "--sf-text-shadow-s",  default: "0 1px 2px oklch(…)" },
+    { label: "Medium",      token: "--sf-text-shadow-m",  default: "0 2px 4px oklch(…)" },
+    { label: "Large",       token: "--sf-text-shadow-l",  default: "0 4px 8px oklch(…)" },
+    { label: "Extra large", token: "--sf-text-shadow-xl", default: "0 8px 16px oklch(…)" },
   ];
+
+  const DROP_SHADOW_STEPS = ["xs", "s", "m", "l", "xl"];
 
   function parseNum(val: string | undefined, fallback: number, strip?: string): number {
     if (!val) return fallback;
@@ -43,6 +47,7 @@
   let showScrollbar = $state(false);
   let showScrollShadow = $state(false);
   let showTextShadow = $state(false);
+  let showDropShadow = $state(false);
 </script>
 
 <div class="p-4 space-y-6">
@@ -286,14 +291,72 @@
               placeholder={t.default}
               oninput={(e) => {
                 const v = (e.target as HTMLInputElement).value;
-                const trimmed = v.trim();
-                trimmed ? onSet(t.token, trimmed) : onReset(t.token);
+                v.trim() ? onSet(t.token, v) : onReset(t.token);
               }}
               class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
             />
             {#if t.token in overrides}
               <button onclick={() => onReset(t.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
+          </div>
+        {/each}
+      </div>
+    {/if}
+  </section>
+
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
+
+  <!-- DROP SHADOW PRESETS -->
+  <section class="space-y-3">
+    <button
+      onclick={() => { showDropShadow = !showDropShadow; }}
+      aria-expanded={showDropShadow}
+      class="w-full flex items-center justify-between cursor-pointer"
+    >
+      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Drop shadow</div>
+      <span class="text-[10px] text-slate-500">{showDropShadow ? "▲" : "▼"}</span>
+    </button>
+    {#if showDropShadow}
+      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
+        <code class="text-slate-600 dark:text-slate-400">filter: drop-shadow(…)</code> — unlike box-shadow, follows the
+        element's actual alpha shape (SVG icons, PNG cutouts, transparent logos). Edit each token directly —
+        use <code class="text-slate-600 dark:text-slate-400">none</code> to disable.
+      </p>
+      <div class="space-y-2">
+        {#each [
+          { label: "Extra small", token: "--sf-drop-shadow-xs", default: "drop-shadow(0 0.5px 1px oklch(…))" },
+          { label: "Small",       token: "--sf-drop-shadow-s",  default: "drop-shadow(0 1px 2px oklch(…))" },
+          { label: "Medium",      token: "--sf-drop-shadow-m",  default: "drop-shadow(0 4px 6px oklch(…))" },
+          { label: "Large",       token: "--sf-drop-shadow-l",  default: "drop-shadow(0 8px 16px oklch(…))" },
+          { label: "Extra large", token: "--sf-drop-shadow-xl", default: "drop-shadow(0 16px 32px oklch(…))" },
+        ] as t (t.token)}
+          <div class="flex items-center gap-2">
+            <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">{t.label}</div>
+            <input
+              type="text"
+              value={overrides[t.token] ?? ""}
+              placeholder={t.default}
+              oninput={(e) => {
+                const v = (e.target as HTMLInputElement).value;
+                v.trim() ? onSet(t.token, v) : onReset(t.token);
+              }}
+              class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+            />
+            {#if t.token in overrides}
+              <button onclick={() => onReset(t.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+            {/if}
+          </div>
+        {/each}
+      </div>
+
+      <!-- Drop-shadow preview — real .sf-drop-shadow-* utility classes -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex gap-4 items-end justify-center flex-wrap">
+        {#each DROP_SHADOW_STEPS as step (step)}
+          <div class="flex flex-col items-center gap-1.5">
+            <svg width="40" height="40" viewBox="0 0 24 24" class={`sf-drop-shadow-${step}`} aria-hidden="true">
+              <rect x="2" y="2" width="20" height="20" rx="3" fill="var(--sf-color-primary)" />
+            </svg>
+            <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600">{step}</span>
           </div>
         {/each}
       </div>

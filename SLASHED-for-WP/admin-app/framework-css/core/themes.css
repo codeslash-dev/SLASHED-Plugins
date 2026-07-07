@@ -1,7 +1,7 @@
 /* SLASHED — core/themes.css
    @layer slashed.themes
    Light/dark activation, scoped theme color inheritance, LumLocker, and scheme-aware color adjustments.
-   Uses data-theme and token overrides. */
+   Uses data-theme, .sf-theme-light/.sf-theme-dark aliases, and token overrides. */
 
 @layer slashed.themes {
 
@@ -12,10 +12,10 @@
     }
   }
 
-  [data-theme="light"] { color-scheme: light; --sf-is-dark: 0; }
-  [data-theme="dark"]  { color-scheme: dark;  --sf-is-dark: 1; }
+  :is([data-theme="light"], .sf-theme-light) { color-scheme: light; --sf-is-dark: 0; }
+  :is([data-theme="dark"], .sf-theme-dark)  { color-scheme: dark;  --sf-is-dark: 1; }
 
-  :where([data-theme]:not(:root, html)) {
+  :where([data-theme]:not(:root, html), .sf-theme-light:not(:root, html), .sf-theme-dark:not(:root, html)) {
     background-color: var(--sf-color-bg);
     color:            var(--sf-color-text);
   }
@@ -42,13 +42,13 @@
     );
   }
 
-  :root[data-lumlocker] [data-theme="dark"] {
+  :root[data-lumlocker] :is([data-theme="dark"], .sf-theme-dark) {
     --sf-color-primary:   oklch(from var(--sf-color-primary-source-dark,   var(--sf-color-primary-source-light))   var(--sf-lumlocker) c h);
     --sf-color-secondary: oklch(from var(--sf-color-secondary-source-dark, var(--sf-color-secondary-source-light)) var(--sf-lumlocker) c h);
     --sf-color-tertiary:  oklch(from var(--sf-color-tertiary-source-dark,  var(--sf-color-tertiary-source-light))  var(--sf-lumlocker) c h);
     --sf-color-action:    oklch(from var(--sf-color-action-source-dark,    var(--sf-color-action-source-light))    var(--sf-lumlocker) c h);
   }
-  :root[data-lumlocker] [data-theme="light"] {
+  :root[data-lumlocker] :is([data-theme="light"], .sf-theme-light) {
     --sf-color-primary:   oklch(from var(--sf-color-primary-source-light)   var(--sf-lumlocker) c h);
     --sf-color-secondary: oklch(from var(--sf-color-secondary-source-light) var(--sf-lumlocker) c h);
     --sf-color-tertiary:  oklch(from var(--sf-color-tertiary-source-light)  var(--sf-lumlocker) c h);
@@ -79,7 +79,7 @@
       --sf-color-danger-source-dark:    oklch(from var(--sf-color-danger-source-light)    clamp(0.65, calc(0.95 - l * 0.5), 0.88) calc(c * 0.9) h);
     }
 
-        [data-theme="dark"] {
+        :is([data-theme="dark"], .sf-theme-dark) {
 
       --sf-color-primary:   var(--sf-color-primary-source-dark);
       --sf-color-secondary: var(--sf-color-secondary-source-dark);
@@ -122,9 +122,22 @@
       --sf-color-warning-strong: oklch(from var(--sf-color-warning) clamp(0.70, calc(l + 0.05), 1) c h);
       --sf-color-info-strong:    oklch(from var(--sf-color-info)    clamp(0.70, calc(l + 0.15), 1) c h);
       --sf-color-danger-strong:  oklch(from var(--sf-color-danger)  clamp(0.70, calc(l + 0.15), 1) c h);
+
+      /* :root-only aliases from tokens.css — var() resolves on the declaring
+         element, so without these re-declarations a nested [data-theme]
+         section inherits the :root-resolved (wrong-scheme) values (#496). */
+      --sf-color-code-bg:        var(--sf-color-inset);
+      --sf-color-bg--disabled:   var(--sf-color-inset);
+      --sf-color-link--disabled: var(--sf-color-text--disabled);
+      --sf-scrollbar-thumb:      var(--sf-color-neutral);
+      /* Non-sign() fallback: keeps inline code readable in engines with
+         oklch(from) but not sign() — the sign()-gated auto-contrast block
+         below overrides this with a proper per-background contrast calc
+         wherever sign() is supported. */
+      --sf-color-code-text:      var(--sf-color-text);
     }
 
-        [data-theme="light"] {
+        :is([data-theme="light"], .sf-theme-light) {
 
       --sf-color-primary:   var(--sf-color-primary-source-light);
       --sf-color-secondary: var(--sf-color-secondary-source-light);
@@ -167,12 +180,20 @@
       --sf-color-warning-strong: oklch(from var(--sf-color-warning-source-light) calc(l - 0.25) c h);
       --sf-color-info-strong:    oklch(from var(--sf-color-info-source-light)    calc(l - 0.1)  c h);
       --sf-color-danger-strong:  oklch(from var(--sf-color-danger-source-light)  calc(l - 0.1)  c h);
+
+      /* :root-only aliases — see the matching note in the dark block (#496). */
+      --sf-color-code-bg:        var(--sf-color-inset);
+      --sf-color-bg--disabled:   var(--sf-color-inset);
+      --sf-color-link--disabled: var(--sf-color-text--disabled);
+      --sf-scrollbar-thumb:      var(--sf-color-neutral);
+      /* Non-sign() fallback — see matching note in the dark block (#496). */
+      --sf-color-code-text:      var(--sf-color-text);
     }
 
   }
 
   @supports (color: oklch(from red l c h)) and (width: calc(1px * sign(1))) {
-    [data-theme="dark"] {
+    :is([data-theme="dark"], .sf-theme-dark) {
       --sf-color-text--on-primary:   oklch(from var(--sf-color-primary)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-secondary: oklch(from var(--sf-color-secondary) clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-tertiary:  oklch(from var(--sf-color-tertiary)  clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
@@ -183,8 +204,12 @@
       --sf-color-text--on-info:      oklch(from var(--sf-color-info)      clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-danger:    oklch(from var(--sf-color-danger)    clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-inverse:   oklch(from var(--sf-color-inverse)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      /* Auto-contrast code text re-derived in-scope so it tracks the
+         per-scope --sf-color-code-bg above (#496). Same formula as
+         core/tokens.css — keep in sync. */
+      --sf-color-code-text:          oklch(from var(--sf-color-code-bg)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
     }
-    [data-theme="light"] {
+    :is([data-theme="light"], .sf-theme-light) {
       --sf-color-text--on-primary:   oklch(from var(--sf-color-primary)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-secondary: oklch(from var(--sf-color-secondary) clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-tertiary:  oklch(from var(--sf-color-tertiary)  clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
@@ -195,6 +220,8 @@
       --sf-color-text--on-info:      oklch(from var(--sf-color-info)      clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-danger:    oklch(from var(--sf-color-danger)    clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
       --sf-color-text--on-inverse:   oklch(from var(--sf-color-inverse)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
+      /* See matching note in the dark block (#496). */
+      --sf-color-code-text:          oklch(from var(--sf-color-code-bg)   clamp(0.1, sign(var(--sf-contrast-threshold) - l) * 999, 0.95) 0 0);
     }
   }
 
