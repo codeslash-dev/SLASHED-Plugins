@@ -802,9 +802,6 @@ li[data-id]:focus-within > .rebemer-badge-host {
    (it would show a static hex snapshot of an adaptive light-dark() token)
    and overlay a red ✕ so users instantly know the swatch cannot represent
    the adaptive value accurately. */
-.bricks-control-preview:has(.slashed-sf-preview-label) {
-  position: relative;
-}
 .slashed-sf-preview-label {
   position: absolute;
   inset: 0;
