@@ -82,6 +82,13 @@ npm run build:apps     # rebuild admin SPA + bricks editor app
 `SLASHED_CONFIGURATOR_SRC=/path/to/SLASHED/configurator/src npm run sync`
 (run from `SLASHED-for-WP/admin-app`) forces a specific local checkout.
 
+When no local checkout is found, the sync falls back to the GitHub API and
+vendors from the framework ref pinned in `slashed.php` (`SLASHED_CSS_REF`),
+so vendored UI and bundled CSS stay on the same release. Override with
+`SLASHED_SYNC_REF=main` to deliberately track a branch. `SLASHED_SKIP_SYNC=1`
+makes the sync (and its prebuild/precheck hooks) a no-op — CI uses it so PR
+builds compile the committed vendored tree instead of re-vendoring mid-build.
+
 ## Updating the bundled framework CSS
 
 ```bash
@@ -90,7 +97,10 @@ npm run update-framework -- --version=0.6.0
 ```
 
 Downloads release CSS bundles, shallow-clones framework source, regenerates
-`data/inventory.json` and `data/class-hints.json`, stamps PHP constants.
+`data/inventory.json`, `data/class-hints.json` and `data/variables-hints.json`,
+re-vendors the admin-app configurator core from the clone, and stamps PHP
+constants — so one run moves every framework-derived artifact to the same
+release.
 
 ## Key scripts
 
@@ -103,6 +113,7 @@ Downloads release CSS bundles, shallow-clones framework source, regenerates
 | `npm test` | Run test suite |
 | `npm run verify` | Verify version metadata is in sync |
 | `npm run check` | Verify generated artifacts (class hints, variables hints, vendored admin-app core) aren't stale — exits non-zero on drift, never writes |
+| `npm run check:hints` | Self-contained subset of `check` (class + variables hints only, no framework repo needed) — the per-PR CI gate |
 | `composer phpunit` | Run the PHP unit suite (`tests-php/`) |
 
 `tests/` is `node --test` specs, run automatically by `npm test`, with one

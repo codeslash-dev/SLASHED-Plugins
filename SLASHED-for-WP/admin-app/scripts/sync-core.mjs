@@ -88,7 +88,21 @@ const VENDOR_DIST = resolve(VENDOR, 'dist');
 const PLUGIN_FULL_CSS = resolve(ADMIN_APP, '../dist/slashed.full.css');
 
 const SLASHED_REPO = 'codeslash-dev/slashed';
-const REF = 'main';
+
+// Framework ref used by the GitHub API fallback. Defaults to the release the
+// plugin's bundled CSS is pinned to (SLASHED_CSS_REF in slashed.php), so the
+// vendored configurator UI cannot skew ahead of the CSS it drives. Override
+// with SLASHED_SYNC_REF=main to deliberately track a branch.
+function pinnedFrameworkRef() {
+  try {
+    const php = readFileSync(resolve(ADMIN_APP, '..', 'slashed.php'), 'utf8');
+    const m = php.match(/define\(\s*'SLASHED_CSS_REF',\s*'([^']+)'/);
+    return m ? m[1] : null;
+  } catch {
+    return null;
+  }
+}
+const REF = process.env.SLASHED_SYNC_REF || pinnedFrameworkRef() || 'main';
 const CFG_SRC = 'configurator/src';
 
 // Chrome layers loaded at :root by src/main.ts (framework *source*, committed).
@@ -541,6 +555,14 @@ async function vendorOptionalRemote() {
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
+  // CI builds set SLASHED_SKIP_SYNC=1 so the *committed* vendored tree is what
+  // gets built and type-checked — not a fresh vendoring fetched mid-build,
+  // which would make PR results depend on the framework repo's current state.
+  if (process.env.SLASHED_SKIP_SYNC === '1') {
+    console.log('SLASHED_SKIP_SYNC=1 — skipping configurator sync, using the committed vendored tree.');
+    return;
+  }
+
   console.log(CHECK_MODE ? 'Checking configurator core sync...' : 'Syncing configurator core...');
 
   const local = findLocalCfgSrc();

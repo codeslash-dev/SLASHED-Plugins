@@ -3,12 +3,15 @@
   "version": "0.4.24",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=20.11.0"
+  },
   "description": "SLASHED for WordPress — Bricks Builder and Gutenberg integrations for the SLASHED cascade-layer CSS framework.",
   "license": "GPL-3.0-or-later",
   "author": "jackgranatowski",
   "repository": {
     "type": "git",
-    "url": "https://github.com/codeslash-dev/slashed-for-wp.git"
+    "url": "https://github.com/codeslash-dev/SLASHED-Plugins.git"
   },
   "scripts": {
     "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks && chmod +x .githooks/* || true",
@@ -23,11 +26,11 @@
     "build:apps": "npm run build:editor-app && npm run build:admin-app",
     "build:zip": "node scripts/zip-plugin.js",
     "build": "npm run build:data && npm run sync-dist && npm run build:apps && npm run build:zip",
-    "build:plugin": "node scripts/zip-plugin.js",
     "version-sync": "node scripts/version-sync.js",
     "changelog": "node scripts/changelog-release.js",
     "verify": "node scripts/verify-sync.js",
     "check": "node scripts/check.js",
+    "check:hints": "node scripts/gen-class-hints.js --check && node scripts/gen-variables-hints.js --check",
     "lint:css": "stylelint \"SLASHED-for-WP/**/*.css\"",
     "lint:css:fix": "stylelint \"SLASHED-for-WP/**/*.css\" --fix",
     "lint:php": "node scripts/lint-php.js",

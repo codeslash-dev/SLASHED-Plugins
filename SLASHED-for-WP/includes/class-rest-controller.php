@@ -103,6 +103,10 @@ class Slashed_REST_Controller {
 							'type'              => 'string',
 							'required'          => false,
 							'sanitize_callback' => 'esc_url_raw',
+							'validate_callback' => function ( $value ) {
+								// Empty clears the setting; otherwise require an http(s) URL.
+								return '' === $value || preg_match( '#^https?://#i', (string) $value );
+							},
 						),
 						'rebemer_element_map'    => array(
 							'type'     => 'object',
