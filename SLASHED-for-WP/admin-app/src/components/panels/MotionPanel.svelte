@@ -356,11 +356,14 @@
       <div class="space-y-2">
         <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
           Default animation-range for scroll-driven animations using the
-          <span class="font-mono text-slate-600 dark:text-slate-400">.sf-scroll-timeline</span> utility.
+          <span class="font-mono text-slate-600 dark:text-slate-400">.sf-entrance--*</span> /
+          <span class="font-mono text-slate-600 dark:text-slate-400">.sf-exit--*</span> macros.
         </p>
         {#each [
-          { label: "Range start", token: "--sf-scroll-timeline-range-start", placeholder: "entry 0%" },
-          { label: "Range end",   token: "--sf-scroll-timeline-range-end",   placeholder: "cover 30%" },
+          { label: "Entry start", token: "--sf-scroll-timeline-range-start",      placeholder: "entry 0%" },
+          { label: "Entry end",   token: "--sf-scroll-timeline-range-end",        placeholder: "cover 30%" },
+          { label: "Exit start",  token: "--sf-scroll-timeline-range-exit-start", placeholder: "cover 70%" },
+          { label: "Exit end",    token: "--sf-scroll-timeline-range-exit-end",   placeholder: "exit 100%" },
         ] as r (r.token)}
           <div class="flex items-center gap-2">
             <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">{r.label}</div>

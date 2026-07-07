@@ -78,7 +78,10 @@ const SRC_ROOT = SRC + sep; // canonical prefix for path-traversal guard
 // Vendored framework CSS — target of the @framework-css alias.
 const VENDOR = resolve(ADMIN_APP, 'framework-css');
 const VENDOR_CORE = resolve(VENDOR, 'core');
-const VENDOR_BADGES = resolve(VENDOR, 'badges');
+const VENDOR_OPTIONAL = resolve(VENDOR, 'optional');
+// Mirrors the framework's own dist/ rename (formerly badges/) — see
+// PreviewPanel.svelte's `@framework-css/dist/slashed.full.css` import.
+const VENDOR_DIST = resolve(VENDOR, 'dist');
 
 // The plugin's own full bundle — used as the preview stylesheet so the preview
 // matches the framework CSS the site actually serves.
@@ -93,6 +96,11 @@ const CHROME_LAYERS = [
   'layers.css', 'tokens.css', 'tokens.layout.css', 'tokens.macros.css',
   'themes.css', 'layout.css', 'macros.css',
 ];
+
+// Optional layers src/main.ts also imports for specific panels (e.g. the
+// Components tab's .sf-btn/.sf-card live preview). Vendored the same way as
+// CHROME_LAYERS, just from optional/ instead of core/.
+const OPTIONAL_LAYERS = ['components.css', 'tokens.components.css'];
 
 // ── Path safety ───────────────────────────────────────────────────────────────
 
@@ -201,6 +209,10 @@ function reportOrphans() {
     if (CHROME_LAYERS.includes(rel)) continue;
     reportDrift('orphan', `framework-css/core/${rel}`, 'vendored locally, no longer a tracked chrome layer');
   }
+  for (const rel of listRelFiles(VENDOR_OPTIONAL, VENDOR_OPTIONAL)) {
+    if (OPTIONAL_LAYERS.includes(rel)) continue;
+    reportDrift('orphan', `framework-css/optional/${rel}`, 'vendored locally, no longer a tracked optional layer');
+  }
 }
 
 /** Print the check result and set the process exit code. Never used outside --check mode. */
@@ -218,12 +230,12 @@ function finishCheck(sourceLabel) {
 
 // ── Framework CSS vendoring (shared) ───────────────────────────────────────────
 
-/** Copy the plugin's full bundle into the vendored badges/ dir for the preview. */
+/** Copy the plugin's full bundle into the vendored dist/ dir for the preview. */
 function vendorFullBundle() {
-  const label = 'framework-css/badges/slashed.full.css';
-  const dest = join(VENDOR_BADGES, 'slashed.full.css');
+  const label = 'framework-css/dist/slashed.full.css';
+  const dest = join(VENDOR_DIST, 'slashed.full.css');
   if (existsSync(PLUGIN_FULL_CSS)) {
-    if (!CHECK_MODE) mkdirSync(VENDOR_BADGES, { recursive: true });
+    if (!CHECK_MODE) mkdirSync(VENDOR_DIST, { recursive: true });
     writeFile(dest, readFileSync(PLUGIN_FULL_CSS), label);
     if (!CHECK_MODE) process.stdout.write(`  copy  ${label} (from dist/)\n`);
   } else if (existsSync(dest)) {
@@ -290,19 +302,27 @@ function copyLocalDir(srcDir, srcBase) {
   }
 }
 
-function vendorChromeLocal(repoRoot) {
-  const coreDir = resolve(repoRoot, 'core');
-  if (!CHECK_MODE) mkdirSync(VENDOR_CORE, { recursive: true });
-  for (const name of CHROME_LAYERS) {
-    const from = join(coreDir, name);
+/** Copy a fixed set of framework CSS files (CHROME_LAYERS or OPTIONAL_LAYERS) from a local checkout. */
+function vendorLayerSetLocal(srcDir, names, vendorDir, labelPrefix) {
+  if (!CHECK_MODE) mkdirSync(vendorDir, { recursive: true });
+  for (const name of names) {
+    const from = join(srcDir, name);
     if (!existsSync(from)) {
-      throw new Error(`Framework chrome layer missing: ${from}`);
+      throw new Error(`Framework ${labelPrefix} layer missing: ${from}`);
     }
-    const dest = join(VENDOR_CORE, name);
-    const label = `framework-css/core/${name}`;
+    const dest = join(vendorDir, name);
+    const label = `framework-css/${labelPrefix}/${name}`;
     writeFile(dest, readFileSync(from), label);
     if (!CHECK_MODE) process.stdout.write(`  copy  ${label}\n`);
   }
+}
+
+function vendorChromeLocal(repoRoot) {
+  vendorLayerSetLocal(resolve(repoRoot, 'core'), CHROME_LAYERS, VENDOR_CORE, 'core');
+}
+
+function vendorOptionalLocal(repoRoot) {
+  vendorLayerSetLocal(resolve(repoRoot, 'optional'), OPTIONAL_LAYERS, VENDOR_OPTIONAL, 'optional');
 }
 
 // ── GitHub API sync ───────────────────────────────────────────────────────────
@@ -490,13 +510,14 @@ async function syncGhDir(ghDir, destDir) {
   );
 }
 
-async function vendorChromeRemote() {
-  if (!CHECK_MODE) mkdirSync(VENDOR_CORE, { recursive: true });
-  for (const name of CHROME_LAYERS) {
-    const dest = join(VENDOR_CORE, name);
-    const label = `framework-css/core/${name}`;
+/** Fetch a fixed set of framework CSS files (CHROME_LAYERS or OPTIONAL_LAYERS) via the GitHub API. */
+async function vendorLayerSetRemote(ghDir, names, vendorDir, labelPrefix) {
+  if (!CHECK_MODE) mkdirSync(vendorDir, { recursive: true });
+  for (const name of names) {
+    const dest = join(vendorDir, name);
+    const label = `framework-css/${labelPrefix}/${name}`;
     try {
-      const content = await ghFetchContent(`core/${name}`);
+      const content = await ghFetchContent(`${ghDir}/${name}`);
       writeFile(dest, content, label);
       if (!CHECK_MODE) process.stdout.write(`  fetch ${label}\n`);
     } catch (err) {
@@ -507,6 +528,14 @@ async function vendorChromeRemote() {
       throw err;
     }
   }
+}
+
+async function vendorChromeRemote() {
+  await vendorLayerSetRemote('core', CHROME_LAYERS, VENDOR_CORE, 'core');
+}
+
+async function vendorOptionalRemote() {
+  await vendorLayerSetRemote('optional', OPTIONAL_LAYERS, VENDOR_OPTIONAL, 'optional');
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -550,6 +579,7 @@ async function main() {
     // below only reads from it (via writeFile()'s compare branch).
     copyLocalDir(local, local);
     vendorChromeLocal(resolve(local, '../..')); // configurator/src -> repo root
+    vendorOptionalLocal(resolve(local, '../..'));
     vendorFullBundle();
     if (CHECK_MODE) {
       reportOrphans();
@@ -596,6 +626,7 @@ async function main() {
   // and root files: App.svelte, main.ts, types.ts, app.css, vite-env.d.ts).
   await syncGhDir(CFG_SRC, SRC);
   await vendorChromeRemote();
+  await vendorOptionalRemote();
   vendorFullBundle();
   if (CHECK_MODE) {
     reportOrphans();

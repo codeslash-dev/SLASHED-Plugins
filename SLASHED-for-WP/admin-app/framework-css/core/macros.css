@@ -310,6 +310,22 @@
   .sf-scrim--bottom { --sf-scrim-direction: to top; }
   .sf-scrim--full   { --sf-scrim-gradient: var(--sf-scrim-color); }
 
+  /* Named background surface preset (issue #523). Composes the
+     --sf-surface-bg-* token set (see tokens.macros.css) into one reusable,
+     named background: base colour + image/gradient/pattern, sizing, an
+     optional overlay layered above the image, and an optional animation.
+     Inert until a preset feeds the tokens. The overlay is the first
+     background-image layer so it paints ABOVE the image. */
+  .sf-surface-bg {
+    background-color:      var(--sf-surface-bg-color);
+    background-image:      var(--sf-surface-bg-overlay), var(--sf-surface-bg-image);
+    background-size:       var(--sf-surface-bg-size);
+    background-position:   var(--sf-surface-bg-position);
+    background-repeat:     var(--sf-surface-bg-repeat);
+    background-attachment: var(--sf-surface-bg-attachment);
+    animation:             var(--sf-surface-bg-animation);
+  }
+
   .sf-text-protect {
     text-shadow: var(--sf-scrim-text-shadow);
   }
@@ -326,6 +342,14 @@
     font-size:       0.85em;
     text-decoration: none;
   }
+  /* Alt-text form (accessible name for the glyph) — gated so a UA that
+     rejects the "value / string" grammar keeps the plain marker above
+     instead of dropping the whole declaration. */
+  @supports (content: "x" / "y") {
+    .sf-link-external::after {
+      content: var(--sf-link-external-marker) / var(--sf-link-external-label);
+    }
+  }
 
   .sf-content-auto {
     content-visibility:     auto;
@@ -338,9 +362,11 @@
 
   /* filter: drop-shadow() utilities — unlike box-shadow, follows the element's
      actual alpha shape (SVG icons, PNG cutouts, transparent logos). */
-  .sf-drop-shadow-s { filter: var(--sf-drop-shadow-s); }
-  .sf-drop-shadow-m { filter: var(--sf-drop-shadow-m); }
-  .sf-drop-shadow-l { filter: var(--sf-drop-shadow-l); }
+  .sf-drop-shadow-xs { filter: var(--sf-drop-shadow-xs); }
+  .sf-drop-shadow-s  { filter: var(--sf-drop-shadow-s); }
+  .sf-drop-shadow-m  { filter: var(--sf-drop-shadow-m); }
+  .sf-drop-shadow-l  { filter: var(--sf-drop-shadow-l); }
+  .sf-drop-shadow-xl { filter: var(--sf-drop-shadow-xl); }
 
   .sf-link--subtle:link,
   .sf-link--subtle:visited {
@@ -359,6 +385,56 @@
   .sf-link--reverse:is(:link, :visited):hover,
   .sf-link--reverse:is(:link, :visited):focus-visible {
     text-decoration-line: none;
+  }
+
+  /* Concave corner — a corner that curves AWAY from the box (revealing
+     whatever sits behind it), via a radial-gradient mask. Physical corner
+     names (mask geometry has no logical form, same rationale as
+     .sf-overflow-fade's physical directions). Cuts the element's full
+     paint at that corner — box-shadow/border don't survive the cut there;
+     put shadows on a wrapper if needed. Named to mirror the future
+     `corner-shape: scoop` keyword for an easy @supports migration. */
+  .sf-corner-scoop {
+    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 18 */
+    -webkit-mask-image: radial-gradient(circle at var(--sf-corner-scoop-at),
+      transparent var(--sf-corner-scoop-size),
+      black calc(var(--sf-corner-scoop-size) + 0.5px));
+    mask-image: radial-gradient(circle at var(--sf-corner-scoop-at),
+      transparent var(--sf-corner-scoop-size),
+      black calc(var(--sf-corner-scoop-size) + 0.5px));
+  }
+  .sf-corner-scoop--top-left     { --sf-corner-scoop-at: 0 0; }
+  .sf-corner-scoop--top-right    { --sf-corner-scoop-at: 100% 0; }
+  .sf-corner-scoop--bottom-left  { --sf-corner-scoop-at: 0 100%; }
+  .sf-corner-scoop--bottom-right { --sf-corner-scoop-at: 100% 100%; }
+
+  /* Overlap recipe — one element intentionally overlapping the previous
+     one (e.g. an image pulled up over the card below it), via a negative
+     logical margin + a raised stacking context. Directional variants are
+     standalone (margins are distinct properties, not a re-pointable knob). */
+  .sf-overlap,
+  .sf-overlap--down,
+  .sf-overlap--start,
+  .sf-overlap--end {
+    position: relative;
+    z-index:  var(--sf-z-raised);
+  }
+  .sf-overlap        { margin-block-start:  calc(-1 * var(--sf-overlap-pull)); }
+  .sf-overlap--down  { margin-block-end:    calc(-1 * var(--sf-overlap-pull)); }
+  .sf-overlap--start { margin-inline-start: calc(-1 * var(--sf-overlap-pull)); }
+  .sf-overlap--end   { margin-inline-end:   calc(-1 * var(--sf-overlap-pull)); }
+
+  /* Card-container recipe — the receiving side of an overlap: an isolated
+     stacking context with block-start padding compensation so in-flow
+     content clears an element intruding from above. The padding knob
+     defaults to the pull knob so one override tunes both. */
+  .sf-overlap-host {
+    position:  relative;
+    isolation: isolate;
+    /* var() fallback resolved on this element, not pre-baked at :root —
+       so a local --sf-overlap-pull override (even without setting
+       --sf-overlap-host-pad) is honored (#496-class pitfall). */
+    padding-block-start: var(--sf-overlap-host-pad, var(--sf-overlap-pull));
   }
 
 }

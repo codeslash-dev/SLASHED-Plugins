@@ -94,5 +94,48 @@
        shadow halo behind glyphs, consumed by .sf-text-protect. */
     --sf-scrim-text-shadow: 0 1px 3px oklch(0 0 0 / 0.6);
 
+    /* ----------------------------------------------------------
+       Named background surface preset — input set for the .sf-surface-bg
+       macro (issue #523). One reusable, named background bundling a base
+       colour fallback + image/gradient/pattern + sizing + an optional
+       overlay + an optional animation. Define a preset by setting these
+       on a scope, then apply .sf-surface-bg to compose them:
+         .hero-surface {
+           --sf-surface-bg-image:   url("/hero.avif");
+           --sf-surface-bg-overlay: var(--sf-scrim-gradient);  // reuse the scrim
+           --sf-surface-bg-animation: sf-pan 40s linear infinite;
+         }
+         <section class="hero-surface sf-surface-bg">…</section>
+       -overlay layers ABOVE -image (first background-image layer). Builds on
+       the existing scrim + gradient tokens rather than new infra; for a
+       blurred backdrop compose .sf-scrim / a filter on top. Inert by default
+       (image/overlay/animation = none) so the bare class is a no-op until a
+       preset feeds it. ---------------------------------------------------- */
+    --sf-surface-bg-color:      transparent;
+    --sf-surface-bg-image:      none;
+    --sf-surface-bg-overlay:    none;
+    --sf-surface-bg-size:       cover;
+    --sf-surface-bg-position:   center;
+    --sf-surface-bg-repeat:     no-repeat;
+    --sf-surface-bg-attachment: scroll;
+    --sf-surface-bg-animation:  none;
+
+    /* ----------------------------------------------------------
+       Concave corner — radius and corner position for .sf-corner-scoop.
+       Override per element: style="--sf-corner-scoop-size: var(--sf-radius-3xl)"
+       (cut radius) or style="--sf-corner-scoop-at: 0 0" (which corner).
+       ---------------------------------------------------------- */
+    --sf-corner-scoop-size: var(--sf-radius-2xl);
+    --sf-corner-scoop-at:   100% 0;
+
+    /* ----------------------------------------------------------
+       Overlap recipe — how far .sf-overlap pulls into the adjacent
+       element. .sf-overlap-host's padding compensation defaults to this
+       same value via a var() fallback in the rule itself (not aliased
+       here — see core/macros.css), so one override on the host tunes
+       both unless --sf-overlap-host-pad is set independently.
+       ---------------------------------------------------------- */
+    --sf-overlap-pull: var(--sf-space-xl);
+
   }
 }

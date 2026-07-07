@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedBy": "scripts/gen-token-registry.js",
-    "nextId": 704
+    "nextId": 759
   },
   "tokens": [
     {
@@ -2798,23 +2798,23 @@
     },
     {
       "id": 693,
-      "name": "--sf-bg-fit"
+      "name": "--sf-bg-layer-fit"
     },
     {
       "id": 694,
-      "name": "--sf-bg-inset"
+      "name": "--sf-bg-layer-inset"
     },
     {
       "id": 695,
-      "name": "--sf-bg-position"
+      "name": "--sf-bg-layer-position"
     },
     {
       "id": 696,
-      "name": "--sf-bg-radius"
+      "name": "--sf-bg-layer-radius"
     },
     {
       "id": 697,
-      "name": "--sf-bg-z"
+      "name": "--sf-bg-layer-z"
     },
     {
       "id": 698,
@@ -2839,6 +2839,236 @@
     {
       "id": 703,
       "name": "--sf-equal-rule-width"
+    },
+    {
+      "id": 704,
+      "name": "--sf-boxed-bg",
+      "removed": true
+    },
+    {
+      "id": 705,
+      "name": "--sf-boxed-border-color",
+      "removed": true
+    },
+    {
+      "id": 706,
+      "name": "--sf-boxed-border-width",
+      "removed": true
+    },
+    {
+      "id": 707,
+      "name": "--sf-boxed-padding",
+      "removed": true
+    },
+    {
+      "id": 708,
+      "name": "--sf-boxed-radius",
+      "removed": true
+    },
+    {
+      "id": 709,
+      "name": "--sf-boxed-shadow",
+      "removed": true
+    },
+    {
+      "id": 710,
+      "name": "--sf-corner-scoop-at"
+    },
+    {
+      "id": 711,
+      "name": "--sf-corner-scoop-size"
+    },
+    {
+      "id": 712,
+      "name": "--sf-corners-end-end",
+      "removed": true
+    },
+    {
+      "id": 713,
+      "name": "--sf-corners-end-start",
+      "removed": true
+    },
+    {
+      "id": 714,
+      "name": "--sf-corners-start-end",
+      "removed": true
+    },
+    {
+      "id": 715,
+      "name": "--sf-corners-start-start",
+      "removed": true
+    },
+    {
+      "id": 716,
+      "name": "--sf-overlap-pull"
+    },
+    {
+      "id": 717,
+      "name": "--sf-btn-border-width"
+    },
+    {
+      "id": 718,
+      "name": "--sf-btn-font-size"
+    },
+    {
+      "id": 719,
+      "name": "--sf-btn-font-weight"
+    },
+    {
+      "id": 720,
+      "name": "--sf-btn-gap"
+    },
+    {
+      "id": 721,
+      "name": "--sf-btn-min-height"
+    },
+    {
+      "id": 722,
+      "name": "--sf-card-bg"
+    },
+    {
+      "id": 723,
+      "name": "--sf-card-border-color"
+    },
+    {
+      "id": 724,
+      "name": "--sf-card-border-width"
+    },
+    {
+      "id": 725,
+      "name": "--sf-card-btn-font-size"
+    },
+    {
+      "id": 726,
+      "name": "--sf-card-gap"
+    },
+    {
+      "id": 727,
+      "name": "--sf-card-heading-size"
+    },
+    {
+      "id": 728,
+      "name": "--sf-card-media-radius"
+    },
+    {
+      "id": 729,
+      "name": "--sf-card-media-ratio"
+    },
+    {
+      "id": 730,
+      "name": "--sf-card-padding"
+    },
+    {
+      "id": 731,
+      "name": "--sf-card-radius"
+    },
+    {
+      "id": 732,
+      "name": "--sf-card-radius-outer"
+    },
+    {
+      "id": 733,
+      "name": "--sf-card-shadow"
+    },
+    {
+      "id": 734,
+      "name": "--sf-card-shadow--elevated"
+    },
+    {
+      "id": 735,
+      "name": "--sf-card-shadow--hover"
+    },
+    {
+      "id": 736,
+      "name": "--sf-animation-slide-out-down"
+    },
+    {
+      "id": 737,
+      "name": "--sf-animation-slide-out-left"
+    },
+    {
+      "id": 738,
+      "name": "--sf-animation-slide-out-right"
+    },
+    {
+      "id": 739,
+      "name": "--sf-animation-slide-out-up"
+    },
+    {
+      "id": 740,
+      "name": "--sf-color-selection-bg--alt"
+    },
+    {
+      "id": 741,
+      "name": "--sf-color-selection-text--alt"
+    },
+    {
+      "id": 742,
+      "name": "--sf-media-radius"
+    },
+    {
+      "id": 743,
+      "name": "--sf-scroll-timeline-range-exit-end"
+    },
+    {
+      "id": 744,
+      "name": "--sf-scroll-timeline-range-exit-start"
+    },
+    {
+      "id": 745,
+      "name": "--sf-drop-shadow-xl"
+    },
+    {
+      "id": 746,
+      "name": "--sf-drop-shadow-xs"
+    },
+    {
+      "id": 747,
+      "name": "--sf-link-external-label"
+    },
+    {
+      "id": 748,
+      "name": "--sf-text-shadow-xl"
+    },
+    {
+      "id": 749,
+      "name": "--sf-text-shadow-xs"
+    },
+    {
+      "id": 750,
+      "name": "--sf-fluid-width"
+    },
+    {
+      "id": 751,
+      "name": "--sf-surface-bg-animation"
+    },
+    {
+      "id": 752,
+      "name": "--sf-surface-bg-attachment"
+    },
+    {
+      "id": 753,
+      "name": "--sf-surface-bg-color"
+    },
+    {
+      "id": 754,
+      "name": "--sf-surface-bg-image"
+    },
+    {
+      "id": 755,
+      "name": "--sf-surface-bg-overlay"
+    },
+    {
+      "id": 756,
+      "name": "--sf-surface-bg-position"
+    },
+    {
+      "id": 757,
+      "name": "--sf-surface-bg-repeat"
+    },
+    {
+      "id": 758,
+      "name": "--sf-surface-bg-size"
     }
   ]
 }

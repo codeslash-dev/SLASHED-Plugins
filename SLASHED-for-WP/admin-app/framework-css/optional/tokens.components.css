@@ -1,0 +1,75 @@
+/* SLASHED — optional/tokens.components.css
+   @layer slashed.tokens
+   Component token surface for the optional component module: card, field,
+   and button knobs. Prefix: --sf-*. */
+
+@layer slashed.tokens {
+  :root {
+
+    /* ============================================================
+     * CARD TOKENS
+     * ============================================================
+     * Concentric radius math: outer = inner + padding. Keeps inner
+     * elements that use the global --sf-radius-m visually
+     * proportional inside a padded card. */
+    --sf-card-padding:        var(--sf-space-l);
+    --sf-card-gap:            var(--sf-space-m);
+    --sf-card-radius:         var(--sf-radius-m);
+    --sf-card-radius-outer:   calc(var(--sf-card-radius) + var(--sf-card-padding));
+    --sf-card-bg:             var(--sf-color-surface);
+    --sf-card-border-width:   var(--sf-border-width-1);
+    --sf-card-border-color:   var(--sf-color-border);
+    --sf-card-shadow:         var(--sf-shadow-s);
+    /* Shadow escalation for the --elevated and --interactive modifiers.
+     * Both default to the same --sf-shadow-l step (elevated's resting shadow
+     * and interactive's hover shadow read as the same "lifted" level) — two
+     * tokens so each modifier can still be tuned independently. */
+    --sf-card-shadow--elevated: var(--sf-shadow-l);
+    --sf-card-shadow--hover:    var(--sf-shadow-l);
+
+    /* Smart-card subcomponents (.sf-card__media / __avatar / __title and the
+     * scoped button font-size override). Media defaults to the 16/9 ratio
+     * token; inner media radius mirrors the card's inner radius. */
+    --sf-card-media-ratio:    var(--sf-ratio-video);
+    --sf-card-media-radius:   var(--sf-card-radius, var(--sf-radius-m));
+    --sf-card-heading-size:   var(--sf-text-xl);
+    --sf-card-btn-font-size:  var(--sf-text-s);
+
+    /* ============================================================
+     * FIELD TOKENS
+     * Override to give form fields a distinct visual language from
+     * buttons without touching global radius/spacing tokens. Reserved
+     * for a future .sf-field class (optional/forms.css) — no consumer
+     * ships in this layer yet.
+     * ============================================================ */
+    --sf-field-radius:         var(--sf-radius-m);
+    --sf-field-padding-block:  var(--sf-space-xs);
+    --sf-field-padding-inline: var(--sf-space-s);
+
+    /* ============================================================
+     * BUTTON TOKENS
+     * Override to give buttons a distinct visual language from
+     * form fields without touching global radius/spacing tokens.
+     * ============================================================ */
+    --sf-btn-radius:         var(--sf-radius-m);
+    --sf-btn-padding-block:  var(--sf-space-xs);
+    --sf-btn-padding-inline: var(--sf-space-m);
+    --sf-btn-gap:            var(--sf-space-2xs);
+    --sf-btn-font-size:      var(--sf-text-m);
+    --sf-btn-font-weight:    var(--sf-font-weight-interactive);
+    --sf-btn-min-height:     var(--sf-touch-target);
+    --sf-btn-border-width:   var(--sf-border-width-1);
+    /*
+     * Size modifiers (.sf-btn--xs/--s/--l/--xl) and the colour family
+     * (--sf-btn-color / --sf-btn-color--hover / --sf-btn-on-color) are
+     * rule-local overrides set in optional/components.css, not global knobs.
+     *
+     * Full-width: .sf-btn--block is unconditional; .sf-btn--block-cq
+     * stretches to 100% only inside a query container narrower than 20rem
+     * (no @media breakpoints). The threshold is a literal in the
+     * @container condition — query conditions cannot read var(), so
+     * there is no token for it.
+     */
+
+  }
+}

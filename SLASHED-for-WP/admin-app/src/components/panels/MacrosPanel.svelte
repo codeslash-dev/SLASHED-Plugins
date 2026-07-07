@@ -1,5 +1,6 @@
 <script lang="ts">
   import SliderRow from '../inputs/SliderRow.svelte';
+  import { SPACE_SCALE, RADIUS_SCALE } from '../../lib/variableScales';
 
   let { overrides, onSet, onReset }: {
     overrides: Record<string, string>;
@@ -32,6 +33,30 @@
     { label: "↖ top-left",   value: "to top left" },
   ];
 
+  // Enumerable presets for the .sf-surface-bg named-background macro. The first
+  // value in each list is the token default, so clicking it resets the override.
+  const SURFACE_BG_SIZE = ["cover", "contain", "auto", "100% 100%"];
+  const SURFACE_BG_POSITION = ["center", "top", "bottom", "left", "right", "top left"];
+  const SURFACE_BG_REPEAT = ["no-repeat", "repeat", "repeat-x", "repeat-y", "space", "round"];
+  const SURFACE_BG_ATTACHMENT = ["scroll", "fixed", "local"];
+
+  // Free-form surface-bg tokens (color/image/overlay/animation) — plain text
+  // inputs, since their values are arbitrary CSS (urls, gradients, keyframes).
+  const SURFACE_BG_TEXT = [
+    { label: "Color",     token: "--sf-surface-bg-color",     placeholder: "transparent" },
+    { label: "Image",     token: "--sf-surface-bg-image",     placeholder: 'url("/hero.avif")' },
+    { label: "Overlay",   token: "--sf-surface-bg-overlay",   placeholder: "var(--sf-scrim-gradient)" },
+    { label: "Animation", token: "--sf-surface-bg-animation", placeholder: "sf-pan 40s linear infinite" },
+  ];
+
+  // Enumerable surface-bg tokens rendered as preset button grids.
+  const SURFACE_BG_ENUM = [
+    { label: "Size",       token: "--sf-surface-bg-size",       opts: SURFACE_BG_SIZE },
+    { label: "Position",   token: "--sf-surface-bg-position",   opts: SURFACE_BG_POSITION },
+    { label: "Repeat",     token: "--sf-surface-bg-repeat",     opts: SURFACE_BG_REPEAT },
+    { label: "Attachment", token: "--sf-surface-bg-attachment", opts: SURFACE_BG_ATTACHMENT },
+  ];
+
   // Prose spacing knobs. Defaults reference space tokens — the numbers below are
   // the approximate resolved rem values, used only as the slider's idle position.
   const PROSE_SPACE = [
@@ -51,6 +76,7 @@
   let showScrim = $state(false);
   let showProse = $state(false);
   let showContentIntrinsic = $state(false);
+  let showSurfaceBg = $state(false);
 
   let lineClamp   = $derived(num("--sf-line-clamp", 3));
   let flowSpace   = $derived(num("--sf-flow-space", 0.5, "rem"));
@@ -59,6 +85,17 @@
   let scrimColor  = $derived(overrides["--sf-scrim-color"] ?? "oklch(0 0 0 / 0.55)");
   let scrimDir    = $derived(overrides["--sf-scrim-direction"] ?? "to top");
   let mediaRadius = $derived(num("--sf-prose-media-radius", 6, "px"));
+
+  // Live preview composition for .sf-surface-bg — mirrors the macro's layering
+  // (overlay above image) so the swatch reflects what ships.
+  let surfaceBgImage    = $derived(overrides["--sf-surface-bg-image"] ?? "none");
+  let surfaceBgOverlay  = $derived(overrides["--sf-surface-bg-overlay"] ?? "none");
+  let surfaceBgColor    = $derived(overrides["--sf-surface-bg-color"] ?? "transparent");
+  let surfaceBgSize     = $derived(overrides["--sf-surface-bg-size"] ?? "cover");
+  let surfaceBgPosition = $derived(overrides["--sf-surface-bg-position"] ?? "center");
+  let surfaceBgRepeat     = $derived(overrides["--sf-surface-bg-repeat"] ?? "no-repeat");
+  let surfaceBgAttachment = $derived(overrides["--sf-surface-bg-attachment"] ?? "scroll");
+  let surfaceBgAnimation  = $derived(overrides["--sf-surface-bg-animation"] ?? "none");
 
   function proseVal(t: typeof PROSE_SPACE[0]): number {
     const raw = overrides[t.token];
@@ -95,6 +132,7 @@
         onChange={(v) => onSet("--sf-flow-space", `${v}rem`)}
         onReset={() => onReset("--sf-flow-space")}
         rawDefault="var(--sf-content-gap)"
+        variableOptions={SPACE_SCALE}
         currentRaw={overrides["--sf-flow-space"]}
         onRawSet={(v) => onSet("--sf-flow-space", v)}
       />
@@ -194,9 +232,6 @@
         overridden={"--sf-scroll-shadow-size" in overrides}
         onChange={(v) => onSet("--sf-scroll-shadow-size", `${v}rem`)}
         onReset={() => onReset("--sf-scroll-shadow-size")}
-        rawDefault="2rem"
-        currentRaw={overrides["--sf-scroll-shadow-size"]}
-        onRawSet={(v) => onSet("--sf-scroll-shadow-size", v)}
       />
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
         <div
@@ -299,6 +334,7 @@
             onChange={(v) => onSet(t.token, `${v}rem`)}
             onReset={() => onReset(t.token)}
             rawDefault={t.raw}
+            variableOptions={SPACE_SCALE}
             currentRaw={overrides[t.token]}
             onRawSet={(v) => onSet(t.token, v)}
           />
@@ -310,6 +346,7 @@
           onChange={(v) => onSet("--sf-prose-media-radius", `${v}px`)}
           onReset={() => onReset("--sf-prose-media-radius")}
           rawDefault="var(--sf-radius-m)"
+          variableOptions={RADIUS_SCALE}
           currentRaw={overrides["--sf-prose-media-radius"]}
           onRawSet={(v) => onSet("--sf-prose-media-radius", v)}
         />
@@ -362,6 +399,70 @@
         {#if "--sf-content-intrinsic-size" in overrides}
           <button onclick={() => onReset("--sf-content-intrinsic-size")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
+      </div>
+    {/if}
+  </section>
+
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
+
+  <!-- BACKGROUND SURFACE -->
+  <section class="space-y-3">
+    <button
+      onclick={() => { showSurfaceBg = !showSurfaceBg; }}
+      aria-expanded={showSurfaceBg}
+      class="w-full flex items-center justify-between cursor-pointer"
+    >
+      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Background surface</div>
+      <span class="text-[10px] text-slate-500">{showSurfaceBg ? "▲" : "▼"}</span>
+    </button>
+    {#if showSurfaceBg}
+      <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
+        --sf-surface-bg-* — input set composed by the <span class="font-mono text-slate-600 dark:text-slate-400">.sf-surface-bg</span>
+        macro into a single reusable background (color, image, overlay, sizing and animation).
+      </p>
+
+      {#each SURFACE_BG_TEXT as t (t.token)}
+        <div class="flex items-center gap-2">
+          <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">{t.label}</div>
+          <input
+            type="text"
+            value={overrides[t.token] ?? ""}
+            placeholder={t.placeholder}
+            oninput={(e) => {
+              const v = (e.target as HTMLInputElement).value;
+              v.trim() ? onSet(t.token, v) : onReset(t.token);
+            }}
+            class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+          />
+          {#if t.token in overrides}
+            <button onclick={() => onReset(t.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          {/if}
+        </div>
+      {/each}
+
+      {#each SURFACE_BG_ENUM as g (g.token)}
+        <div>
+          <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">{g.label}</div>
+          <div class="grid grid-cols-3 gap-1">
+            {#each g.opts as opt (opt)}
+              <button
+                onclick={() => opt === g.opts[0] ? onReset(g.token) : onSet(g.token, opt)}
+                class={`py-1 rounded-lg text-[10px] border transition-all cursor-pointer font-mono ${
+                  (overrides[g.token] ?? g.opts[0]) === opt
+                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                    : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
+                }`}
+              >{opt}</button>
+            {/each}
+          </div>
+        </div>
+      {/each}
+
+      <div
+        class="h-24 rounded-xl border border-black/8 dark:border-white/8 overflow-hidden flex items-end p-2"
+        style={`background-color:${surfaceBgColor};background-image:${surfaceBgOverlay}, ${surfaceBgImage};background-size:${surfaceBgSize};background-position:${surfaceBgPosition};background-repeat:${surfaceBgRepeat};background-attachment:${surfaceBgAttachment};animation:${surfaceBgAnimation}`}
+      >
+        <span class="text-[11px] font-bold text-white mix-blend-difference">.sf-surface-bg preview</span>
       </div>
     {/if}
   </section>

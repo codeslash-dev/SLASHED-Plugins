@@ -3,6 +3,7 @@
   import PowerKnobRow from '../inputs/PowerKnobRow.svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
+  import { SPACE_SCALE, RADIUS_SCALE, BORDER_WIDTH_SCALE, type VarOption } from '../../lib/variableScales';
 
   let { overrides, onSet, onReset }: {
     overrides: Record<string, string>;
@@ -23,13 +24,10 @@
     { step: "2xl", name: "--sf-radius-2xl", default: 24, max: 80, step_size: 2,   rawDefault: "calc(24px * var(--sf-radius-scale))" },
   ];
 
-  const COMPONENT_TOKENS = [
-    { label: "Button radius",         token: "--sf-btn-radius",         unit: "rem", min: 0, max: 2,   step: 0.05,  default: 0.5,   rawDefault: "var(--sf-radius-m)",  help: "--sf-btn-radius" },
-    { label: "Button padding block",  token: "--sf-btn-padding-block",  unit: "rem", min: 0, max: 1,   step: 0.025, default: 0.375, rawDefault: "var(--sf-space-xs)", help: "--sf-btn-padding-block" },
-    { label: "Button padding inline", token: "--sf-btn-padding-inline", unit: "rem", min: 0, max: 2,   step: 0.025, default: 1,     rawDefault: "var(--sf-space-m)",  help: "--sf-btn-padding-inline" },
-    { label: "Field radius",          token: "--sf-field-radius",       unit: "rem", min: 0, max: 2,   step: 0.05,  default: 0.5,   rawDefault: "var(--sf-radius-m)",  help: "--sf-field-radius" },
-    { label: "Field padding block",   token: "--sf-field-padding-block",  unit: "rem", min: 0, max: 1, step: 0.025, default: 0.375, rawDefault: "var(--sf-space-xs)", help: "--sf-field-padding-block" },
-    { label: "Field padding inline",  token: "--sf-field-padding-inline", unit: "rem", min: 0, max: 2, step: 0.025, default: 0.75,  rawDefault: "var(--sf-space-s)",  help: "--sf-field-padding-inline" },
+  const COMPONENT_TOKENS: Array<{ label: string; token: string; unit: string; min: number; max: number; step: number; default: number; rawDefault: string; help: string; variableOptions: VarOption[] }> = [
+    { label: "Field radius",          token: "--sf-field-radius",       unit: "rem", min: 0, max: 2,   step: 0.05,  default: 0.5,   rawDefault: "var(--sf-radius-m)",  help: "--sf-field-radius", variableOptions: RADIUS_SCALE },
+    { label: "Field padding block",   token: "--sf-field-padding-block",  unit: "rem", min: 0, max: 1, step: 0.025, default: 0.375, rawDefault: "var(--sf-space-xs)", help: "--sf-field-padding-block", variableOptions: SPACE_SCALE },
+    { label: "Field padding inline",  token: "--sf-field-padding-inline", unit: "rem", min: 0, max: 2, step: 0.025, default: 0.75,  rawDefault: "var(--sf-space-s)",  help: "--sf-field-padding-inline", variableOptions: SPACE_SCALE },
   ];
 
   const knobs = KNOBS_BY_DOMAIN["borders"] ?? [];
@@ -41,8 +39,9 @@
   let showFocusRing = $state(false);
   let showRadiusScale = $state(false);
   let showRadiusPreview = $state(false);
+  let showMediaRadius = $state(false);
   let showFineTune = $state(false);
-  let showComponents = $state(false);
+  let showFieldShape = $state(false);
 
   function parseNum(val: string | undefined, fallback: number, strip?: string): number {
     if (!val) return fallback;
@@ -60,6 +59,7 @@
   let borderStyle  = $derived(overrides["--sf-border-style"] ?? "solid");
   let focusRingColor = $derived(overrides["--sf-focus-ring-color"] ?? "");
   let dividerColor = $derived(overrides["--sf-divider-color"] ?? "");
+  let mediaRadius  = $derived(parseNum(overrides["--sf-media-radius"]?.replace("rem",""), 0));
 
   function getStyleCurrent(tokenName: string, defaultVal: string): string {
     return overrides[tokenName] ?? defaultVal;
@@ -246,6 +246,7 @@
         onChange={(v) => onSet("--sf-divider-width", `${v}px`)}
         onReset={() => onReset("--sf-divider-width")}
         rawDefault="var(--sf-border-width-1)"
+        variableOptions={BORDER_WIDTH_SCALE}
         currentRaw={overrides["--sf-divider-width"]}
         onRawSet={(v) => onSet("--sf-divider-width", v)}
       />
@@ -256,6 +257,7 @@
         onChange={(v) => onSet("--sf-divider-gap", `${v}rem`)}
         onReset={() => onReset("--sf-divider-gap")}
         rawDefault="var(--sf-space-m)"
+        variableOptions={SPACE_SCALE}
         currentRaw={overrides["--sf-divider-gap"]}
         onRawSet={(v) => onSet("--sf-divider-gap", v)}
       />
@@ -380,17 +382,54 @@
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
-  <!-- COMPONENT SHAPE -->
+  <!-- GLOBAL MEDIA RADIUS -->
+  <section class="space-y-3">
+    <button
+      onclick={() => { showMediaRadius = !showMediaRadius; }}
+      aria-expanded={showMediaRadius}
+      class="w-full flex items-center justify-between cursor-pointer"
+    >
+      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global media radius</div>
+      <span class="text-[10px] text-slate-500">{showMediaRadius ? "▲" : "▼"}</span>
+    </button>
+    {#if showMediaRadius}
+      <p class="text-[9px] text-slate-400 dark:text-slate-600">
+        --sf-media-radius — 0 by default (off). Rounds every &lt;img&gt;/&lt;figure&gt; globally via a
+        zero-specificity :where() rule; .sf-bg-layer and component-level radii still win.
+      </p>
+      <SliderRow
+        label="Radius" value={mediaRadius} min={0} max={2} step={0.05} unit="rem"
+        help="--sf-media-radius"
+        overridden={"--sf-media-radius" in overrides}
+        onChange={(v) => onSet("--sf-media-radius", `${v}rem`)}
+        onReset={() => onReset("--sf-media-radius")}
+        rawDefault="var(--sf-radius-m)"
+        variableOptions={RADIUS_SCALE}
+        currentRaw={overrides["--sf-media-radius"]}
+        onRawSet={(v) => onSet("--sf-media-radius", v)}
+      />
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center">
+        <div
+          class="w-16 h-16 bg-indigo-500/40 border border-indigo-500/30"
+          style={`border-radius: ${mediaRadius}rem`}
+        ></div>
+      </div>
+    {/if}
+  </section>
+
+  <div class="h-px bg-black/6 dark:bg-white/6"></div>
+
+  <!-- FIELD SHAPE -->
   <div>
     <button
-      onclick={() => { showComponents = !showComponents; }}
-      aria-expanded={showComponents}
+      onclick={() => { showFieldShape = !showFieldShape; }}
+      aria-expanded={showFieldShape}
       class="w-full flex items-center justify-between text-[10px] font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer py-1"
     >
-      <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Component shape</span>
-      <span class="text-[10px] text-slate-500">{showComponents ? "▲" : "▼"}</span>
+      <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Field shape</span>
+      <span class="text-[10px] text-slate-500">{showFieldShape ? "▲" : "▼"}</span>
     </button>
-    {#if showComponents}
+    {#if showFieldShape}
       <div class="mt-2 space-y-2">
         {#each COMPONENT_TOKENS as t (t.token)}
           <SliderRow
@@ -400,6 +439,7 @@
             onChange={(v) => onSet(t.token, `${v}${t.unit}`)}
             onReset={() => onReset(t.token)}
             rawDefault={t.rawDefault}
+            variableOptions={t.variableOptions}
             currentRaw={overrides[t.token]}
             onRawSet={(v) => onSet(t.token, v)}
           />
