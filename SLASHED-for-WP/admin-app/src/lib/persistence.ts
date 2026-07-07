@@ -194,10 +194,29 @@ export function isEmbedded(): boolean {
  * sharing — use the host's public standalone configurator URL instead.
  * Returns undefined in standalone mode, where buildShareUrl()'s own
  * window.location.href fallback is already correct.
+ *
+ * The value is host-controlled boot data, so validate it before handing it to
+ * buildShareUrl()'s `new URL(baseUrl)`: a relative/malformed string would throw
+ * (silently swallowed by the share/copy handlers, so nothing gets copied and
+ * the user gets no feedback), and a non-http(s) scheme (javascript:, data:…)
+ * would be faithfully propagated into a copied "share link". On any of those,
+ * return undefined so buildShareUrl() falls back to the current page URL.
  */
 export function getShareBaseUrl(): string | undefined {
-  const url = wpBoot()?.pluginSettings?.configurator_url;
-  return url && url.trim() !== "" ? url : undefined;
+  const raw = wpBoot()?.pluginSettings?.configurator_url;
+  const trimmed = raw?.trim();
+  if (!trimmed) return undefined;
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      console.warn(`[slashed] ignoring configurator_url with unsupported scheme: ${parsed.protocol}`);
+      return undefined;
+    }
+    return trimmed;
+  } catch {
+    console.warn(`[slashed] ignoring invalid configurator_url: ${trimmed}`);
+    return undefined;
+  }
 }
 
 /**
