@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.1 — slashed.optimal-components.css | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.2 — slashed.optimal-components.css | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -4645,7 +4645,9 @@
     /* ============================================================
      * FIELD TOKENS
      * Override to give form fields a distinct visual language from
-     * buttons without touching global radius/spacing tokens.
+     * buttons without touching global radius/spacing tokens. Reserved
+     * for a future .sf-field class (optional/forms.css) — no consumer
+     * ships in this layer yet.
      * ============================================================ */
     --sf-field-radius:         var(--sf-radius-m);
     --sf-field-padding-block:  var(--sf-space-xs);
@@ -4933,7 +4935,7 @@
     inline-size:   100%;
     aspect-ratio:  var(--sf-card-media-ratio, var(--sf-ratio-video));
     object-fit:    cover;
-    border-radius: var(--sf-card-media-radius, var(--sf-card-radius, var(--sf-radius-m)));
+    border-radius: var(--sf-card-media-radius);
     overflow:      clip;
   }
 

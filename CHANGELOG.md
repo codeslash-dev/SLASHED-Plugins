@@ -9,6 +9,26 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.4.24] - 2026-07-07
+
+### Fixed
+
+- Resync ComponentsPanel.svelte fix for stale computed radius display
+- Sync package-lock.json license field with package.json
+- Vendor optional/ CSS layers and track framework's dist/ rename
+- Avoid positioning Bricks SF preview label
+- Preserve Bricks color preview placement
+
+## [0.4.24] - 2026-07-07
+
+### Fixed
+
+- Resync ComponentsPanel.svelte fix for stale computed radius display
+- Sync package-lock.json license field with package.json
+- Vendor optional/ CSS layers and track framework's dist/ rename
+- Avoid positioning Bricks SF preview label
+- Preserve Bricks color preview placement
+
 ## [0.4.22] - 2026-07-03
 
 ### Added

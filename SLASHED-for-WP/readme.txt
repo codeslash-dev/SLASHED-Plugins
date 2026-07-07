@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.4.22
+Stable tag: 0.4.24
 Requires PHP: 7.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -129,6 +129,13 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.4.24 =
+* Fixed: Resync ComponentsPanel.svelte fix for stale computed radius display
+* Fixed: Sync package-lock.json license field with package.json
+* Fixed: Vendor optional/ CSS layers and track framework's dist/ rename
+* Fixed: Avoid positioning Bricks SF preview label
+* Fixed: Preserve Bricks color preview placement
 
 = 0.4.22 =
 * Added: Sync Studio light-mode support into the admin-app
