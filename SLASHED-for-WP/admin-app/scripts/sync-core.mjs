@@ -78,7 +78,11 @@ const SRC_ROOT = SRC + sep; // canonical prefix for path-traversal guard
 // Vendored framework CSS — target of the @framework-css alias.
 const VENDOR = resolve(ADMIN_APP, 'framework-css');
 const VENDOR_CORE = resolve(VENDOR, 'core');
-const VENDOR_BADGES = resolve(VENDOR, 'badges');
+const VENDOR_OPTIONAL = resolve(VENDOR, 'optional');
+// The full bundle is vendored under dist/ to match PreviewPanel.svelte's
+// `@framework-css/dist/slashed.full.css?raw` import (the framework's own alias
+// resolves that path to its repo-root dist/, so the plugin mirrors it here).
+const VENDOR_DIST = resolve(VENDOR, 'dist');
 
 // The plugin's own full bundle — used as the preview stylesheet so the preview
 // matches the framework CSS the site actually serves.
@@ -92,6 +96,15 @@ const CFG_SRC = 'configurator/src';
 const CHROME_LAYERS = [
   'layers.css', 'tokens.css', 'tokens.layout.css', 'tokens.macros.css',
   'themes.css', 'layout.css', 'macros.css',
+];
+
+// Optional layers imported by src/main.ts from `@framework-css/optional/`.
+// main.ts pulls in components.css (for the .sf-btn / .sf-card live previews),
+// which itself `@import`s tokens.components.css — so both must be vendored or
+// the admin-app build fails with UNLOADABLE_DEPENDENCY. Keep this list in sync
+// with the `@framework-css/optional/*` imports in configurator/src/main.ts.
+const OPTIONAL_LAYERS = [
+  'components.css', 'tokens.components.css',
 ];
 
 // ── Path safety ───────────────────────────────────────────────────────────────
@@ -201,6 +214,10 @@ function reportOrphans() {
     if (CHROME_LAYERS.includes(rel)) continue;
     reportDrift('orphan', `framework-css/core/${rel}`, 'vendored locally, no longer a tracked chrome layer');
   }
+  for (const rel of listRelFiles(VENDOR_OPTIONAL, VENDOR_OPTIONAL)) {
+    if (OPTIONAL_LAYERS.includes(rel)) continue;
+    reportDrift('orphan', `framework-css/optional/${rel}`, 'vendored locally, no longer a tracked optional layer');
+  }
 }
 
 /** Print the check result and set the process exit code. Never used outside --check mode. */
@@ -218,12 +235,12 @@ function finishCheck(sourceLabel) {
 
 // ── Framework CSS vendoring (shared) ───────────────────────────────────────────
 
-/** Copy the plugin's full bundle into the vendored badges/ dir for the preview. */
+/** Copy the plugin's full bundle into the vendored dist/ dir for the preview. */
 function vendorFullBundle() {
-  const label = 'framework-css/badges/slashed.full.css';
-  const dest = join(VENDOR_BADGES, 'slashed.full.css');
+  const label = 'framework-css/dist/slashed.full.css';
+  const dest = join(VENDOR_DIST, 'slashed.full.css');
   if (existsSync(PLUGIN_FULL_CSS)) {
-    if (!CHECK_MODE) mkdirSync(VENDOR_BADGES, { recursive: true });
+    if (!CHECK_MODE) mkdirSync(VENDOR_DIST, { recursive: true });
     writeFile(dest, readFileSync(PLUGIN_FULL_CSS), label);
     if (!CHECK_MODE) process.stdout.write(`  copy  ${label} (from dist/)\n`);
   } else if (existsSync(dest)) {
@@ -300,6 +317,18 @@ function vendorChromeLocal(repoRoot) {
     }
     const dest = join(VENDOR_CORE, name);
     const label = `framework-css/core/${name}`;
+    writeFile(dest, readFileSync(from), label);
+    if (!CHECK_MODE) process.stdout.write(`  copy  ${label}\n`);
+  }
+  const optionalDir = resolve(repoRoot, 'optional');
+  if (!CHECK_MODE) mkdirSync(VENDOR_OPTIONAL, { recursive: true });
+  for (const name of OPTIONAL_LAYERS) {
+    const from = join(optionalDir, name);
+    if (!existsSync(from)) {
+      throw new Error(`Framework optional layer missing: ${from}`);
+    }
+    const dest = join(VENDOR_OPTIONAL, name);
+    const label = `framework-css/optional/${name}`;
     writeFile(dest, readFileSync(from), label);
     if (!CHECK_MODE) process.stdout.write(`  copy  ${label}\n`);
   }
@@ -497,6 +526,22 @@ async function vendorChromeRemote() {
     const label = `framework-css/core/${name}`;
     try {
       const content = await ghFetchContent(`core/${name}`);
+      writeFile(dest, content, label);
+      if (!CHECK_MODE) process.stdout.write(`  fetch ${label}\n`);
+    } catch (err) {
+      if ((err.status === 403 || err.status === 404) && existsSync(dest)) {
+        if (!CHECK_MODE) process.stdout.write(`  keep  ${label} (GitHub API ${err.status})\n`);
+        continue;
+      }
+      throw err;
+    }
+  }
+  if (!CHECK_MODE) mkdirSync(VENDOR_OPTIONAL, { recursive: true });
+  for (const name of OPTIONAL_LAYERS) {
+    const dest = join(VENDOR_OPTIONAL, name);
+    const label = `framework-css/optional/${name}`;
+    try {
+      const content = await ghFetchContent(`optional/${name}`);
       writeFile(dest, content, label);
       if (!CHECK_MODE) process.stdout.write(`  fetch ${label}\n`);
     } catch (err) {
