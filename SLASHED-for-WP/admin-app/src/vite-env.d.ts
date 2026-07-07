@@ -11,6 +11,7 @@ interface Window {
     rest?: { url?: string; nonce?: string };
     overrides?: Record<string, string>;
     versions?: { plugin?: string; framework?: string; css_source?: string };
+    pluginSettings?: { configurator_url?: string; [key: string]: unknown };
     [key: string]: unknown;
   };
 }

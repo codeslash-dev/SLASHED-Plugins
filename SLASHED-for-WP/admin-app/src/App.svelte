@@ -274,6 +274,7 @@
 <div class="{embedded ? 'w-full h-full' : 'w-screen h-screen'} flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-800 dark:text-slate-200 font-sans">
   <!-- Top header bar -->
   <StudioHeader
+    {overrides}
     {overridesCount}
     {canUndo}
     {canRedo}

@@ -173,6 +173,7 @@ export function computeDerivedOverrides(ov: Record<string, string>, { reduceMoti
 interface SlashedAppBoot {
   rest?: { url?: string; nonce?: string };
   overrides?: Record<string, string>;
+  pluginSettings?: { configurator_url?: string };
 }
 
 function wpBoot(): SlashedAppBoot | null {
@@ -183,6 +184,20 @@ function wpBoot(): SlashedAppBoot | null {
 /** Whether the configurator is running embedded in WordPress (REST persistence). */
 export function isEmbedded(): boolean {
   return Boolean(wpBoot()?.rest?.url);
+}
+
+/**
+ * Base URL share links should point at. Embedded hosts (e.g. the WP plugin)
+ * persist overrides server-side rather than in the URL hash (see
+ * saveStandalone() below, which the WP save path skips entirely), so the
+ * current page's URL is a logged-in admin screen, not something worth
+ * sharing — use the host's public standalone configurator URL instead.
+ * Returns undefined in standalone mode, where buildShareUrl()'s own
+ * window.location.href fallback is already correct.
+ */
+export function getShareBaseUrl(): string | undefined {
+  const url = wpBoot()?.pluginSettings?.configurator_url;
+  return url && url.trim() !== "" ? url : undefined;
 }
 
 /**
