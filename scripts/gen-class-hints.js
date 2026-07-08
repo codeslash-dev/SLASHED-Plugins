@@ -44,7 +44,7 @@ const SOURCE_FILES = [
 
 // Curated overrides — always win over auto-parsed CSS-comment descriptions.
 // Use this for classes whose section comment produces a wrong/shared/truncated hint.
-const OVERRIDE_HINTS = {
+export const OVERRIDE_HINTS = {
   // Bento container variants inherit the section description instead of getting their own.
   'sf-bento':          { description: 'Auto-fill bento grid for card dashboards. Children span 1 column by default; use span modifiers (sf-bento-wide, sf-bento-tall, sf-bento-full, sf-bento-featured) to break the grid.', category: 'Layout' },
   'sf-bento--2':       { description: 'Bento grid variant with a 2-column base layout.', category: 'Layout' },
@@ -77,7 +77,7 @@ const OVERRIDE_HINTS = {
 
 // Manual descriptions for classes whose source format can't be auto-parsed.
 // States use /* === SECTION === */ comments with no inline descriptions.
-const MANUAL_HINTS = {
+export const MANUAL_HINTS = {
   'is-hidden':      { description: 'Hides the element (display: none). Toggled by JS or ARIA.', category: 'States' },
   'is-invisible':   { description: 'Makes the element invisible but still occupies space.', category: 'States' },
   'is-visible':     { description: 'Forces visibility: visible on a hidden element.', category: 'States' },
@@ -122,7 +122,20 @@ function parseFile(rel, category) {
   const abs = path.join(FRAMEWORK, rel);
   if (!fs.existsSync(abs)) return {};
 
-  const src = fs.readFileSync(abs, 'utf8');
+  return parseCss(fs.readFileSync(abs, 'utf8'), category);
+}
+
+/**
+ * Pure section-comment parser: extract a { className → { description, category } }
+ * map from a CSS source string. Exported (no fs / no env) so the comment-format
+ * assumptions can be unit-tested — this is the logic that would silently produce
+ * wrong hints if the framework changed its section-comment style.
+ *
+ * @param {string} src      Raw CSS source.
+ * @param {string} category Category label to tag every class found.
+ * @returns {object}
+ */
+export function parseCss(src, category) {
   const hints = {};
 
   // Split into tokens: either a block comment or code.
@@ -190,11 +203,16 @@ function missingFrameworkSources() {
     .filter((file) => !fs.existsSync(path.join(FRAMEWORK, file)));
 }
 
-function generate() {
-  const all = {};
-  for (const { file, category } of SOURCE_FILES) {
-    Object.assign(all, parseFile(file, category));
-  }
+/**
+ * Layer the curated hint maps over an auto-parsed map, applying the precedence
+ * the generator guarantees: MANUAL_HINTS only fill gaps (never override a
+ * parsed entry), OVERRIDE_HINTS always win. Pure — exported for unit testing.
+ *
+ * @param {object} parsed Auto-parsed { className → hint } map.
+ * @returns {object} Merged map.
+ */
+export function applyCuratedHints(parsed) {
+  const all = { ...parsed };
   // Manual hints fill gaps (states, non-standard comment formats).
   // They don't override auto-parsed entries unless the class wasn't found.
   for (const [name, hint] of Object.entries(MANUAL_HINTS)) {
@@ -205,39 +223,51 @@ function generate() {
   return all;
 }
 
-const hints = generate();
-const json  = JSON.stringify(hints, null, 2) + '\n';
+function generate() {
+  const all = {};
+  for (const { file, category } of SOURCE_FILES) {
+    Object.assign(all, parseFile(file, category));
+  }
+  return applyCuratedHints(all);
+}
 
-const OUT_REL = path.relative(ROOT, OUT);
+// ── CLI ─────────────────────────────────────────────────────────────────────
+// Guarded so importing this module (e.g. from a test) never reads the framework
+// or writes/exits as a side effect.
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const hints = generate();
+  const json  = JSON.stringify(hints, null, 2) + '\n';
+  const OUT_REL = path.relative(ROOT, OUT);
 
-if (process.argv.includes('--check')) {
-  if (!fs.existsSync(OUT)) {
-    console.error(`[gen-class-hints] ${OUT_REL} not found — run: node scripts/gen-class-hints.js`);
-    process.exit(1);
+  if (process.argv.includes('--check')) {
+    if (!fs.existsSync(OUT)) {
+      console.error(`[gen-class-hints] ${OUT_REL} not found — run: node scripts/gen-class-hints.js`);
+      process.exit(1);
+    }
+    const stored = fs.readFileSync(OUT, 'utf8');
+    if (JSON.stringify(JSON.parse(stored)) !== JSON.stringify(JSON.parse(json))) {
+      console.error(`[gen-class-hints] ${OUT_REL} is stale — run: node scripts/gen-class-hints.js`);
+      process.exit(1);
+    }
+    console.log(`[gen-class-hints] OK — ${Object.keys(hints).length} class hints`);
+  } else {
+    // Refuse to overwrite the committed file with a truncated result: every
+    // framework CSS source must resolve, or the generated map would silently
+    // drop the categories whose sources are missing.
+    const missing = missingFrameworkSources();
+    if (missing.length > 0) {
+      console.error(
+        `[gen-class-hints] framework CSS source incomplete — refusing to overwrite ${OUT_REL} ` +
+        `with a truncated hints map.\n` +
+        `  Missing ${missing.length}/${SOURCE_FILES.length} source file(s) under FRAMEWORK=${FRAMEWORK}:\n` +
+        missing.map((f) => `    - ${f}`).join('\n') + '\n' +
+        `  Point SLASHED_FRAMEWORK_DIR at a complete SLASHED checkout, add a ./.framework clone, ` +
+        `or place a sibling ../SLASHED checkout, then re-run.`,
+      );
+      process.exit(1);
+    }
+    fs.mkdirSync(path.dirname(OUT), { recursive: true });
+    fs.writeFileSync(OUT, json);
+    console.log(`[gen-class-hints] → ${OUT_REL} (${Object.keys(hints).length} class hints)`);
   }
-  const stored = fs.readFileSync(OUT, 'utf8');
-  if (JSON.stringify(JSON.parse(stored)) !== JSON.stringify(JSON.parse(json))) {
-    console.error(`[gen-class-hints] ${OUT_REL} is stale — run: node scripts/gen-class-hints.js`);
-    process.exit(1);
-  }
-  console.log(`[gen-class-hints] OK — ${Object.keys(hints).length} class hints`);
-} else {
-  // Refuse to overwrite the committed file with a truncated result: every
-  // framework CSS source must resolve, or the generated map would silently
-  // drop the categories whose sources are missing.
-  const missing = missingFrameworkSources();
-  if (missing.length > 0) {
-    console.error(
-      `[gen-class-hints] framework CSS source incomplete — refusing to overwrite ${OUT_REL} ` +
-      `with a truncated hints map.\n` +
-      `  Missing ${missing.length}/${SOURCE_FILES.length} source file(s) under FRAMEWORK=${FRAMEWORK}:\n` +
-      missing.map((f) => `    - ${f}`).join('\n') + '\n' +
-      `  Point SLASHED_FRAMEWORK_DIR at a complete SLASHED checkout, add a ./.framework clone, ` +
-      `or place a sibling ../SLASHED checkout, then re-run.`,
-    );
-    process.exit(1);
-  }
-  fs.mkdirSync(path.dirname(OUT), { recursive: true });
-  fs.writeFileSync(OUT, json);
-  console.log(`[gen-class-hints] → ${OUT_REL} (${Object.keys(hints).length} class hints)`);
 }

@@ -75,17 +75,13 @@ class Slashed_REST_Controller {
 							'type'              => 'string',
 							'required'          => false,
 							'sanitize_callback' => 'sanitize_text_field',
-							'validate_callback' => function ( $value ) {
-								return in_array( (string) $value, array( '', '100', '62.5' ), true );
-							},
+							'validate_callback' => array( __CLASS__, 'is_allowed_html_font_size' ),
 						),
 						'css_bundle'             => array(
 							'type'              => 'string',
 							'required'          => false,
 							'sanitize_callback' => 'sanitize_key',
-							'validate_callback' => function ( $value ) {
-								return in_array( (string) $value, Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true );
-							},
+							'validate_callback' => array( __CLASS__, 'is_allowed_css_bundle' ),
 						),
 						'show_class_hints'       => array(
 							'type'     => 'boolean',
@@ -103,10 +99,7 @@ class Slashed_REST_Controller {
 							'type'              => 'string',
 							'required'          => false,
 							'sanitize_callback' => 'esc_url_raw',
-							'validate_callback' => function ( $value ) {
-								// Empty clears the setting; otherwise require an http(s) URL.
-								return '' === $value || preg_match( '#^https?://#i', (string) $value );
-							},
+							'validate_callback' => array( __CLASS__, 'is_valid_configurator_url' ),
 						),
 						'rebemer_element_map'    => array(
 							'type'     => 'object',
@@ -120,6 +113,38 @@ class Slashed_REST_Controller {
 
 	public function check_permissions() {
 		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Validate the html_font_size setting: empty (unset), '100', or '62.5'.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return bool
+	 */
+	public static function is_allowed_html_font_size( $value ) {
+		return in_array( (string) $value, array( '', '100', '62.5' ), true );
+	}
+
+	/**
+	 * Validate the css_bundle setting against the allowlist.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return bool
+	 */
+	public static function is_allowed_css_bundle( $value ) {
+		return in_array( (string) $value, Slashed_Token_Store::ALLOWED_CSS_BUNDLES, true );
+	}
+
+	/**
+	 * Validate the configurator_url setting. Empty clears the setting; otherwise
+	 * an http(s) URL is required so a `javascript:`/`data:` scheme (which would
+	 * be echoed into the admin) can never be stored.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return bool
+	 */
+	public static function is_valid_configurator_url( $value ) {
+		return '' === $value || 1 === preg_match( '#^https?://#i', (string) $value );
 	}
 
 	public function get_settings( WP_REST_Request $request ) {
