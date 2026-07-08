@@ -36,6 +36,7 @@ const FRAMEWORK_DIR = path.join(ROOT, '.framework');
 const DEST_DIR      = path.join(ROOT, 'SLASHED-for-WP', 'dist');
 const REPO_URL      = 'https://github.com/codeslash-dev/SLASHED.git';
 const META_URL      = 'https://data.jsdelivr.com/v1/packages/gh/codeslash-dev/SLASHED';
+const GH_API_BASE   = 'https://api.github.com/repos/codeslash-dev/SLASHED';
 const RELEASE_BASE  = 'https://github.com/codeslash-dev/SLASHED/releases/download';
 
 const BUNDLES = ['optimal', 'optimal-components', 'optimal-utilities', 'full'];
@@ -50,11 +51,11 @@ const CSS_REF_TARGETS = [
 function log(msg) { console.log(`[update-framework] ${msg}`); }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function fetchWithRetry(url, attempts = 5) {
+async function fetchWithRetry(url, attempts = 5, extraHeaders = {}) {
   let last;
   for (let i = 1; i <= attempts; i++) {
     try {
-      const res = await fetch(url, { headers: { 'user-agent': 'slashed-for-wp update-framework' }, redirect: 'follow' });
+      const res = await fetch(url, { headers: { 'user-agent': 'slashed-for-wp update-framework', ...extraHeaders }, redirect: 'follow' });
       if (res.ok || ![429, 500, 502, 503, 504].includes(res.status)) return res;
       last = new Error(`HTTP ${res.status}`);
     } catch (err) {
@@ -77,16 +78,81 @@ function parseVersionArg() {
 
 const normalizeTag = (v) => `v${String(v).replace(/^v/, '')}`;
 
-async function resolveLatestTag() {
+const STABLE_RE = /^\d+\.\d+\.\d+$/;
+const bareVer = (v) => String(v || '').replace(/^v/, '');
+
+// Compare two `X.Y.Z` strings numerically. Returns >0 if a is newer than b.
+function cmpSemver(a, b) {
+  const pa = bareVer(a).split('.').map(Number);
+  const pb = bareVer(b).split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (pa[i] !== pb[i]) return pa[i] - pb[i];
+  }
+  return 0;
+}
+
+// jsDelivr's metadata CDN. Fast, but eventually-consistent — a freshly
+// published release can take minutes to appear here, so it must never be the
+// sole source of truth for "latest" (that lag is exactly what shipped the
+// plugin against a stale framework release once).
+async function latestFromJsdelivr() {
   const res = await fetchWithRetry(META_URL);
-  if (!res.ok) throw new Error(`metadata request failed: HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`jsDelivr metadata request failed: HTTP ${res.status}`);
   const body = await res.json();
   const versions = Array.isArray(body.versions) ? body.versions : [];
   for (const entry of versions) {
-    const ver = String((typeof entry === 'string' ? entry : entry?.version) || '').replace(/^v/, '');
-    if (/^\d+\.\d+\.\d+$/.test(ver)) return `v${ver}`; // newest-first; first stable wins
+    const ver = bareVer(typeof entry === 'string' ? entry : entry?.version);
+    if (STABLE_RE.test(ver)) return `v${ver}`; // newest-first; first stable wins
   }
-  throw new Error('no stable release tag found in framework metadata');
+  return null;
+}
+
+// GitHub's Releases API is the authoritative source: `/releases/latest`
+// reflects a publish the instant it happens and excludes drafts/prereleases.
+// Authenticates with GITHUB_TOKEN/GH_TOKEN when present (raises the rate limit
+// and is always available in CI).
+async function latestFromGithub() {
+  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  const headers = {
+    accept: 'application/vnd.github+json',
+    'x-github-api-version': '2022-11-28',
+    ...(token ? { authorization: `Bearer ${token}` } : {}),
+  };
+  const res = await fetchWithRetry(`${GH_API_BASE}/releases/latest`, 5, headers);
+  if (!res.ok) throw new Error(`GitHub releases request failed: HTTP ${res.status}`);
+  const body = await res.json();
+  const ver = bareVer(body?.tag_name);
+  if (STABLE_RE.test(ver)) return `v${ver}`;
+  throw new Error(`GitHub latest release tag "${body?.tag_name}" is not a stable X.Y.Z version`);
+}
+
+// Resolve "latest" from GitHub (source of truth) with jsDelivr as a fallback,
+// then take whichever is newer. GitHub is authoritative and updates instantly,
+// so it normally wins; the max() guard guarantees we never regress to an older
+// release if one source lags or is briefly unavailable.
+async function resolveLatestTag() {
+  const results = await Promise.allSettled([latestFromGithub(), latestFromJsdelivr()]);
+  const [gh, jsd] = results;
+
+  if (gh.status === 'rejected' && jsd.status === 'rejected') {
+    throw new Error(
+      `could not resolve latest framework tag — GitHub: ${gh.reason.message}; jsDelivr: ${jsd.reason.message}`,
+    );
+  }
+  if (gh.status === 'rejected') {
+    log(`GitHub releases lookup failed (${gh.reason.message}); falling back to jsDelivr`);
+  }
+
+  const candidates = [gh, jsd]
+    .filter((r) => r.status === 'fulfilled' && r.value)
+    .map((r) => r.value);
+  if (candidates.length === 0) throw new Error('no stable release tag found for the framework');
+
+  const newest = candidates.reduce((a, b) => (cmpSemver(b, a) > 0 ? b : a));
+  if (candidates.length === 2 && cmpSemver(candidates[0], candidates[1]) !== 0) {
+    log(`GitHub=${gh.value} jsDelivr=${jsd.value} disagree (CDN lag) — using newer ${newest}`);
+  }
+  return newest;
 }
 
 async function downloadReleaseBundles(tag) {
