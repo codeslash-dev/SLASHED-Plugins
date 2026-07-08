@@ -78,8 +78,20 @@ function parseVersionArg() {
 
 const normalizeTag = (v) => `v${String(v).replace(/^v/, '')}`;
 
-const STABLE_RE = /^\d+\.\d+\.\d+$/;
+const STABLE_RE = /^(\d+)\.(\d+)\.(\d+)$/;
 const bareVer = (v) => String(v || '').replace(/^v/, '');
+
+// Validate a raw version string and rebuild the tag from its NUMERIC
+// components. The result is provably `v<int>.<int>.<int>`, so no substring of
+// an untrusted network response (the jsDelivr/GitHub release metadata) flows on
+// into the download URL / git ref built from the tag — closes CodeQL's
+// "network data written to file system" path. Returns null when not stable X.Y.Z.
+function toStableTag(raw) {
+  const m = STABLE_RE.exec(bareVer(raw));
+  if (!m) return null;
+  const [maj, min, pat] = m.slice(1, 4).map(Number);
+  return `v${maj}.${min}.${pat}`;
+}
 
 // Compare two `X.Y.Z` strings numerically. Returns >0 if a is newer than b.
 function cmpSemver(a, b) {
@@ -101,8 +113,8 @@ async function latestFromJsdelivr() {
   const body = await res.json();
   const versions = Array.isArray(body.versions) ? body.versions : [];
   for (const entry of versions) {
-    const ver = bareVer(typeof entry === 'string' ? entry : entry?.version);
-    if (STABLE_RE.test(ver)) return `v${ver}`; // newest-first; first stable wins
+    const tag = toStableTag(typeof entry === 'string' ? entry : entry?.version);
+    if (tag) return tag; // newest-first; first stable wins
   }
   return null;
 }
@@ -121,8 +133,8 @@ async function latestFromGithub() {
   const res = await fetchWithRetry(`${GH_API_BASE}/releases/latest`, 5, headers);
   if (!res.ok) throw new Error(`GitHub releases request failed: HTTP ${res.status}`);
   const body = await res.json();
-  const ver = bareVer(body?.tag_name);
-  if (STABLE_RE.test(ver)) return `v${ver}`;
+  const tag = toStableTag(body?.tag_name);
+  if (tag) return tag;
   throw new Error(`GitHub latest release tag "${body?.tag_name}" is not a stable X.Y.Z version`);
 }
 
