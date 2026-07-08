@@ -4,7 +4,7 @@
  *
  * The plugin ships local copies of the framework's CSS for offline/local-first
  * delivery. This script, end to end:
- *   1. Resolve the target version ("latest" → newest stable tag via jsDelivr).
+ *   1. Resolve the target version ("latest" → newest published GitHub Release).
  *   2. Download that release's CSS bundles (optimal/optimal-components/optimal-utilities/full)
  *      from the framework's GitHub Release assets into SLASHED-for-WP/dist/.
  *   3. Shallow-clone the framework source at that tag into ./.framework and
@@ -31,12 +31,12 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { runChecks } from './verify-sync.js';
 
-const ROOT          = path.resolve(import.meta.dirname, '..');
-const FRAMEWORK_DIR = path.join(ROOT, '.framework');
-const DEST_DIR      = path.join(ROOT, 'SLASHED-for-WP', 'dist');
-const REPO_URL      = 'https://github.com/codeslash-dev/SLASHED.git';
-const META_URL      = 'https://data.jsdelivr.com/v1/packages/gh/codeslash-dev/SLASHED';
-const RELEASE_BASE  = 'https://github.com/codeslash-dev/SLASHED/releases/download';
+const ROOT           = path.resolve(import.meta.dirname, '..');
+const FRAMEWORK_DIR  = path.join(ROOT, '.framework');
+const DEST_DIR       = path.join(ROOT, 'SLASHED-for-WP', 'dist');
+const REPO_URL       = 'https://github.com/codeslash-dev/SLASHED.git';
+const LATEST_RELEASE_URL = 'https://api.github.com/repos/codeslash-dev/SLASHED/releases/latest';
+const RELEASE_BASE   = 'https://github.com/codeslash-dev/SLASHED/releases/download';
 
 const BUNDLES = ['optimal', 'optimal-components', 'optimal-utilities', 'full'];
 
@@ -51,10 +51,19 @@ function log(msg) { console.log(`[update-framework] ${msg}`); }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function fetchWithRetry(url, attempts = 5) {
+  const headers = { 'user-agent': 'slashed-for-wp update-framework' };
+  // GitHub API rate-limits unauthenticated requests to 60/hr per IP, which CI
+  // runners share — attach a token when available (mirrors sync-core.mjs) so
+  // this doesn't start flaking under normal Actions traffic.
+  const ghToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  if (ghToken && new URL(url).hostname === 'api.github.com') {
+    headers.authorization = `Bearer ${ghToken}`;
+    headers.accept = 'application/vnd.github+json';
+  }
   let last;
   for (let i = 1; i <= attempts; i++) {
     try {
-      const res = await fetch(url, { headers: { 'user-agent': 'slashed-for-wp update-framework' }, redirect: 'follow' });
+      const res = await fetch(url, { headers, redirect: 'follow' });
       if (res.ok || ![429, 500, 502, 503, 504].includes(res.status)) return res;
       last = new Error(`HTTP ${res.status}`);
     } catch (err) {
@@ -77,16 +86,21 @@ function parseVersionArg() {
 
 const normalizeTag = (v) => `v${String(v).replace(/^v/, '')}`;
 
+// Resolve "latest" via the GitHub Releases API rather than the tag list (jsDelivr's
+// package metadata, or `git ls-remote --tags`, both surface any pushed tag —
+// including one whose release publish step failed and never uploaded assets).
+// /releases/latest only ever returns a published, non-draft, non-prerelease
+// release, which is the one guarantee we actually need: the CSS bundles this
+// script downloads next are certain to exist.
 async function resolveLatestTag() {
-  const res = await fetchWithRetry(META_URL);
-  if (!res.ok) throw new Error(`metadata request failed: HTTP ${res.status}`);
+  const res = await fetchWithRetry(LATEST_RELEASE_URL);
+  if (!res.ok) throw new Error(`releases/latest request failed: HTTP ${res.status}`);
   const body = await res.json();
-  const versions = Array.isArray(body.versions) ? body.versions : [];
-  for (const entry of versions) {
-    const ver = String((typeof entry === 'string' ? entry : entry?.version) || '').replace(/^v/, '');
-    if (/^\d+\.\d+\.\d+$/.test(ver)) return `v${ver}`; // newest-first; first stable wins
+  const tag = String(body.tag_name || '').replace(/^v/, '');
+  if (!/^\d+\.\d+\.\d+$/.test(tag)) {
+    throw new Error(`unexpected tag_name in latest release: ${JSON.stringify(body.tag_name)}`);
   }
-  throw new Error('no stable release tag found in framework metadata');
+  return `v${tag}`;
 }
 
 async function downloadReleaseBundles(tag) {

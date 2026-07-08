@@ -41,9 +41,19 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm ci
+        # Retry a few times: a transient registry blip here would otherwise
+        # fail the whole release after the tag is already pushed.
+        run: |
+          for i in 1 2 3; do
+            npm ci && exit 0
+            echo "npm ci failed (attempt $i/3)" >&2
+            [ "$i" = 3 ] && exit 1
+            sleep $((i * 5))
+          done
 
       - name: Sync bundled framework CSS to latest release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: npm run update-framework
 
       - name: Stamp version from tag into plugin files
