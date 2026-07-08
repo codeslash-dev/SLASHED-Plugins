@@ -44,7 +44,7 @@ const ALPHA_STEPS = ['a5', 'a10', 'a20', 'a30', 'a40', 'a50', 'a60', 'a70', 'a80
 /** Named semantic aliases, ordered light → dark → translucent. */
 const ALIAS_ORDER = [
   'superlight', 'xlight', 'lighter', 'darker', 'xdark', 'superdark',
-  'hover', 'active', 'strong', 'subtle', 'muted', 'ghost',
+  'hover', 'active', 'strong', 'subtle', 'muted', 'tint',
 ];
 
 /**
@@ -159,7 +159,7 @@ function isTranslucent(info) {
   if (info.kind === 'alpha') return true;
   // Named alpha-ish aliases and semantic overlays that resolve to a
   // translucent value in the framework.
-  return /(?:^|-)(?:subtle|muted|ghost|translucent|overlay|dim|underline)$/.test(info.key);
+  return /(?:^|-)(?:subtle|muted|tint|translucent|overlay|dim|underline)$/.test(info.key);
 }
 
 /**
@@ -512,7 +512,7 @@ export function buildQuickUseModel(_variables, light, dark) {
         label: token.label,
         light: l,
         dark:  d,
-        alpha: /overlay|subtle|ghost|muted|dim|alpha/i.test(token.var),
+        alpha: /overlay|subtle|tint|muted|dim|alpha/i.test(token.var),
       });
     }
     if (swatches.length) groups.push({ id: groupDef.id, label: groupDef.label, swatches });

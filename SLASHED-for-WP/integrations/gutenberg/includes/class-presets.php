@@ -73,7 +73,7 @@ class Slashed_Gutenberg_Presets {
 		'strong',
 		'subtle',
 		'muted',
-		'ghost',
+		'tint',
 	);
 
 	/**

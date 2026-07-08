@@ -280,8 +280,9 @@
         <div class="sf-cluster sf-cluster--s">
           <button class="sf-btn sf-btn--primary">Primary</button>
           <button class="sf-btn sf-btn--secondary">Secondary</button>
+          <button class="sf-btn sf-btn--soft">Soft</button>
           <button class="sf-btn sf-btn--outline">Outline</button>
-          <button class="sf-btn sf-btn--ghost">Ghost</button>
+          <button class="sf-btn sf-btn--gradient">Gradient</button>
           <button class="sf-btn sf-btn--neutral">Neutral</button>
         </div>
         <div class="sf-cluster sf-cluster--s">
@@ -318,7 +319,7 @@
       <article class="sf-card sf-card--elevated sf-card--interactive">
         <div class="sf-card__header"><h3 class="sf-card__title">Interactive card</h3></div>
         <div class="sf-card__body"><p class="pv-secondary">Elevation and interaction states react to token changes.</p></div>
-        <div class="sf-card__footer"><button class="sf-btn sf-btn--secondary sf-btn--s">Select</button></div>
+        <div class="sf-card__footer"><button class="sf-btn sf-btn--soft sf-btn--s">Select</button></div>
       </article>
     </div>
   </section>
@@ -404,7 +405,7 @@
     <div class="sf-cluster">
       <button class="sf-btn sf-btn--primary">Primary</button>
       <button class="sf-btn sf-btn--secondary">Secondary</button>
-      <button class="sf-btn sf-btn--ghost">Ghost</button>
+      <button class="sf-btn sf-btn--soft">Soft</button>
       <button class="sf-btn sf-btn--danger">Danger</button>
       <button class="sf-btn sf-btn--primary" disabled>Disabled</button>
     </div>

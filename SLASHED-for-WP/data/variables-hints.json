@@ -267,6 +267,10 @@
     "description": "Corner radius for .sf-btn. Defaults to --sf-radius-m; gives buttons a distinct radius from form fields without touching global tokens.",
     "category": "Component tokens"
   },
+  "sf-card-avatar-size": {
+    "description": "Diameter of .sf-card__avatar. Defaults to 2.5rem.",
+    "category": "Component tokens"
+  },
   "sf-card-bg": {
     "description": "Background surface for .sf-card. Defaults to --sf-color-surface.",
     "category": "Component tokens"
@@ -431,10 +435,6 @@
     "description": "Deep action shade for high-contrast contexts.",
     "category": "Core tokens"
   },
-  "sf-color-action-ghost": {
-    "description": "Near-transparent action tint for ghost-button hover backgrounds.",
-    "category": "Core tokens"
-  },
   "sf-color-action-lighter": {
     "description": "Light action shade for soft accents.",
     "category": "Core tokens"
@@ -461,6 +461,10 @@
   },
   "sf-color-action-superlight": {
     "description": "Near-white action shade for maximum contrast on dark surfaces.",
+    "category": "Core tokens"
+  },
+  "sf-color-action-tint": {
+    "description": "Near-transparent action tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-action-xdark": {
@@ -547,10 +551,6 @@
     "description": "80% opacity base-surface tint.",
     "category": "Core tokens"
   },
-  "sf-color-base-ghost": {
-    "description": "Near-transparent base-surface tint for ghost backgrounds.",
-    "category": "Core tokens"
-  },
   "sf-color-base-muted": {
     "description": "Medium base-surface fill for muted containers or overlays.",
     "category": "Core tokens"
@@ -565,6 +565,10 @@
   },
   "sf-color-base-subtle": {
     "description": "Subtle base-surface tint for low-emphasis backgrounds.",
+    "category": "Core tokens"
+  },
+  "sf-color-base-tint": {
+    "description": "Near-transparent base-surface tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-bg": {
@@ -651,6 +655,10 @@
     "description": "Light danger tint for error row backgrounds and alert container fills.",
     "category": "Core tokens"
   },
+  "sf-color-danger-tint": {
+    "description": "Near-transparent danger tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
+    "category": "Core tokens"
+  },
   "sf-color-dim": {
     "description": "Backdrop overlay color for modals, drawers, and lightboxes.",
     "category": "Core tokens"
@@ -681,6 +689,10 @@
   },
   "sf-color-info-subtle": {
     "description": "Light info tint for informational note backgrounds.",
+    "category": "Core tokens"
+  },
+  "sf-color-info-tint": {
+    "description": "Near-transparent info tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-inset": {
@@ -803,10 +815,6 @@
     "description": "Deep neutral shade for high-contrast contexts.",
     "category": "Core tokens"
   },
-  "sf-color-neutral-ghost": {
-    "description": "Near-transparent neutral tint for ghost-button hover backgrounds.",
-    "category": "Core tokens"
-  },
   "sf-color-neutral-lighter": {
     "description": "Light neutral shade.",
     "category": "Core tokens"
@@ -833,6 +841,10 @@
   },
   "sf-color-neutral-superlight": {
     "description": "Near-white neutral shade.",
+    "category": "Core tokens"
+  },
+  "sf-color-neutral-tint": {
+    "description": "Near-transparent neutral tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-neutral-xdark": {
@@ -927,10 +939,6 @@
     "description": "Deep primary shade.",
     "category": "Core tokens"
   },
-  "sf-color-primary-ghost": {
-    "description": "Near-transparent primary tint for ghost-button hover backgrounds.",
-    "category": "Core tokens"
-  },
   "sf-color-primary-lighter": {
     "description": "Light primary shade.",
     "category": "Core tokens"
@@ -957,6 +965,10 @@
   },
   "sf-color-primary-superlight": {
     "description": "Near-white primary shade.",
+    "category": "Core tokens"
+  },
+  "sf-color-primary-tint": {
+    "description": "Near-transparent primary tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-primary-xdark": {
@@ -1055,10 +1067,6 @@
     "description": "Deep secondary shade.",
     "category": "Core tokens"
   },
-  "sf-color-secondary-ghost": {
-    "description": "Near-transparent secondary tint for ghost-button hover backgrounds.",
-    "category": "Core tokens"
-  },
   "sf-color-secondary-lighter": {
     "description": "Light secondary shade.",
     "category": "Core tokens"
@@ -1085,6 +1093,10 @@
   },
   "sf-color-secondary-superlight": {
     "description": "Near-white secondary shade.",
+    "category": "Core tokens"
+  },
+  "sf-color-secondary-tint": {
+    "description": "Near-transparent secondary tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-secondary-xdark": {
@@ -1133,6 +1145,10 @@
   },
   "sf-color-success-subtle": {
     "description": "Light success tint for confirmation backgrounds.",
+    "category": "Core tokens"
+  },
+  "sf-color-success-tint": {
+    "description": "Near-transparent success tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-surface": {
@@ -1219,10 +1235,6 @@
     "description": "Deep tertiary shade.",
     "category": "Core tokens"
   },
-  "sf-color-tertiary-ghost": {
-    "description": "Near-transparent tertiary tint for ghost-button hover backgrounds.",
-    "category": "Core tokens"
-  },
   "sf-color-tertiary-lighter": {
     "description": "Light tertiary shade.",
     "category": "Core tokens"
@@ -1249,6 +1261,10 @@
   },
   "sf-color-tertiary-superlight": {
     "description": "Near-white tertiary shade.",
+    "category": "Core tokens"
+  },
+  "sf-color-tertiary-tint": {
+    "description": "Near-transparent tertiary tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-tertiary-xdark": {
@@ -1349,6 +1365,10 @@
   },
   "sf-color-warning-subtle": {
     "description": "Light warning tint for warning notification backgrounds.",
+    "category": "Core tokens"
+  },
+  "sf-color-warning-tint": {
+    "description": "Near-transparent warning tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
     "category": "Core tokens"
   },
   "sf-color-white": {
@@ -1548,15 +1568,15 @@
     "category": "Core tokens"
   },
   "sf-field-padding-block": {
-    "description": "Vertical (block) inner padding for form field inputs.",
+    "description": "Vertical (block) inner padding for form field inputs. Reserved for a future .sf-field class — declared but not yet consumed by any shipped rule.",
     "category": "Component tokens"
   },
   "sf-field-padding-inline": {
-    "description": "Horizontal (inline) inner padding for form field inputs.",
+    "description": "Horizontal (inline) inner padding for form field inputs. Reserved for a future .sf-field class — declared but not yet consumed by any shipped rule.",
     "category": "Component tokens"
   },
   "sf-field-radius": {
-    "description": "Border radius for form field inputs. Defaults to --sf-radius-m; override to reshape all inputs at once.",
+    "description": "Border radius for form field inputs. Defaults to --sf-radius-m; override to reshape all inputs at once. Reserved for a future .sf-field class — declared but not yet consumed by any shipped rule.",
     "category": "Component tokens"
   },
   "sf-field-required-marker": {
@@ -1685,6 +1705,10 @@
   },
   "sf-gap": {
     "description": "Default gap between components (the loose rhythm). Layout primitives like cluster/grid/sidebar default to it. Override globally to retune them all at once, or set a primitive token (e.g. --sf-cluster-gap) for one element.",
+    "category": "Core tokens"
+  },
+  "sf-gradient-action": {
+    "description": "Gradient using action palette colors (light to saturated). Core-4 parity with the primary/secondary/tertiary gradients; drives the default .sf-btn--gradient fill.",
     "category": "Core tokens"
   },
   "sf-gradient-brand": {

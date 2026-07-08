@@ -147,7 +147,7 @@ class Slashed_Color_Resolver {
 		'active'     => '800',
 		'subtle'     => 'a10',
 		'muted'      => 'a30',
-		'ghost'      => 'a5',
+		'tint'       => 'a5',
 	);
 
 	/**

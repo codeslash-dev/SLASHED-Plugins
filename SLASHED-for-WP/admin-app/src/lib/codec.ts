@@ -43,7 +43,10 @@ function buildNameToIdMap(registry: TokenRegistry): Map<string, number> {
 function buildIdToNameMap(registry: TokenRegistry): Map<number, string> {
   const idToName = new Map<number, string>();
   for (const entry of registry?.tokens ?? []) {
-    if (entry && typeof entry.name === "string" && Number.isInteger(entry.id)) {
+    // Skip removed entries, mirroring buildNameToIdMap: a legacy share code
+    // may still carry a removed token's id, but rehydrating it would inject
+    // a no-op override for a token that no longer exists.
+    if (entry && !entry.removed && typeof entry.name === "string" && Number.isInteger(entry.id)) {
       idToName.set(entry.id, entry.name);
     }
   }
@@ -265,7 +268,9 @@ export function encodeOverrides(overrides: Record<string, string>): string {
 const SHARE_PARAM_RE = new RegExp(`[#&]?${SHARE_PARAM}=([^&]+)`);
 
 export function readShareFromHash(hashOrParam: string, options: ShareOptions = {}): Record<string, string> {
-  const knownTokensSet = new Set(tokensData.tokens.map((tok) => tok.name));
+  const knownTokensSet = new Set(
+    tokensData.tokens.filter((tok) => !tok.removed).map((tok) => tok.name),
+  );
   const isKnown = options.isKnown ?? ((name: string) => knownTokensSet.has(name));
   let trimmed = String(hashOrParam ?? "").trim();
   const match = trimmed.match(SHARE_PARAM_RE);

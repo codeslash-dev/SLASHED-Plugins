@@ -586,27 +586,38 @@
       --sf-color-mark-bg: oklch(from var(--sf-color-warning) l c h / 0.25);
 
       /* ----------------------------------------------------------
-         Status triplets — subtle/muted (alpha variants)
-         bg/border use same formula both modes
+         Status triplets — subtle/muted/tint (alpha variants)
+         bg/border use same formula both modes. -tint is the 5%
+         near-transparent rung, mirroring the brand families'
+         --sf-color-{family}-tint aliases (full 10-family coverage).
          ---------------------------------------------------------- */
       --sf-color-success-subtle: oklch(from var(--sf-color-success) l c h / 0.12);
       --sf-color-success-muted:  oklch(from var(--sf-color-success) l c h / 0.3);
+      --sf-color-success-tint:   oklch(from var(--sf-color-success) l c h / 0.05);
 
       --sf-color-warning-subtle: oklch(from var(--sf-color-warning) l c h / 0.12);
       --sf-color-warning-muted:  oklch(from var(--sf-color-warning) l c h / 0.3);
+      --sf-color-warning-tint:   oklch(from var(--sf-color-warning) l c h / 0.05);
 
       --sf-color-info-subtle:    oklch(from var(--sf-color-info) l c h / 0.1);
       --sf-color-info-muted:     oklch(from var(--sf-color-info) l c h / 0.3);
+      --sf-color-info-tint:      oklch(from var(--sf-color-info) l c h / 0.05);
 
       --sf-color-danger-subtle:  oklch(from var(--sf-color-danger) l c h / 0.1);
       --sf-color-danger-muted:   oklch(from var(--sf-color-danger) l c h / 0.3);
+      --sf-color-danger-tint:    oklch(from var(--sf-color-danger) l c h / 0.05);
 
       /* ----------------------------------------------------------
          Gradients — derived from brand colors (auto-adapt)
+         All 4 core brand families (primary/secondary/tertiary/action)
+         share the same darkening formula; --sf-gradient-brand is a
+         separate decorative hue-shift option, independent of the
+         colour axis.
          ---------------------------------------------------------- */
       --sf-gradient-primary:   linear-gradient(in oklch 135deg, var(--sf-color-primary), oklch(from var(--sf-color-primary) calc(l - 0.08) c h));
       --sf-gradient-secondary: linear-gradient(in oklch 135deg, var(--sf-color-secondary), oklch(from var(--sf-color-secondary) calc(l - 0.08) c h));
       --sf-gradient-tertiary:  linear-gradient(in oklch 135deg, var(--sf-color-tertiary), oklch(from var(--sf-color-tertiary) calc(l - 0.08) c h));
+      --sf-gradient-action:    linear-gradient(in oklch 135deg, var(--sf-color-action), oklch(from var(--sf-color-action) calc(l - 0.08) c h));
       --sf-gradient-brand:     linear-gradient(in oklch 135deg, var(--sf-color-primary), oklch(from var(--sf-color-primary) l c calc(h + 30)));
       --sf-gradient-surface:   linear-gradient(in oklab 180deg, var(--sf-color-surface), var(--sf-color-bg));
 
@@ -732,7 +743,7 @@
     --sf-color-primary--active:    var(--sf-color-primary-xdark);
     --sf-color-primary-subtle:     var(--sf-color-primary-a10);
     --sf-color-primary-muted:      var(--sf-color-primary-a30);
-    --sf-color-primary-ghost:      var(--sf-color-primary-a5);
+    --sf-color-primary-tint:      var(--sf-color-primary-a5);
 
 
 
@@ -767,7 +778,7 @@
     --sf-color-secondary--active:    var(--sf-color-secondary-xdark);
     --sf-color-secondary-subtle:     var(--sf-color-secondary-a10);
     --sf-color-secondary-muted:      var(--sf-color-secondary-a30);
-    --sf-color-secondary-ghost:      var(--sf-color-secondary-a5);
+    --sf-color-secondary-tint:      var(--sf-color-secondary-a5);
 
 
 
@@ -802,7 +813,7 @@
     --sf-color-tertiary--active:    var(--sf-color-tertiary-xdark);
     --sf-color-tertiary-subtle:     var(--sf-color-tertiary-a10);
     --sf-color-tertiary-muted:      var(--sf-color-tertiary-a30);
-    --sf-color-tertiary-ghost:      var(--sf-color-tertiary-a5);
+    --sf-color-tertiary-tint:      var(--sf-color-tertiary-a5);
 
 
 
@@ -837,7 +848,7 @@
     --sf-color-action--active:    var(--sf-color-action-xdark);
     --sf-color-action-subtle:     var(--sf-color-action-a10);
     --sf-color-action-muted:      var(--sf-color-action-a30);
-    --sf-color-action-ghost:      var(--sf-color-action-a5);
+    --sf-color-action-tint:      var(--sf-color-action-a5);
 
 
 
@@ -872,7 +883,7 @@
     --sf-color-neutral--active:    var(--sf-color-neutral-xdark);
     --sf-color-neutral-subtle:     var(--sf-color-neutral-a10);
     --sf-color-neutral-muted:      var(--sf-color-neutral-a30);
-    --sf-color-neutral-ghost:      var(--sf-color-neutral-a5);
+    --sf-color-neutral-tint:      var(--sf-color-neutral-a5);
 
 
 
@@ -930,7 +941,7 @@
     --sf-color-base--active:    oklch(from var(--sf-color-base) clamp(0.01, calc(l - 0.08 + var(--sf-is-dark) * 0.16), 0.99) c h);
     --sf-color-base-subtle:     var(--sf-color-base-a10);
     --sf-color-base-muted:      var(--sf-color-base-a30);
-    --sf-color-base-ghost:      var(--sf-color-base-a5);
+    --sf-color-base-tint:      var(--sf-color-base-a5);
 
 
   }
@@ -987,7 +998,10 @@
     --sf-font-weight-body:        var(--sf-font-weight-normal);    /* body copy            */
     --sf-font-weight-heading:     var(--sf-font-weight-semibold);  /* h1–h6                */
     --sf-font-weight-display:     var(--sf-font-weight-bold);      /* hero / display       */
-    --sf-font-weight-interactive: var(--sf-font-weight-semibold);  /* buttons, badges, nav */
+    --sf-font-weight-interactive: var(--sf-font-weight-semibold);  /* buttons, badges, nav.
+       Note: "interactive" here names a TYPOGRAPHY WEIGHT TIER; .sf-card--interactive
+       names a card BEHAVIOUR modifier. Deliberate coexistence (different property
+       spaces) — do not introduce a third meaning of "interactive". */
     --sf-font-weight-strong:      var(--sf-font-weight-bold);      /* <strong> / emphasis  */
 
     /* State token — consumed by .sf-is-current in states.css.

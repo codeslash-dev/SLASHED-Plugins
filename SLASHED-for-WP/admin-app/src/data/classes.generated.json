@@ -210,7 +210,27 @@
       "kind": "component",
       "category": "Components",
       "group": ".sf-btn",
-      "description": "Interactive call-to-action button. Apply to <button> or <a>. Intrinsic width by default; owns its own styling (excluded from the classless <button> look). Combine a colour family, a style treatment, and a size modifier.",
+      "description": "Interactive call-to-action button. Apply to <button> or <a>. Intrinsic width by default; owns its own styling (excluded from the classless <button> look). Three orthogonal axes — colour family, style treatment (fill/--soft/--outline), gradient — plus a size modifier.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--action",
+      "selector": ".sf-btn--action",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Button in the action colour family (same as the unmodified default, named explicitly).",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--base",
+      "selector": ".sf-btn--base",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Button in the base (surface-neutral) colour family.",
       "optional": true,
       "layer": "slashed.components"
     },
@@ -245,12 +265,12 @@
       "layer": "slashed.components"
     },
     {
-      "name": "sf-btn--ghost",
-      "selector": ".sf-btn--ghost",
+      "name": "sf-btn--gradient",
+      "selector": ".sf-btn--gradient",
       "kind": "component",
       "category": "Components",
       "group": ".sf-btn",
-      "description": "Borderless, transparent button; tints on hover. The lightest button treatment.",
+      "description": "Gradient axis: paints the fill (or, with --outline, the border ring) with the family's --sf-gradient-* token. Core-4 brand families (primary/secondary/tertiary/action); solid no-op for other families. Composes with any colour family.",
       "optional": true,
       "layer": "slashed.components"
     },
@@ -320,7 +340,17 @@
       "kind": "component",
       "category": "Components",
       "group": ".sf-btn",
-      "description": "Transparent-fill button with a coloured border and text; subtle tint on hover.",
+      "description": "Button in the secondary brand colour family.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--soft",
+      "selector": ".sf-btn--soft",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Soft tonal-fill button: a light wash of the family colour (subtle at rest, muted on hover), coloured text, no border. Lower-emphasis than the solid fill. Composes with any colour family.",
       "optional": true,
       "layer": "slashed.components"
     },
@@ -331,6 +361,16 @@
       "category": "Components",
       "group": ".sf-btn",
       "description": "Button in the success (positive) colour family.",
+      "optional": true,
+      "layer": "slashed.components"
+    },
+    {
+      "name": "sf-btn--tertiary",
+      "selector": ".sf-btn--tertiary",
+      "kind": "component",
+      "category": "Components",
+      "group": ".sf-btn",
+      "description": "Button in the tertiary brand colour family.",
       "optional": true,
       "layer": "slashed.components"
     },
@@ -380,7 +420,7 @@
       "kind": "component",
       "category": "Components",
       "group": ".sf-card",
-      "description": "Circular avatar image inside a card.",
+      "description": "Circular avatar image inside a card, sized via --sf-card-avatar-size.",
       "optional": true,
       "layer": "slashed.components"
     },
