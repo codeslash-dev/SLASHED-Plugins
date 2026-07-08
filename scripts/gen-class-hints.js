@@ -172,6 +172,24 @@ function parseFile(rel, category) {
   return hints;
 }
 
+/**
+ * The framework CSS source files (relative to FRAMEWORK) that are NOT present
+ * on disk. parseFile() silently returns {} for a missing source, so ANY absent
+ * file would drop that whole category's hints; generate() would then produce a
+ * partial map (down to just the hardcoded MANUAL_HINTS + OVERRIDE_HINTS when
+ * the checkout is missing entirely). Writing that would clobber the committed
+ * classes-hints.json, so the writer below refuses unless EVERY source resolves
+ * — a mispointed or partial checkout is rejected, not silently truncated.
+ * Mirrors gen-bricks-inventory.js, which likewise fails on any missing source.
+ * (--check mode still runs generate() and reports the resulting drift loudly,
+ * which is safe.)
+ */
+function missingFrameworkSources() {
+  return SOURCE_FILES
+    .map(({ file }) => file)
+    .filter((file) => !fs.existsSync(path.join(FRAMEWORK, file)));
+}
+
 function generate() {
   const all = {};
   for (const { file, category } of SOURCE_FILES) {
@@ -204,6 +222,21 @@ if (process.argv.includes('--check')) {
   }
   console.log(`[gen-class-hints] OK — ${Object.keys(hints).length} class hints`);
 } else {
+  // Refuse to overwrite the committed file with a truncated result: every
+  // framework CSS source must resolve, or the generated map would silently
+  // drop the categories whose sources are missing.
+  const missing = missingFrameworkSources();
+  if (missing.length > 0) {
+    console.error(
+      `[gen-class-hints] framework CSS source incomplete — refusing to overwrite ${OUT_REL} ` +
+      `with a truncated hints map.\n` +
+      `  Missing ${missing.length}/${SOURCE_FILES.length} source file(s) under FRAMEWORK=${FRAMEWORK}:\n` +
+      missing.map((f) => `    - ${f}`).join('\n') + '\n' +
+      `  Point SLASHED_FRAMEWORK_DIR at a complete SLASHED checkout, add a ./.framework clone, ` +
+      `or place a sibling ../SLASHED checkout, then re-run.`,
+    );
+    process.exit(1);
+  }
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, json);
   console.log(`[gen-class-hints] → ${OUT_REL} (${Object.keys(hints).length} class hints)`);

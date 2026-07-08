@@ -21,7 +21,7 @@
     "update-framework": "node scripts/update-framework.js",
     "build:data": "node scripts/gen-bricks-inventory.js && node scripts/gen-class-hints.js && node scripts/gen-variables-hints.js",
     "sync-dist": "node scripts/sync-plugin-dist.js",
-    "build:editor-app": "npm --prefix SLASHED-for-WP/integrations/bricks/editor-app run build",
+    "build:editor-app": "(cd SLASHED-for-WP/integrations/bricks/editor-app && npm ci && npm run build)",
     "build:admin-app": "(cd SLASHED-for-WP/admin-app && npm ci && npm run build)",
     "build:apps": "npm run build:editor-app && npm run build:admin-app",
     "build:zip": "node scripts/zip-plugin.js",
