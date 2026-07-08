@@ -172,6 +172,19 @@ function parseFile(rel, category) {
   return hints;
 }
 
+/**
+ * True when at least one of the framework CSS source files is present on disk.
+ * When the framework checkout is missing, parseFile() returns {} for every
+ * source and generate() would produce a hints map containing only the
+ * hardcoded MANUAL_HINTS + OVERRIDE_HINTS — a small fraction of the real set.
+ * Writing that would silently clobber the committed classes-hints.json, so the
+ * writer below refuses to run without a framework source. (--check mode still
+ * runs generate() and reports the resulting drift loudly, which is safe.)
+ */
+function frameworkSourcePresent() {
+  return SOURCE_FILES.some(({ file }) => fs.existsSync(path.join(FRAMEWORK, file)));
+}
+
 function generate() {
   const all = {};
   for (const { file, category } of SOURCE_FILES) {
@@ -204,6 +217,18 @@ if (process.argv.includes('--check')) {
   }
   console.log(`[gen-class-hints] OK — ${Object.keys(hints).length} class hints`);
 } else {
+  // Refuse to overwrite the committed file with a framework-less (truncated)
+  // result. Without the CSS source, `hints` holds only the hardcoded manual /
+  // override entries and would drop every auto-parsed class.
+  if (!frameworkSourcePresent()) {
+    console.error(
+      `[gen-class-hints] framework CSS source not found — refusing to overwrite ${OUT_REL} ` +
+      `with a truncated hints map.\n` +
+      `  Point SLASHED_FRAMEWORK_DIR at a SLASHED checkout, add a ./.framework clone, ` +
+      `or place a sibling ../SLASHED checkout, then re-run.`,
+    );
+    process.exit(1);
+  }
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, json);
   console.log(`[gen-class-hints] → ${OUT_REL} (${Object.keys(hints).length} class hints)`);

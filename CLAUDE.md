@@ -8,7 +8,7 @@ SLASHED-for-WP/          WordPress plugin
     src/                 ⚠️  VENDORED — see below
     framework-css/       Vendored framework CSS (chrome layers + full bundle)
   assets/                Built SPA output (admin-app/, editor-app/ — committed build artifacts)
-  data/                  Generated inventories/hints (class-hints.json, variables-hints.json…)
+  data/                  Generated inventories/hints (classes-hints.json, variables-hints.json…)
   integrations/
     bricks/editor-app/   Bricks Builder panel — independent, NOT vendored
     gutenberg/           Gutenberg integration
@@ -97,7 +97,7 @@ npm run update-framework -- --version=0.6.0
 ```
 
 Downloads release CSS bundles, shallow-clones framework source, regenerates
-`data/inventory.json`, `data/class-hints.json` and `data/variables-hints.json`,
+`data/inventory.json`, `data/classes-hints.json` and `data/variables-hints.json`,
 re-vendors the admin-app configurator core from the clone, and stamps PHP
 constants — so one run moves every framework-derived artifact to the same
 release.

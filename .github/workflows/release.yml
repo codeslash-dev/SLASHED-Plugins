@@ -52,6 +52,13 @@ jobs:
       - name: Update CHANGELOG and readme.txt for this release
         run: node scripts/changelog-release.js --from-tag
 
+      # Rebuild BOTH bundled Svelte apps so the release ships freshly-built
+      # artifacts rather than whatever was last committed. The admin-app build
+      # re-vendors the configurator from the framework (needs GITHUB_TOKEN);
+      # the editor-app build is self-contained.
+      - name: Build editor-app
+        run: npm run build:editor-app
+
       - name: Build admin-app
         env:
           GITHUB_TOKEN: ${{ github.token }}

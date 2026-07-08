@@ -14,11 +14,15 @@
  *   2. GitHub API  https://api.github.com/repos/codeslash-dev/slashed
  *      Set GITHUB_TOKEN env var to avoid public rate limits.
  *
- * The configurator is now embeddable on its own (it auto-detects WordPress via
- * window.slashedApp and persists through the REST API), so NOTHING in src/ needs
- * to diverge — `.syncignore` is empty by default. Plugin build wiring lives
- * outside src/ (vite.config.js, package.json, svelte.config.js, tsconfig.json)
- * and is never touched by this script.
+ * The configurator is embeddable on its own (it auto-detects WordPress via
+ * window.slashedApp and persists through the REST API), so almost nothing in
+ * src/ needs to diverge from upstream. The few files that DO — the plugin's
+ * frontend overlay entry points — are listed in `.syncignore` (currently
+ * src/plugin-main.ts and src/AppOverlay.svelte) and are preserved across every
+ * sync. Any other file you edit under src/ is overwritten on the next sync;
+ * `npm run check` fails CI when a non-syncignored src/ file drifts from
+ * upstream. Plugin build wiring lives outside src/ (vite.config.js,
+ * package.json, svelte.config.js, tsconfig.json) and is never touched here.
  *
  * --check / --dry-run: reports drift against the framework source (files that
  * would change, be added, or are vendored locally but no longer exist upstream)

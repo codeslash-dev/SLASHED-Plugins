@@ -31,3 +31,4 @@ $includes = dirname( __DIR__ ) . '/SLASHED-for-WP/includes/';
 require_once $includes . 'class-css-parser.php';
 require_once $includes . 'class-css-generator.php';
 require_once $includes . 'class-rest-controller.php';
+require_once $includes . 'class-color-math.php';

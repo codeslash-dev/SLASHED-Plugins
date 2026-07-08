@@ -56,6 +56,21 @@ jobs:
       - name: Build
         run: npm --prefix SLASHED-for-WP/integrations/bricks/editor-app run build
 
+      # The built editor-app bundle (assets/editor-app/app.js + app.css) is a
+      # COMMITTED artifact loaded at runtime. Fail the PR if a source change
+      # wasn't rebuilt & committed — otherwise the build here is green while the
+      # shipped/committed bundle is stale. (.map files are gitignored, so a
+      # clean tree here means the committed app.js/app.css match this build.)
+      - name: Fail if committed editor-app bundle is stale
+        run: |
+          changes="$(git status --porcelain -- SLASHED-for-WP/integrations/bricks/assets/editor-app)"
+          if [ -n "$changes" ]; then
+            echo "::error::Committed editor-app bundle is out of date. Run 'npm run build:editor-app' and commit the result."
+            echo "$changes"
+            git --no-pager diff -- SLASHED-for-WP/integrations/bricks/assets/editor-app
+            exit 1
+          fi
+
   build-admin-app:
     name: Build admin-app
     runs-on: ubuntu-latest
@@ -87,6 +102,22 @@ jobs:
         env:
           SLASHED_SKIP_SYNC: '1'
         run: npm run build
+
+      # The built admin SPA (assets/admin-app/app.js + app.css) is a COMMITTED
+      # artifact loaded at runtime by the token page and the frontend overlay.
+      # Fail the PR if a source (or vendored-configurator) change wasn't rebuilt
+      # & committed — otherwise CI is green while the shipped bundle is stale.
+      # (.map files are gitignored, so a clean tree here means the committed
+      # app.js/app.css match this build.)
+      - name: Fail if committed admin-app bundle is stale
+        run: |
+          changes="$(git status --porcelain -- SLASHED-for-WP/assets/admin-app)"
+          if [ -n "$changes" ]; then
+            echo "::error::Committed admin-app bundle is out of date. Run 'npm run build:admin-app' and commit the result."
+            echo "$changes"
+            git --no-pager diff -- SLASHED-for-WP/assets/admin-app
+            exit 1
+          fi
 
   quality:
     name: Lint, test, version & drift checks
