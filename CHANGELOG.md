@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-07-08
+
+### Fixed
+
+- Keep live preview visible on desktop in WP Studio
+
+## [0.5.1] - 2026-07-08
+
+### Fixed
+
+- Keep live preview visible on desktop in WP Studio
+
 ## [0.5.0] - 2026-07-08
 
 ### Fixed

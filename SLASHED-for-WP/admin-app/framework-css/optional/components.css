@@ -45,15 +45,26 @@
     --sf-btn-color--hover: var(--sf-color-action--hover);
     --sf-btn-on-color:     var(--sf-color-text--on-action);
 
+    /* Rule-local SIZE tier — the per-size defaults each size modifier tunes.
+       The base (default / m) values live here; .sf-btn--xs/--s/--l/--xl only
+       reassign these *-size tokens, never the public knob. Each public knob
+       (--sf-btn-font-size, --sf-btn-padding-block/-inline, --sf-btn-min-height)
+       is read FIRST in its property below, so a :root override of the knob
+       wins on every size, while an unset knob falls through to the size tier. */
+    --sf-btn-font-size--size:      var(--sf-text-m);
+    --sf-btn-padding-block--size:  var(--sf-space-xs);
+    --sf-btn-padding-inline--size: var(--sf-space-m);
+    --sf-btn-min-height--size:     var(--sf-touch-target);
+
     display:          inline-flex;
     align-items:      center;
     justify-content:  center;
     gap:              var(--sf-btn-gap, var(--sf-space-2xs));
-    padding-block:    var(--sf-btn-padding-block);
-    padding-inline:   var(--sf-btn-padding-inline);
-    min-block-size:   var(--sf-btn-min-height, var(--sf-touch-target));
+    padding-block:    var(--sf-btn-padding-block, var(--sf-btn-padding-block--size));
+    padding-inline:   var(--sf-btn-padding-inline, var(--sf-btn-padding-inline--size));
+    min-block-size:   var(--sf-btn-min-height, var(--sf-btn-min-height--size));
     font-family:      inherit;
-    font-size:        var(--sf-btn-font-size, var(--sf-text-m));
+    font-size:        var(--sf-btn-font-size, var(--sf-btn-font-size--size));
     font-weight:      var(--sf-btn-font-weight, var(--sf-font-weight-interactive));
     line-height:      var(--sf-leading-tight);
     text-decoration:  none;
@@ -104,13 +115,25 @@
     --sf-btn-on-color:     var(--sf-color-text--on-danger);
   }
 
-  /* --- Style treatments (compose with any colour family) --- */
+  /* --- Style treatments (compose with any colour family) ---
+     Emphasis ladder, highest → lowest:
+       fill       solid family background (the base .sf-btn)
+       secondary  soft TONAL fill — a light wash of the family colour, no
+                  border. Lower-emphasis than fill but still reads as a filled
+                  button, so it is visually distinct from --outline.
+       ghost      no background, no border — text only until hover.
+       outline    transparent with a visible border; fills on hover.
+     secondary and ghost lean on color-mix(); their resting fill is gated with
+     @supports so engines without color-mix() degrade gracefully (secondary →
+     bordered, ghost → text-only) instead of dropping a declaration mid-rule.
+     Mirrors the framework-wide gating policy enforced by
+     tests/tier1-p2-coverage.test.js + tests/tier1-p7-oldengine.test.js. */
+
+  /* Soft tonal fill. Fallback (no color-mix): a bordered treatment so it is
+     never invisible; the tonal wash is layered on inside @supports below. */
   .sf-btn--secondary {
     background:   transparent;
     color:        var(--sf-btn-color);
-    border-color: var(--sf-btn-color);
-  }
-  .sf-btn--secondary:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
     border-color: var(--sf-btn-color);
   }
 
@@ -120,17 +143,19 @@
     border-color: transparent;
   }
 
-  /* The subtle hover tint uses color-mix() — a modern colour function. Gate it
-     with @supports so engines without color-mix() skip the tint (the border /
-     foreground hover cues still apply) instead of dropping the background
-     declaration mid-rule. Mirrors the framework-wide gating policy enforced by
-     tests/tier1-p2-coverage.test.js + tests/tier1-p7-oldengine.test.js. */
   @supports (background: color-mix(in oklab, red, red)) {
+    /* Tonal fill replaces the fallback border once color-mix() is available. */
+    .sf-btn--secondary {
+      background:   color-mix(in oklab, var(--sf-btn-color) 14%, transparent);
+      color:        var(--sf-btn-color);
+      border-color: transparent;
+    }
     .sf-btn--secondary:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
-      background: color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
+      background:   color-mix(in oklab, var(--sf-btn-color) 24%, transparent);
+      border-color: transparent;
     }
     .sf-btn--ghost:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
-      background: color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
+      background: color-mix(in oklab, var(--sf-btn-color) 10%, transparent);
     }
   }
 
@@ -146,30 +171,31 @@
     border-color: var(--sf-btn-color);
   }
 
-  /* --- Sizes (m is the default; override the sizing tokens) --- */
+  /* --- Sizes (m is the default; retune the rule-local *-size tier so a
+         :root override of the public knob still wins over the size) --- */
   .sf-btn--xs {
-    --sf-btn-padding-block:  var(--sf-space-3xs, 0.125rem);
-    --sf-btn-padding-inline: var(--sf-space-xs);
-    --sf-btn-font-size:      var(--sf-text-xs);
-    --sf-btn-min-height:     var(--sf-size-xs);
+    --sf-btn-padding-block--size:  var(--sf-space-3xs, 0.125rem);
+    --sf-btn-padding-inline--size: var(--sf-space-xs);
+    --sf-btn-font-size--size:      var(--sf-text-xs);
+    --sf-btn-min-height--size:     var(--sf-size-xs);
   }
   .sf-btn--s {
-    --sf-btn-padding-block:  var(--sf-space-2xs);
-    --sf-btn-padding-inline: var(--sf-space-s);
-    --sf-btn-font-size:      var(--sf-text-s);
-    --sf-btn-min-height:     var(--sf-size-s);
+    --sf-btn-padding-block--size:  var(--sf-space-2xs);
+    --sf-btn-padding-inline--size: var(--sf-space-s);
+    --sf-btn-font-size--size:      var(--sf-text-s);
+    --sf-btn-min-height--size:     var(--sf-size-s);
   }
   .sf-btn--l {
-    --sf-btn-padding-block:  var(--sf-space-s);
-    --sf-btn-padding-inline: var(--sf-space-l);
-    --sf-btn-font-size:      var(--sf-text-l);
-    --sf-btn-min-height:     var(--sf-size-xl);
+    --sf-btn-padding-block--size:  var(--sf-space-s);
+    --sf-btn-padding-inline--size: var(--sf-space-l);
+    --sf-btn-font-size--size:      var(--sf-text-l);
+    --sf-btn-min-height--size:     var(--sf-size-xl);
   }
   .sf-btn--xl {
-    --sf-btn-padding-block:  var(--sf-space-m);
-    --sf-btn-padding-inline: var(--sf-space-xl);
-    --sf-btn-font-size:      var(--sf-text-xl);
-    --sf-btn-min-height:     calc(var(--sf-size-xl) + var(--sf-space-s));
+    --sf-btn-padding-block--size:  var(--sf-space-m);
+    --sf-btn-padding-inline--size: var(--sf-space-xl);
+    --sf-btn-font-size--size:      var(--sf-text-xl);
+    --sf-btn-min-height--size:     calc(var(--sf-size-xl) + var(--sf-space-s));
   }
 
   /* --- States --- */
@@ -261,7 +287,7 @@
     display:       block;
     inline-size:   100%;
     aspect-ratio:  var(--sf-card-media-ratio, var(--sf-ratio-video));
-    object-fit:    cover;
+    object-fit:    var(--sf-object-fit, cover);
     border-radius: var(--sf-card-media-radius);
     overflow:      clip;
   }
@@ -280,8 +306,11 @@
     color:     var(--sf-color-heading);
   }
 
+  /* Nested buttons shrink to the card's button size. Feed the *-size tier
+     (not the public --sf-btn-font-size knob) so a :root override of the knob
+     still wins inside cards, exactly as it does everywhere else. */
   .sf-card .sf-btn {
-    --sf-btn-font-size: var(--sf-card-btn-font-size, var(--sf-text-s));
+    --sf-btn-font-size--size: var(--sf-card-btn-font-size, var(--sf-text-s));
   }
 
   /* --- Modifiers --- */
