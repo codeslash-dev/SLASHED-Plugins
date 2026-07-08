@@ -30,5 +30,9 @@ $includes = dirname( __DIR__ ) . '/SLASHED-for-WP/includes/';
 
 require_once $includes . 'class-css-parser.php';
 require_once $includes . 'class-css-generator.php';
+require_once $includes . 'class-token-store.php';
 require_once $includes . 'class-rest-controller.php';
 require_once $includes . 'class-color-math.php';
+require_once $includes . 'class-category-map.php';
+require_once $includes . 'class-token-defaults.php';
+require_once $includes . 'class-color-resolver.php';

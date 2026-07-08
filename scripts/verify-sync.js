@@ -56,46 +56,50 @@ const INVENTORY_COPIES = [
   `${PLUGIN}/integrations/bricks/data/inventory.json`,
 ];
 
-function read(rel) {
-  return fs.readFileSync(path.join(ROOT, rel), 'utf8');
+function read(root, rel) {
+  return fs.readFileSync(path.join(root, rel), 'utf8');
 }
 
-function sha256(rel) {
-  return crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, rel))).digest('hex');
+function sha256(root, rel) {
+  return crypto.createHash('sha256').update(fs.readFileSync(path.join(root, rel))).digest('hex');
 }
 
 /** Extract `X.Y.Z[-pre]` from a `/* SLASHED vX.Y.Z — file.css *\/` header. */
-function distHeaderVersion(rel) {
-  const first = read(rel).split('\n', 1)[0];
+function distHeaderVersion(root, rel) {
+  const first = read(root, rel).split('\n', 1)[0];
   const m = first.match(/SLASHED\s+v(\d+\.\d+\.\d+(?:[-.][A-Za-z0-9.]+)*)/);
   return m ? m[1] : null;
 }
 
-function cssRefValue(rel, name) {
-  const m = read(rel).match(new RegExp(`define\\(\\s*'${name}',\\s*'([^']*)'\\s*\\)`));
+function cssRefValue(root, rel, name) {
+  const m = read(root, rel).match(new RegExp(`define\\(\\s*'${name}',\\s*'([^']*)'\\s*\\)`));
   return m ? m[1] : null;
 }
 
-function versionHeaderValue(rel) {
-  const m = read(rel).match(/^\s*\*\s*Version:\s*(.+?)\s*$/m);
+function versionHeaderValue(root, rel) {
+  const m = read(root, rel).match(/^\s*\*\s*Version:\s*(.+?)\s*$/m);
   return m ? m[1] : null;
 }
 
-function stableTagValue(rel) {
-  const m = read(rel).match(/^Stable tag:\s*(.+?)\s*$/m);
+function stableTagValue(root, rel) {
+  const m = read(root, rel).match(/^Stable tag:\s*(.+?)\s*$/m);
   return m ? m[1] : null;
 }
 
+/**
+ * Run every version-consistency check against a checkout root (defaults to
+ * this repo). The `root` parameter lets tests point the same logic at a
+ * fixture tree with deliberately broken metadata to prove the checks actually
+ * fire — the CLI and the committed-state guard both call it with no argument.
+ */
 export function runChecks(root = ROOT) {
-  // Allow tests/callers to point at a different checkout root.
-  if (root !== ROOT) throw new Error('runChecks: custom root is not supported');
   const errors = [];
   const info = [];
 
   // ── 1. Framework-tracked version ──────────────────────────────────────────
   const distVersions = DIST_BUNDLES.map((b) => {
     const rel = `${PLUGIN}/dist/slashed.${b}.css`;
-    const v = distHeaderVersion(rel);
+    const v = distHeaderVersion(root, rel);
     if (!v) errors.push(`Cannot read SLASHED version header from ${rel}`);
     return v;
   });
@@ -113,7 +117,7 @@ export function runChecks(root = ROOT) {
 
   const expectedRef = distVersion ? `v${distVersion}` : null;
   for (const { file, name } of CSS_REF_TARGETS) {
-    const val = cssRefValue(file, name);
+    const val = cssRefValue(root, file, name);
     if (val === null) {
       errors.push(`Cannot find ${name} define in ${file}`);
       continue;
@@ -125,7 +129,7 @@ export function runChecks(root = ROOT) {
   if (expectedRef && errors.length === 0) info.push(`SLASHED_*_CSS_REF all = ${expectedRef}`);
 
   // Both shipped inventories must be byte-identical (one generator, two copies).
-  const invHashes = INVENTORY_COPIES.map(sha256);
+  const invHashes = INVENTORY_COPIES.map((rel) => sha256(root, rel));
   if (!invHashes.every((h) => h === invHashes[0])) {
     errors.push(`inventory.json copies differ:\n  ${INVENTORY_COPIES.map((f, i) => `${f} (${invHashes[i].slice(0, 12)})`).join('\n  ')}\n  run \`npm run build:data\``);
   } else {
@@ -133,9 +137,9 @@ export function runChecks(root = ROOT) {
   }
 
   // ── 2. Plugin's own release version ───────────────────────────────────────
-  const pkgVersion = JSON.parse(read('package.json')).version;
-  const stableTag = stableTagValue(`${PLUGIN}/readme.txt`);
-  const headerVersions = VERSION_HEADER_FILES.map((f) => [f, versionHeaderValue(f)]);
+  const pkgVersion = JSON.parse(read(root, 'package.json')).version;
+  const stableTag = stableTagValue(root, `${PLUGIN}/readme.txt`);
+  const headerVersions = VERSION_HEADER_FILES.map((f) => [f, versionHeaderValue(root, f)]);
 
   if (stableTag !== pkgVersion) {
     errors.push(`readme.txt Stable tag '${stableTag}' != package.json version '${pkgVersion}' — run \`npm run version-sync\``);
@@ -145,7 +149,7 @@ export function runChecks(root = ROOT) {
     else if (v !== pkgVersion) errors.push(`${file} Version: '${v}' != package.json version '${pkgVersion}' — run \`npm run version-sync\``);
   }
   for (const { file, name } of VERSION_CONSTANTS) {
-    const val = cssRefValue(file, name);
+    const val = cssRefValue(root, file, name);
     if (val === null) errors.push(`Cannot find ${name} define in ${file}`);
     else if (val !== pkgVersion) errors.push(`${name} = '${val}' != package.json version '${pkgVersion}' — run \`npm run version-sync\``);
   }
