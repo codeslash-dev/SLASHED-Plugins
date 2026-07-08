@@ -13,14 +13,17 @@
   const RATIO_STEPS = ["square", "video", "cinema", "4-3", "3-2", "portrait", "golden"];
   const WEIGHT_OPTIONS = ["100", "200", "300", "400", "500", "600", "700", "800", "900"];
 
-  const BTN_VARIANTS = ["default", "primary", "neutral", "success", "warning", "info", "danger"];
-  const BTN_STYLES: { id: "fill" | "secondary" | "ghost" | "outline"; label: string }[] = [
-    { id: "fill",      label: "Fill" },
-    { id: "secondary", label: "Secondary" },
-    { id: "ghost",     label: "Ghost" },
-    { id: "outline",   label: "Outline" },
+  const BTN_VARIANTS = ["default", "primary", "secondary", "tertiary", "action", "base", "neutral", "success", "warning", "info", "danger"];
+  const BTN_STYLES: { id: "fill" | "soft" | "outline"; label: string }[] = [
+    { id: "fill",    label: "Fill" },
+    { id: "soft",    label: "Soft" },
+    { id: "outline", label: "Outline" },
   ];
   const BTN_SIZES = ["xs", "s", "m", "l", "xl"];
+  // Families with a real --sf-gradient-* token (core-4 brand families; the
+  // unmodified default resolves to action). Elsewhere --gradient is a
+  // documented solid no-op, so the toggle is disabled there.
+  const BTN_GRADIENT_FAMILIES = new Set(["default", "primary", "secondary", "tertiary", "action"]);
 
   const BG_PRESETS = [
     { step: "surface", label: "Surface" },
@@ -58,6 +61,7 @@
   // .sf-btn/.sf-card classes to render in the live sample below.
   let btnVariant = $state<typeof BTN_VARIANTS[number]>("primary");
   let btnStyle = $state<typeof BTN_STYLES[number]["id"]>("fill");
+  let btnGradient = $state(false);
   let btnSize = $state("m");
   let btnDisabled = $state(false);
   let btnLoading = $state(false);
@@ -70,6 +74,7 @@
     const classes = ["sf-btn"];
     if (btnVariant !== "default") classes.push(`sf-btn--${btnVariant}`);
     if (btnStyle !== "fill") classes.push(`sf-btn--${btnStyle}`);
+    if (btnGradient && btnStyle !== "soft" && BTN_GRADIENT_FAMILIES.has(btnVariant)) classes.push("sf-btn--gradient");
     if (btnSize !== "m") classes.push(`sf-btn--${btnSize}`);
     return classes.join(" ");
   }
@@ -186,6 +191,23 @@
           {/each}
         </div>
         <div class="flex items-center gap-3 pt-0.5">
+          <label
+            class={`flex items-center gap-1.5 text-[9px] ${
+              BTN_GRADIENT_FAMILIES.has(btnVariant) && btnStyle !== "soft"
+                ? "text-slate-500 cursor-pointer"
+                : "text-slate-400 dark:text-slate-600 cursor-not-allowed"
+            }`}
+            title={BTN_GRADIENT_FAMILIES.has(btnVariant) && btnStyle !== "soft"
+              ? "Paint the fill (or the outline ring) with the family gradient"
+              : "Gradient covers the core-4 brand families (primary/secondary/tertiary/action) and is ignored under Soft"}
+          >
+            <input
+              type="checkbox"
+              bind:checked={btnGradient}
+              disabled={!BTN_GRADIENT_FAMILIES.has(btnVariant) || btnStyle === "soft"}
+              class="cursor-pointer disabled:cursor-not-allowed"
+            /> gradient
+          </label>
           <label class="flex items-center gap-1.5 text-[9px] text-slate-500 cursor-pointer">
             <input type="checkbox" bind:checked={btnDisabled} class="cursor-pointer" /> disabled
           </label>

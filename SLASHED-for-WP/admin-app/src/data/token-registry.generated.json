@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedBy": "scripts/gen-token-registry.js",
-    "nextId": 759
+    "nextId": 771
   },
   "tokens": [
     {
@@ -333,7 +333,8 @@
     },
     {
       "id": 81,
-      "name": "--sf-color-action-ghost"
+      "name": "--sf-color-action-ghost",
+      "removed": true
     },
     {
       "id": 82,
@@ -454,7 +455,8 @@
     },
     {
       "id": 111,
-      "name": "--sf-color-base-ghost"
+      "name": "--sf-color-base-ghost",
+      "removed": true
     },
     {
       "id": 112,
@@ -765,7 +767,8 @@
     },
     {
       "id": 186,
-      "name": "--sf-color-neutral-ghost"
+      "name": "--sf-color-neutral-ghost",
+      "removed": true
     },
     {
       "id": 187,
@@ -889,7 +892,8 @@
     },
     {
       "id": 217,
-      "name": "--sf-color-primary-ghost"
+      "name": "--sf-color-primary-ghost",
+      "removed": true
     },
     {
       "id": 218,
@@ -1017,7 +1021,8 @@
     },
     {
       "id": 249,
-      "name": "--sf-color-secondary-ghost"
+      "name": "--sf-color-secondary-ghost",
+      "removed": true
     },
     {
       "id": 250,
@@ -1173,7 +1178,8 @@
     },
     {
       "id": 288,
-      "name": "--sf-color-tertiary-ghost"
+      "name": "--sf-color-tertiary-ghost",
+      "removed": true
     },
     {
       "id": 289,
@@ -3069,6 +3075,54 @@
     {
       "id": 758,
       "name": "--sf-surface-bg-size"
+    },
+    {
+      "id": 759,
+      "name": "--sf-card-avatar-size"
+    },
+    {
+      "id": 760,
+      "name": "--sf-color-action-tint"
+    },
+    {
+      "id": 761,
+      "name": "--sf-color-base-tint"
+    },
+    {
+      "id": 762,
+      "name": "--sf-color-danger-tint"
+    },
+    {
+      "id": 763,
+      "name": "--sf-color-info-tint"
+    },
+    {
+      "id": 764,
+      "name": "--sf-color-neutral-tint"
+    },
+    {
+      "id": 765,
+      "name": "--sf-color-primary-tint"
+    },
+    {
+      "id": 766,
+      "name": "--sf-color-secondary-tint"
+    },
+    {
+      "id": 767,
+      "name": "--sf-color-success-tint"
+    },
+    {
+      "id": 768,
+      "name": "--sf-color-tertiary-tint"
+    },
+    {
+      "id": 769,
+      "name": "--sf-color-warning-tint"
+    },
+    {
+      "id": 770,
+      "name": "--sf-gradient-action"
     }
   ]
 }

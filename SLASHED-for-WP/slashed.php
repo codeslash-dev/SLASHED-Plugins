@@ -29,7 +29,7 @@ define( 'SLASHED_URL', plugin_dir_url( __FILE__ ) );
  * in the admin UI. The framework CSS is bundled with the plugin in dist/ and
  * updated through normal plugin releases — see Slashed_CSS_Loader.
  */
-define( 'SLASHED_CSS_REF', 'v0.7.6' );
+define( 'SLASHED_CSS_REF', 'v0.7.7' );
 
 // ─── Shared infrastructure ────────────────────────────────────────────
 
