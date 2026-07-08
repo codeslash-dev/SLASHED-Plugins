@@ -152,7 +152,27 @@ class Slashed_Token_Page {
 			'body.slashed-tokens-page #wpcontent, body.slashed-tokens-page #wpbody, body.slashed-tokens-page #wpbody-content { height: calc(100vh - var(--wp-admin--admin-bar--height, 32px)); }' .
 			'body.slashed-tokens-page #wpbody-content { display: flex; flex-direction: column; overflow: auto; }' .
 			'body.slashed-tokens-page .wrap { margin: 0; flex: 1 1 auto; min-height: 0; display: flex; }' .
-			'body.slashed-tokens-page #slashed-admin-app { flex: 1 1 auto; min-height: 0; width: 100%; }'
+			'body.slashed-tokens-page #slashed-admin-app { flex: 1 1 auto; min-height: 0; width: 100%; }' .
+			// WordPress admin ships a global `.hidden { display: none }` utility
+			// (wp-admin/css/common.css) that loads in the same admin document as
+			// our bundle. The Studio shell reveals desktop-only regions with
+			// Tailwind's responsive show pattern (`hidden md:flex` /
+			// `hidden md:block`), which depends on the `md:` rule overriding
+			// `.hidden` at >=768px. But WP core's `.hidden` has equal specificity
+			// to Tailwind's `.md\:flex` / `.md\:block` and can win the cascade,
+			// so on desktop the live-preview pane (and any other `hidden md:*`
+			// region) stays stuck at `display: none` — the panel renders without
+			// its preview and the mobile fold toggle looks like the only way in.
+			// The standalone framework configurator has no such `.hidden` rule,
+			// so it only bites inside WordPress. The frontend overlay escapes it
+			// by mounting in a Shadow DOM; the admin Studio mounts in the light
+			// DOM and needs this guard. Re-assert the responsive display
+			// utilities at higher, id-scoped specificity (1,1,0 > 0,1,0) so they
+			// deterministically beat WP core regardless of stylesheet load order.
+			'@media (min-width: 48rem) {' .
+				'body.slashed-tokens-page #slashed-admin-app .md\:flex { display: flex; }' .
+				'body.slashed-tokens-page #slashed-admin-app .md\:block { display: block; }' .
+			'}'
 		);
 
 		wp_enqueue_script(
