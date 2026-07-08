@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-07-08
+
+### Fixed
+
+- Install editor-app deps in release build and require all class-hint sources
+- Gate built assets and guard generators against silent drift
+
+## [0.5.0] - 2026-07-08
+
+### Fixed
+
+- Install editor-app deps in release build and require all class-hint sources
+- Gate built assets and guard generators against silent drift
+
 ## [0.4.25] - 2026-07-07
 
 ### Fixed

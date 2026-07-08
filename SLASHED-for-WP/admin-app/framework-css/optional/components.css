@@ -111,7 +111,6 @@
     border-color: var(--sf-btn-color);
   }
   .sf-btn--secondary:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
-    background:   color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
     border-color: var(--sf-btn-color);
   }
 
@@ -120,8 +119,19 @@
     color:        var(--sf-btn-color);
     border-color: transparent;
   }
-  .sf-btn--ghost:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
-    background: color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
+
+  /* The subtle hover tint uses color-mix() — a modern colour function. Gate it
+     with @supports so engines without color-mix() skip the tint (the border /
+     foreground hover cues still apply) instead of dropping the background
+     declaration mid-rule. Mirrors the framework-wide gating policy enforced by
+     tests/tier1-p2-coverage.test.js + tests/tier1-p7-oldengine.test.js. */
+  @supports (background: color-mix(in oklab, red, red)) {
+    .sf-btn--secondary:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+      background: color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
+    }
+    .sf-btn--ghost:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+      background: color-mix(in oklab, var(--sf-btn-color) 8%, transparent);
+    }
   }
 
   /* Outline: transparent to start, fills with the family colour on hover. */
