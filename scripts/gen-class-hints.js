@@ -173,16 +173,21 @@ function parseFile(rel, category) {
 }
 
 /**
- * True when at least one of the framework CSS source files is present on disk.
- * When the framework checkout is missing, parseFile() returns {} for every
- * source and generate() would produce a hints map containing only the
- * hardcoded MANUAL_HINTS + OVERRIDE_HINTS — a small fraction of the real set.
- * Writing that would silently clobber the committed classes-hints.json, so the
- * writer below refuses to run without a framework source. (--check mode still
- * runs generate() and reports the resulting drift loudly, which is safe.)
+ * The framework CSS source files (relative to FRAMEWORK) that are NOT present
+ * on disk. parseFile() silently returns {} for a missing source, so ANY absent
+ * file would drop that whole category's hints; generate() would then produce a
+ * partial map (down to just the hardcoded MANUAL_HINTS + OVERRIDE_HINTS when
+ * the checkout is missing entirely). Writing that would clobber the committed
+ * classes-hints.json, so the writer below refuses unless EVERY source resolves
+ * — a mispointed or partial checkout is rejected, not silently truncated.
+ * Mirrors gen-bricks-inventory.js, which likewise fails on any missing source.
+ * (--check mode still runs generate() and reports the resulting drift loudly,
+ * which is safe.)
  */
-function frameworkSourcePresent() {
-  return SOURCE_FILES.some(({ file }) => fs.existsSync(path.join(FRAMEWORK, file)));
+function missingFrameworkSources() {
+  return SOURCE_FILES
+    .map(({ file }) => file)
+    .filter((file) => !fs.existsSync(path.join(FRAMEWORK, file)));
 }
 
 function generate() {
@@ -217,14 +222,17 @@ if (process.argv.includes('--check')) {
   }
   console.log(`[gen-class-hints] OK — ${Object.keys(hints).length} class hints`);
 } else {
-  // Refuse to overwrite the committed file with a framework-less (truncated)
-  // result. Without the CSS source, `hints` holds only the hardcoded manual /
-  // override entries and would drop every auto-parsed class.
-  if (!frameworkSourcePresent()) {
+  // Refuse to overwrite the committed file with a truncated result: every
+  // framework CSS source must resolve, or the generated map would silently
+  // drop the categories whose sources are missing.
+  const missing = missingFrameworkSources();
+  if (missing.length > 0) {
     console.error(
-      `[gen-class-hints] framework CSS source not found — refusing to overwrite ${OUT_REL} ` +
+      `[gen-class-hints] framework CSS source incomplete — refusing to overwrite ${OUT_REL} ` +
       `with a truncated hints map.\n` +
-      `  Point SLASHED_FRAMEWORK_DIR at a SLASHED checkout, add a ./.framework clone, ` +
+      `  Missing ${missing.length}/${SOURCE_FILES.length} source file(s) under FRAMEWORK=${FRAMEWORK}:\n` +
+      missing.map((f) => `    - ${f}`).join('\n') + '\n' +
+      `  Point SLASHED_FRAMEWORK_DIR at a complete SLASHED checkout, add a ./.framework clone, ` +
       `or place a sibling ../SLASHED checkout, then re-run.`,
     );
     process.exit(1);
