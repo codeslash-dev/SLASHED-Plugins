@@ -83,7 +83,7 @@ final class ColorResolverTest extends TestCase {
 			'active' => '800',
 			'subtle' => 'a10',
 			'muted'  => 'a30',
-			'ghost'  => 'a5',
+			'tint'   => 'a5',
 		);
 		foreach ( $aliases as $alias => $target ) {
 			$this->assertSame(
