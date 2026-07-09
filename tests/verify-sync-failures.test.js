@@ -69,6 +69,14 @@ describe('runChecks failure detection', () => {
     assert.ok(errors.some((e) => /disagree on version/.test(e)), errors.join('\n'));
   });
 
+  test('a flat bundle that drifts from the layered bundles is caught', () => {
+    // The flat variants are exactly what the "Flat CSS" setting serves, so a
+    // flat bundle at the wrong version must fail the same header check.
+    write(root, `${PLUGIN}/dist/slashed.optimal.flat.css`, `/* SLASHED v9.9.9 — slashed.optimal.flat.css */\n`);
+    const { errors } = runChecks(root);
+    assert.ok(errors.some((e) => /disagree on version/.test(e)), errors.join('\n'));
+  });
+
   test('a CSS_REF constant that lags the bundled CSS is caught', () => {
     write(root, `${PLUGIN}/slashed.php`,
       `<?php\n/**\n * Version: ${PV}\n */\n` +
