@@ -176,7 +176,16 @@
      Radius + space: <length> syntax enables CSS transitions on layout values —
      border-radius/padding/gap etc. now interpolate instead of snapping.
      Shadow: syntax:"*" (no <shadow> type in spec); inherits:true so :root values
-     cascade normally; registers the properties formally for DevTools inspection. */
+     cascade normally; registers the properties formally for DevTools inspection.
+
+     initial-value ≠ :root default (by spec): a registered <length> requires a
+     computationally-independent initial-value, so these carry `initial-value: 0`
+     while their real defaults are the calc()-derived values set on :root below
+     (see --sf-fluid-width above for the same constraint stated at length). One
+     consequence worth flagging: once a property is registered, the initial
+     value IS a value — so a fallback like `var(--sf-radius-m, 12px)` will NEVER
+     fire; an unset --sf-radius-m resolves to the registered `0`, not to "no
+     value". Author fallbacks against the token's :root default, not this 0. */
 
   @property --sf-radius-none  { syntax: "<length>"; inherits: true; initial-value: 0; }
   @property --sf-radius-2xs   { syntax: "<length>"; inherits: true; initial-value: 0; }
@@ -1167,12 +1176,16 @@
     --sf-space-4xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) * 1rem)) * var(--sf-space-scale));
 
     /* ----------------------------------------------------------
-       UI sizes
+       UI sizes — a purely geometric rung ladder (+0.5rem / 8px per
+       step: 24 · 32 · 40 · 48 · 56 px). These are free design knobs:
+       nothing external constrains them, so overriding them just
+       rescales component heights. Accessibility floors live on their
+       own tokens (--sf-touch-target), never on a rung — see below.
        ---------------------------------------------------------- */
     --sf-size-xs: 1.5rem;
     --sf-size-s:  2rem;
     --sf-size-m:  2.5rem;
-    --sf-size-l:  2.75rem;
+    --sf-size-l:  3rem;
     --sf-size-xl: 3.5rem;
 
     /* ----------------------------------------------------------
@@ -1428,11 +1441,15 @@
       calc((var(--sf-sticky-offset-desktop) - var(--sf-sticky-offset-mobile)) / ((var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * 1rem) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-sticky-offset-mobile)),
       var(--sf-sticky-offset-desktop));
     /* Focus ring dimensions and minimum touch-target size. Governs keyboard
-       navigation affordance and WCAG 2.5.5 pointer-target requirements. */
+       navigation affordance and WCAG 2.5.5 pointer-target requirements.
+       --sf-touch-target owns the 44px WCAG floor as a literal — it is NOT an
+       alias of a --sf-size-* rung, so retuning the size scale can never drag
+       the accessibility minimum below spec. Override it deliberately if you
+       have your own target policy. */
     --sf-focus-ring-width:  2px;
     --sf-focus-ring-offset: 2px;
     --sf-focus-ring-style:  solid;
-    --sf-touch-target:      var(--sf-size-l);
+    --sf-touch-target:      2.75rem;  /* 44px — WCAG 2.5.5 minimum, independent of the size scale */
     /* Global text-contrast knob. Nudges derived reading-text colours
        toward the extremes (darker in light mode, lighter in dark mode).
        Positive = more contrast; 0 = no change. Consumed by
@@ -1609,7 +1626,7 @@
     --sf-content-gap:   var(--sf-space-s);  /* tight: within content       */
     --sf-gutter:        var(--sf-space-l);  /* wide: page/section gutters  */
     --sf-component-pad: var(--sf-space-m);  /* standard component padding  */
-    --sf-field-block:   var(--sf-space-l);  /* form-field block spacing */
+    --sf-field-block:   var(--sf-space-xs); /* form-field block padding — matches the shipped field default (see optional/forms.css) */
     --sf-field-required-marker: " *";
     /* Leading space is baked into the default so consumers can fully
        disable the indicator with `--sf-link-external-marker: ""` —

@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.5.6] - 2026-07-09
+
+### Added
+
+- Reduce CSS bundles to optimal + full and redesign the picker
+
+## [0.5.6] - 2026-07-09
+
+### Added
+
+- Reduce CSS bundles to optimal + full and redesign the picker
+
 ## [0.5.5] - 2026-07-09
 
 ### Fixed

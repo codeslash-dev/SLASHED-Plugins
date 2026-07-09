@@ -1488,11 +1488,11 @@
     "category": "Core tokens"
   },
   "sf-duration-fast": {
-    "description": "Fast duration (~100ms). Hover transitions, tooltip appear.",
+    "description": "Fast duration (~150ms). Hover transitions, tooltip appear.",
     "category": "Core tokens"
   },
   "sf-duration-instant": {
-    "description": "Near-instant duration (~50ms). Micro-interactions and cursor-follow effects.",
+    "description": "Near-instant duration (~100ms). Micro-interactions and cursor-follow effects.",
     "category": "Core tokens"
   },
   "sf-duration-none": {
@@ -1500,11 +1500,11 @@
     "category": "Core tokens"
   },
   "sf-duration-normal": {
-    "description": "Normal duration (~200ms). Default for most transitions.",
+    "description": "Normal duration (~250ms). Default for most transitions.",
     "category": "Core tokens"
   },
   "sf-duration-slow": {
-    "description": "Slow duration (~350ms). Emphasis transitions, drawers.",
+    "description": "Slow duration (~400ms). Emphasis transitions, drawers.",
     "category": "Core tokens"
   },
   "sf-duration-slower": {
@@ -2436,19 +2436,19 @@
     "category": "Layout tokens"
   },
   "sf-size-l": {
-    "description": "Large UI component height (~44px). Touch-friendly interactive elements.",
+    "description": "Large UI component height (~48px). Touch-friendly interactive elements.",
     "category": "Core tokens"
   },
   "sf-size-m": {
-    "description": "Medium UI component height (~36px). Default size for buttons and inputs.",
+    "description": "~40px UI component height (scale rung `m`). The default `.sf-btn` min-height.",
     "category": "Core tokens"
   },
   "sf-size-s": {
-    "description": "Small UI component height (~28px). Compact buttons and input variants.",
+    "description": "Small UI component height (~32px). Compact buttons and input variants.",
     "category": "Core tokens"
   },
   "sf-size-xl": {
-    "description": "Extra-large interactive component height (~52px). For oversized or prominently touch-friendly controls.",
+    "description": "Extra-large interactive component height (~56px). For oversized or prominently touch-friendly controls.",
     "category": "Core tokens"
   },
   "sf-size-xs": {
@@ -2836,7 +2836,7 @@
     "category": "Core tokens"
   },
   "sf-touch-target": {
-    "description": "Minimum touch-target size for interactive elements per WCAG 2.5.5.",
+    "description": "Minimum touch-target size for interactive elements per WCAG 2.5.5. Fixed 44px anchor, independent of the --sf-size-* scale.",
     "category": "Core tokens"
   },
   "sf-tracking-normal": {

@@ -16,29 +16,6 @@
       ]
     },
     {
-      "id": "optimal-utilities",
-      "output": "slashed.optimal-utilities.css",
-      "min": "slashed.optimal-utilities.min.css",
-      "cdn": "https://cdn.jsdelivr.net/gh/codeslash-dev/SLASHED@dist/slashed.optimal-utilities.min.css",
-      "fileCount": 15,
-      "optionalModules": [
-        "optional/forms.css",
-        "optional/utilities.css"
-      ]
-    },
-    {
-      "id": "optimal-components",
-      "output": "slashed.optimal-components.css",
-      "min": "slashed.optimal-components.min.css",
-      "cdn": "https://cdn.jsdelivr.net/gh/codeslash-dev/SLASHED@dist/slashed.optimal-components.min.css",
-      "fileCount": 16,
-      "optionalModules": [
-        "optional/forms.css",
-        "optional/tokens.components.css",
-        "optional/components.css"
-      ]
-    },
-    {
       "id": "full",
       "output": "slashed.full.css",
       "min": "slashed.full.min.css",

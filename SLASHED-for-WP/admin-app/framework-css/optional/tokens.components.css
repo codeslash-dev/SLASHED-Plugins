@@ -39,9 +39,10 @@
     /* ============================================================
      * FIELD TOKENS
      * Override to give form fields a distinct visual language from
-     * buttons without touching global radius/spacing tokens. Reserved
-     * for a future .sf-field class (optional/forms.css) — no consumer
-     * ships in this layer yet.
+     * buttons without touching global radius/spacing tokens. Consumed
+     * by the classless field rules in optional/forms.css (padding-block,
+     * padding-inline, border-radius); each fallback there equals these
+     * defaults so an unset knob renders identically.
      * ============================================================ */
     --sf-field-radius:         var(--sf-radius-m);
     --sf-field-padding-block:  var(--sf-space-xs);

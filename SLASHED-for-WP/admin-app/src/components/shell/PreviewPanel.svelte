@@ -186,14 +186,18 @@
     .pv-card--soft{background:var(--sf-color-primary-100);color:var(--sf-color-primary-700);}`;
   }
 
+  // preventDefault on the nav links: the preview iframe keeps allow-same-origin
+  // (needed for contentDocument access above), so a real href would let the
+  // frame navigate itself to the app's own origin, loading the whole
+  // configurator recursively inside the tiny preview pane.
   const MARKETING_BODY = `
 <header class="pv-header">
   <div class="sf-container sf-cluster sf-cluster--between sf-cluster--no-wrap">
     <span class="pv-brand">SlashedUI</span>
     <nav class="sf-cluster sf-cluster--m">
-      <a class="sf-link--subtle" href="#">Framework</a>
-      <a class="sf-link--subtle" href="#">Tokens</a>
-      <a class="sf-link--subtle" href="#">Docs</a>
+      <a class="sf-link--subtle" href="#" onclick="event.preventDefault()">Framework</a>
+      <a class="sf-link--subtle" href="#" onclick="event.preventDefault()">Tokens</a>
+      <a class="sf-link--subtle" href="#" onclick="event.preventDefault()">Docs</a>
     </nav>
     <button class="sf-btn sf-btn--primary sf-btn--s">Get Started</button>
   </div>

@@ -65,7 +65,7 @@
     --sf-btn-font-size--size:      var(--sf-text-m);
     --sf-btn-padding-block--size:  var(--sf-space-xs);
     --sf-btn-padding-inline--size: var(--sf-space-m);
-    --sf-btn-min-height--size:     var(--sf-touch-target);
+    --sf-btn-min-height--size:     var(--sf-size-m);
 
     display:          inline-flex;
     align-items:      center;
@@ -298,7 +298,18 @@
   }
 
   /* --- Sizes (m is the default; retune the rule-local *-size tier so a
-         :root override of the public knob still wins over the size) --- */
+         :root override of the public knob still wins over the size) ---
+
+     The min-height ladder maps 1:1 onto the --sf-size-* scale rungs: --xs→xs,
+     --s→s, default(m)→m, --l→l, --xl→xl. (Before 0.8.0 the ladder was offset
+     by one rung so the default button cleared the 44px --sf-touch-target
+     floor; that pinned m to --sf-size-l and pushed --l/--xl up. The offset was
+     dropped so the size names read predictably — see docs/migration.md.) The
+     default control is now --sf-size-m (40px), which still clears the WCAG 2.2
+     AA 24px target; consumers who want the 44px AAA touch target back can set
+     `--sf-btn-min-height: var(--sf-touch-target)` globally (exactly 44px, an
+     accessibility anchor independent of the size scale) or reach for
+     `.sf-btn--l` (--sf-size-l, 48px). */
   .sf-btn--xs {
     --sf-btn-padding-block--size:  0.125rem;
     --sf-btn-padding-inline--size: var(--sf-space-xs);
@@ -315,13 +326,13 @@
     --sf-btn-padding-block--size:  var(--sf-space-s);
     --sf-btn-padding-inline--size: var(--sf-space-l);
     --sf-btn-font-size--size:      var(--sf-text-l);
-    --sf-btn-min-height--size:     var(--sf-size-xl);
+    --sf-btn-min-height--size:     var(--sf-size-l);
   }
   .sf-btn--xl {
     --sf-btn-padding-block--size:  var(--sf-space-m);
     --sf-btn-padding-inline--size: var(--sf-space-xl);
     --sf-btn-font-size--size:      var(--sf-text-xl);
-    --sf-btn-min-height--size:     calc(var(--sf-size-xl) + var(--sf-space-s));
+    --sf-btn-min-height--size:     var(--sf-size-xl);
   }
 
   /* --- States --- */
