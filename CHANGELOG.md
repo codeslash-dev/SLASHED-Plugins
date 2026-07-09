@@ -9,6 +9,13 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+### Fixed
+
+- Ship the flat (no `@layer`) CSS bundles so the "Flat CSS — no cascade layers"
+  setting actually loads framework CSS instead of resolving a missing file.
+- Include `assets/admin/` in the plugin zip so the settings-page stylesheet
+  (`settings.css`) loads and the page renders styled.
+
 ## [0.5.6] - 2026-07-09
 
 ### Added
