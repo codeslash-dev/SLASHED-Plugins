@@ -32,7 +32,7 @@ if ( ! defined( 'SLASHED_GUTENBERG_VERSION' ) ) {
 	define( 'SLASHED_GUTENBERG_CSS_REF', 'v0.7.8' );
 }
 
-define( 'SLASHED_GUTENBERG_ALLOWED_BUNDLES', array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' ) );
+define( 'SLASHED_GUTENBERG_ALLOWED_BUNDLES', array( 'optimal', 'full' ) );
 
 /**
  * Standalone shared infrastructure.
@@ -69,7 +69,7 @@ if ( ! class_exists( 'Slashed_Token_Store' ) ) {
  * Delegates to the shared Slashed_CSS_Loader when running under the unified
  * plugin; falls back to its own option in standalone mode.
  *
- * @return string One of 'optimal', 'optimal-components', 'optimal-utilities', 'full'.
+ * @return string One of 'optimal', 'full'.
  */
 function slashed_gutenberg_get_css_bundle() {
 	if ( class_exists( 'Slashed_CSS_Loader' ) ) {
@@ -77,8 +77,12 @@ function slashed_gutenberg_get_css_bundle() {
 	}
 	$settings = get_option( 'slashed_gutenberg_settings', array() );
 	$bundle   = isset( $settings['css_bundle'] ) ? (string) $settings['css_bundle'] : 'optimal';
+	// Migrate retired bundle names: 'essential' predates the optimal/full split;
+	// the component and utility tiers fold into 'full' (a superset).
 	if ( 'essential' === $bundle ) {
 		$bundle = 'optimal';
+	} elseif ( 'optimal-components' === $bundle || 'optimal-utilities' === $bundle ) {
+		$bundle = 'full';
 	}
 	if ( ! in_array( $bundle, SLASHED_GUTENBERG_ALLOWED_BUNDLES, true ) ) {
 		$bundle = 'optimal';

@@ -30,7 +30,38 @@ class Slashed_Settings {
 	 */
 	const KNOWN_INTEGRATIONS = array( 'bricks', 'gutenberg' );
 
-	const ALLOWED_BUNDLES = array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' );
+	const ALLOWED_BUNDLES = array( 'optimal', 'full' );
+
+	/**
+	 * Retired bundle values mapped to their replacement.
+	 *
+	 * The framework reduced its delivery set to two bundles (optimal + full).
+	 * 'essential' predated the optimal/full split; the component and utility
+	 * tiers fold into 'full', which is a superset — so a site that had one of
+	 * them selected keeps every rule it was already loading, just under the
+	 * full bundle.
+	 *
+	 * @var array<string, string>
+	 */
+	const BUNDLE_MIGRATIONS = array(
+		'essential'          => 'optimal',
+		'optimal-components' => 'full',
+		'optimal-utilities'  => 'full',
+	);
+
+	/**
+	 * Normalise a raw bundle value: migrate retired names, then validate.
+	 *
+	 * @param mixed $bundle Raw stored/submitted bundle value.
+	 * @return string A value guaranteed to be in self::ALLOWED_BUNDLES.
+	 */
+	public static function normalize_bundle( $bundle ) {
+		$bundle = (string) $bundle;
+		if ( isset( self::BUNDLE_MIGRATIONS[ $bundle ] ) ) {
+			$bundle = self::BUNDLE_MIGRATIONS[ $bundle ];
+		}
+		return in_array( $bundle, self::ALLOWED_BUNDLES, true ) ? $bundle : 'optimal';
+	}
 
 	/**
 	 * Read settings from the database, applying defaults.
@@ -67,13 +98,8 @@ class Slashed_Settings {
 				$stored = array();
 			}
 		}
-		$bundle = isset( $stored['css_bundle'] ) ? (string) $stored['css_bundle'] : 'optimal';
-		// Migrate: 'essential' was removed when the framework moved to the
-		// optimal / optimal-components / optimal-utilities / full bundle set.
-		if ( 'essential' === $bundle ) {
-			$bundle = 'optimal';
-		}
-		return in_array( $bundle, self::ALLOWED_BUNDLES, true ) ? $bundle : 'optimal';
+		$bundle = isset( $stored['css_bundle'] ) ? $stored['css_bundle'] : 'optimal';
+		return self::normalize_bundle( $bundle );
 	}
 
 	/**
@@ -130,14 +156,8 @@ class Slashed_Settings {
 			$integrations[ $slug ] = ! empty( $data['integrations'][ $slug ] );
 		}
 
-		$bundle = isset( $data['css_bundle'] ) ? (string) $data['css_bundle'] : 'optimal';
-		// Migrate legacy 'essential' value on save so it is never re-stored.
-		if ( 'essential' === $bundle ) {
-			$bundle = 'optimal';
-		}
-		if ( ! in_array( $bundle, self::ALLOWED_BUNDLES, true ) ) {
-			$bundle = 'optimal';
-		}
+		// Migrate retired bundle names on save so they are never re-stored.
+		$bundle = self::normalize_bundle( isset( $data['css_bundle'] ) ? $data['css_bundle'] : 'optimal' );
 
 		$flat = ! empty( $data['css_flat'] );
 
@@ -161,14 +181,7 @@ class Slashed_Settings {
 	 * @return bool True if the option was updated.
 	 */
 	public static function set_css_bundle( $bundle ) {
-		$bundle = (string) $bundle;
-		// Migrate legacy value.
-		if ( 'essential' === $bundle ) {
-			$bundle = 'optimal';
-		}
-		if ( ! in_array( $bundle, self::ALLOWED_BUNDLES, true ) ) {
-			$bundle = 'optimal';
-		}
+		$bundle = self::normalize_bundle( $bundle );
 
 		$stored = get_option( self::OPTION_KEY, array() );
 		if ( ! is_array( $stored ) ) {

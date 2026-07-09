@@ -29,7 +29,7 @@ class Slashed_CSS_Loader {
 	 * Delegates to Slashed_Settings::get_css_bundle(), which validates the
 	 * value against the canonical allowlist and falls back to 'optimal'.
 	 *
-	 * @return string One of 'optimal', 'optimal-components', 'optimal-utilities', 'full'.
+	 * @return string One of 'optimal', 'full'.
 	 */
 	public static function get_bundle() {
 		return Slashed_Settings::get_css_bundle();

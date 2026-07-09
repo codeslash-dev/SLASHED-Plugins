@@ -41,8 +41,11 @@ final class RestControllerSettingsValidatorsTest extends TestCase {
 	public function bundles() {
 		return array(
 			'optimal'            => array( 'optimal', true ),
-			'optimal-components' => array( 'optimal-components', true ),
 			'full'               => array( 'full', true ),
+			// Retired tiers are no longer accepted on write; stored values are
+			// migrated to 'full' on read by Slashed_Settings::normalize_bundle().
+			'optimal-components' => array( 'optimal-components', false ),
+			'optimal-utilities'  => array( 'optimal-utilities', false ),
 			'unknown'            => array( 'kitchen-sink', false ),
 			'empty'              => array( '', false ),
 		);

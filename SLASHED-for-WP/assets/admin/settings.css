@@ -1,108 +1,266 @@
 /* SLASHED settings page (SLASHED → Plugin Settings). */
 
+:root {
+	--slashed-accent: #2271b1;
+	--slashed-accent-strong: #135e96;
+	--slashed-accent-tint: #f0f6fc;
+	--slashed-ok: #00a32a;
+	--slashed-line: #dcdcde;
+	--slashed-ink: #1d2327;
+	--slashed-ink-soft: #50575e;
+}
+
+/* ---- Bundle cards ------------------------------------------------------- */
+
 .slashed-bundle-grid {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 12px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
 	max-width: 920px;
-	margin: 12px 0 24px;
+	margin: 14px 0 20px;
 }
+
 .slashed-bundle-card {
-	display: block;
-	border: 2px solid #c3c4c7;
-	border-radius: 6px;
-	padding: 16px;
-	cursor: pointer;
 	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 18px 18px 20px;
 	background: #fff;
+	border: 1px solid var(--slashed-line);
+	border-radius: 12px;
+	box-shadow: 0 1px 2px rgb(0 0 0 / .04);
+	cursor: pointer;
+	transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease, background .15s ease;
 }
-.slashed-bundle-card:hover { border-color: #2271b1; }
-/* Highlight the card whose radio is checked — replaces the former inline JS. */
-.slashed-bundle-card:has( input[type="radio"]:checked ) {
-	border-color: #2271b1;
-	background: #f0f6fc;
+
+.slashed-bundle-card:hover {
+	border-color: #a7aaad;
+	box-shadow: 0 3px 10px rgb(0 0 0 / .08);
+	transform: translateY(-1px);
 }
+
+/* Visually hide the native radio but keep it accessible/focusable. */
 .slashed-bundle-card input[type="radio"] {
 	position: absolute;
-	top: 16px;
-	right: 14px;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
 	margin: 0;
+	pointer-events: none;
 }
+
+/* Custom radio indicator, top-right. */
+.slashed-bundle-card__radio {
+	position: absolute;
+	top: 18px;
+	right: 18px;
+	width: 20px;
+	height: 20px;
+	border: 2px solid #c3c4c7;
+	border-radius: 50%;
+	background: #fff;
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.slashed-bundle-card__radio::after {
+	content: "";
+	position: absolute;
+	inset: 3px;
+	border-radius: 50%;
+	background: var(--slashed-accent);
+	transform: scale(0);
+	transition: transform .15s ease;
+}
+
+/* Selected state — driven by the checked radio, no inline JS/classes. */
+.slashed-bundle-card:has(input[type="radio"]:checked) {
+	border-color: var(--slashed-accent);
+	background: var(--slashed-accent-tint);
+	box-shadow: 0 0 0 1px var(--slashed-accent), 0 3px 10px rgb(34 113 177 / .12);
+}
+
+.slashed-bundle-card:has(input[type="radio"]:checked) .slashed-bundle-card__radio {
+	border-color: var(--slashed-accent);
+}
+
+.slashed-bundle-card:has(input[type="radio"]:checked) .slashed-bundle-card__radio::after {
+	transform: scale(1);
+}
+
+/* Keyboard focus ring on the card. */
+.slashed-bundle-card:has(input[type="radio"]:focus-visible) {
+	outline: 2px solid var(--slashed-accent);
+	outline-offset: 2px;
+}
+
+.slashed-bundle-card__head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-right: 30px; /* room for the radio */
+}
+
 .slashed-bundle-card__name {
-	font-size: 14px;
+	font-size: 15px;
 	font-weight: 600;
-	display: block;
-	margin-bottom: 3px;
-	padding-right: 22px;
-	color: #1e1e1e;
+	color: var(--slashed-ink);
+	line-height: 1.2;
 }
-.slashed-bundle-card__tagline {
-	font-size: 12px;
-	color: #50575e;
-	display: block;
-	margin-bottom: 10px;
-}
+
 .slashed-bundle-card__badge {
 	display: inline-block;
-	background: #00a32a;
+	background: var(--slashed-ok);
 	color: #fff;
 	font-size: 10px;
-	font-weight: 600;
-	padding: 1px 7px;
-	border-radius: 10px;
+	font-weight: 700;
+	padding: 2px 8px;
+	border-radius: 999px;
 	text-transform: uppercase;
-	letter-spacing: .04em;
-	margin-left: 5px;
-	vertical-align: middle;
+	letter-spacing: .05em;
+	line-height: 1.4;
 }
-.slashed-bundle-card hr {
-	border: none;
-	border-top: 1px solid #e2e4e7;
-	margin: 10px 0 8px;
+
+.slashed-bundle-card__tagline {
+	font-size: 13px;
+	color: var(--slashed-ink-soft);
+	line-height: 1.45;
 }
+
 .slashed-bundle-card__list {
 	list-style: none;
-	padding: 0;
-	margin: 0;
-	font-size: 12px;
+	padding: 12px 0 0;
+	margin: 4px 0 0;
+	border-top: 1px solid rgb(0 0 0 / .06);
+	font-size: 12.5px;
 	color: #3c434a;
-	line-height: 1.6;
+	line-height: 1.55;
+	display: grid;
+	gap: 5px;
 }
+
 .slashed-bundle-card__list li {
-	padding-left: 16px;
 	position: relative;
+	padding-left: 22px;
 }
+
 .slashed-bundle-card__list li::before {
-	content: '\2713';
+	content: "";
 	position: absolute;
-	left: 0;
-	color: #00a32a;
-	font-size: 11px;
-	line-height: 1.6;
+	left: 2px;
+	top: 6px;
+	width: 11px;
+	height: 6px;
+	border-left: 2px solid var(--slashed-ok);
+	border-bottom: 2px solid var(--slashed-ok);
+	transform: rotate(-45deg);
 }
+
 .slashed-bundle-card__list li.added::before {
-	content: '+';
-	color: #2271b1;
+	content: "+";
+	left: 4px;
+	top: 0;
+	width: auto;
+	height: auto;
+	border: 0;
+	transform: none;
+	color: var(--slashed-accent);
 	font-weight: 700;
+	font-size: 14px;
+	line-height: 1.4;
 }
+
+/* ---- Flat toggle -------------------------------------------------------- */
+
 .slashed-flat-row {
-	max-width: 920px;
-	margin: 0 0 8px;
-	padding: 12px 16px;
-	border: 1px solid #c3c4c7;
-	border-radius: 6px;
-	background: #fff;
-}
-.slashed-flat-row label {
 	display: flex;
 	align-items: flex-start;
-	gap: 8px;
-	font-size: 13px;
-	color: #1e1e1e;
+	gap: 14px;
+	max-width: 920px;
+	margin: 0 0 10px;
+	padding: 16px 18px;
+	background: #fff;
+	border: 1px solid var(--slashed-line);
+	border-radius: 12px;
 	cursor: pointer;
+	transition: border-color .15s ease, box-shadow .15s ease;
 }
-.slashed-flat-row label input { margin-top: 2px; flex-shrink: 0; }
-.slashed-flat-row p.description { margin: 4px 0 0 22px; }
+
+.slashed-flat-row:hover {
+	border-color: #a7aaad;
+}
+
+.slashed-flat-row:has(input:checked) {
+	border-color: var(--slashed-accent);
+	box-shadow: 0 0 0 1px var(--slashed-accent);
+}
+
+.slashed-flat-row input[type="checkbox"] {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	pointer-events: none;
+}
+
+/* Switch track + knob. */
+.slashed-flat-row__switch {
+	position: relative;
+	flex: 0 0 auto;
+	width: 38px;
+	height: 22px;
+	margin-top: 1px;
+	border-radius: 999px;
+	background: #c3c4c7;
+	transition: background .15s ease;
+}
+
+.slashed-flat-row__switch::after {
+	content: "";
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 2px rgb(0 0 0 / .3);
+	transition: transform .15s ease;
+}
+
+.slashed-flat-row:has(input:checked) .slashed-flat-row__switch {
+	background: var(--slashed-accent);
+}
+
+.slashed-flat-row:has(input:checked) .slashed-flat-row__switch::after {
+	transform: translateX(16px);
+}
+
+.slashed-flat-row:has(input:focus-visible) .slashed-flat-row__switch {
+	outline: 2px solid var(--slashed-accent);
+	outline-offset: 2px;
+}
+
+.slashed-flat-row__text {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.slashed-flat-row__text strong {
+	font-size: 13.5px;
+	color: var(--slashed-ink);
+}
+
+.slashed-flat-row__desc {
+	font-size: 12.5px;
+	color: var(--slashed-ink-soft);
+	line-height: 1.5;
+}
+
 @media (width <= 900px) {
-	.slashed-bundle-grid { grid-template-columns: 1fr; }
+	.slashed-bundle-grid {
+		grid-template-columns: 1fr;
+	}
 }
