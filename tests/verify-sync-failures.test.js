@@ -20,7 +20,7 @@ import { runChecks } from '../scripts/verify-sync.js';
 const PLUGIN = 'SLASHED-for-WP';
 const FW = '0.7.3'; // bundled-framework version
 const PV = '1.2.3'; // plugin release version
-const BUNDLES = ['optimal', 'full'];
+const BUNDLES = ['optimal', 'full', 'optimal.flat', 'full.flat'];
 
 function write(root, rel, contents) {
   const abs = path.join(root, rel);
@@ -65,6 +65,14 @@ describe('runChecks failure detection', () => {
 
   test('mismatched dist bundle versions are caught', () => {
     write(root, `${PLUGIN}/dist/slashed.full.css`, `/* SLASHED v9.9.9 — slashed.full.css */\n`);
+    const { errors } = runChecks(root);
+    assert.ok(errors.some((e) => /disagree on version/.test(e)), errors.join('\n'));
+  });
+
+  test('a flat bundle that drifts from the layered bundles is caught', () => {
+    // The flat variants are exactly what the "Flat CSS" setting serves, so a
+    // flat bundle at the wrong version must fail the same header check.
+    write(root, `${PLUGIN}/dist/slashed.optimal.flat.css`, `/* SLASHED v9.9.9 — slashed.optimal.flat.css */\n`);
     const { errors } = runChecks(root);
     assert.ok(errors.some((e) => /disagree on version/.test(e)), errors.join('\n'));
   });

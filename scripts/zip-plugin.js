@@ -8,6 +8,7 @@
  * The zip contains a single top-level `slashed/` directory with:
  *   slashed.php                          — unified entry point
  *   includes/                            — shared PHP classes
+ *   assets/admin/                        — settings-page stylesheet (settings.css)
  *   assets/admin-app/                    — new unified admin SPA (app.js + app.css)
  *   dist/                                — bundled CSS for local-first delivery
  *   integrations/bricks/
@@ -42,6 +43,7 @@ const INCLUDE = [
   { src: `${PLUGIN_ROOT}/readme.txt`,                                   dest: 'readme.txt',  required: true },
   { src: `${PLUGIN_ROOT}/license.txt`,                                  dest: 'license.txt', required: true },
   { src: `${PLUGIN_ROOT}/includes`,                                     dest: 'includes' },
+  { src: `${PLUGIN_ROOT}/assets/admin`,                                 dest: 'assets/admin', required: true },
   { src: `${PLUGIN_ROOT}/assets/admin-app`,                             dest: 'assets/admin-app', required: true },
   { src: `${PLUGIN_ROOT}/dist`,                                         dest: 'dist', required: true },
   { src: `${PLUGIN_ROOT}/data`,                                         dest: 'data' },

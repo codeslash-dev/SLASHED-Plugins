@@ -5,7 +5,7 @@
  * The plugin ships local copies of the framework's CSS for offline/local-first
  * delivery. This script, end to end:
  *   1. Resolve the target version ("latest" → newest stable tag via jsDelivr).
- *   2. Download that release's CSS bundles (optimal/full)
+ *   2. Download that release's CSS bundles (optimal/full, layered + flat)
  *      from the framework's GitHub Release assets into SLASHED-for-WP/dist/.
  *   3. Shallow-clone the framework source at that tag into ./.framework and
  *      regenerate data/inventory.json + data/classes-hints.json from it.
@@ -167,10 +167,18 @@ async function resolveLatestTag() {
   return newest;
 }
 
+// Every bundle ships in two variants: the layered build and its flat
+// (`@layer`-stripped) sibling, which the plugin's "Flat CSS" setting serves as
+// slashed.<bundle>.flat.css. Both must be downloaded or the flat setting
+// resolves to a missing file and loads no framework CSS at all.
+const BUNDLE_FILES = BUNDLES.flatMap((bundle) => [
+  `slashed.${bundle}.css`,
+  `slashed.${bundle}.flat.css`,
+]);
+
 async function downloadReleaseBundles(tag) {
   fs.mkdirSync(DEST_DIR, { recursive: true });
-  for (const bundle of BUNDLES) {
-    const filename = `slashed.${bundle}.css`;
+  for (const filename of BUNDLE_FILES) {
     const url = `${RELEASE_BASE}/${tag}/${filename}`;
     const res = await fetchWithRetry(url);
     if (!res.ok) {
