@@ -28,7 +28,7 @@ import crypto from 'node:crypto';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const PLUGIN = 'SLASHED-for-WP';
 
-const DIST_BUNDLES = ['optimal', 'optimal-components', 'optimal-utilities', 'full'];
+const DIST_BUNDLES = ['optimal', 'full'];
 
 // PHP files carrying the tracked-framework-version constant.
 const CSS_REF_TARGETS = [

@@ -100,7 +100,7 @@ class Slashed_Admin {
 		$raw_flat = ! empty( $_POST['css_flat'] );
 
 		$data = array(
-			'css_bundle'   => in_array( $raw_bundle, Slashed_Settings::ALLOWED_BUNDLES, true ) ? $raw_bundle : 'optimal',
+			'css_bundle'   => Slashed_Settings::normalize_bundle( $raw_bundle ),
 			'css_flat'     => $raw_flat,
 			'integrations' => array(),
 		);
@@ -164,9 +164,9 @@ class Slashed_Admin {
 
 				<?php
 				$bundles = array(
-					'optimal'            => array(
+					'optimal' => array(
 						'label'   => __( 'Optimal', 'slashed' ),
-						'tagline' => __( 'Recommended for most sites', 'slashed' ),
+						'tagline' => __( 'The whole framework, lean — recommended for most sites.', 'slashed' ),
 						'badge'   => __( 'Recommended', 'slashed' ),
 						'items'   => array(
 							__( 'Design tokens — color, type, spacing, layout, motion, macros, shadows, radius, z-index', 'slashed' ),
@@ -175,59 +175,37 @@ class Slashed_Admin {
 							__( 'Macro-classes — .sf-prose, .sf-flow, .sf-truncate, .sf-aspect, .sf-scroll-shadow…', 'slashed' ),
 							__( 'Interaction states (.is-* and .has-* classes)', 'slashed' ),
 							__( 'Themes — light &amp; dark mode via light-dark(); [data-theme] scoping', 'slashed' ),
-							__( 'Motion — animation tokens, keyframes, transitions', 'slashed' ),
-							__( 'Accessibility &amp; print layers', 'slashed' ),
+							__( 'Motion, accessibility &amp; print layers', 'slashed' ),
 							__( 'Classless form styling — inputs, selects, checkboxes, buttons', 'slashed' ),
 						),
 					),
-					'optimal-components' => array(
-						'label'   => __( 'Optimal + Components', 'slashed' ),
-						'tagline' => __( 'Optimal plus component layer', 'slashed' ),
-						'base'    => __( 'Everything in Optimal, plus:', 'slashed' ),
-						'items'   => array(
-							__( 'Component token layer (slashed.tokens — ships incrementally in 0.x)', 'slashed' ),
-							__( 'Component styles layer (slashed.components — 8 slots reserved; class definitions ship in upcoming 0.x releases)', 'slashed' ),
-						),
-					),
-					'optimal-utilities'  => array(
-						'label'   => __( 'Optimal + Utilities', 'slashed' ),
-						'tagline' => __( 'Optimal plus utilities layer', 'slashed' ),
-						'base'    => __( 'Everything in Optimal, plus:', 'slashed' ),
-						'items'   => array(
-							__( 'Utilities layer (slashed.utilities — reserved; SLASHED ships no utility classes in 0.x)', 'slashed' ),
-						),
-					),
-					'full'               => array(
+					'full'    => array(
 						'label'   => __( 'Full', 'slashed' ),
-						'tagline' => __( 'All layers', 'slashed' ),
+						'tagline' => __( 'Everything in Optimal, plus the component and utility layers.', 'slashed' ),
 						'base'    => __( 'Everything in Optimal, plus:', 'slashed' ),
 						'items'   => array(
-							__( 'Component tokens (ships incrementally in 0.x)', 'slashed' ),
-							__( 'Component styles (8 slots reserved; class definitions ship in upcoming 0.x releases)', 'slashed' ),
-							__( 'Utilities layer (reserved; no utility classes in 0.x)', 'slashed' ),
+							__( 'Component classes — .sf-btn, .sf-card, and their component token layer', 'slashed' ),
+							__( 'Utility helpers — heading, text-size, hover, list-reset, marker, selection, sticky', 'slashed' ),
 						),
 					),
 				);
 				?>
 				<div class="slashed-bundle-grid">
 					<?php foreach ( $bundles as $value => $bundle ) : ?>
-					<label class="slashed-bundle-card<?php echo $css_bundle === $value ? ' is-selected' : ''; ?>" for="bundle-<?php echo esc_attr( $value ); ?>">
+					<label class="slashed-bundle-card" for="bundle-<?php echo esc_attr( $value ); ?>">
 						<input type="radio"
 							id="bundle-<?php echo esc_attr( $value ); ?>"
 							name="css_bundle"
 							value="<?php echo esc_attr( $value ); ?>"
 							<?php checked( $css_bundle, $value ); ?>>
-						<span class="slashed-bundle-card__name">
-							<?php echo esc_html( $bundle['label'] ); ?>
+						<span class="slashed-bundle-card__radio" aria-hidden="true"></span>
+						<span class="slashed-bundle-card__head">
+							<span class="slashed-bundle-card__name"><?php echo esc_html( $bundle['label'] ); ?></span>
 							<?php if ( ! empty( $bundle['badge'] ) ) : ?>
 								<span class="slashed-bundle-card__badge"><?php echo esc_html( $bundle['badge'] ); ?></span>
 							<?php endif; ?>
 						</span>
 						<span class="slashed-bundle-card__tagline"><?php echo esc_html( $bundle['tagline'] ); ?></span>
-						<hr>
-						<?php if ( ! empty( $bundle['base'] ) ) : ?>
-							<p style="margin:0 0 4px;font-size:12px;color:#50575e;"><?php echo esc_html( $bundle['base'] ); ?></p>
-						<?php endif; ?>
 						<ul class="slashed-bundle-card__list">
 							<?php foreach ( $bundle['items'] as $item ) : ?>
 								<li<?php echo ! empty( $bundle['base'] ) ? ' class="added"' : ''; ?>>
@@ -242,15 +220,16 @@ class Slashed_Admin {
 					<?php endforeach; ?>
 				</div>
 
-				<div class="slashed-flat-row">
-					<label>
-						<input type="checkbox" name="css_flat" value="1" <?php checked( $css_flat ); ?>>
-						<strong><?php esc_html_e( 'Use flat CSS bundle', 'slashed' ); ?></strong>
-					</label>
-					<p class="description">
-						<?php esc_html_e( 'Loads the flat variant of the selected bundle (e.g. slashed.optimal.flat.css). Flat bundles contain identical rules but without @layer declarations, which can fix conflicts with themes or plugins that do not support CSS cascade layers.', 'slashed' ); ?>
-					</p>
-				</div>
+				<label class="slashed-flat-row">
+					<input type="checkbox" name="css_flat" value="1" <?php checked( $css_flat ); ?>>
+					<span class="slashed-flat-row__switch" aria-hidden="true"></span>
+					<span class="slashed-flat-row__text">
+						<strong><?php esc_html_e( 'Flat CSS — no cascade layers', 'slashed' ); ?></strong>
+						<span class="slashed-flat-row__desc">
+							<?php esc_html_e( 'Loads the flat variant of the selected bundle (e.g. slashed.optimal.flat.css) — identical rules, but without @layer declarations. Turn this on only if a theme or plugin that doesn\'t support CSS cascade layers is conflicting with SLASHED.', 'slashed' ); ?>
+						</span>
+					</span>
+				</label>
 
 				<h2><?php esc_html_e( 'Builder integrations', 'slashed' ); ?></h2>
 				<p class="description"><?php esc_html_e( 'Optional deeper integration with your page builder. Adds builder-specific features on top of the core CSS delivery.', 'slashed' ); ?></p>

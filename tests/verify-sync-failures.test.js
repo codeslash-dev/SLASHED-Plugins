@@ -20,7 +20,7 @@ import { runChecks } from '../scripts/verify-sync.js';
 const PLUGIN = 'SLASHED-for-WP';
 const FW = '0.7.3'; // bundled-framework version
 const PV = '1.2.3'; // plugin release version
-const BUNDLES = ['optimal', 'optimal-components', 'optimal-utilities', 'full'];
+const BUNDLES = ['optimal', 'full'];
 
 function write(root, rel, contents) {
   const abs = path.join(root, rel);

@@ -60,12 +60,12 @@ A single dark section inside a light page — or the reverse — works with no s
 
 Pick the bundle that fits the project on the settings page:
 
-* **Optimal** (recommended) — tokens, CSS reset, base element styles, light/dark themes, layout primitives (container, stack, grid, cluster, sidebar, switcher, cover, center, frame, reel), macros (prose, flow, truncate, aspect, scroll-shadow), interaction states, motion, accessibility, print, and classless form styling.
-* **Optimal + Components** — adds prebuilt components: buttons, badges, tags, cards, tables, form rows, and loading skeletons, with status and style modifiers.
-* **Optimal + Utilities** — adds utility classes: object-fit, a z-index scale, text balancing, and animation helpers (spin, ping, blink, shimmer, float).
-* **Full** — everything above.
+* **Optimal** (recommended) — the whole framework, lean: tokens, CSS reset, base element styles, light/dark themes, layout primitives (container, stack, grid, cluster, sidebar, switcher, cover, center, frame, reel), macros (prose, flow, truncate, aspect, scroll-shadow), interaction states, motion, accessibility, print, and classless form styling.
+* **Full** — everything in Optimal, plus the component layer (buttons and cards) and the utility helpers.
 
-All bundles ship with the plugin and load locally from the plugin's own folder — no external requests are made to render your site. New framework CSS arrives through normal plugin updates.
+Both bundles ship with the plugin and load locally from the plugin's own folder — no external requests are made to render your site. New framework CSS arrives through normal plugin updates.
+
+Each bundle also has a **flat** variant (identical rules without @layer declarations) for themes or plugins that don't support CSS cascade layers — toggle it on the settings page.
 
 = Predictable overrides =
 

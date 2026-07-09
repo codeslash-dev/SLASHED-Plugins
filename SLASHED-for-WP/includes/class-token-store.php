@@ -40,8 +40,13 @@ class Slashed_Token_Store {
 
 	/**
 	 * Allowed values for the css_bundle plugin setting.
+	 *
+	 * The framework delivers two bundles: 'optimal' (the whole framework, lean)
+	 * and 'full' (optimal plus the component and utility layers). Retired names
+	 * ('optimal-components', 'optimal-utilities') are migrated to 'full' on read
+	 * by Slashed_Settings::normalize_bundle().
 	 */
-	const ALLOWED_CSS_BUNDLES = array( 'optimal', 'optimal-components', 'optimal-utilities', 'full' );
+	const ALLOWED_CSS_BUNDLES = array( 'optimal', 'full' );
 
 	/**
 	 * Read the flat configurator override map.

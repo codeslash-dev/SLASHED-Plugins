@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Copies the local-delivery CSS bundles (optimal, optimal-components, optimal-utilities, full)
-// from the root dist/ build output into the WordPress plugin's bundled dist/.
+// Copies the local-delivery CSS bundles (optimal, full) from the root dist/
+// build output into the WordPress plugin's bundled dist/.
 //
 // The plugin ships these files so sites can load SLASHED without a CDN
 // (see Slashed_CSS_Loader / "local-first delivery"). They must always match
@@ -23,7 +23,7 @@ const FRAMEWORK = process.env.SLASHED_FRAMEWORK_DIR
 const SRC_DIR = path.join(FRAMEWORK, 'dist');
 const DEST_DIR = path.join(ROOT, 'SLASHED-for-WP/dist');
 
-const BUNDLES = ['optimal', 'optimal-components', 'optimal-utilities', 'full'];
+const BUNDLES = ['optimal', 'full'];
 
 fs.mkdirSync(DEST_DIR, { recursive: true });
 
