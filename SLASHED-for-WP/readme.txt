@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.5.6
+Stable tag: 0.5.7
 Requires PHP: 7.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -129,6 +129,12 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.5.7 =
+* Fixed: Ship the flat (no `@layer`) CSS bundles so the "Flat CSS — no cascade layers"
+* Fixed: setting actually loads framework CSS instead of resolving a missing file.
+* Fixed: Include `assets/admin/` in the plugin zip so the settings-page stylesheet
+* Fixed: (`settings.css`) loads and the page renders styled.
 
 = 0.5.6 =
 * Added: Reduce CSS bundles to optimal + full and redesign the picker

@@ -9,6 +9,14 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.5.7] - 2026-07-09
+
+### Fixed
+
+- Ship flat CSS bundles and settings-page stylesheet in the plugin
+
+## [0.5.7] - 2026-07-09
+
 ### Fixed
 
 - Ship the flat (no `@layer`) CSS bundles so the "Flat CSS — no cascade layers"

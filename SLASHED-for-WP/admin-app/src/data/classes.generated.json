@@ -740,7 +740,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "description": "Concave \"scooped\" corner cut with a radial-gradient mask; defaults to the top-right corner (--sf-corner-scoop-at). Add a placement modifier to move it.",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -750,7 +750,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "description": "Places the concave corner scoop at the bottom-left corner.",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -760,7 +760,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "description": "Places the concave corner scoop at the bottom-right corner.",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -770,7 +770,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "description": "Places the concave corner scoop at the top-left corner.",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -780,7 +780,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "Concave corner — a corner that curves AWAY from the box (revealing whatever sits behind it), via a radial-gradient mask. Physical corner names (mask geometry has no logical form, same rationale as .sf-overflow-fade's physical directions). Cuts the element's full paint at that…",
+      "description": "Places the concave corner scoop at the top-right corner.",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -860,7 +860,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "Divide",
-      "description": "Divide — rules between direct children, reusing .sf-divider's tokens. Unlike .sf-divider (a standalone separator element), .sf-divide is applied to the container and needs no extra markup per gap.",
+      "description": "Rules between direct children (a border on each child after the first), reusing .sf-divider's tokens — no per-gap markup needed.",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -870,7 +870,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "Divide",
-      "description": "Divide — rules between direct children, reusing .sf-divider's tokens. Unlike .sf-divider (a standalone separator element), .sf-divide is applied to the container and needs no extra markup per gap.",
+      "description": "Vertical rules between direct children (inline-start borders), for row/horizontal layouts.",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -950,7 +950,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "description": "Large filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-l).",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -960,7 +960,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "description": "Medium filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-m).",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -970,7 +970,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "description": "Small filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-s).",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -980,7 +980,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "description": "Extra-large filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-xl).",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -990,7 +990,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "filter: drop-shadow() utilities — unlike box-shadow, follows the element's actual alpha shape (SVG icons, PNG cutouts, transparent logos).",
+      "description": "Extra-small filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-xs).",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -1120,7 +1120,7 @@
       "kind": "motion",
       "category": "Motion / animation",
       "group": "",
-      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "description": "Scroll-out exit animation: fades the element out in place (sf-fade-out).",
       "optional": false,
       "layer": "slashed.motion"
     },
@@ -1130,7 +1130,7 @@
       "kind": "motion",
       "category": "Motion / animation",
       "group": "",
-      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "description": "Scroll-out exit animation: fades out while sliding downward (sf-slide-out-down).",
       "optional": false,
       "layer": "slashed.motion"
     },
@@ -1140,7 +1140,7 @@
       "kind": "motion",
       "category": "Motion / animation",
       "group": "",
-      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "description": "Scroll-out exit animation: fades out while sliding to the left (sf-slide-out-left).",
       "optional": false,
       "layer": "slashed.motion"
     },
@@ -1150,7 +1150,7 @@
       "kind": "motion",
       "category": "Motion / animation",
       "group": "",
-      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "description": "Scroll-out exit animation: fades out while sliding to the right (sf-slide-out-right).",
       "optional": false,
       "layer": "slashed.motion"
     },
@@ -1160,7 +1160,7 @@
       "kind": "motion",
       "category": "Motion / animation",
       "group": "",
-      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "description": "Scroll-out exit animation: fades out while sliding upward (sf-slide-out-up).",
       "optional": false,
       "layer": "slashed.motion"
     },
@@ -1170,7 +1170,7 @@
       "kind": "motion",
       "category": "Motion / animation",
       "group": "",
-      "description": "Exit counterpart of .sf-entrance--*: fires as the element scrolls out of view. Every declaration below lives inside @supports — unlike entrance (where a non-scroll fallback still ends visible), an unconditional exit animation would leave content permanently hidden on engines…",
+      "description": "Scroll-out exit animation: fades out while shrinking (sf-scale-down).",
       "optional": false,
       "layer": "slashed.motion"
     },
@@ -1720,7 +1720,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "",
-      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "description": "Header block padding at the l step (--sf-space-l).",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -1730,7 +1730,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "",
-      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "description": "Header block padding at the m step (--sf-space-m).",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -1740,7 +1740,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "",
-      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "description": "Header block padding at the s step (--sf-space-s).",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -1750,7 +1750,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "",
-      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "description": "Header block padding at the xl step (--sf-space-xl).",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -1760,7 +1760,7 @@
       "kind": "layout",
       "category": "Layout primitives",
       "group": "",
-      "description": "Header — block padding on the standard spacing scale. Headers usually want lighter vertical rhythm than .sf-section, so these map to --sf-space-* directly. Only block padding is set; any inline gutter (from .sf-section--guttered, a container, or the element itself) is left…",
+      "description": "Header block padding at the xs step (--sf-space-xs).",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -2290,7 +2290,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "LIST MARKER COLOUR (.sf-marker--*)",
-      "description": "Colour the ::marker of an arbitrary list. Brand/action families only — for any other colour set `::marker { color }` yourself. The :not(.sf-prose *) guard keeps this utility from reaching into a .sf-prose subtree, which owns its markers via --sf-prose-marker-color (utilities…",
+      "description": "Colours list ::markers with the action colour.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -2300,7 +2300,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "LIST MARKER COLOUR (.sf-marker--*)",
-      "description": "Colour the ::marker of an arbitrary list. Brand/action families only — for any other colour set `::marker { color }` yourself. The :not(.sf-prose *) guard keeps this utility from reaching into a .sf-prose subtree, which owns its markers via --sf-prose-marker-color (utilities…",
+      "description": "Colours list ::markers with the primary brand colour.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -2310,7 +2310,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "LIST MARKER COLOUR (.sf-marker--*)",
-      "description": "Colour the ::marker of an arbitrary list. Brand/action families only — for any other colour set `::marker { color }` yourself. The :not(.sf-prose *) guard keeps this utility from reaching into a .sf-prose subtree, which owns its markers via --sf-prose-marker-color (utilities…",
+      "description": "Colours list ::markers with the secondary brand colour.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -2320,7 +2320,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "LIST MARKER COLOUR (.sf-marker--*)",
-      "description": "Colour the ::marker of an arbitrary list. Brand/action families only — for any other colour set `::marker { color }` yourself. The :not(.sf-prose *) guard keeps this utility from reaching into a .sf-prose subtree, which owns its markers via --sf-prose-marker-color (utilities…",
+      "description": "Colours list ::markers with the tertiary brand colour.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -2420,7 +2420,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "Overlap recipe — one element intentionally overlapping the previous one (e.g. an image pulled up over the card below it), via a negative logical margin + a raised stacking context. Directional variants are standalone (margins are distinct properties, not a re-pointable knob).",
+      "description": "Overlap recipe — pulls the element upward (negative block-start margin) so it overlaps the previous sibling by --sf-overlap-pull.",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -2430,7 +2430,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "Overlap recipe — one element intentionally overlapping the previous one (e.g. an image pulled up over the card below it), via a negative logical margin + a raised stacking context. Directional variants are standalone (margins are distinct properties, not a re-pointable knob).",
+      "description": "Overlap recipe — pulls following content up (negative block-end margin) so this element overlaps the sibling below it.",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -2440,7 +2440,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "Overlap recipe — one element intentionally overlapping the previous one (e.g. an image pulled up over the card below it), via a negative logical margin + a raised stacking context. Directional variants are standalone (margins are distinct properties, not a re-pointable knob).",
+      "description": "Overlap recipe — pulls the element toward the inline-end (negative inline-end margin) to overlap horizontally.",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -2450,7 +2450,7 @@
       "kind": "macro",
       "category": "Macro classes",
       "group": "",
-      "description": "Overlap recipe — one element intentionally overlapping the previous one (e.g. an image pulled up over the card below it), via a negative logical margin + a raised stacking context. Directional variants are standalone (margins are distinct properties, not a re-pointable knob).",
+      "description": "Overlap recipe — pulls the element toward the inline-start (negative inline-start margin) to overlap horizontally.",
       "optional": false,
       "layer": "slashed.macros"
     },
@@ -2890,7 +2890,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "STICKY POSITIONING (.sf-sticky)",
-      "description": "The sticky mechanism — position: sticky at the header-aware --sf-sticky-offset. Offset modifiers (--s/-m/-l) add extra gap on top of that fluid offset. (position: sticky is already conditional by nature, so there is no separate runtime-toggled state class.)",
+      "description": "position: sticky pinned at the header-aware --sf-sticky-offset.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -2900,7 +2900,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "STICKY POSITIONING (.sf-sticky)",
-      "description": "The sticky mechanism — position: sticky at the header-aware --sf-sticky-offset. Offset modifiers (--s/-m/-l) add extra gap on top of that fluid offset. (position: sticky is already conditional by nature, so there is no separate runtime-toggled state class.)",
+      "description": "Sticky positioning with an extra large gap (--sf-space-l) above the header-aware offset.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -2910,7 +2910,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "STICKY POSITIONING (.sf-sticky)",
-      "description": "The sticky mechanism — position: sticky at the header-aware --sf-sticky-offset. Offset modifiers (--s/-m/-l) add extra gap on top of that fluid offset. (position: sticky is already conditional by nature, so there is no separate runtime-toggled state class.)",
+      "description": "Sticky positioning with an extra medium gap (--sf-space-m) above the header-aware offset.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -2920,7 +2920,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "STICKY POSITIONING (.sf-sticky)",
-      "description": "The sticky mechanism — position: sticky at the header-aware --sf-sticky-offset. Offset modifiers (--s/-m/-l) add extra gap on top of that fluid offset. (position: sticky is already conditional by nature, so there is no separate runtime-toggled state class.)",
+      "description": "Sticky positioning with an extra small gap (--sf-space-s) above the header-aware offset.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -3220,7 +3220,7 @@
       "kind": "theme",
       "category": "Theme utilities",
       "group": "",
-      "description": "",
+      "description": "Forces dark colour scheme on the element and its subtree (class alias of [data-theme=\"dark\"]).",
       "optional": false,
       "layer": "slashed.themes"
     },
@@ -3230,7 +3230,7 @@
       "kind": "theme",
       "category": "Theme utilities",
       "group": "",
-      "description": "",
+      "description": "Forces light colour scheme on the element and its subtree (class alias of [data-theme=\"light\"]).",
       "optional": false,
       "layer": "slashed.themes"
     },
