@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Copies the local-delivery CSS bundles (optimal, full) from the root dist/
-// build output into the WordPress plugin's bundled dist/.
+// Copies the local-delivery CSS bundles (optimal, full — each in its layered
+// and flat variant) from the root dist/ build output into the WordPress
+// plugin's bundled dist/.
 //
 // The plugin ships these files so sites can load SLASHED without a CDN
 // (see Slashed_CSS_Loader / "local-first delivery"). They must always match
@@ -25,10 +26,18 @@ const DEST_DIR = path.join(ROOT, 'SLASHED-for-WP/dist');
 
 const BUNDLES = ['optimal', 'full'];
 
+// Both the layered bundle and its flat (no `@layer`) sibling ship, because the
+// plugin's "Flat CSS" setting serves slashed.<bundle>.flat.css — if the flat
+// files are missing the CSS loader resolves an empty URL and no framework CSS
+// loads at all (see Slashed_CSS_Loader::get_url()).
+const FILENAMES = BUNDLES.flatMap((bundle) => [
+  `slashed.${bundle}.css`,
+  `slashed.${bundle}.flat.css`,
+]);
+
 fs.mkdirSync(DEST_DIR, { recursive: true });
 
-for (const bundle of BUNDLES) {
-  const filename = `slashed.${bundle}.css`;
+for (const filename of FILENAMES) {
   fs.copyFileSync(path.join(SRC_DIR, filename), path.join(DEST_DIR, filename));
   console.log(`[sync-plugin-dist] → SLASHED-for-WP/dist/${filename}`);
 }

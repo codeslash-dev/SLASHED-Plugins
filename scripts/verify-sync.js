@@ -28,7 +28,10 @@ import crypto from 'node:crypto';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const PLUGIN = 'SLASHED-for-WP';
 
-const DIST_BUNDLES = ['optimal', 'full'];
+// Every shipped bundle, layered and flat. All must carry the same framework
+// version header — the flat variants are what the "Flat CSS" setting serves,
+// so a missing or mismatched flat bundle is exactly the drift this catches.
+const DIST_BUNDLES = ['optimal', 'full', 'optimal.flat', 'full.flat'];
 
 // PHP files carrying the tracked-framework-version constant.
 const CSS_REF_TARGETS = [
