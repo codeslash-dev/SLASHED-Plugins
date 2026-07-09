@@ -1,6 +1,7 @@
 <script lang="ts">
   import SliderRow from '../inputs/SliderRow.svelte';
   import { SPACE_SCALE, RADIUS_SCALE, BORDER_WIDTH_SCALE, SIZE_SCALE, type VarOption } from '../../lib/variableScales';
+  import { themeState } from '../../lib/theme.svelte';
 
   let { overrides, onSet, onReset }: {
     overrides: Record<string, string>;
@@ -218,8 +219,17 @@
       </div>
 
       <!-- Live preview — real .sf-btn classes, driven by the same override
-           mechanism as every other panel's inline preview. -->
-      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center">
+           mechanism as every other panel's inline preview. data-theme pins
+           the framework's token resolution to the Studio's own chrome theme:
+           without it, background tokens (--sf-card-bg/--sf-color-surface,
+           registered via @property) and text tokens (--sf-color-text,
+           unregistered) resolve dark mode through different mechanisms —
+           the former freezes at :root's color-scheme, the latter
+           re-evaluates light-dark() locally — so toggling just the Tailwind
+           `dark` class on an ancestor (as the Studio chrome does) desyncs
+           them into unreadable combinations. An explicit attribute forces
+           both through the same deterministic [data-theme] CSS path. -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center" data-theme={themeState.value}>
         <button class={btnClass()} class:sf-is-loading={btnLoading} disabled={btnDisabled}>
           {btnLoading ? "Loading" : "Button label"}
         </button>
@@ -303,8 +313,11 @@
         </label>
       </div>
 
-      <!-- Live preview — real .sf-card + subcomponents, realistic composition -->
-      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center">
+      <!-- Live preview — real .sf-card + subcomponents, realistic composition.
+           data-theme: see the equivalent note on the button preview above —
+           without it, this card's background and text tokens can resolve
+           dark mode through different mechanisms and desync. -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center" data-theme={themeState.value}>
         <article class={cardClass()} style="max-inline-size: 16rem;">
           <div class="sf-card__media" style="background: var(--sf-gradient-primary);"></div>
           <header class="sf-card__header">

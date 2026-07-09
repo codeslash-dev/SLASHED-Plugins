@@ -9,6 +9,22 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-07-09
+
+### Fixed
+
+- Recognize renamed -tint color alias in WP integrations
+- Sanitize resolved framework tag before use
+- Resolve "latest" from GitHub API, fall back to jsDelivr
+
+## [0.5.5] - 2026-07-09
+
+### Fixed
+
+- Recognize renamed -tint color alias in WP integrations
+- Sanitize resolved framework tag before use
+- Resolve "latest" from GitHub API, fall back to jsDelivr
+
 ## [0.5.4] - 2026-07-08
 ## [0.5.4] - 2026-07-08
 ## [0.5.4] - 2026-07-08

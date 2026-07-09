@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.5.4
+Stable tag: 0.5.5
 Requires PHP: 7.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -129,6 +129,11 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.5.5 =
+* Fixed: Recognize renamed -tint color alias in WP integrations
+* Fixed: Sanitize resolved framework tag before use
+* Fixed: Resolve "latest" from GitHub API, fall back to jsDelivr
 
 = 0.5.4 =
 * Maintenance release.

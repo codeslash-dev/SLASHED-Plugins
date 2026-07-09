@@ -300,7 +300,7 @@
   /* --- Sizes (m is the default; retune the rule-local *-size tier so a
          :root override of the public knob still wins over the size) --- */
   .sf-btn--xs {
-    --sf-btn-padding-block--size:  var(--sf-space-3xs, 0.125rem);
+    --sf-btn-padding-block--size:  0.125rem;
     --sf-btn-padding-inline--size: var(--sf-space-xs);
     --sf-btn-font-size--size:      var(--sf-text-xs);
     --sf-btn-min-height--size:     var(--sf-size-xs);
@@ -416,6 +416,9 @@
     object-fit:    var(--sf-object-fit, cover);
     border-radius: var(--sf-card-media-radius);
     overflow:      clip;
+    /* Space before whatever follows (header or body) — media had no gap of
+       its own, so it touched the next element directly. */
+    margin-block-end: var(--sf-card-gap, var(--sf-space-m));
   }
 
   .sf-card__avatar {

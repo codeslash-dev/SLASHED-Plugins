@@ -166,9 +166,10 @@
     /* Spacing scale bars */
     .pv-space-bar{background:var(--sf-color-primary-400);border-radius:2px;min-inline-size:3px;min-block-size:3px;}
     ${SPACES.map((s) => {
-      // --sf-space-3xs is not a defined core token (core starts at 2xs); give it
-      // the same fallback the framework uses elsewhere so the bar still renders.
-      const size = s === "3xs" ? "var(--sf-space-3xs,0.125rem)" : `var(--sf-space-${s})`;
+      // "3xs" isn't a core spacing step (the scale starts at 2xs) — it's a
+      // one-off literal .sf-btn--xs also uses for its tightest padding, with
+      // no backing token to reference here.
+      const size = s === "3xs" ? "0.125rem" : `var(--sf-space-${s})`;
       return `.pv-space--${s}{inline-size:${size};block-size:${size};}`;
     }).join("")}
     .pv-swatch-label{font-size:var(--sf-text-2xs);font-family:var(--sf-font-mono);color:var(--sf-color-text--muted);}

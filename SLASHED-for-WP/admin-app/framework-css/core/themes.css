@@ -18,6 +18,20 @@
   :where([data-theme]:not(:root, html), .sf-theme-light:not(:root, html), .sf-theme-dark:not(:root, html)) {
     background-color: var(--sf-color-bg);
     color:            var(--sf-color-text);
+
+    /* Component-layer tokens that merely alias a themed core token (no
+       light/dark branching of their own, e.g. --sf-card-bg: var(--sf-color-
+       surface)) are declared once in optional/tokens.components.css's plain
+       :root block. Without a redeclaration here, that var() substitutes
+       using :root's OWN --sf-color-surface at computed-value time and the
+       result inherits down frozen — a nested data-theme section further in
+       never gets a chance to re-substitute it, breaking the "data-theme
+       works on any element" guarantee (docs/theming.md) for .sf-card
+       specifically. Re-declaring the alias here, at the same non-root
+       scope, forces a fresh substitution against this section's own
+       (possibly overridden) --sf-color-surface/-border. */
+    --sf-card-bg:           var(--sf-color-surface);
+    --sf-card-border-color: var(--sf-color-border);
   }
 
   /* LumLocker: locks 4 brand colors to shared OKLCH L. Neutral/base excluded —
