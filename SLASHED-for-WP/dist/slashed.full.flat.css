@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.12 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.14 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -2097,6 +2097,14 @@
   --sf-btn-font-weight:    var(--sf-font-weight-interactive);
   --sf-btn-border-width:   var(--sf-border-width-1);
 
+  /* Uniform label-size multiplier — the everyday "make button text a little
+   * larger / smaller" knob. Scales the resolved font-size of EVERY button
+   * size (.sf-btn--xs…xl) by the same factor while KEEPING the size ladder
+   * intact (xs < s < m < l < xl). Contrast with --sf-btn-font-size below,
+   * which flattens every size to one value. Applied in the font-size calc()
+   * in optional/components.css. */
+  --sf-btn-font-scale:     1;
+
   /*
    * The four SIZE-VARYING knobs are declared `initial` on purpose — NOT with
    * a concrete default. Each size modifier (.sf-btn--xs/--s/--l/--xl) needs
@@ -2117,6 +2125,22 @@
   --sf-btn-padding-block:  initial;
   --sf-btn-padding-inline: initial;
   --sf-btn-min-height:     initial;
+
+  /*
+   * Per-size label font-size knobs — one PUBLIC knob per size rung, the
+   * button counterpart of the per-heading --sf-hN-size knobs. Each is
+   * `initial` so, unset, that rung falls through to its scale default
+   * (--sf-text-{size}); set one on :root to pin a SINGLE rung's label size
+   * without disturbing the others — unlike the flatten-all --sf-btn-font-size
+   * above, or the proportional --sf-btn-font-scale. Consumed per
+   * .sf-btn--{size} in optional/components.css as the first arg of the
+   * --sf-btn-font-size--size tier token.
+   */
+  --sf-btn-xs-font-size:   initial;
+  --sf-btn-s-font-size:    initial;
+  --sf-btn-m-font-size:    initial;
+  --sf-btn-l-font-size:    initial;
+  --sf-btn-xl-font-size:   initial;
   /*
    * Size modifiers (.sf-btn--xs/--s/--l/--xl) and the colour family
    * (--sf-btn-color / --sf-btn-color--hover / --sf-btn-on-color) are
@@ -2766,8 +2790,12 @@ label:has(+ * :required)::after {
      reassign these *-size tokens, never the public knob. Each public knob
      (--sf-btn-font-size, --sf-btn-padding-block/-inline, --sf-btn-min-height)
      is read FIRST in its property below, so a :root override of the knob
-     wins on every size, while an unset knob falls through to the size tier. */
-  --sf-btn-font-size--size:      var(--sf-text-m);
+     wins on every size, while an unset knob falls through to the size tier.
+     For font-size the tier's first arg is the per-size knob
+     --sf-btn-{size}-font-size (initial → falls through to --sf-text-{size}),
+     and the whole resolved value is then multiplied by --sf-btn-font-scale
+     in the property below. */
+  --sf-btn-font-size--size:      var(--sf-btn-m-font-size, var(--sf-text-m));
   --sf-btn-padding-block--size:  var(--sf-space-xs);
   --sf-btn-padding-inline--size: var(--sf-space-m);
   --sf-btn-min-height--size:     var(--sf-size-m);
@@ -2780,7 +2808,7 @@ label:has(+ * :required)::after {
   padding-inline:   var(--sf-btn-padding-inline, var(--sf-btn-padding-inline--size));
   min-block-size:   var(--sf-btn-min-height, var(--sf-btn-min-height--size));
   font-family:      inherit;
-  font-size:        var(--sf-btn-font-size, var(--sf-btn-font-size--size));
+  font-size:        calc(var(--sf-btn-font-size, var(--sf-btn-font-size--size)) * var(--sf-btn-font-scale, 1));
   font-weight:      var(--sf-btn-font-weight, var(--sf-font-weight-interactive));
   line-height:      var(--sf-leading-tight);
   text-decoration:  none;
@@ -3014,29 +3042,34 @@ label:has(+ * :required)::after {
    AA 24px target; consumers who want the 44px AAA touch target back can set
    `--sf-btn-min-height: var(--sf-touch-target)` globally (exactly 44px, an
    accessibility anchor independent of the size scale) or reach for
-   `.sf-btn--l` (--sf-size-l, 48px). */
+   `.sf-btn--l` (--sf-size-l, 48px).
+
+   This ladder is honoured on touch devices too: .sf-btn is excluded from the
+   blanket `@media (pointer: coarse)` 44px floor in core/accessibility.css, so
+   the size scale stays visible on phones/tablets instead of every rung
+   collapsing to 44px. The AAA opt-in above restores the floor when wanted. */
 .sf-btn--xs {
   --sf-btn-padding-block--size:  0.125rem;
   --sf-btn-padding-inline--size: var(--sf-space-xs);
-  --sf-btn-font-size--size:      var(--sf-text-xs);
+  --sf-btn-font-size--size:      var(--sf-btn-xs-font-size, var(--sf-text-xs));
   --sf-btn-min-height--size:     var(--sf-size-xs);
 }
 .sf-btn--s {
   --sf-btn-padding-block--size:  var(--sf-space-2xs);
   --sf-btn-padding-inline--size: var(--sf-space-s);
-  --sf-btn-font-size--size:      var(--sf-text-s);
+  --sf-btn-font-size--size:      var(--sf-btn-s-font-size, var(--sf-text-s));
   --sf-btn-min-height--size:     var(--sf-size-s);
 }
 .sf-btn--l {
   --sf-btn-padding-block--size:  var(--sf-space-s);
   --sf-btn-padding-inline--size: var(--sf-space-l);
-  --sf-btn-font-size--size:      var(--sf-text-l);
+  --sf-btn-font-size--size:      var(--sf-btn-l-font-size, var(--sf-text-l));
   --sf-btn-min-height--size:     var(--sf-size-l);
 }
 .sf-btn--xl {
   --sf-btn-padding-block--size:  var(--sf-space-m);
   --sf-btn-padding-inline--size: var(--sf-space-xl);
-  --sf-btn-font-size--size:      var(--sf-text-xl);
+  --sf-btn-font-size--size:      var(--sf-btn-xl-font-size, var(--sf-text-xl));
   --sf-btn-min-height--size:     var(--sf-size-xl);
 }
 
@@ -5146,9 +5179,22 @@ img.sf-is-skeleton,
   }
 }
 
-/* Minimum touch targets */
+/* Minimum touch targets.
+   .sf-btn is excluded on purpose: it owns a deliberate XS–XL size ladder
+   (--sf-btn-min-height / --sf-size-* rungs) whose default already clears the
+   WCAG 2.2 AA 24px target, and a blanket floor here would silently override
+   that ladder on every touch device — collapsing the whole size scale to
+   44px. Consumers who want the AAA 44px target on buttons opt in explicitly
+   with `--sf-btn-min-height: var(--sf-touch-target)`. Bare <button>s (no
+   .sf-btn) and native form controls keep the floor.
+
+   The exclusion is written as [class~="sf-btn"] rather than :not(.sf-btn) on
+   purpose: the class-catalogue tooling masks quoted string literals, so this
+   keeps .sf-btn filed under its home `components` layer instead of being
+   re-attributed to `accessibility`. It is exactly equivalent to :not(.sf-btn)
+   in behaviour and specificity. */
 @media (pointer: coarse) {
-  button,
+  button:not([class~="sf-btn"]),
   input[type="button"],
   input[type="submit"],
   input[type="reset"],

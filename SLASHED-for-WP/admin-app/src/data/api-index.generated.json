@@ -2,15 +2,15 @@
   "_sync": {
     "generatedBy": "configurator/scripts/sync-api.mjs",
     "source": "docs/api-index.json",
-    "tokensHash": "46e82162ef0c",
+    "tokensHash": "6a484a58e793",
     "bundles": [
       "full",
       "optimal"
     ],
     "counts": {
-      "tokens": 735,
+      "tokens": 741,
       "byTier": {
-        "PUBLIC": 679,
+        "PUBLIC": 685,
         "PUBLIC-ADVANCED": 55,
         "INTERNAL": 1
       },
@@ -18,7 +18,7 @@
         "Layout tokens": 53,
         "Core tokens": 622,
         "Macro tokens": 34,
-        "Component tokens": 26
+        "Component tokens": 32
       }
     }
   },
@@ -1283,6 +1283,26 @@
       ]
     },
     {
+      "name": "--sf-btn-font-scale",
+      "tier": "PUBLIC",
+      "role": "knob",
+      "namespace": "btn",
+      "category": "Component tokens",
+      "group": "BUTTON TOKENS",
+      "description": "Padding and radius tokens that control button geometry. Override these to give buttons a distinct visual language from form fields.",
+      "note": "Uniform label-size multiplier for .sf-btn — scales every size's font-size by one factor while keeping the xs…xl ladder intact. The everyday 'bigger/smaller button text' knob.",
+      "value": "1",
+      "aliasOf": null,
+      "registered": false,
+      "syntax": null,
+      "fallbackOnly": false,
+      "optional": true,
+      "layer": "slashed.tokens",
+      "bundles": [
+        "full"
+      ]
+    },
+    {
       "name": "--sf-btn-font-size",
       "tier": "PUBLIC",
       "role": "knob",
@@ -1290,7 +1310,7 @@
       "category": "Component tokens",
       "group": "BUTTON TOKENS",
       "description": "Padding and radius tokens that control button geometry. Override these to give buttons a distinct visual language from form fields.",
-      "note": "Label font-size for .sf-btn. The size modifiers (--xs/--s/--l/--xl) override this per button.",
+      "note": "Flatten-all label font-size for .sf-btn — once set it overrides every size (--xs/--s/--l/--xl) to the same value. For proportional sizing use --sf-btn-font-scale; to retune a single rung use --sf-btn-{size}-font-size.",
       "value": "initial",
       "aliasOf": null,
       "registered": false,
@@ -1333,6 +1353,46 @@
       "note": "Gap between an icon and the label inside .sf-btn.",
       "value": "var(--sf-space-2xs)",
       "aliasOf": "--sf-space-2xs",
+      "registered": false,
+      "syntax": null,
+      "fallbackOnly": false,
+      "optional": true,
+      "layer": "slashed.tokens",
+      "bundles": [
+        "full"
+      ]
+    },
+    {
+      "name": "--sf-btn-l-font-size",
+      "tier": "PUBLIC",
+      "role": "knob",
+      "namespace": "btn",
+      "category": "Component tokens",
+      "group": "BUTTON TOKENS",
+      "description": "Padding and radius tokens that control button geometry. Override these to give buttons a distinct visual language from form fields.",
+      "note": "Label font-size for the large button (.sf-btn--l). Unset, falls through to --sf-text-l; set to retune this rung without touching the others.",
+      "value": "initial",
+      "aliasOf": null,
+      "registered": false,
+      "syntax": null,
+      "fallbackOnly": false,
+      "optional": true,
+      "layer": "slashed.tokens",
+      "bundles": [
+        "full"
+      ]
+    },
+    {
+      "name": "--sf-btn-m-font-size",
+      "tier": "PUBLIC",
+      "role": "knob",
+      "namespace": "btn",
+      "category": "Component tokens",
+      "group": "BUTTON TOKENS",
+      "description": "Padding and radius tokens that control button geometry. Override these to give buttons a distinct visual language from form fields.",
+      "note": "Label font-size for the default (medium) button (.sf-btn). Unset, falls through to --sf-text-m; set to retune this rung without touching the others.",
+      "value": "initial",
+      "aliasOf": null,
       "registered": false,
       "syntax": null,
       "fallbackOnly": false,
@@ -1413,6 +1473,66 @@
       "note": "Corner radius for .sf-btn. Defaults to --sf-radius-m; gives buttons a distinct radius from form fields without touching global tokens.",
       "value": "var(--sf-radius-m)",
       "aliasOf": "--sf-radius-m",
+      "registered": false,
+      "syntax": null,
+      "fallbackOnly": false,
+      "optional": true,
+      "layer": "slashed.tokens",
+      "bundles": [
+        "full"
+      ]
+    },
+    {
+      "name": "--sf-btn-s-font-size",
+      "tier": "PUBLIC",
+      "role": "knob",
+      "namespace": "btn",
+      "category": "Component tokens",
+      "group": "BUTTON TOKENS",
+      "description": "Padding and radius tokens that control button geometry. Override these to give buttons a distinct visual language from form fields.",
+      "note": "Label font-size for the small button (.sf-btn--s). Unset, falls through to --sf-text-s; set to retune this rung without touching the others.",
+      "value": "initial",
+      "aliasOf": null,
+      "registered": false,
+      "syntax": null,
+      "fallbackOnly": false,
+      "optional": true,
+      "layer": "slashed.tokens",
+      "bundles": [
+        "full"
+      ]
+    },
+    {
+      "name": "--sf-btn-xl-font-size",
+      "tier": "PUBLIC",
+      "role": "knob",
+      "namespace": "btn",
+      "category": "Component tokens",
+      "group": "BUTTON TOKENS",
+      "description": "Padding and radius tokens that control button geometry. Override these to give buttons a distinct visual language from form fields.",
+      "note": "Label font-size for the extra-large button (.sf-btn--xl). Unset, falls through to --sf-text-xl; set to retune this rung without touching the others.",
+      "value": "initial",
+      "aliasOf": null,
+      "registered": false,
+      "syntax": null,
+      "fallbackOnly": false,
+      "optional": true,
+      "layer": "slashed.tokens",
+      "bundles": [
+        "full"
+      ]
+    },
+    {
+      "name": "--sf-btn-xs-font-size",
+      "tier": "PUBLIC",
+      "role": "knob",
+      "namespace": "btn",
+      "category": "Component tokens",
+      "group": "BUTTON TOKENS",
+      "description": "Padding and radius tokens that control button geometry. Override these to give buttons a distinct visual language from form fields.",
+      "note": "Label font-size for the extra-small button (.sf-btn--xs). Unset, falls through to --sf-text-xs; set to retune this rung without touching the others.",
+      "value": "initial",
+      "aliasOf": null,
       "registered": false,
       "syntax": null,
       "fallbackOnly": false,

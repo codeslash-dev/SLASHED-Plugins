@@ -2,7 +2,7 @@
   "_meta": {
     "source": "source (core/ + optional/ token and class files)",
     "counts": {
-      "variables": 735,
+      "variables": 741,
       "sf_classes": 320,
       "is_classes": 0
     }
@@ -68,13 +68,19 @@
     "--sf-box-padding",
     "--sf-breakout-width",
     "--sf-btn-border-width",
+    "--sf-btn-font-scale",
     "--sf-btn-font-size",
     "--sf-btn-font-weight",
     "--sf-btn-gap",
+    "--sf-btn-l-font-size",
+    "--sf-btn-m-font-size",
     "--sf-btn-min-height",
     "--sf-btn-padding-block",
     "--sf-btn-padding-inline",
     "--sf-btn-radius",
+    "--sf-btn-s-font-size",
+    "--sf-btn-xl-font-size",
+    "--sf-btn-xs-font-size",
     "--sf-card-avatar-size",
     "--sf-card-bg",
     "--sf-card-border-color",

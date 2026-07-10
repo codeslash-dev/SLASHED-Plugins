@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.12 — slashed.optimal.css | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.14 — slashed.optimal.css | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -4114,9 +4114,22 @@
     }
   }
 
-  /* Minimum touch targets */
+  /* Minimum touch targets.
+     .sf-btn is excluded on purpose: it owns a deliberate XS–XL size ladder
+     (--sf-btn-min-height / --sf-size-* rungs) whose default already clears the
+     WCAG 2.2 AA 24px target, and a blanket floor here would silently override
+     that ladder on every touch device — collapsing the whole size scale to
+     44px. Consumers who want the AAA 44px target on buttons opt in explicitly
+     with `--sf-btn-min-height: var(--sf-touch-target)`. Bare <button>s (no
+     .sf-btn) and native form controls keep the floor.
+
+     The exclusion is written as [class~="sf-btn"] rather than :not(.sf-btn) on
+     purpose: the class-catalogue tooling masks quoted string literals, so this
+     keeps .sf-btn filed under its home `components` layer instead of being
+     re-attributed to `accessibility`. It is exactly equivalent to :not(.sf-btn)
+     in behaviour and specificity. */
   @media (pointer: coarse) {
-    button,
+    button:not([class~="sf-btn"]),
     input[type="button"],
     input[type="submit"],
     input[type="reset"],

@@ -58,6 +58,14 @@
     --sf-btn-font-weight:    var(--sf-font-weight-interactive);
     --sf-btn-border-width:   var(--sf-border-width-1);
 
+    /* Uniform label-size multiplier — the everyday "make button text a little
+     * larger / smaller" knob. Scales the resolved font-size of EVERY button
+     * size (.sf-btn--xs…xl) by the same factor while KEEPING the size ladder
+     * intact (xs < s < m < l < xl). Contrast with --sf-btn-font-size below,
+     * which flattens every size to one value. Applied in the font-size calc()
+     * in optional/components.css. */
+    --sf-btn-font-scale:     1;
+
     /*
      * The four SIZE-VARYING knobs are declared `initial` on purpose — NOT with
      * a concrete default. Each size modifier (.sf-btn--xs/--s/--l/--xl) needs
@@ -78,6 +86,22 @@
     --sf-btn-padding-block:  initial;
     --sf-btn-padding-inline: initial;
     --sf-btn-min-height:     initial;
+
+    /*
+     * Per-size label font-size knobs — one PUBLIC knob per size rung, the
+     * button counterpart of the per-heading --sf-hN-size knobs. Each is
+     * `initial` so, unset, that rung falls through to its scale default
+     * (--sf-text-{size}); set one on :root to pin a SINGLE rung's label size
+     * without disturbing the others — unlike the flatten-all --sf-btn-font-size
+     * above, or the proportional --sf-btn-font-scale. Consumed per
+     * .sf-btn--{size} in optional/components.css as the first arg of the
+     * --sf-btn-font-size--size tier token.
+     */
+    --sf-btn-xs-font-size:   initial;
+    --sf-btn-s-font-size:    initial;
+    --sf-btn-m-font-size:    initial;
+    --sf-btn-l-font-size:    initial;
+    --sf-btn-xl-font-size:   initial;
     /*
      * Size modifiers (.sf-btn--xs/--s/--l/--xl) and the colour family
      * (--sf-btn-color / --sf-btn-color--hover / --sf-btn-on-color) are

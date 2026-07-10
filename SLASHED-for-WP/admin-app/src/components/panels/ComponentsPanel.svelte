@@ -38,12 +38,21 @@
     { step: "border--strong",   label: "Strong" },
   ];
 
+  // Everyday, non-scale-shadowing button knobs — applied uniformly, they don't
+  // flatten the .sf-btn--xs…xl size ladder, so they stay on the main surface.
   const BUTTON_TOKENS: Array<{ label: string; token: string; unit: string; min: number; max: number; step: number; default: number; rawDefault: string; variableOptions: VarOption[] }> = [
     { label: "Radius",         token: "--sf-btn-radius",         unit: "rem", min: 0, max: 2,   step: 0.05,   default: 0.5,   rawDefault: "var(--sf-radius-m)", variableOptions: RADIUS_SCALE },
-    { label: "Padding block",  token: "--sf-btn-padding-block",  unit: "rem", min: 0, max: 1,   step: 0.025,  default: 0.375, rawDefault: "var(--sf-space-xs)", variableOptions: SPACE_SCALE },
-    { label: "Padding inline", token: "--sf-btn-padding-inline", unit: "rem", min: 0, max: 2,   step: 0.025,  default: 1,     rawDefault: "var(--sf-space-m)", variableOptions: SPACE_SCALE },
     { label: "Gap (icon+label)", token: "--sf-btn-gap",          unit: "rem", min: 0, max: 1,   step: 0.0125, default: 0.25,  rawDefault: "var(--sf-space-2xs)", variableOptions: SPACE_SCALE },
     { label: "Border width",  token: "--sf-btn-border-width",   unit: "px",  min: 0, max: 4,   step: 0.5,    default: 1,     rawDefault: "var(--sf-border-width-1)", variableOptions: BORDER_WIDTH_SCALE },
+  ];
+
+  // Advanced flatten-all knobs — each shadows the per-size scale (.sf-btn--xs…xl)
+  // on EVERY size once set, so they live behind the panel's "Advanced" toggle
+  // rather than the primary surface. (For everyday sizing use the label-size
+  // multiplier + per-size knobs above.)
+  const BUTTON_ADVANCED_TOKENS: Array<{ label: string; token: string; unit: string; min: number; max: number; step: number; default: number; rawDefault: string; variableOptions: VarOption[] }> = [
+    { label: "Padding block",  token: "--sf-btn-padding-block",  unit: "rem", min: 0, max: 1,   step: 0.025,  default: 0.375, rawDefault: "var(--sf-space-xs)", variableOptions: SPACE_SCALE },
+    { label: "Padding inline", token: "--sf-btn-padding-inline", unit: "rem", min: 0, max: 2,   step: 0.025,  default: 1,     rawDefault: "var(--sf-space-m)", variableOptions: SPACE_SCALE },
     // Unset, --sf-btn-min-height falls through to the per-size tier
     // (--sf-size-* via .sf-btn--xs…xl), whose base is --sf-size-m (40px) — so
     // THAT is the real default, not --sf-touch-target. Presenting touch-target
@@ -51,6 +60,22 @@
     // the XS–XL scale. touch-target stays available as an explicit choice via
     // the variable dropdown for consumers who want the WCAG AAA target.
     { label: "Min height",    token: "--sf-btn-min-height",      unit: "rem", min: 1, max: 4,   step: 0.125,  default: 2.5,   rawDefault: "var(--sf-size-m)", variableOptions: SIZE_SCALE },
+  ];
+
+  // Everyday label-size multiplier — scales every button's font-size by one
+  // factor while KEEPING the xs…xl ladder intact (unlike the flatten-all
+  // --sf-btn-font-size override, which lives in Advanced).
+  const BTN_FONT_SCALE = { token: "--sf-btn-font-scale", default: 1, min: 0.75, max: 1.5, step: 0.05 };
+
+  // Per-size label-size knobs — one public knob per rung, the button counterpart
+  // of the per-heading size knobs. Each rung's default step matches its own name
+  // (xs→--sf-text-xs …); unset falls through to that scale default.
+  const BTN_FONT_SIZES = [
+    { rung: "xs", token: "--sf-btn-xs-font-size" },
+    { rung: "s",  token: "--sf-btn-s-font-size" },
+    { rung: "m",  token: "--sf-btn-m-font-size" },
+    { rung: "l",  token: "--sf-btn-l-font-size" },
+    { rung: "xl", token: "--sf-btn-xl-font-size" },
   ];
 
   const CARD_TOKENS: Array<{ label: string; token: string; unit: string; min: number; max: number; step: number; default: number; rawDefault: string; variableOptions: VarOption[] }> = [
@@ -78,6 +103,9 @@
   }
 
   let showButton = $state(false);
+  let showBtnAdvanced = $state(false);
+  let activeBtnRung = $state("m");
+  let activeBtnSize = $derived(BTN_FONT_SIZES.find((r) => r.rung === activeBtnRung) ?? BTN_FONT_SIZES[2]);
   let showCard = $state(false);
 
   // Preview-only state — never touches overrides, just picks which real
@@ -258,12 +286,8 @@
       </div>
 
       <div class="mt-2 space-y-2">
-        <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Base style — applies to every size</div>
-        <div class="text-[9px] text-slate-500 leading-snug">
-          Padding, min-height and label size are <b>global</b>: once set they override the
-          <code class="text-slate-600 dark:text-slate-300">.sf-btn--xs…xl</code> size scale on every button.
-          Leave them at default to keep the size scale (see it live on the Components preview tab).
-        </div>
+        <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Base style</div>
+
         {#each BUTTON_TOKENS as t (t.token)}
           <SliderRow
             label={t.label} value={getVal(t)} min={t.min} max={t.max} step={t.step} unit={t.unit}
@@ -276,30 +300,19 @@
             currentRaw={overrides[t.token]}
             onRawSet={(v) => onSet(t.token, v)}
           />
-          {#if SCALE_SHADOWING.has(t.token) && t.token in overrides}
-            <div class="text-[9px] text-amber-600 dark:text-amber-400 -mt-1 pl-0.5">↕ overrides every size (.sf-btn--xs…xl)</div>
-          {/if}
         {/each}
 
-        <div>
-          <div class="text-[9px] text-slate-500 mb-1">Label size — --sf-btn-font-size</div>
-          <div class="flex flex-wrap gap-1">
-            {#each TEXT_STEPS as step (step)}
-              {@const cur = currentStep("--sf-btn-font-size", "text", TEXT_STEPS, "m")}
-              <button
-                onclick={() => setStep("--sf-btn-font-size", "text", step, "m")}
-                class={`px-2 py-1 rounded-lg text-[10px] border transition-all cursor-pointer ${
-                  cur === step
-                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
-                    : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5"
-                }`}
-              >{step}</button>
-            {/each}
-          </div>
-          {#if "--sf-btn-font-size" in overrides}
-            <div class="text-[9px] text-amber-600 dark:text-amber-400 mt-1 pl-0.5">↕ overrides every size (.sf-btn--xs…xl)</div>
-          {/if}
-        </div>
+        <!-- Label size — the everyday multiplier. Scales every rung together,
+             keeping the xs…xl ladder intact (unlike the flatten-all override
+             in Advanced). -->
+        <SliderRow
+          label="Label size (all sizes)" value={getVal(BTN_FONT_SCALE)}
+          min={BTN_FONT_SCALE.min} max={BTN_FONT_SCALE.max} step={BTN_FONT_SCALE.step} unit="×"
+          help="--sf-btn-font-scale — multiplies every button's label, keeping the size ladder"
+          overridden={BTN_FONT_SCALE.token in overrides}
+          onChange={(v) => v === BTN_FONT_SCALE.default ? onReset(BTN_FONT_SCALE.token) : onSet(BTN_FONT_SCALE.token, String(v))}
+          onReset={() => onReset(BTN_FONT_SCALE.token)}
+        />
 
         <div>
           <div class="text-[9px] text-slate-500 mb-1">Label weight — --sf-btn-font-weight</div>
@@ -317,6 +330,97 @@
               >{w}</button>
             {/each}
           </div>
+        </div>
+
+        <!-- Per-size label size — one rung at a time (parity with per-heading
+             size knobs). Retunes --sf-btn-{rung}-font-size for a single rung. -->
+        <div>
+          <div class="text-[9px] text-slate-500 mb-1">Per-size label — {activeBtnSize.token}</div>
+          <div class="flex gap-0.5 mb-1.5 bg-black/5 dark:bg-white/5 rounded-lg p-0.5">
+            {#each BTN_FONT_SIZES as r (r.rung)}
+              <button
+                onclick={() => { activeBtnRung = r.rung; }}
+                class={`relative flex-1 py-1 rounded-md text-[10px] font-bold uppercase transition-all cursor-pointer ${
+                  activeBtnRung === r.rung
+                    ? "bg-black/12 dark:bg-white/12 text-slate-900 dark:text-white"
+                    : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                }`}
+              >
+                {r.rung}
+                {#if r.token in overrides}<span class="absolute top-0.5 right-0.5 w-1 h-1 rounded-full bg-indigo-400"></span>{/if}
+              </button>
+            {/each}
+          </div>
+          <div class="flex flex-wrap gap-1">
+            {#each TEXT_STEPS as step (step)}
+              {@const cur = currentStep(activeBtnSize.token, "text", TEXT_STEPS, activeBtnRung)}
+              <button
+                onclick={() => setStep(activeBtnSize.token, "text", step, activeBtnRung)}
+                class={`px-2 py-1 rounded-lg text-[10px] border transition-all cursor-pointer ${
+                  cur === step
+                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                    : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5"
+                }`}
+              >{step}</button>
+            {/each}
+          </div>
+        </div>
+
+        <!-- Advanced — flatten-all knobs that override the whole size ladder. -->
+        <div class="pt-1">
+          <button
+            onclick={() => { showBtnAdvanced = !showBtnAdvanced; }}
+            aria-expanded={showBtnAdvanced}
+            class="w-full flex items-center justify-between text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors cursor-pointer"
+          >
+            <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
+            <span class="text-[10px]">{showBtnAdvanced ? "▲" : "▼"}</span>
+          </button>
+          {#if showBtnAdvanced}
+            <div class="mt-2 space-y-2">
+              <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-snug">
+                These <b>flatten every size</b>: once set they override the
+                <code class="text-slate-500 dark:text-slate-400">.sf-btn--xs…xl</code> scale on all buttons.
+                For proportional sizing use the multiplier + per-size knobs above.
+              </p>
+              {#each BUTTON_ADVANCED_TOKENS as t (t.token)}
+                <SliderRow
+                  label={t.label} value={getVal(t)} min={t.min} max={t.max} step={t.step} unit={t.unit}
+                  help={t.token}
+                  overridden={t.token in overrides}
+                  onChange={(v) => onSet(t.token, `${v}${t.unit}`)}
+                  onReset={() => onReset(t.token)}
+                  rawDefault={t.rawDefault}
+                  variableOptions={t.variableOptions}
+                  currentRaw={overrides[t.token]}
+                  onRawSet={(v) => onSet(t.token, v)}
+                />
+                {#if SCALE_SHADOWING.has(t.token) && t.token in overrides}
+                  <div class="text-[9px] text-amber-600 dark:text-amber-400 -mt-1 pl-0.5">↕ overrides every size (.sf-btn--xs…xl)</div>
+                {/if}
+              {/each}
+
+              <div>
+                <div class="text-[9px] text-slate-500 mb-1">Label size — flatten all — --sf-btn-font-size</div>
+                <div class="flex flex-wrap gap-1">
+                  {#each TEXT_STEPS as step (step)}
+                    {@const cur = currentStep("--sf-btn-font-size", "text", TEXT_STEPS, "m")}
+                    <button
+                      onclick={() => setStep("--sf-btn-font-size", "text", step, "m")}
+                      class={`px-2 py-1 rounded-lg text-[10px] border transition-all cursor-pointer ${
+                        cur === step
+                          ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                          : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5"
+                      }`}
+                    >{step}</button>
+                  {/each}
+                </div>
+                {#if "--sf-btn-font-size" in overrides}
+                  <div class="text-[9px] text-amber-600 dark:text-amber-400 mt-1 pl-0.5">↕ overrides every size (.sf-btn--xs…xl)</div>
+                {/if}
+              </div>
+            </div>
+          {/if}
         </div>
 
         {#if Object.keys(overrides).some((k) => k.startsWith("--sf-btn-"))}

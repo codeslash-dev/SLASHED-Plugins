@@ -239,8 +239,12 @@
     "description": "Border thickness for .sf-btn (used by all fill, outline, and secondary treatments).",
     "category": "Component tokens"
   },
+  "sf-btn-font-scale": {
+    "description": "Uniform label-size multiplier for .sf-btn — scales every size's font-size by one factor while keeping the xs…xl ladder intact. The everyday 'bigger/smaller button text' knob.",
+    "category": "Component tokens"
+  },
   "sf-btn-font-size": {
-    "description": "Label font-size for .sf-btn. The size modifiers (--xs/--s/--l/--xl) override this per button.",
+    "description": "Flatten-all label font-size for .sf-btn — once set it overrides every size (--xs/--s/--l/--xl) to the same value. For proportional sizing use --sf-btn-font-scale; to retune a single rung use --sf-btn-{size}-font-size.",
     "category": "Component tokens"
   },
   "sf-btn-font-weight": {
@@ -249,6 +253,14 @@
   },
   "sf-btn-gap": {
     "description": "Gap between an icon and the label inside .sf-btn.",
+    "category": "Component tokens"
+  },
+  "sf-btn-l-font-size": {
+    "description": "Label font-size for the large button (.sf-btn--l). Unset, falls through to --sf-text-l; set to retune this rung without touching the others.",
+    "category": "Component tokens"
+  },
+  "sf-btn-m-font-size": {
+    "description": "Label font-size for the default (medium) button (.sf-btn). Unset, falls through to --sf-text-m; set to retune this rung without touching the others.",
     "category": "Component tokens"
   },
   "sf-btn-min-height": {
@@ -265,6 +277,18 @@
   },
   "sf-btn-radius": {
     "description": "Corner radius for .sf-btn. Defaults to --sf-radius-m; gives buttons a distinct radius from form fields without touching global tokens.",
+    "category": "Component tokens"
+  },
+  "sf-btn-s-font-size": {
+    "description": "Label font-size for the small button (.sf-btn--s). Unset, falls through to --sf-text-s; set to retune this rung without touching the others.",
+    "category": "Component tokens"
+  },
+  "sf-btn-xl-font-size": {
+    "description": "Label font-size for the extra-large button (.sf-btn--xl). Unset, falls through to --sf-text-xl; set to retune this rung without touching the others.",
+    "category": "Component tokens"
+  },
+  "sf-btn-xs-font-size": {
+    "description": "Label font-size for the extra-small button (.sf-btn--xs). Unset, falls through to --sf-text-xs; set to retune this rung without touching the others.",
     "category": "Component tokens"
   },
   "sf-card-avatar-size": {

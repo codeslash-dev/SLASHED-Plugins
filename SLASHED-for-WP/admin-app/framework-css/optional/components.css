@@ -61,8 +61,12 @@
        reassign these *-size tokens, never the public knob. Each public knob
        (--sf-btn-font-size, --sf-btn-padding-block/-inline, --sf-btn-min-height)
        is read FIRST in its property below, so a :root override of the knob
-       wins on every size, while an unset knob falls through to the size tier. */
-    --sf-btn-font-size--size:      var(--sf-text-m);
+       wins on every size, while an unset knob falls through to the size tier.
+       For font-size the tier's first arg is the per-size knob
+       --sf-btn-{size}-font-size (initial → falls through to --sf-text-{size}),
+       and the whole resolved value is then multiplied by --sf-btn-font-scale
+       in the property below. */
+    --sf-btn-font-size--size:      var(--sf-btn-m-font-size, var(--sf-text-m));
     --sf-btn-padding-block--size:  var(--sf-space-xs);
     --sf-btn-padding-inline--size: var(--sf-space-m);
     --sf-btn-min-height--size:     var(--sf-size-m);
@@ -75,7 +79,7 @@
     padding-inline:   var(--sf-btn-padding-inline, var(--sf-btn-padding-inline--size));
     min-block-size:   var(--sf-btn-min-height, var(--sf-btn-min-height--size));
     font-family:      inherit;
-    font-size:        var(--sf-btn-font-size, var(--sf-btn-font-size--size));
+    font-size:        calc(var(--sf-btn-font-size, var(--sf-btn-font-size--size)) * var(--sf-btn-font-scale, 1));
     font-weight:      var(--sf-btn-font-weight, var(--sf-font-weight-interactive));
     line-height:      var(--sf-leading-tight);
     text-decoration:  none;
@@ -309,29 +313,34 @@
      AA 24px target; consumers who want the 44px AAA touch target back can set
      `--sf-btn-min-height: var(--sf-touch-target)` globally (exactly 44px, an
      accessibility anchor independent of the size scale) or reach for
-     `.sf-btn--l` (--sf-size-l, 48px). */
+     `.sf-btn--l` (--sf-size-l, 48px).
+
+     This ladder is honoured on touch devices too: .sf-btn is excluded from the
+     blanket `@media (pointer: coarse)` 44px floor in core/accessibility.css, so
+     the size scale stays visible on phones/tablets instead of every rung
+     collapsing to 44px. The AAA opt-in above restores the floor when wanted. */
   .sf-btn--xs {
     --sf-btn-padding-block--size:  0.125rem;
     --sf-btn-padding-inline--size: var(--sf-space-xs);
-    --sf-btn-font-size--size:      var(--sf-text-xs);
+    --sf-btn-font-size--size:      var(--sf-btn-xs-font-size, var(--sf-text-xs));
     --sf-btn-min-height--size:     var(--sf-size-xs);
   }
   .sf-btn--s {
     --sf-btn-padding-block--size:  var(--sf-space-2xs);
     --sf-btn-padding-inline--size: var(--sf-space-s);
-    --sf-btn-font-size--size:      var(--sf-text-s);
+    --sf-btn-font-size--size:      var(--sf-btn-s-font-size, var(--sf-text-s));
     --sf-btn-min-height--size:     var(--sf-size-s);
   }
   .sf-btn--l {
     --sf-btn-padding-block--size:  var(--sf-space-s);
     --sf-btn-padding-inline--size: var(--sf-space-l);
-    --sf-btn-font-size--size:      var(--sf-text-l);
+    --sf-btn-font-size--size:      var(--sf-btn-l-font-size, var(--sf-text-l));
     --sf-btn-min-height--size:     var(--sf-size-l);
   }
   .sf-btn--xl {
     --sf-btn-padding-block--size:  var(--sf-space-m);
     --sf-btn-padding-inline--size: var(--sf-space-xl);
-    --sf-btn-font-size--size:      var(--sf-text-xl);
+    --sf-btn-font-size--size:      var(--sf-btn-xl-font-size, var(--sf-text-xl));
     --sf-btn-min-height--size:     var(--sf-size-xl);
   }
 

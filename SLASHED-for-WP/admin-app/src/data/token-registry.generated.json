@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedBy": "scripts/gen-token-registry.js",
-    "nextId": 771
+    "nextId": 777
   },
   "tokens": [
     {
@@ -3123,6 +3123,30 @@
     {
       "id": 770,
       "name": "--sf-gradient-action"
+    },
+    {
+      "id": 771,
+      "name": "--sf-btn-font-scale"
+    },
+    {
+      "id": 772,
+      "name": "--sf-btn-l-font-size"
+    },
+    {
+      "id": 773,
+      "name": "--sf-btn-m-font-size"
+    },
+    {
+      "id": 774,
+      "name": "--sf-btn-s-font-size"
+    },
+    {
+      "id": 775,
+      "name": "--sf-btn-xl-font-size"
+    },
+    {
+      "id": 776,
+      "name": "--sf-btn-xs-font-size"
     }
   ]
 }
