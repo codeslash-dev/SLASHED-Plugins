@@ -2,6 +2,7 @@
   import { onMount, untrack } from 'svelte';
   import { SlidersHorizontal, Eye, RotateCcw } from '@lucide/svelte';
   import type { PreviewTemplate, SlashedToken, ApiIndex } from './types';
+  import { PANEL_TO_TAB } from './lib/preview';
   import StudioHeader from './components/shell/StudioHeader.svelte';
   import SidebarNav from './components/shell/SidebarNav.svelte';
   import StatusBar from './components/shell/StatusBar.svelte';
@@ -53,7 +54,7 @@
   let previewTheme = $state<"light" | "dark">("light");
   let previewWidth = $state<"fluid" | "mobile" | "tablet" | "desktop">("fluid");
   let previewMotion = $state<"normal" | "slow" | "none">("normal");
-  let previewTemplate = $state<PreviewTemplate>("marketing");
+  let previewTemplate = $state<PreviewTemplate>("color");
 
   // Derived
   let overridesCount = $derived(Object.keys(overrides).length);
@@ -85,6 +86,15 @@
 
   // Live CSS preview on every change — actual persistence only on explicit save.
   $effect(() => { injectLivePreview(overrides); });
+
+  // Auto-follow: switching the control panel switches the preview to the tab
+  // that visualises it (edit Colors → see the Color gallery). Fires only on a
+  // panel change, so a manual preview-tab click persists until the next switch.
+  // Panels with no visual counterpart (home/install/classes) leave the tab as-is.
+  $effect(() => {
+    const tab = PANEL_TO_TAB[domain];
+    if (tab) untrack(() => { previewTemplate = tab; });
+  });
 
   function setOverrides(updater: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>) {
     const prev = overrides;

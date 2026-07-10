@@ -104,7 +104,9 @@ export interface SavedSlot {
   overrides: Record<string, string>;
 }
 
-export type PreviewTemplate = "marketing" | "components" | "stylescape";
+// Live-preview tabs. Single source of truth is lib/preview (PreviewTab); this
+// alias keeps the historical name used across the shell components.
+export type PreviewTemplate = import("./lib/preview").PreviewTab;
 
 export interface ConfiguratorState {
   domain: string;

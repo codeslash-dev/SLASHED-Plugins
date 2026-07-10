@@ -79,7 +79,7 @@
       "selector": ".sf-bento",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Bento grid",
+      "group": ".sf-card",
       "description": "Auto-fill bento grid for card dashboards. Children span 1 column by default; use span modifiers (sf-bento-wide, sf-bento-tall, sf-bento-full, sf-bento-featured) to break the grid.",
       "optional": false,
       "layer": "slashed.layout"
@@ -509,7 +509,7 @@
       "selector": ".sf-center",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Center",
+      "group": ".sf-card",
       "description": "Centers children both horizontally and vertically using flexbox. Optionally add sf-center--intrinsic to size the container to its content.",
       "optional": false,
       "layer": "slashed.layout"
@@ -549,7 +549,7 @@
       "selector": ".sf-cluster",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Cluster",
+      "group": ".sf-card",
       "description": "Flex-wrap row of variable-width items with automatic gap. Children wrap when the container is too narrow. Use for tag lists, button groups, and icon rows.",
       "optional": false,
       "layer": "slashed.layout"
@@ -789,7 +789,7 @@
       "selector": ".sf-cover",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Cover",
+      "group": ".sf-card",
       "description": "Vertically stretches to at least a viewport height with a centered element (sf-cover__center). Typical use: hero sections.",
       "optional": false,
       "layer": "slashed.layout"
@@ -1239,7 +1239,7 @@
       "selector": ".sf-frame",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Frame",
+      "group": ".sf-card",
       "description": "Aspect-ratio container for media (images, video, maps). Children fill and cover the fixed-ratio box. Default ratio is 16:9.",
       "optional": false,
       "layer": "slashed.layout"
@@ -1399,7 +1399,7 @@
       "selector": ".sf-grid",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Grid (auto)",
+      "group": ".sf-card",
       "description": "Auto-fill CSS grid. Columns are sized with RAM pattern (Repeat, Auto-fill, Minmax) and wrap automatically. Default column min-width is --sf-grid-min-col.",
       "optional": false,
       "layer": "slashed.layout"
@@ -1579,7 +1579,7 @@
       "selector": ".sf-grid-flex",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Grid (flex)",
+      "group": ".sf-card",
       "description": "Flexbox alternative to .sf-grid for item counts that don't divide evenly: leftover last-row items stretch to fill the row by default, or stay fixed-width and centered with --center.",
       "optional": false,
       "layer": "slashed.layout"
@@ -2499,7 +2499,7 @@
       "selector": ".sf-reel",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Reel",
+      "group": ".sf-card",
       "description": "Horizontally scrollable row of fixed-height items with snap scrolling. Children don't shrink below their intrinsic width, creating a card carousel effect.",
       "optional": false,
       "layer": "slashed.layout"
@@ -2709,7 +2709,7 @@
       "selector": ".sf-sidebar",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Sidebar",
+      "group": ".sf-card",
       "description": "Two-column sidebar layout: first child is the sidebar, second child is main content. The sidebar collapses below the breakpoint (--sf-sidebar-min-width). Default sidebar on the left.",
       "optional": false,
       "layer": "slashed.layout"
@@ -2789,7 +2789,7 @@
       "selector": ".sf-stack",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Stack",
+      "group": ".sf-card",
       "description": "Flex column with even vertical spacing between children (--sf-stack-gap). Stacking context for vertical rhythm.",
       "optional": false,
       "layer": "slashed.layout"
@@ -3069,7 +3069,7 @@
       "selector": ".sf-switcher",
       "kind": "layout",
       "category": "Layout primitives",
-      "group": "Switcher",
+      "group": ".sf-card",
       "description": "Flex layout that switches from a horizontal row to a vertical column when the container is narrower than --sf-switcher-threshold.",
       "optional": false,
       "layer": "slashed.layout"

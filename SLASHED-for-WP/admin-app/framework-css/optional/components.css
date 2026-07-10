@@ -394,6 +394,10 @@
    * --sf-card-btn-font-size.
    * ============================================================ */
   .sf-card {
+    /* A card is a block box. When combined with a layout primitive on the same
+       element (.sf-card.sf-stack, .sf-card.sf-grid, …) the primitive's
+       flex/grid display wins, because slashed.layout layers AFTER
+       slashed.components — see core/layers.css. No guard needed. */
     display:       block;
     padding:       var(--sf-card-padding, var(--sf-space-l));
     background:    var(--sf-card-bg, var(--sf-color-surface));

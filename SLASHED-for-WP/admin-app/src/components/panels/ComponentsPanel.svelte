@@ -44,7 +44,13 @@
     { label: "Padding inline", token: "--sf-btn-padding-inline", unit: "rem", min: 0, max: 2,   step: 0.025,  default: 1,     rawDefault: "var(--sf-space-m)", variableOptions: SPACE_SCALE },
     { label: "Gap (icon+label)", token: "--sf-btn-gap",          unit: "rem", min: 0, max: 1,   step: 0.0125, default: 0.25,  rawDefault: "var(--sf-space-2xs)", variableOptions: SPACE_SCALE },
     { label: "Border width",  token: "--sf-btn-border-width",   unit: "px",  min: 0, max: 4,   step: 0.5,    default: 1,     rawDefault: "var(--sf-border-width-1)", variableOptions: BORDER_WIDTH_SCALE },
-    { label: "Min height",    token: "--sf-btn-min-height",      unit: "rem", min: 1, max: 4,   step: 0.125,  default: 2.75,  rawDefault: "var(--sf-touch-target)", variableOptions: SIZE_SCALE },
+    // Unset, --sf-btn-min-height falls through to the per-size tier
+    // (--sf-size-* via .sf-btn--xs…xl), whose base is --sf-size-m (40px) — so
+    // THAT is the real default, not --sf-touch-target. Presenting touch-target
+    // (44px) as the default silently pinned every size to 44px and collapsed
+    // the XS–XL scale. touch-target stays available as an explicit choice via
+    // the variable dropdown for consumers who want the WCAG AAA target.
+    { label: "Min height",    token: "--sf-btn-min-height",      unit: "rem", min: 1, max: 4,   step: 0.125,  default: 2.5,   rawDefault: "var(--sf-size-m)", variableOptions: SIZE_SCALE },
   ];
 
   const CARD_TOKENS: Array<{ label: string; token: string; unit: string; min: number; max: number; step: number; default: number; rawDefault: string; variableOptions: VarOption[] }> = [
@@ -54,6 +60,22 @@
     { label: "Border width",  token: "--sf-card-border-width",  unit: "px",  min: 0, max: 4, step: 0.5,  default: 1,   rawDefault: "var(--sf-border-width-1)", variableOptions: BORDER_WIDTH_SCALE },
     { label: "Media radius",  token: "--sf-card-media-radius",  unit: "rem", min: 0, max: 2, step: 0.05, default: 0.5, rawDefault: "var(--sf-card-radius, var(--sf-radius-m))", variableOptions: RADIUS_SCALE },
   ];
+
+  // Global knobs that, once set, shadow the per-size scale (.sf-btn--xs…xl) on
+  // EVERY size — the framework reads the public knob before the size tier. The
+  // UI flags these so a global tweak that flattens the size scale isn't a
+  // surprise. (Label size / --sf-btn-font-size behaves the same way.)
+  const SCALE_SHADOWING = new Set([
+    "--sf-btn-padding-block",
+    "--sf-btn-padding-inline",
+    "--sf-btn-min-height",
+  ]);
+
+  function resetButtonTokens() {
+    for (const k of Object.keys(overrides)) {
+      if (k.startsWith("--sf-btn-")) onReset(k);
+    }
+  }
 
   let showButton = $state(false);
   let showCard = $state(false);
@@ -236,6 +258,12 @@
       </div>
 
       <div class="mt-2 space-y-2">
+        <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Base style — applies to every size</div>
+        <div class="text-[9px] text-slate-500 leading-snug">
+          Padding, min-height and label size are <b>global</b>: once set they override the
+          <code class="text-slate-600 dark:text-slate-300">.sf-btn--xs…xl</code> size scale on every button.
+          Leave them at default to keep the size scale (see it live on the Components preview tab).
+        </div>
         {#each BUTTON_TOKENS as t (t.token)}
           <SliderRow
             label={t.label} value={getVal(t)} min={t.min} max={t.max} step={t.step} unit={t.unit}
@@ -248,6 +276,9 @@
             currentRaw={overrides[t.token]}
             onRawSet={(v) => onSet(t.token, v)}
           />
+          {#if SCALE_SHADOWING.has(t.token) && t.token in overrides}
+            <div class="text-[9px] text-amber-600 dark:text-amber-400 -mt-1 pl-0.5">↕ overrides every size (.sf-btn--xs…xl)</div>
+          {/if}
         {/each}
 
         <div>
@@ -265,6 +296,9 @@
               >{step}</button>
             {/each}
           </div>
+          {#if "--sf-btn-font-size" in overrides}
+            <div class="text-[9px] text-amber-600 dark:text-amber-400 mt-1 pl-0.5">↕ overrides every size (.sf-btn--xs…xl)</div>
+          {/if}
         </div>
 
         <div>
@@ -284,6 +318,13 @@
             {/each}
           </div>
         </div>
+
+        {#if Object.keys(overrides).some((k) => k.startsWith("--sf-btn-"))}
+          <button
+            onclick={resetButtonTokens}
+            class="text-[10px] font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 underline underline-offset-2 cursor-pointer"
+          >Reset all button tokens</button>
+        {/if}
       </div>
     {/if}
   </section>

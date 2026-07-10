@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.10 — slashed.full.css | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.11 — slashed.full.css | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -10,8 +10,8 @@
   slashed.reset,
   slashed.base,
   slashed.forms,
-  slashed.layout,
   slashed.components,
+  slashed.layout,
   slashed.macros,
   slashed.utilities,
   slashed.states,
@@ -5153,6 +5153,10 @@
    * --sf-card-btn-font-size.
    * ============================================================ */
   .sf-card {
+    /* A card is a block box. When combined with a layout primitive on the same
+       element (.sf-card.sf-stack, .sf-card.sf-grid, …) the primitive's
+       flex/grid display wins, because slashed.layout layers AFTER
+       slashed.components — see core/layers.css. No guard needed. */
     display:       block;
     padding:       var(--sf-card-padding, var(--sf-space-l));
     background:    var(--sf-card-bg, var(--sf-color-surface));

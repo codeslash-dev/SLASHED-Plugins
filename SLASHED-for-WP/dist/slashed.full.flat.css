@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.10 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.11 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -2704,6 +2704,496 @@ label:has(+ * :required)::after {
   color: var(--sf-color-danger);
 }
 
+/* ─── optional/components.css ─── */
+/* SLASHED — optional/components.css
+   @layer slashed.components
+   Component class surface: button and card.
+
+   .sf-btn and .sf-card are LIVE since v0.7.0. Further components
+   (badge, tag, alert, avatar, modal, skeleton) are planned — see
+   docs/roadmap.md and issue #384. The framework stays BEM-first and
+   token-first: anything not shipped here is authored as project BEM
+   classes reading SLASHED tokens.
+   Imports optional component tokens. */
+
+
+
+/* ============================================================
+ * .sf-btn
+ * Interactive call-to-action element. Apply to <button> or <a>.
+ * Three orthogonal axes, freely composable:
+ *   Colour:   --primary | --secondary | --tertiary | --action |
+ *             --base | --neutral | --success | --warning | --info |
+ *             --danger   (no modifier = --action)
+ *   Style:    (no modifier = fill) | --soft | --outline
+ *   Gradient: --gradient (fill + outline; core-4 brand families only —
+ *             primary/secondary/tertiary/action; graceful solid no-op
+ *             for the other families)
+ * Sizes:  --xs | --s | (default m) | --l | --xl
+ * Width:  intrinsic by default (like every other framework). --block
+ *         forces full width everywhere; --block-cq opts into full width
+ *         only inside a query container narrower than 20rem (needs a
+ *         container ancestor — the layout primitives or .sf-cq provide
+ *         one). No @media breakpoints.
+ * States: :disabled / .sf-is-disabled | .sf-is-loading
+ *
+ * Colour model: every colour variant sets five rule-local custom
+ * properties — --sf-btn-color (family base), --sf-btn-color--hover,
+ * --sf-btn-on-color (readable foreground), and the --sf-btn-soft-bg /
+ * --sf-btn-soft-bg--hover pair (the family's -subtle / -muted alpha
+ * aliases) — and the fill / --soft / --outline treatments all derive
+ * from them. This keeps the style modifiers orthogonal: they compose
+ * with any colour family (e.g. .sf-btn--outline.sf-btn--danger).
+ * The default (no colour modifier) is the action family. Semantic
+ * hover: brand colours use the --hover token; status colours
+ * (success/warning/info/danger) use the direction-aware -strong
+ * triplet.
+ *
+ * Focus: the global core/accessibility.css :focus-visible rule already
+ * applies the WCAG ring to every focusable element, so .sf-btn needs no
+ * component-level focus outline of its own.
+ * ============================================================ */
+.sf-btn {
+  /* Rule-local colour family — variants override these five. */
+  --sf-btn-color:          var(--sf-color-action);
+  --sf-btn-color--hover:   var(--sf-color-action--hover);
+  --sf-btn-on-color:       var(--sf-color-text--on-action);
+  --sf-btn-soft-bg:        var(--sf-color-action-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-action-muted);
+
+  /* Rule-local SIZE tier — the per-size defaults each size modifier tunes.
+     The base (default / m) values live here; .sf-btn--xs/--s/--l/--xl only
+     reassign these *-size tokens, never the public knob. Each public knob
+     (--sf-btn-font-size, --sf-btn-padding-block/-inline, --sf-btn-min-height)
+     is read FIRST in its property below, so a :root override of the knob
+     wins on every size, while an unset knob falls through to the size tier. */
+  --sf-btn-font-size--size:      var(--sf-text-m);
+  --sf-btn-padding-block--size:  var(--sf-space-xs);
+  --sf-btn-padding-inline--size: var(--sf-space-m);
+  --sf-btn-min-height--size:     var(--sf-size-m);
+
+  display:          inline-flex;
+  align-items:      center;
+  justify-content:  center;
+  gap:              var(--sf-btn-gap, var(--sf-space-2xs));
+  padding-block:    var(--sf-btn-padding-block, var(--sf-btn-padding-block--size));
+  padding-inline:   var(--sf-btn-padding-inline, var(--sf-btn-padding-inline--size));
+  min-block-size:   var(--sf-btn-min-height, var(--sf-btn-min-height--size));
+  font-family:      inherit;
+  font-size:        var(--sf-btn-font-size, var(--sf-btn-font-size--size));
+  font-weight:      var(--sf-btn-font-weight, var(--sf-font-weight-interactive));
+  line-height:      var(--sf-leading-tight);
+  text-decoration:  none;
+  white-space:      nowrap;
+  border:           var(--sf-btn-border-width, var(--sf-border-width-1)) solid var(--sf-btn-color);
+  border-radius:    var(--sf-btn-radius);
+  cursor:           pointer;
+  user-select:      none;
+  appearance:       none;
+  transition:       var(--sf-transition-form-field);
+  background:       var(--sf-btn-color);
+  color:            var(--sf-btn-on-color);
+}
+.sf-btn:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+  background:   var(--sf-btn-color--hover);
+  border-color: var(--sf-btn-color--hover);
+}
+
+/* --- Colour families (all 10, 1:1 with the global palette): set the
+       rule-local custom properties only. --action mirrors the default
+       so the colour axis has an explicit name for every family. --- */
+.sf-btn--primary {
+  --sf-btn-color:          var(--sf-color-primary);
+  --sf-btn-color--hover:   var(--sf-color-primary--hover);
+  --sf-btn-on-color:       var(--sf-color-text--on-primary);
+  --sf-btn-soft-bg:        var(--sf-color-primary-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-primary-muted);
+}
+.sf-btn--secondary {
+  --sf-btn-color:          var(--sf-color-secondary);
+  --sf-btn-color--hover:   var(--sf-color-secondary--hover);
+  --sf-btn-on-color:       var(--sf-color-text--on-secondary);
+  --sf-btn-soft-bg:        var(--sf-color-secondary-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-secondary-muted);
+}
+.sf-btn--tertiary {
+  --sf-btn-color:          var(--sf-color-tertiary);
+  --sf-btn-color--hover:   var(--sf-color-tertiary--hover);
+  --sf-btn-on-color:       var(--sf-color-text--on-tertiary);
+  --sf-btn-soft-bg:        var(--sf-color-tertiary-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-tertiary-muted);
+}
+.sf-btn--action {
+  --sf-btn-color:          var(--sf-color-action);
+  --sf-btn-color--hover:   var(--sf-color-action--hover);
+  --sf-btn-on-color:       var(--sf-color-text--on-action);
+  --sf-btn-soft-bg:        var(--sf-color-action-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-action-muted);
+}
+.sf-btn--base {
+  --sf-btn-color:          var(--sf-color-base);
+  --sf-btn-color--hover:   var(--sf-color-base--hover);
+  --sf-btn-on-color:       var(--sf-color-text--on-base);
+  --sf-btn-soft-bg:        var(--sf-color-base-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-base-muted);
+}
+.sf-btn--neutral {
+  --sf-btn-color:          var(--sf-color-neutral);
+  --sf-btn-color--hover:   var(--sf-color-neutral--hover);
+  --sf-btn-on-color:       var(--sf-color-text--on-neutral);
+  --sf-btn-soft-bg:        var(--sf-color-neutral-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-neutral-muted);
+}
+.sf-btn--success {
+  --sf-btn-color:          var(--sf-color-success);
+  --sf-btn-color--hover:   var(--sf-color-success-strong);
+  --sf-btn-on-color:       var(--sf-color-text--on-success);
+  --sf-btn-soft-bg:        var(--sf-color-success-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-success-muted);
+}
+.sf-btn--warning {
+  --sf-btn-color:          var(--sf-color-warning);
+  --sf-btn-color--hover:   var(--sf-color-warning-strong);
+  --sf-btn-on-color:       var(--sf-color-text--on-warning);
+  --sf-btn-soft-bg:        var(--sf-color-warning-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-warning-muted);
+}
+.sf-btn--info {
+  --sf-btn-color:          var(--sf-color-info);
+  --sf-btn-color--hover:   var(--sf-color-info-strong);
+  --sf-btn-on-color:       var(--sf-color-text--on-info);
+  --sf-btn-soft-bg:        var(--sf-color-info-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-info-muted);
+}
+.sf-btn--danger {
+  --sf-btn-color:          var(--sf-color-danger);
+  --sf-btn-color--hover:   var(--sf-color-danger-strong);
+  --sf-btn-on-color:       var(--sf-color-text--on-danger);
+  --sf-btn-soft-bg:        var(--sf-color-danger-subtle);
+  --sf-btn-soft-bg--hover: var(--sf-color-danger-muted);
+}
+
+/* --- Style treatments (compose with any colour family) ---
+   Emphasis ladder, highest → lowest:
+     fill       solid family background (the base .sf-btn)
+     soft       soft TONAL fill — a light wash of the family colour, no
+                border. Lower-emphasis than fill but still reads as a filled
+                button, so it is visually distinct from --outline.
+     outline    transparent with a visible border; fills on hover.
+   --soft reads the family's alpha-alias tokens (--sf-color-{family}-subtle
+   resting, -muted on hover) via the rule-local --sf-btn-soft-bg pair, so
+   the wash has one source of truth in core/tokens.css. Those aliases live
+   behind the relative-color @supports gate, so the resting fill is gated
+   the same way: engines without oklch(from …) degrade soft → bordered
+   instead of dropping a declaration mid-rule. Mirrors the framework-wide
+   gating policy enforced by tests/tier1-p2-coverage.test.js +
+   tests/tier1-p7-oldengine.test.js. */
+
+/* Soft tonal fill. Fallback (no relative color): a bordered treatment so
+   it is never invisible; the tonal wash is layered on inside @supports
+   below. */
+.sf-btn--soft {
+  background:   transparent;
+  color:        var(--sf-btn-color);
+  border-color: var(--sf-btn-color);
+}
+
+@supports (color: oklch(from red l c h)) {
+  /* Tonal fill replaces the fallback border once the alpha-alias tokens
+     (gated on relative color in core/tokens.css) are available. */
+  .sf-btn--soft {
+    background:   var(--sf-btn-soft-bg);
+    color:        var(--sf-btn-color);
+    border-color: transparent;
+  }
+  .sf-btn--soft:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background:   var(--sf-btn-soft-bg--hover);
+    border-color: transparent;
+  }
+}
+
+/* Outline: transparent to start, fills with the family colour on hover. */
+.sf-btn--outline {
+  background:   transparent;
+  color:        var(--sf-btn-color);
+  border-color: var(--sf-btn-color);
+}
+.sf-btn--outline:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+  background:   var(--sf-btn-color);
+  color:        var(--sf-btn-on-color);
+  border-color: var(--sf-btn-color);
+}
+
+/* --- Gradient axis (.sf-btn--gradient, composes with colour + style) ---
+   Real modifier for the 4 core brand families — primary / secondary /
+   tertiary / action — driven by the matching --sf-gradient-{family}
+   token. The remaining families (base/neutral/status) have no gradient
+   token yet; for them --gradient resolves to the solid family colour
+   (documented no-op), so composing is always safe. All visual rules sit
+   behind the relative-color @supports gate (the gradient tokens are only
+   defined there); outside it the button renders as its solid fill or
+   outline. --soft wins over --gradient: the tonal wash is the lower-
+   emphasis treatment, so the gradient fill explicitly excludes it. */
+.sf-btn--gradient {
+  --sf-btn-gradient: var(--sf-gradient-action);
+}
+.sf-btn--primary.sf-btn--gradient   { --sf-btn-gradient: var(--sf-gradient-primary); }
+.sf-btn--secondary.sf-btn--gradient { --sf-btn-gradient: var(--sf-gradient-secondary); }
+.sf-btn--tertiary.sf-btn--gradient  { --sf-btn-gradient: var(--sf-gradient-tertiary); }
+.sf-btn--action.sf-btn--gradient    { --sf-btn-gradient: var(--sf-gradient-action); }
+/* Families without a gradient token: solid family colour (no-op). */
+.sf-btn--base.sf-btn--gradient,
+.sf-btn--neutral.sf-btn--gradient,
+.sf-btn--success.sf-btn--gradient,
+.sf-btn--warning.sf-btn--gradient,
+.sf-btn--info.sf-btn--gradient,
+.sf-btn--danger.sf-btn--gradient {
+  --sf-btn-gradient: var(--sf-btn-color);
+}
+
+@supports (color: oklch(from red l c h)) {
+  /* Gradient fill. Border goes transparent so the darkening gradient
+     never fights a solid family-coloured edge. */
+  .sf-btn--gradient:not(.sf-btn--outline, .sf-btn--soft) {
+    background:   var(--sf-btn-gradient);
+    border-color: transparent;
+  }
+  /* Hover: keep the gradient, darken (light mode) / lighten (dark mode)
+     through a translucent overlay — --sf-is-dark is 0 in light, 1 in
+     dark, so the overlay's oklch lightness flips direction-aware. */
+  .sf-btn--gradient:not(.sf-btn--outline, .sf-btn--soft):hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background:   linear-gradient(
+                    oklch(var(--sf-is-dark) 0 0 / 0.12),
+                    oklch(var(--sf-is-dark) 0 0 / 0.12)
+                  ),
+                  var(--sf-btn-gradient);
+    border-color: transparent;
+  }
+
+  /* Gradient outline: the docs' former copy-paste recipe as a real rule.
+     A masked ::before paints the family gradient in the border ring only
+     (padding-box punched out of border-box). Uses ::before — the loading
+     spinner owns ::after, so both states compose. */
+  .sf-btn--gradient.sf-btn--outline {
+    position:     relative;
+    background:   transparent;
+    color:        var(--sf-btn-color);
+    border-color: transparent;
+  }
+  .sf-btn--gradient.sf-btn--outline::before {
+    content:        "";
+    position:       absolute;
+    inset:          0;
+    border-radius:  inherit;
+    padding:        var(--sf-btn-border-width, var(--sf-border-width-1));
+    background:     var(--sf-btn-gradient);
+    /* Punch the padding-box out of the border-box so only the border
+       ring shows. Unprefixed mask is within the browser floor implied
+       by the surrounding relative-color gate. */
+    mask:           linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  /* Hover mirrors solid --outline: fills, here with the gradient. */
+  .sf-btn--gradient.sf-btn--outline:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
+    background:   var(--sf-btn-gradient);
+    color:        var(--sf-btn-on-color);
+    border-color: transparent;
+  }
+}
+
+/* --- Sizes (m is the default; retune the rule-local *-size tier so a
+       :root override of the public knob still wins over the size) ---
+
+   The min-height ladder maps 1:1 onto the --sf-size-* scale rungs: --xs→xs,
+   --s→s, default(m)→m, --l→l, --xl→xl. (Before 0.8.0 the ladder was offset
+   by one rung so the default button cleared the 44px --sf-touch-target
+   floor; that pinned m to --sf-size-l and pushed --l/--xl up. The offset was
+   dropped so the size names read predictably — see docs/migration.md.) The
+   default control is now --sf-size-m (40px), which still clears the WCAG 2.2
+   AA 24px target; consumers who want the 44px AAA touch target back can set
+   `--sf-btn-min-height: var(--sf-touch-target)` globally (exactly 44px, an
+   accessibility anchor independent of the size scale) or reach for
+   `.sf-btn--l` (--sf-size-l, 48px). */
+.sf-btn--xs {
+  --sf-btn-padding-block--size:  0.125rem;
+  --sf-btn-padding-inline--size: var(--sf-space-xs);
+  --sf-btn-font-size--size:      var(--sf-text-xs);
+  --sf-btn-min-height--size:     var(--sf-size-xs);
+}
+.sf-btn--s {
+  --sf-btn-padding-block--size:  var(--sf-space-2xs);
+  --sf-btn-padding-inline--size: var(--sf-space-s);
+  --sf-btn-font-size--size:      var(--sf-text-s);
+  --sf-btn-min-height--size:     var(--sf-size-s);
+}
+.sf-btn--l {
+  --sf-btn-padding-block--size:  var(--sf-space-s);
+  --sf-btn-padding-inline--size: var(--sf-space-l);
+  --sf-btn-font-size--size:      var(--sf-text-l);
+  --sf-btn-min-height--size:     var(--sf-size-l);
+}
+.sf-btn--xl {
+  --sf-btn-padding-block--size:  var(--sf-space-m);
+  --sf-btn-padding-inline--size: var(--sf-space-xl);
+  --sf-btn-font-size--size:      var(--sf-text-xl);
+  --sf-btn-min-height--size:     var(--sf-size-xl);
+}
+
+/* --- States --- */
+.sf-btn:disabled,
+.sf-btn.sf-is-disabled {
+  opacity:        var(--sf-opacity-disabled);
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+.sf-btn.sf-is-loading {
+  cursor:   wait;
+  position: relative;
+}
+.sf-btn.sf-is-loading > * {
+  visibility: hidden;
+}
+.sf-btn.sf-is-loading::after {
+  content:                  '';
+  position:                 absolute;
+  inset:                    0;
+  margin:                   auto;
+  inline-size:              1em;
+  block-size:               1em;
+  border:                   2px solid currentcolor;
+  border-block-start-color: transparent;
+  border-radius:            var(--sf-radius-full);
+}
+/* Spinner only animates when motion is welcome; otherwise the ring is
+   shown static so the loading state is still visible. */
+@media (prefers-reduced-motion: no-preference) {
+  .sf-btn.sf-is-loading::after {
+    animation: sf-spin var(--sf-duration-slower) linear infinite;
+  }
+}
+
+/* --- Width --- */
+.sf-btn--block {
+  inline-size: 100%;
+}
+
+@container (max-width: 20rem) {
+  .sf-btn--block-cq {
+    inline-size: 100%;
+  }
+}
+
+/* ============================================================
+ * .sf-card
+ * Padded content container with optional header/body/footer.
+ * Modifiers: --bordered (flat, outlined, no shadow) |
+ *            --elevated (floating shadow, no border) |
+ *            --interactive (pointer + hover/focus lift)
+ * Concentric radius: --sf-card-radius-outer on the card,
+ * --sf-card-radius on inner elements (mirrors the math in
+ * tokens.components.css).
+ * Subcomponents: __media (16/9 cover image), __avatar (round),
+ * __title (unified heading size). Nested .sf-btn shrinks to
+ * --sf-card-btn-font-size.
+ * ============================================================ */
+.sf-card {
+  /* A card is a block box. When combined with a layout primitive on the same
+     element (.sf-card.sf-stack, .sf-card.sf-grid, …) the primitive's
+     flex/grid display wins, because slashed.layout layers AFTER
+     slashed.components — see core/layers.css. No guard needed. */
+  display:       block;
+  padding:       var(--sf-card-padding, var(--sf-space-l));
+  background:    var(--sf-card-bg, var(--sf-color-surface));
+  border:        var(--sf-card-border-width, var(--sf-border-width-1)) solid var(--sf-card-border-color, var(--sf-color-border));
+  border-radius: var(--sf-card-radius-outer, calc(var(--sf-radius-m) + var(--sf-space-l)));
+  box-shadow:    var(--sf-card-shadow, var(--sf-shadow-s));
+}
+
+.sf-card__header,
+.sf-card__body,
+.sf-card__footer {
+  display: block;
+}
+
+.sf-card__header {
+  padding-block-end: var(--sf-card-gap, var(--sf-space-m));
+  border-block-end:  var(--sf-border-subtle);
+  margin-block-end:  var(--sf-card-gap, var(--sf-space-m));
+}
+
+.sf-card__footer {
+  padding-block-start: var(--sf-card-gap, var(--sf-space-m));
+  border-block-start:  var(--sf-border-subtle);
+  margin-block-start:  var(--sf-card-gap, var(--sf-space-m));
+}
+
+.sf-card__media {
+  display:       block;
+  inline-size:   100%;
+  aspect-ratio:  var(--sf-card-media-ratio, var(--sf-ratio-video));
+  object-fit:    var(--sf-object-fit, cover);
+  border-radius: var(--sf-card-media-radius);
+  overflow:      clip;
+  /* Space before whatever follows (header or body) — media had no gap of
+     its own, so it touched the next element directly. */
+  margin-block-end: var(--sf-card-gap, var(--sf-space-m));
+}
+
+.sf-card__avatar {
+  inline-size:   var(--sf-card-avatar-size, 2.5rem);
+  block-size:    var(--sf-card-avatar-size, 2.5rem);
+  aspect-ratio:  1;
+  object-fit:    cover;
+  border-radius: var(--sf-radius-full);
+  flex-shrink:   0;
+}
+
+.sf-card__title {
+  font-size: var(--sf-card-heading-size, var(--sf-text-xl));
+  color:     var(--sf-color-heading);
+}
+
+/* Nested buttons shrink to the card's button size. Feed the *-size tier
+   (not the public --sf-btn-font-size knob) so a :root override of the knob
+   still wins inside cards, exactly as it does everywhere else. */
+.sf-card .sf-btn {
+  --sf-btn-font-size--size: var(--sf-card-btn-font-size, var(--sf-text-s));
+}
+
+/* --- Modifiers --- */
+/* Flat, outlined card: keep the border, drop the shadow. */
+.sf-card--bordered {
+  box-shadow: none;
+}
+
+/* Floating card: lean on the shadow, hide the border. */
+.sf-card--elevated {
+  border-color: transparent;
+  box-shadow:   var(--sf-card-shadow--elevated, var(--sf-shadow-l));
+}
+
+/* Whole-card affordance: pointer + lift on hover/keyboard focus.
+   Pair with .sf-clickable-parent when the entire card is a link. */
+.sf-card--interactive {
+  cursor:     pointer;
+  transition: var(--sf-transition-shadow);
+}
+.sf-card--interactive:hover,
+.sf-card--interactive:focus-within {
+  box-shadow: var(--sf-card-shadow--hover, var(--sf-shadow-l));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sf-card--interactive {
+    transition: var(--sf-transition-shadow), var(--sf-transition-transform);
+  }
+  .sf-card--interactive:hover,
+  .sf-card--interactive:focus-within {
+    transform: translateY(calc(-1 * var(--sf-space-2xs)));
+  }
+}
+
 /* ─── core/layout.css ─── */
 /* SLASHED — core/layout.css
    @layer slashed.layout
@@ -3312,492 +3802,6 @@ label:has(+ * :required)::after {
 
 .sf-subgrid      { display: grid; grid-template-columns: subgrid; }
 .sf-subgrid-rows { display: grid; grid-template-rows:    subgrid; }
-
-/* ─── optional/components.css ─── */
-/* SLASHED — optional/components.css
-   @layer slashed.components
-   Component class surface: button and card.
-
-   .sf-btn and .sf-card are LIVE since v0.7.0. Further components
-   (badge, tag, alert, avatar, modal, skeleton) are planned — see
-   docs/roadmap.md and issue #384. The framework stays BEM-first and
-   token-first: anything not shipped here is authored as project BEM
-   classes reading SLASHED tokens.
-   Imports optional component tokens. */
-
-
-
-/* ============================================================
- * .sf-btn
- * Interactive call-to-action element. Apply to <button> or <a>.
- * Three orthogonal axes, freely composable:
- *   Colour:   --primary | --secondary | --tertiary | --action |
- *             --base | --neutral | --success | --warning | --info |
- *             --danger   (no modifier = --action)
- *   Style:    (no modifier = fill) | --soft | --outline
- *   Gradient: --gradient (fill + outline; core-4 brand families only —
- *             primary/secondary/tertiary/action; graceful solid no-op
- *             for the other families)
- * Sizes:  --xs | --s | (default m) | --l | --xl
- * Width:  intrinsic by default (like every other framework). --block
- *         forces full width everywhere; --block-cq opts into full width
- *         only inside a query container narrower than 20rem (needs a
- *         container ancestor — the layout primitives or .sf-cq provide
- *         one). No @media breakpoints.
- * States: :disabled / .sf-is-disabled | .sf-is-loading
- *
- * Colour model: every colour variant sets five rule-local custom
- * properties — --sf-btn-color (family base), --sf-btn-color--hover,
- * --sf-btn-on-color (readable foreground), and the --sf-btn-soft-bg /
- * --sf-btn-soft-bg--hover pair (the family's -subtle / -muted alpha
- * aliases) — and the fill / --soft / --outline treatments all derive
- * from them. This keeps the style modifiers orthogonal: they compose
- * with any colour family (e.g. .sf-btn--outline.sf-btn--danger).
- * The default (no colour modifier) is the action family. Semantic
- * hover: brand colours use the --hover token; status colours
- * (success/warning/info/danger) use the direction-aware -strong
- * triplet.
- *
- * Focus: the global core/accessibility.css :focus-visible rule already
- * applies the WCAG ring to every focusable element, so .sf-btn needs no
- * component-level focus outline of its own.
- * ============================================================ */
-.sf-btn {
-  /* Rule-local colour family — variants override these five. */
-  --sf-btn-color:          var(--sf-color-action);
-  --sf-btn-color--hover:   var(--sf-color-action--hover);
-  --sf-btn-on-color:       var(--sf-color-text--on-action);
-  --sf-btn-soft-bg:        var(--sf-color-action-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-action-muted);
-
-  /* Rule-local SIZE tier — the per-size defaults each size modifier tunes.
-     The base (default / m) values live here; .sf-btn--xs/--s/--l/--xl only
-     reassign these *-size tokens, never the public knob. Each public knob
-     (--sf-btn-font-size, --sf-btn-padding-block/-inline, --sf-btn-min-height)
-     is read FIRST in its property below, so a :root override of the knob
-     wins on every size, while an unset knob falls through to the size tier. */
-  --sf-btn-font-size--size:      var(--sf-text-m);
-  --sf-btn-padding-block--size:  var(--sf-space-xs);
-  --sf-btn-padding-inline--size: var(--sf-space-m);
-  --sf-btn-min-height--size:     var(--sf-size-m);
-
-  display:          inline-flex;
-  align-items:      center;
-  justify-content:  center;
-  gap:              var(--sf-btn-gap, var(--sf-space-2xs));
-  padding-block:    var(--sf-btn-padding-block, var(--sf-btn-padding-block--size));
-  padding-inline:   var(--sf-btn-padding-inline, var(--sf-btn-padding-inline--size));
-  min-block-size:   var(--sf-btn-min-height, var(--sf-btn-min-height--size));
-  font-family:      inherit;
-  font-size:        var(--sf-btn-font-size, var(--sf-btn-font-size--size));
-  font-weight:      var(--sf-btn-font-weight, var(--sf-font-weight-interactive));
-  line-height:      var(--sf-leading-tight);
-  text-decoration:  none;
-  white-space:      nowrap;
-  border:           var(--sf-btn-border-width, var(--sf-border-width-1)) solid var(--sf-btn-color);
-  border-radius:    var(--sf-btn-radius);
-  cursor:           pointer;
-  user-select:      none;
-  appearance:       none;
-  transition:       var(--sf-transition-form-field);
-  background:       var(--sf-btn-color);
-  color:            var(--sf-btn-on-color);
-}
-.sf-btn:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
-  background:   var(--sf-btn-color--hover);
-  border-color: var(--sf-btn-color--hover);
-}
-
-/* --- Colour families (all 10, 1:1 with the global palette): set the
-       rule-local custom properties only. --action mirrors the default
-       so the colour axis has an explicit name for every family. --- */
-.sf-btn--primary {
-  --sf-btn-color:          var(--sf-color-primary);
-  --sf-btn-color--hover:   var(--sf-color-primary--hover);
-  --sf-btn-on-color:       var(--sf-color-text--on-primary);
-  --sf-btn-soft-bg:        var(--sf-color-primary-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-primary-muted);
-}
-.sf-btn--secondary {
-  --sf-btn-color:          var(--sf-color-secondary);
-  --sf-btn-color--hover:   var(--sf-color-secondary--hover);
-  --sf-btn-on-color:       var(--sf-color-text--on-secondary);
-  --sf-btn-soft-bg:        var(--sf-color-secondary-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-secondary-muted);
-}
-.sf-btn--tertiary {
-  --sf-btn-color:          var(--sf-color-tertiary);
-  --sf-btn-color--hover:   var(--sf-color-tertiary--hover);
-  --sf-btn-on-color:       var(--sf-color-text--on-tertiary);
-  --sf-btn-soft-bg:        var(--sf-color-tertiary-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-tertiary-muted);
-}
-.sf-btn--action {
-  --sf-btn-color:          var(--sf-color-action);
-  --sf-btn-color--hover:   var(--sf-color-action--hover);
-  --sf-btn-on-color:       var(--sf-color-text--on-action);
-  --sf-btn-soft-bg:        var(--sf-color-action-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-action-muted);
-}
-.sf-btn--base {
-  --sf-btn-color:          var(--sf-color-base);
-  --sf-btn-color--hover:   var(--sf-color-base--hover);
-  --sf-btn-on-color:       var(--sf-color-text--on-base);
-  --sf-btn-soft-bg:        var(--sf-color-base-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-base-muted);
-}
-.sf-btn--neutral {
-  --sf-btn-color:          var(--sf-color-neutral);
-  --sf-btn-color--hover:   var(--sf-color-neutral--hover);
-  --sf-btn-on-color:       var(--sf-color-text--on-neutral);
-  --sf-btn-soft-bg:        var(--sf-color-neutral-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-neutral-muted);
-}
-.sf-btn--success {
-  --sf-btn-color:          var(--sf-color-success);
-  --sf-btn-color--hover:   var(--sf-color-success-strong);
-  --sf-btn-on-color:       var(--sf-color-text--on-success);
-  --sf-btn-soft-bg:        var(--sf-color-success-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-success-muted);
-}
-.sf-btn--warning {
-  --sf-btn-color:          var(--sf-color-warning);
-  --sf-btn-color--hover:   var(--sf-color-warning-strong);
-  --sf-btn-on-color:       var(--sf-color-text--on-warning);
-  --sf-btn-soft-bg:        var(--sf-color-warning-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-warning-muted);
-}
-.sf-btn--info {
-  --sf-btn-color:          var(--sf-color-info);
-  --sf-btn-color--hover:   var(--sf-color-info-strong);
-  --sf-btn-on-color:       var(--sf-color-text--on-info);
-  --sf-btn-soft-bg:        var(--sf-color-info-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-info-muted);
-}
-.sf-btn--danger {
-  --sf-btn-color:          var(--sf-color-danger);
-  --sf-btn-color--hover:   var(--sf-color-danger-strong);
-  --sf-btn-on-color:       var(--sf-color-text--on-danger);
-  --sf-btn-soft-bg:        var(--sf-color-danger-subtle);
-  --sf-btn-soft-bg--hover: var(--sf-color-danger-muted);
-}
-
-/* --- Style treatments (compose with any colour family) ---
-   Emphasis ladder, highest → lowest:
-     fill       solid family background (the base .sf-btn)
-     soft       soft TONAL fill — a light wash of the family colour, no
-                border. Lower-emphasis than fill but still reads as a filled
-                button, so it is visually distinct from --outline.
-     outline    transparent with a visible border; fills on hover.
-   --soft reads the family's alpha-alias tokens (--sf-color-{family}-subtle
-   resting, -muted on hover) via the rule-local --sf-btn-soft-bg pair, so
-   the wash has one source of truth in core/tokens.css. Those aliases live
-   behind the relative-color @supports gate, so the resting fill is gated
-   the same way: engines without oklch(from …) degrade soft → bordered
-   instead of dropping a declaration mid-rule. Mirrors the framework-wide
-   gating policy enforced by tests/tier1-p2-coverage.test.js +
-   tests/tier1-p7-oldengine.test.js. */
-
-/* Soft tonal fill. Fallback (no relative color): a bordered treatment so
-   it is never invisible; the tonal wash is layered on inside @supports
-   below. */
-.sf-btn--soft {
-  background:   transparent;
-  color:        var(--sf-btn-color);
-  border-color: var(--sf-btn-color);
-}
-
-@supports (color: oklch(from red l c h)) {
-  /* Tonal fill replaces the fallback border once the alpha-alias tokens
-     (gated on relative color in core/tokens.css) are available. */
-  .sf-btn--soft {
-    background:   var(--sf-btn-soft-bg);
-    color:        var(--sf-btn-color);
-    border-color: transparent;
-  }
-  .sf-btn--soft:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
-    background:   var(--sf-btn-soft-bg--hover);
-    border-color: transparent;
-  }
-}
-
-/* Outline: transparent to start, fills with the family colour on hover. */
-.sf-btn--outline {
-  background:   transparent;
-  color:        var(--sf-btn-color);
-  border-color: var(--sf-btn-color);
-}
-.sf-btn--outline:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
-  background:   var(--sf-btn-color);
-  color:        var(--sf-btn-on-color);
-  border-color: var(--sf-btn-color);
-}
-
-/* --- Gradient axis (.sf-btn--gradient, composes with colour + style) ---
-   Real modifier for the 4 core brand families — primary / secondary /
-   tertiary / action — driven by the matching --sf-gradient-{family}
-   token. The remaining families (base/neutral/status) have no gradient
-   token yet; for them --gradient resolves to the solid family colour
-   (documented no-op), so composing is always safe. All visual rules sit
-   behind the relative-color @supports gate (the gradient tokens are only
-   defined there); outside it the button renders as its solid fill or
-   outline. --soft wins over --gradient: the tonal wash is the lower-
-   emphasis treatment, so the gradient fill explicitly excludes it. */
-.sf-btn--gradient {
-  --sf-btn-gradient: var(--sf-gradient-action);
-}
-.sf-btn--primary.sf-btn--gradient   { --sf-btn-gradient: var(--sf-gradient-primary); }
-.sf-btn--secondary.sf-btn--gradient { --sf-btn-gradient: var(--sf-gradient-secondary); }
-.sf-btn--tertiary.sf-btn--gradient  { --sf-btn-gradient: var(--sf-gradient-tertiary); }
-.sf-btn--action.sf-btn--gradient    { --sf-btn-gradient: var(--sf-gradient-action); }
-/* Families without a gradient token: solid family colour (no-op). */
-.sf-btn--base.sf-btn--gradient,
-.sf-btn--neutral.sf-btn--gradient,
-.sf-btn--success.sf-btn--gradient,
-.sf-btn--warning.sf-btn--gradient,
-.sf-btn--info.sf-btn--gradient,
-.sf-btn--danger.sf-btn--gradient {
-  --sf-btn-gradient: var(--sf-btn-color);
-}
-
-@supports (color: oklch(from red l c h)) {
-  /* Gradient fill. Border goes transparent so the darkening gradient
-     never fights a solid family-coloured edge. */
-  .sf-btn--gradient:not(.sf-btn--outline, .sf-btn--soft) {
-    background:   var(--sf-btn-gradient);
-    border-color: transparent;
-  }
-  /* Hover: keep the gradient, darken (light mode) / lighten (dark mode)
-     through a translucent overlay — --sf-is-dark is 0 in light, 1 in
-     dark, so the overlay's oklch lightness flips direction-aware. */
-  .sf-btn--gradient:not(.sf-btn--outline, .sf-btn--soft):hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
-    background:   linear-gradient(
-                    oklch(var(--sf-is-dark) 0 0 / 0.12),
-                    oklch(var(--sf-is-dark) 0 0 / 0.12)
-                  ),
-                  var(--sf-btn-gradient);
-    border-color: transparent;
-  }
-
-  /* Gradient outline: the docs' former copy-paste recipe as a real rule.
-     A masked ::before paints the family gradient in the border ring only
-     (padding-box punched out of border-box). Uses ::before — the loading
-     spinner owns ::after, so both states compose. */
-  .sf-btn--gradient.sf-btn--outline {
-    position:     relative;
-    background:   transparent;
-    color:        var(--sf-btn-color);
-    border-color: transparent;
-  }
-  .sf-btn--gradient.sf-btn--outline::before {
-    content:        "";
-    position:       absolute;
-    inset:          0;
-    border-radius:  inherit;
-    padding:        var(--sf-btn-border-width, var(--sf-border-width-1));
-    background:     var(--sf-btn-gradient);
-    /* Punch the padding-box out of the border-box so only the border
-       ring shows. Unprefixed mask is within the browser floor implied
-       by the surrounding relative-color gate. */
-    mask:           linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-  /* Hover mirrors solid --outline: fills, here with the gradient. */
-  .sf-btn--gradient.sf-btn--outline:hover:not(:disabled, .sf-is-disabled, .sf-is-loading) {
-    background:   var(--sf-btn-gradient);
-    color:        var(--sf-btn-on-color);
-    border-color: transparent;
-  }
-}
-
-/* --- Sizes (m is the default; retune the rule-local *-size tier so a
-       :root override of the public knob still wins over the size) ---
-
-   The min-height ladder maps 1:1 onto the --sf-size-* scale rungs: --xs→xs,
-   --s→s, default(m)→m, --l→l, --xl→xl. (Before 0.8.0 the ladder was offset
-   by one rung so the default button cleared the 44px --sf-touch-target
-   floor; that pinned m to --sf-size-l and pushed --l/--xl up. The offset was
-   dropped so the size names read predictably — see docs/migration.md.) The
-   default control is now --sf-size-m (40px), which still clears the WCAG 2.2
-   AA 24px target; consumers who want the 44px AAA touch target back can set
-   `--sf-btn-min-height: var(--sf-touch-target)` globally (exactly 44px, an
-   accessibility anchor independent of the size scale) or reach for
-   `.sf-btn--l` (--sf-size-l, 48px). */
-.sf-btn--xs {
-  --sf-btn-padding-block--size:  0.125rem;
-  --sf-btn-padding-inline--size: var(--sf-space-xs);
-  --sf-btn-font-size--size:      var(--sf-text-xs);
-  --sf-btn-min-height--size:     var(--sf-size-xs);
-}
-.sf-btn--s {
-  --sf-btn-padding-block--size:  var(--sf-space-2xs);
-  --sf-btn-padding-inline--size: var(--sf-space-s);
-  --sf-btn-font-size--size:      var(--sf-text-s);
-  --sf-btn-min-height--size:     var(--sf-size-s);
-}
-.sf-btn--l {
-  --sf-btn-padding-block--size:  var(--sf-space-s);
-  --sf-btn-padding-inline--size: var(--sf-space-l);
-  --sf-btn-font-size--size:      var(--sf-text-l);
-  --sf-btn-min-height--size:     var(--sf-size-l);
-}
-.sf-btn--xl {
-  --sf-btn-padding-block--size:  var(--sf-space-m);
-  --sf-btn-padding-inline--size: var(--sf-space-xl);
-  --sf-btn-font-size--size:      var(--sf-text-xl);
-  --sf-btn-min-height--size:     var(--sf-size-xl);
-}
-
-/* --- States --- */
-.sf-btn:disabled,
-.sf-btn.sf-is-disabled {
-  opacity:        var(--sf-opacity-disabled);
-  cursor:         not-allowed;
-  pointer-events: none;
-}
-
-.sf-btn.sf-is-loading {
-  cursor:   wait;
-  position: relative;
-}
-.sf-btn.sf-is-loading > * {
-  visibility: hidden;
-}
-.sf-btn.sf-is-loading::after {
-  content:                  '';
-  position:                 absolute;
-  inset:                    0;
-  margin:                   auto;
-  inline-size:              1em;
-  block-size:               1em;
-  border:                   2px solid currentcolor;
-  border-block-start-color: transparent;
-  border-radius:            var(--sf-radius-full);
-}
-/* Spinner only animates when motion is welcome; otherwise the ring is
-   shown static so the loading state is still visible. */
-@media (prefers-reduced-motion: no-preference) {
-  .sf-btn.sf-is-loading::after {
-    animation: sf-spin var(--sf-duration-slower) linear infinite;
-  }
-}
-
-/* --- Width --- */
-.sf-btn--block {
-  inline-size: 100%;
-}
-
-@container (max-width: 20rem) {
-  .sf-btn--block-cq {
-    inline-size: 100%;
-  }
-}
-
-/* ============================================================
- * .sf-card
- * Padded content container with optional header/body/footer.
- * Modifiers: --bordered (flat, outlined, no shadow) |
- *            --elevated (floating shadow, no border) |
- *            --interactive (pointer + hover/focus lift)
- * Concentric radius: --sf-card-radius-outer on the card,
- * --sf-card-radius on inner elements (mirrors the math in
- * tokens.components.css).
- * Subcomponents: __media (16/9 cover image), __avatar (round),
- * __title (unified heading size). Nested .sf-btn shrinks to
- * --sf-card-btn-font-size.
- * ============================================================ */
-.sf-card {
-  display:       block;
-  padding:       var(--sf-card-padding, var(--sf-space-l));
-  background:    var(--sf-card-bg, var(--sf-color-surface));
-  border:        var(--sf-card-border-width, var(--sf-border-width-1)) solid var(--sf-card-border-color, var(--sf-color-border));
-  border-radius: var(--sf-card-radius-outer, calc(var(--sf-radius-m) + var(--sf-space-l)));
-  box-shadow:    var(--sf-card-shadow, var(--sf-shadow-s));
-}
-
-.sf-card__header,
-.sf-card__body,
-.sf-card__footer {
-  display: block;
-}
-
-.sf-card__header {
-  padding-block-end: var(--sf-card-gap, var(--sf-space-m));
-  border-block-end:  var(--sf-border-subtle);
-  margin-block-end:  var(--sf-card-gap, var(--sf-space-m));
-}
-
-.sf-card__footer {
-  padding-block-start: var(--sf-card-gap, var(--sf-space-m));
-  border-block-start:  var(--sf-border-subtle);
-  margin-block-start:  var(--sf-card-gap, var(--sf-space-m));
-}
-
-.sf-card__media {
-  display:       block;
-  inline-size:   100%;
-  aspect-ratio:  var(--sf-card-media-ratio, var(--sf-ratio-video));
-  object-fit:    var(--sf-object-fit, cover);
-  border-radius: var(--sf-card-media-radius);
-  overflow:      clip;
-  /* Space before whatever follows (header or body) — media had no gap of
-     its own, so it touched the next element directly. */
-  margin-block-end: var(--sf-card-gap, var(--sf-space-m));
-}
-
-.sf-card__avatar {
-  inline-size:   var(--sf-card-avatar-size, 2.5rem);
-  block-size:    var(--sf-card-avatar-size, 2.5rem);
-  aspect-ratio:  1;
-  object-fit:    cover;
-  border-radius: var(--sf-radius-full);
-  flex-shrink:   0;
-}
-
-.sf-card__title {
-  font-size: var(--sf-card-heading-size, var(--sf-text-xl));
-  color:     var(--sf-color-heading);
-}
-
-/* Nested buttons shrink to the card's button size. Feed the *-size tier
-   (not the public --sf-btn-font-size knob) so a :root override of the knob
-   still wins inside cards, exactly as it does everywhere else. */
-.sf-card .sf-btn {
-  --sf-btn-font-size--size: var(--sf-card-btn-font-size, var(--sf-text-s));
-}
-
-/* --- Modifiers --- */
-/* Flat, outlined card: keep the border, drop the shadow. */
-.sf-card--bordered {
-  box-shadow: none;
-}
-
-/* Floating card: lean on the shadow, hide the border. */
-.sf-card--elevated {
-  border-color: transparent;
-  box-shadow:   var(--sf-card-shadow--elevated, var(--sf-shadow-l));
-}
-
-/* Whole-card affordance: pointer + lift on hover/keyboard focus.
-   Pair with .sf-clickable-parent when the entire card is a link. */
-.sf-card--interactive {
-  cursor:     pointer;
-  transition: var(--sf-transition-shadow);
-}
-.sf-card--interactive:hover,
-.sf-card--interactive:focus-within {
-  box-shadow: var(--sf-card-shadow--hover, var(--sf-shadow-l));
-}
-@media (prefers-reduced-motion: no-preference) {
-  .sf-card--interactive {
-    transition: var(--sf-transition-shadow), var(--sf-transition-transform);
-  }
-  .sf-card--interactive:hover,
-  .sf-card--interactive:focus-within {
-    transform: translateY(calc(-1 * var(--sf-space-2xs)));
-  }
-}
 
 /* ─── core/macros.css ─── */
 /* SLASHED — core/macros.css
