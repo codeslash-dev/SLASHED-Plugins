@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.14 — slashed.optimal.css | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.16 — slashed.optimal.css | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -2671,16 +2671,18 @@
   }
 
   .sf-divider {
+    inline-size:        100%;
     border:             none;
     border-block-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
     margin-block:       var(--sf-divider-gap);
   }
   .sf-divider--vertical {
-    border-block-start:  none;
-    border-inline-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
-    margin-block:        0;
-    margin-inline:       var(--sf-divider-gap);
-    align-self:          stretch;
+    inline-size:          auto;
+    border-block-start:   none;
+    border-inline-start:  var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
+    margin-block:         0;
+    margin-inline:        var(--sf-divider-gap);
+    align-self:           stretch;
   }
 
   .sf-divider--soft   { --sf-divider-color: var(--sf-color-border--subtle); }
@@ -4482,16 +4484,31 @@
   }
   /* stylelint-enable selector-pseudo-class-no-unknown */
 
-  /* Native validation states */
-  input:user-invalid,
-  select:user-invalid,
-  textarea:user-invalid {
+  /* Opt-in native validation feedback. Unconditional :user-invalid/:user-valid
+     styling was removed in 0.8.0 (see docs/migration.md): it fires on simple
+     focus+blur, so a still-empty required field could be marked invalid mid
+     multi-field form-fill, before any submit was attempted — the pattern
+     Bootstrap's own .was-validated gate exists to avoid. .sf-live-validate is
+     that same gate: put it on a <form> or <fieldset> to scope the pivot to
+     that subtree, so it only lights up on a real submit attempt (or explicit
+     interaction) instead of applying everywhere by default.
+
+     Safe to combine with manual validation: .sf-is-invalid/.sf-is-valid
+     (core/states.css, @layer slashed.states) always win over the rules below
+     regardless of selector specificity, because slashed.states is declared
+     AFTER slashed.forms in the layer order (core/layers.css) — cascade layer
+     order beats specificity. A field you've manually marked .sf-is-invalid
+     (e.g. a server-side error) can't be silently un-coloured by these rules
+     even if the browser considers it natively valid. */
+  .sf-live-validate input:user-invalid,
+  .sf-live-validate select:user-invalid,
+  .sf-live-validate textarea:user-invalid {
     --sf-field-border-color: var(--sf-color-danger);
   }
 
-  input:user-valid,
-  select:user-valid,
-  textarea:user-valid {
+  .sf-live-validate input:user-valid,
+  .sf-live-validate select:user-valid,
+  .sf-live-validate textarea:user-valid {
     --sf-field-border-color: var(--sf-color-success);
   }
 

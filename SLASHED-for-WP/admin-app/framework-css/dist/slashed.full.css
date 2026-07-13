@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.14 — slashed.full.css | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.16 — slashed.full.css | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -2671,16 +2671,18 @@
   }
 
   .sf-divider {
+    inline-size:        100%;
     border:             none;
     border-block-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
     margin-block:       var(--sf-divider-gap);
   }
   .sf-divider--vertical {
-    border-block-start:  none;
-    border-inline-start: var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
-    margin-block:        0;
-    margin-inline:       var(--sf-divider-gap);
-    align-self:          stretch;
+    inline-size:          auto;
+    border-block-start:   none;
+    border-inline-start:  var(--sf-divider-width) var(--sf-divider-style) var(--sf-divider-color);
+    margin-block:         0;
+    margin-inline:        var(--sf-divider-gap);
+    align-self:           stretch;
   }
 
   .sf-divider--soft   { --sf-divider-color: var(--sf-color-border--subtle); }
@@ -4482,16 +4484,31 @@
   }
   /* stylelint-enable selector-pseudo-class-no-unknown */
 
-  /* Native validation states */
-  input:user-invalid,
-  select:user-invalid,
-  textarea:user-invalid {
+  /* Opt-in native validation feedback. Unconditional :user-invalid/:user-valid
+     styling was removed in 0.8.0 (see docs/migration.md): it fires on simple
+     focus+blur, so a still-empty required field could be marked invalid mid
+     multi-field form-fill, before any submit was attempted — the pattern
+     Bootstrap's own .was-validated gate exists to avoid. .sf-live-validate is
+     that same gate: put it on a <form> or <fieldset> to scope the pivot to
+     that subtree, so it only lights up on a real submit attempt (or explicit
+     interaction) instead of applying everywhere by default.
+
+     Safe to combine with manual validation: .sf-is-invalid/.sf-is-valid
+     (core/states.css, @layer slashed.states) always win over the rules below
+     regardless of selector specificity, because slashed.states is declared
+     AFTER slashed.forms in the layer order (core/layers.css) — cascade layer
+     order beats specificity. A field you've manually marked .sf-is-invalid
+     (e.g. a server-side error) can't be silently un-coloured by these rules
+     even if the browser considers it natively valid. */
+  .sf-live-validate input:user-invalid,
+  .sf-live-validate select:user-invalid,
+  .sf-live-validate textarea:user-invalid {
     --sf-field-border-color: var(--sf-color-danger);
   }
 
-  input:user-valid,
-  select:user-valid,
-  textarea:user-valid {
+  .sf-live-validate input:user-valid,
+  .sf-live-validate select:user-valid,
+  .sf-live-validate textarea:user-valid {
     --sf-field-border-color: var(--sf-color-success);
   }
 
@@ -4704,14 +4721,13 @@
     --sf-card-shadow--elevated: var(--sf-shadow-l);
     --sf-card-shadow--hover:    var(--sf-shadow-l);
 
-    /* Smart-card subcomponents (.sf-card__media / __avatar / __title and the
-     * scoped button font-size override). Media defaults to the 16/9 ratio
-     * token; inner media radius mirrors the card's inner radius. */
+    /* Smart-card subcomponents (.sf-card__media / __avatar / __title). Media
+     * defaults to the 16/9 ratio token; inner media radius mirrors the card's
+     * inner radius. */
     --sf-card-media-ratio:    var(--sf-ratio-video);
     --sf-card-media-radius:   var(--sf-card-radius, var(--sf-radius-m));
     --sf-card-avatar-size:    2.5rem;
     --sf-card-heading-size:   var(--sf-text-xl);
-    --sf-card-btn-font-size:  var(--sf-text-s);
 
     /* ============================================================
      * FIELD TOKENS
@@ -4765,20 +4781,36 @@
     --sf-btn-min-height:     initial;
 
     /*
-     * Per-size label font-size knobs — one PUBLIC knob per size rung, the
-     * button counterpart of the per-heading --sf-hN-size knobs. Each is
-     * `initial` so, unset, that rung falls through to its scale default
-     * (--sf-text-{size}); set one on :root to pin a SINGLE rung's label size
-     * without disturbing the others — unlike the flatten-all --sf-btn-font-size
-     * above, or the proportional --sf-btn-font-scale. Consumed per
-     * .sf-btn--{size} in optional/components.css as the first arg of the
-     * --sf-btn-font-size--size tier token.
+     * Per-size knobs — one PUBLIC knob per size rung for each sizing property
+     * (label font-size, block/inline padding, min-height): the button
+     * counterpart of the per-heading typography knobs. Each is `initial` so,
+     * unset, that rung falls through to its own scale default (--sf-text-{size},
+     * --sf-space-*, --sf-size-{size}); set one on :root to retune a SINGLE
+     * rung's property without disturbing the others — unlike the flatten-all
+     * --sf-btn-{prop} overrides above, or the proportional --sf-btn-font-scale.
+     * Consumed per .sf-btn--{size} in optional/components.css as the first arg
+     * of the matching --sf-btn-{prop}--size tier token.
      */
-    --sf-btn-xs-font-size:   initial;
-    --sf-btn-s-font-size:    initial;
-    --sf-btn-m-font-size:    initial;
-    --sf-btn-l-font-size:    initial;
-    --sf-btn-xl-font-size:   initial;
+    --sf-btn-xs-font-size:      initial;
+    --sf-btn-s-font-size:       initial;
+    --sf-btn-m-font-size:       initial;
+    --sf-btn-l-font-size:       initial;
+    --sf-btn-xl-font-size:      initial;
+    --sf-btn-xs-padding-block:  initial;
+    --sf-btn-s-padding-block:   initial;
+    --sf-btn-m-padding-block:   initial;
+    --sf-btn-l-padding-block:   initial;
+    --sf-btn-xl-padding-block:  initial;
+    --sf-btn-xs-padding-inline: initial;
+    --sf-btn-s-padding-inline:  initial;
+    --sf-btn-m-padding-inline:  initial;
+    --sf-btn-l-padding-inline:  initial;
+    --sf-btn-xl-padding-inline: initial;
+    --sf-btn-xs-min-height:     initial;
+    --sf-btn-s-min-height:      initial;
+    --sf-btn-m-min-height:      initial;
+    --sf-btn-l-min-height:      initial;
+    --sf-btn-xl-min-height:     initial;
     /*
      * Size modifiers (.sf-btn--xs/--s/--l/--xl) and the colour family
      * (--sf-btn-color / --sf-btn-color--hover / --sf-btn-on-color) are
@@ -4858,14 +4890,15 @@
        (--sf-btn-font-size, --sf-btn-padding-block/-inline, --sf-btn-min-height)
        is read FIRST in its property below, so a :root override of the knob
        wins on every size, while an unset knob falls through to the size tier.
-       For font-size the tier's first arg is the per-size knob
-       --sf-btn-{size}-font-size (initial → falls through to --sf-text-{size}),
-       and the whole resolved value is then multiplied by --sf-btn-font-scale
-       in the property below. */
+       Each tier's first arg is the matching per-size knob
+       --sf-btn-{size}-{prop} (initial → falls through to that rung's own scale
+       default), so a :root override retunes one rung; for font-size the whole
+       resolved value is then multiplied by --sf-btn-font-scale in the property
+       below. */
     --sf-btn-font-size--size:      var(--sf-btn-m-font-size, var(--sf-text-m));
-    --sf-btn-padding-block--size:  var(--sf-space-xs);
-    --sf-btn-padding-inline--size: var(--sf-space-m);
-    --sf-btn-min-height--size:     var(--sf-size-m);
+    --sf-btn-padding-block--size:  var(--sf-btn-m-padding-block, var(--sf-space-xs));
+    --sf-btn-padding-inline--size: var(--sf-btn-m-padding-inline, var(--sf-space-m));
+    --sf-btn-min-height--size:     var(--sf-btn-m-min-height, var(--sf-size-m));
 
     display:          inline-flex;
     align-items:      center;
@@ -5116,28 +5149,28 @@
      the size scale stays visible on phones/tablets instead of every rung
      collapsing to 44px. The AAA opt-in above restores the floor when wanted. */
   .sf-btn--xs {
-    --sf-btn-padding-block--size:  0.125rem;
-    --sf-btn-padding-inline--size: var(--sf-space-xs);
+    --sf-btn-padding-block--size:  var(--sf-btn-xs-padding-block, 0.125rem);
+    --sf-btn-padding-inline--size: var(--sf-btn-xs-padding-inline, var(--sf-space-xs));
     --sf-btn-font-size--size:      var(--sf-btn-xs-font-size, var(--sf-text-xs));
-    --sf-btn-min-height--size:     var(--sf-size-xs);
+    --sf-btn-min-height--size:     var(--sf-btn-xs-min-height, var(--sf-size-xs));
   }
   .sf-btn--s {
-    --sf-btn-padding-block--size:  var(--sf-space-2xs);
-    --sf-btn-padding-inline--size: var(--sf-space-s);
+    --sf-btn-padding-block--size:  var(--sf-btn-s-padding-block, var(--sf-space-2xs));
+    --sf-btn-padding-inline--size: var(--sf-btn-s-padding-inline, var(--sf-space-s));
     --sf-btn-font-size--size:      var(--sf-btn-s-font-size, var(--sf-text-s));
-    --sf-btn-min-height--size:     var(--sf-size-s);
+    --sf-btn-min-height--size:     var(--sf-btn-s-min-height, var(--sf-size-s));
   }
   .sf-btn--l {
-    --sf-btn-padding-block--size:  var(--sf-space-s);
-    --sf-btn-padding-inline--size: var(--sf-space-l);
+    --sf-btn-padding-block--size:  var(--sf-btn-l-padding-block, var(--sf-space-s));
+    --sf-btn-padding-inline--size: var(--sf-btn-l-padding-inline, var(--sf-space-l));
     --sf-btn-font-size--size:      var(--sf-btn-l-font-size, var(--sf-text-l));
-    --sf-btn-min-height--size:     var(--sf-size-l);
+    --sf-btn-min-height--size:     var(--sf-btn-l-min-height, var(--sf-size-l));
   }
   .sf-btn--xl {
-    --sf-btn-padding-block--size:  var(--sf-space-m);
-    --sf-btn-padding-inline--size: var(--sf-space-xl);
+    --sf-btn-padding-block--size:  var(--sf-btn-xl-padding-block, var(--sf-space-m));
+    --sf-btn-padding-inline--size: var(--sf-btn-xl-padding-inline, var(--sf-space-xl));
     --sf-btn-font-size--size:      var(--sf-btn-xl-font-size, var(--sf-text-xl));
-    --sf-btn-min-height--size:     var(--sf-size-xl);
+    --sf-btn-min-height--size:     var(--sf-btn-xl-min-height, var(--sf-size-xl));
   }
 
   /* --- States --- */
@@ -5195,8 +5228,8 @@
    * --sf-card-radius on inner elements (mirrors the math in
    * tokens.components.css).
    * Subcomponents: __media (16/9 cover image), __avatar (round),
-   * __title (unified heading size). Nested .sf-btn shrinks to
-   * --sf-card-btn-font-size.
+   * __title (unified heading size). Nested buttons keep their own
+   * size — add .sf-btn--s explicitly for a compact card action.
    * ============================================================ */
   .sf-card {
     /* A card is a block box. When combined with a layout primitive on the same
@@ -5253,13 +5286,6 @@
   .sf-card__title {
     font-size: var(--sf-card-heading-size, var(--sf-text-xl));
     color:     var(--sf-color-heading);
-  }
-
-  /* Nested buttons shrink to the card's button size. Feed the *-size tier
-     (not the public --sf-btn-font-size knob) so a :root override of the knob
-     still wins inside cards, exactly as it does everywhere else. */
-  .sf-card .sf-btn {
-    --sf-btn-font-size--size: var(--sf-card-btn-font-size, var(--sf-text-s));
   }
 
   /* --- Modifiers --- */

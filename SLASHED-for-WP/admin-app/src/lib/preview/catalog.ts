@@ -32,6 +32,13 @@ export interface ApiClass {
 export const TOKENS: ApiToken[] = (apiIndex as { tokens: ApiToken[] }).tokens;
 export const CLASSES: ApiClass[] = (classIndex as { classes: ApiClass[] }).classes;
 
+/** Solid-colour gradient families (--sf-gradient-*, excluding the directional
+ *  --sf-gradient-fade--* and --sf-scrim-gradient). Shared between sections.ts
+ *  (which renders the swatches) and skin.ts (which generates the
+ *  .pv-grad--{family} rules they use) — the two must stay in lockstep or a
+ *  swatch silently renders blank. */
+export const GRADS = ["primary", "secondary", "tertiary", "action", "brand", "surface"];
+
 export const isPublic = (t: ApiToken) => t.tier === "PUBLIC";
 export const isAdvanced = (t: ApiToken) => t.tier === "PUBLIC-ADVANCED";
 

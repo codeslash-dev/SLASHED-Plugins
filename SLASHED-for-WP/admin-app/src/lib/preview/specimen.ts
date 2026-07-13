@@ -63,3 +63,11 @@ export function grid(min: number, ...items: string[]): string {
 export function well(content: string): string {
   return `<div class="sf-card sf-card--bordered">${content}</div>`;
 }
+
+/** A plain bordered surface backdrop — like `well`, but NOT a `.sf-card`.
+ *  Use for rows of `.sf-btn`: the framework's `.sf-card .sf-btn` rule pins a
+ *  nested button's label to `--sf-text-s`, which would flatten a per-size
+ *  button font ladder; a non-card frame lets each button render its true size. */
+export function frame(content: string): string {
+  return `<div style="padding:var(--sf-space-l);background:var(--sf-color-surface);border:var(--sf-border-width-1) solid var(--sf-color-border);border-radius:var(--sf-radius-l)">${content}</div>`;
+}

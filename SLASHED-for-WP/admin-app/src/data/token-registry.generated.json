@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedBy": "scripts/gen-token-registry.js",
-    "nextId": 777
+    "nextId": 792
   },
   "tokens": [
     {
@@ -2942,7 +2942,8 @@
     },
     {
       "id": 725,
-      "name": "--sf-card-btn-font-size"
+      "name": "--sf-card-btn-font-size",
+      "removed": true
     },
     {
       "id": 726,
@@ -3147,6 +3148,66 @@
     {
       "id": 776,
       "name": "--sf-btn-xs-font-size"
+    },
+    {
+      "id": 777,
+      "name": "--sf-btn-l-min-height"
+    },
+    {
+      "id": 778,
+      "name": "--sf-btn-l-padding-block"
+    },
+    {
+      "id": 779,
+      "name": "--sf-btn-l-padding-inline"
+    },
+    {
+      "id": 780,
+      "name": "--sf-btn-m-min-height"
+    },
+    {
+      "id": 781,
+      "name": "--sf-btn-m-padding-block"
+    },
+    {
+      "id": 782,
+      "name": "--sf-btn-m-padding-inline"
+    },
+    {
+      "id": 783,
+      "name": "--sf-btn-s-min-height"
+    },
+    {
+      "id": 784,
+      "name": "--sf-btn-s-padding-block"
+    },
+    {
+      "id": 785,
+      "name": "--sf-btn-s-padding-inline"
+    },
+    {
+      "id": 786,
+      "name": "--sf-btn-xl-min-height"
+    },
+    {
+      "id": 787,
+      "name": "--sf-btn-xl-padding-block"
+    },
+    {
+      "id": 788,
+      "name": "--sf-btn-xl-padding-inline"
+    },
+    {
+      "id": 789,
+      "name": "--sf-btn-xs-min-height"
+    },
+    {
+      "id": 790,
+      "name": "--sf-btn-xs-padding-block"
+    },
+    {
+      "id": 791,
+      "name": "--sf-btn-xs-padding-inline"
     }
   ]
 }

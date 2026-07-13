@@ -5,6 +5,8 @@
 // references a live --sf-* token, so configurator overrides drive these exactly
 // like the framework's own classes — the whole gallery reacts to every change.
 
+import { GRADS } from "./catalog";
+
 const RAMP_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
 const RAMP_FAMILIES = ["primary", "secondary", "tertiary", "action", "base", "neutral"];
 const STATUS = ["success", "warning", "danger", "info"];
@@ -12,7 +14,6 @@ const RADII = ["xs", "s", "m", "l", "xl", "2xl", "full"];
 const SHADOWS = ["xs", "s", "m", "l", "xl", "2xl"];
 const SPACES = ["3xs", "2xs", "xs", "s", "m", "l", "xl", "2xl", "3xl", "4xl"];
 const TYPE_STEPS = ["display-l", "display-m", "display-s", "2xl", "xl", "l", "m", "s", "xs"];
-const GRADS = ["primary", "brand", "tertiary", "surface"];
 
 export function previewSkinCSS(): string {
   const rampClass = (family: string) =>
@@ -45,7 +46,7 @@ export function previewSkinCSS(): string {
     /* Status chips + gradients */
     .pv-chip{display:block;inline-size:100%;block-size:44px;border-radius:var(--sf-radius-s);}
     ${STATUS.map((s) => `.pv-chip--${s}{background:var(--sf-color-${s});}`).join("")}
-    .pv-grad{block-size:44px;border-radius:var(--sf-radius-m);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);}
+    .pv-grad{inline-size:100%;block-size:44px;border-radius:var(--sf-radius-m);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-border);}
     ${GRADS.map((g) => `.pv-grad--${g}{background:var(--sf-gradient-${g});}`).join("")}
     /* Radius + shadow demo boxes */
     .pv-demo-box{inline-size:56px;block-size:56px;background:var(--sf-color-primary-100);border:2px solid var(--sf-color-primary-300);}
@@ -62,8 +63,13 @@ export function previewSkinCSS(): string {
     /* Generic filled block for layout-primitive demos (stack/cluster/grid gaps) */
     .pv-box{background:var(--sf-color-primary-100);border:var(--sf-border-width-1) var(--sf-border-style) var(--sf-color-primary-300);border-radius:var(--sf-radius-s);padding:var(--sf-space-s);color:var(--sf-color-primary-700);font-size:var(--sf-text-s);font-family:var(--sf-font-mono);text-align:center;min-inline-size:3rem;}
     .pv-box--tall{min-block-size:4rem;display:flex;align-items:center;justify-content:center;}
-    /* Motion demo tile */
-    .pv-motion-tile{inline-size:100%;block-size:56px;background:var(--sf-gradient-primary);border-radius:var(--sf-radius-m);}
+    /* Motion demo tile — "exit"/fade-out/scale-down presets end their real,
+       one-shot animation at opacity:0 (animation-fill-mode:both), which is
+       correct for actual exit transitions but would leave the tile blank
+       forever in a static gallery. Force infinite alternate playback here
+       (unlayered, so it beats @layer slashed.motion) purely so every tile
+       stays visible and keeps demonstrating its motion. */
+    .pv-motion-tile{inline-size:100%;block-size:56px;background:var(--sf-gradient-primary);border-radius:var(--sf-radius-m);animation-iteration-count:infinite !important;animation-direction:alternate !important;}
     /* Tinted card variants (demo-only; unlayered so they beat .sf-card's layer) */
     .pv-card--primary{background:var(--sf-color-primary);color:var(--sf-color-text--on-primary);}
     .pv-card--soft{background:var(--sf-color-primary-100);color:var(--sf-color-primary-700);}`;

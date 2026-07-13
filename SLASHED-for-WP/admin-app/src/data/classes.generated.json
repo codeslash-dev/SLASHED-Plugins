@@ -2285,6 +2285,16 @@
       "layer": "slashed.utilities"
     },
     {
+      "name": "sf-live-validate",
+      "selector": ".sf-live-validate",
+      "kind": "form",
+      "category": "Forms",
+      "group": "",
+      "description": "Scopes native constraint-validation feedback to this subtree: within it, :user-invalid/:user-valid on input/select/textarea drive --sf-field-border-color (the same token .sf-is-invalid/.sf-is-valid set explicitly). Apply to a <form> or <fieldset>. Off by default so a still-empty required field isn't marked invalid before a submit is attempted.",
+      "optional": true,
+      "layer": "slashed.forms"
+    },
+    {
       "name": "sf-marker--action",
       "selector": ".sf-marker--action",
       "kind": "utility",

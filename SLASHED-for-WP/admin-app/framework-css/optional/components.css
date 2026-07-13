@@ -62,14 +62,15 @@
        (--sf-btn-font-size, --sf-btn-padding-block/-inline, --sf-btn-min-height)
        is read FIRST in its property below, so a :root override of the knob
        wins on every size, while an unset knob falls through to the size tier.
-       For font-size the tier's first arg is the per-size knob
-       --sf-btn-{size}-font-size (initial → falls through to --sf-text-{size}),
-       and the whole resolved value is then multiplied by --sf-btn-font-scale
-       in the property below. */
+       Each tier's first arg is the matching per-size knob
+       --sf-btn-{size}-{prop} (initial → falls through to that rung's own scale
+       default), so a :root override retunes one rung; for font-size the whole
+       resolved value is then multiplied by --sf-btn-font-scale in the property
+       below. */
     --sf-btn-font-size--size:      var(--sf-btn-m-font-size, var(--sf-text-m));
-    --sf-btn-padding-block--size:  var(--sf-space-xs);
-    --sf-btn-padding-inline--size: var(--sf-space-m);
-    --sf-btn-min-height--size:     var(--sf-size-m);
+    --sf-btn-padding-block--size:  var(--sf-btn-m-padding-block, var(--sf-space-xs));
+    --sf-btn-padding-inline--size: var(--sf-btn-m-padding-inline, var(--sf-space-m));
+    --sf-btn-min-height--size:     var(--sf-btn-m-min-height, var(--sf-size-m));
 
     display:          inline-flex;
     align-items:      center;
@@ -320,28 +321,28 @@
      the size scale stays visible on phones/tablets instead of every rung
      collapsing to 44px. The AAA opt-in above restores the floor when wanted. */
   .sf-btn--xs {
-    --sf-btn-padding-block--size:  0.125rem;
-    --sf-btn-padding-inline--size: var(--sf-space-xs);
+    --sf-btn-padding-block--size:  var(--sf-btn-xs-padding-block, 0.125rem);
+    --sf-btn-padding-inline--size: var(--sf-btn-xs-padding-inline, var(--sf-space-xs));
     --sf-btn-font-size--size:      var(--sf-btn-xs-font-size, var(--sf-text-xs));
-    --sf-btn-min-height--size:     var(--sf-size-xs);
+    --sf-btn-min-height--size:     var(--sf-btn-xs-min-height, var(--sf-size-xs));
   }
   .sf-btn--s {
-    --sf-btn-padding-block--size:  var(--sf-space-2xs);
-    --sf-btn-padding-inline--size: var(--sf-space-s);
+    --sf-btn-padding-block--size:  var(--sf-btn-s-padding-block, var(--sf-space-2xs));
+    --sf-btn-padding-inline--size: var(--sf-btn-s-padding-inline, var(--sf-space-s));
     --sf-btn-font-size--size:      var(--sf-btn-s-font-size, var(--sf-text-s));
-    --sf-btn-min-height--size:     var(--sf-size-s);
+    --sf-btn-min-height--size:     var(--sf-btn-s-min-height, var(--sf-size-s));
   }
   .sf-btn--l {
-    --sf-btn-padding-block--size:  var(--sf-space-s);
-    --sf-btn-padding-inline--size: var(--sf-space-l);
+    --sf-btn-padding-block--size:  var(--sf-btn-l-padding-block, var(--sf-space-s));
+    --sf-btn-padding-inline--size: var(--sf-btn-l-padding-inline, var(--sf-space-l));
     --sf-btn-font-size--size:      var(--sf-btn-l-font-size, var(--sf-text-l));
-    --sf-btn-min-height--size:     var(--sf-size-l);
+    --sf-btn-min-height--size:     var(--sf-btn-l-min-height, var(--sf-size-l));
   }
   .sf-btn--xl {
-    --sf-btn-padding-block--size:  var(--sf-space-m);
-    --sf-btn-padding-inline--size: var(--sf-space-xl);
+    --sf-btn-padding-block--size:  var(--sf-btn-xl-padding-block, var(--sf-space-m));
+    --sf-btn-padding-inline--size: var(--sf-btn-xl-padding-inline, var(--sf-space-xl));
     --sf-btn-font-size--size:      var(--sf-btn-xl-font-size, var(--sf-text-xl));
-    --sf-btn-min-height--size:     var(--sf-size-xl);
+    --sf-btn-min-height--size:     var(--sf-btn-xl-min-height, var(--sf-size-xl));
   }
 
   /* --- States --- */
@@ -399,8 +400,8 @@
    * --sf-card-radius on inner elements (mirrors the math in
    * tokens.components.css).
    * Subcomponents: __media (16/9 cover image), __avatar (round),
-   * __title (unified heading size). Nested .sf-btn shrinks to
-   * --sf-card-btn-font-size.
+   * __title (unified heading size). Nested buttons keep their own
+   * size — add .sf-btn--s explicitly for a compact card action.
    * ============================================================ */
   .sf-card {
     /* A card is a block box. When combined with a layout primitive on the same
@@ -457,13 +458,6 @@
   .sf-card__title {
     font-size: var(--sf-card-heading-size, var(--sf-text-xl));
     color:     var(--sf-color-heading);
-  }
-
-  /* Nested buttons shrink to the card's button size. Feed the *-size tier
-     (not the public --sf-btn-font-size knob) so a :root override of the knob
-     still wins inside cards, exactly as it does everywhere else. */
-  .sf-card .sf-btn {
-    --sf-btn-font-size--size: var(--sf-card-btn-font-size, var(--sf-text-s));
   }
 
   /* --- Modifiers --- */
