@@ -34,7 +34,13 @@ function write(root, rel, contents) {
 /** Build a fully-consistent fixture checkout that runChecks() should pass. */
 function buildFixture(root) {
   for (const b of BUNDLES) {
-    write(root, `${PLUGIN}/dist/slashed.${b}.css`, `/* SLASHED v${FW} — slashed.${b}.css */\n:root{}\n`);
+    // Minified bundles mirror the real dist/ layout: the mandatory @layer
+    // order statement leads, pushing the version banner comment to line 2 —
+    // exercising distHeaderVersion's 300-char prefix scan, not just line 1.
+    const contents = b.endsWith('.min')
+      ? `@layer slashed.tokens,slashed.reset;\n/*! SLASHED v${FW} — slashed.${b}.css */\n:root{}\n`
+      : `/* SLASHED v${FW} — slashed.${b}.css */\n:root{}\n`;
+    write(root, `${PLUGIN}/dist/slashed.${b}.css`, contents);
   }
   const entry = (cssRef, cssName, verName) =>
     `<?php\n/**\n * Version: ${PV}\n */\n` +
@@ -68,6 +74,15 @@ describe('runChecks failure detection', () => {
 
   test('mismatched dist bundle versions are caught', () => {
     write(root, `${PLUGIN}/dist/slashed.full.css`, `/* SLASHED v9.9.9 — slashed.full.css */\n`);
+    const { errors } = runChecks(root);
+    assert.ok(errors.some((e) => /disagree on version/.test(e)), errors.join('\n'));
+  });
+
+  test('a minified bundle whose version banner sits on line 2 is caught when it drifts', () => {
+    // Real minified bundles lead with the @layer statement, so this proves
+    // distHeaderVersion's 300-char prefix scan — not just line 1 — is what
+    // catches drift here.
+    write(root, `${PLUGIN}/dist/slashed.full.min.css`, `@layer slashed.tokens;\n/*! SLASHED v9.9.9 — slashed.full.min.css */\n:root{}\n`);
     const { errors } = runChecks(root);
     assert.ok(errors.some((e) => /disagree on version/.test(e)), errors.join('\n'));
   });
