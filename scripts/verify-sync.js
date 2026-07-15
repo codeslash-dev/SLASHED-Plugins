@@ -7,7 +7,8 @@
  * Two independent version concepts are checked:
  *
  *   1. Framework-tracked version (which framework release's CSS is bundled):
- *      - all four bundled dist/*.css headers carry the SAME `SLASHED vX.Y.Z`;
+ *      - all eight bundled dist/*.css headers (layered + flat, each with its
+ *        minified sibling) carry the SAME `SLASHED vX.Y.Z`;
  *      - SLASHED_CSS_REF / SLASHED_BRICKS_CSS_REF / SLASHED_GUTENBERG_CSS_REF
  *        all equal `v<that version>`;
  *      - the two shipped inventory.json copies are byte-identical.
@@ -28,10 +29,15 @@ import crypto from 'node:crypto';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const PLUGIN = 'SLASHED-for-WP';
 
-// Every shipped bundle, layered and flat. All must carry the same framework
-// version header — the flat variants are what the "Flat CSS" setting serves,
-// so a missing or mismatched flat bundle is exactly the drift this catches.
-const DIST_BUNDLES = ['optimal', 'full', 'optimal.flat', 'full.flat'];
+// Every shipped bundle, layered and flat, minified and not. All must carry
+// the same framework version header — the flat variants are what the "Flat
+// CSS" setting serves and the minified variants are what Slashed_CSS_Loader
+// serves by default (see class-css-loader.php), so a missing or mismatched
+// bundle in any of these is exactly the drift this catches.
+const DIST_BUNDLES = [
+  'optimal', 'optimal.min', 'optimal.flat', 'optimal.flat.min',
+  'full', 'full.min', 'full.flat', 'full.flat.min',
+];
 
 // PHP files carrying the tracked-framework-version constant.
 const CSS_REF_TARGETS = [
@@ -67,10 +73,15 @@ function sha256(root, rel) {
   return crypto.createHash('sha256').update(fs.readFileSync(path.join(root, rel))).digest('hex');
 }
 
-/** Extract `X.Y.Z[-pre]` from a `/* SLASHED vX.Y.Z — file.css *\/` header. */
+/**
+ * Extract `X.Y.Z[-pre]` from a `/* SLASHED vX.Y.Z — file.css *\/` header.
+ * Scans a prefix rather than just line 1: minified bundles lead with the
+ * mandatory `@layer` order statement, which pushes the version banner
+ * comment onto line 2.
+ */
 function distHeaderVersion(root, rel) {
-  const first = read(root, rel).split('\n', 1)[0];
-  const m = first.match(/SLASHED\s+v(\d+\.\d+\.\d+(?:[-.][A-Za-z0-9.]+)*)/);
+  const head = read(root, rel).slice(0, 300);
+  const m = head.match(/SLASHED\s+v(\d+\.\d+\.\d+(?:[-.][A-Za-z0-9.]+)*)/);
   return m ? m[1] : null;
 }
 
