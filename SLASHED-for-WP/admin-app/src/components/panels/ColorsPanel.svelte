@@ -109,41 +109,42 @@
     { name: "--sf-color-danger-source-dark",   label: "Danger",  side: "dark",  default: "oklch(0.73 0.198 12)", colorKey: "danger" },
   ];
 
-  const MIX_STEPS = [
-    { name: "--sf-palette-mix-50",  label: "50",  step: "tint",  default: 4 },
-    { name: "--sf-palette-mix-100", label: "100", step: "tint",  default: 8 },
-    { name: "--sf-palette-mix-200", label: "200", step: "tint",  default: 20 },
-    { name: "--sf-palette-mix-300", label: "300", step: "tint",  default: 40 },
-    { name: "--sf-palette-mix-400", label: "400", step: "tint",  default: 65 },
-    { name: "--sf-palette-mix-600", label: "600", step: "shade", default: 82 },
-    { name: "--sf-palette-mix-700", label: "700", step: "shade", default: 62 },
-    { name: "--sf-palette-mix-800", label: "800", step: "shade", default: 38 },
-    { name: "--sf-palette-mix-900", label: "900", step: "shade", default: 18 },
-    { name: "--sf-palette-mix-950", label: "950", step: "shade", default: 8 },
+  // Baked per-step ramp curve — mirrors core/tokens.css: how far each step
+  // pulls its lightness toward the absolute anchor, plus a chroma taper.
+  // Preview-only (the shape is fixed in the framework); the two anchors below
+  // are the tunable public knobs.
+  const RAMP_CURVE = [
+    { label: "50",  step: "tint",  frac: 0.95, taper: 0.20 },
+    { label: "100", step: "tint",  frac: 0.88, taper: 0.30 },
+    { label: "200", step: "tint",  frac: 0.72, taper: 0.50 },
+    { label: "300", step: "tint",  frac: 0.52, taper: 0.72 },
+    { label: "400", step: "tint",  frac: 0.30, taper: 0.88 },
+    { label: "600", step: "shade", frac: 0.16, taper: 0.96 },
+    { label: "700", step: "shade", frac: 0.36, taper: 0.88 },
+    { label: "800", step: "shade", frac: 0.58, taper: 0.72 },
+    { label: "900", step: "shade", frac: 0.78, taper: 0.52 },
+    { label: "950", step: "shade", frac: 0.90, taper: 0.38 },
+  ] as const;
+
+  // The two PUBLIC-ADVANCED ramp anchors — absolute OKLCH lightness the tint
+  // (50–400) / shade (600–950) halves reach toward. Unitless 0–1.
+  const ANCHOR_KNOBS = [
+    { name: "--sf-palette-tint-l",  label: "Lightest step (L)", default: 0.97 },
+    { name: "--sf-palette-shade-l", label: "Darkest step (L)",  default: 0.1 },
   ];
 
   const CURVE_PRESETS = [
     {
       label: "Softer", desc: "Low contrast palette",
-      patch: {
-        "--sf-palette-mix-50": "3%", "--sf-palette-mix-100": "6%", "--sf-palette-mix-200": "14%",
-        "--sf-palette-mix-300": "30%", "--sf-palette-mix-400": "55%",
-        "--sf-palette-mix-600": "72%", "--sf-palette-mix-700": "52%",
-        "--sf-palette-mix-800": "28%", "--sf-palette-mix-900": "12%", "--sf-palette-mix-950": "5%",
-      },
+      patch: { "--sf-palette-tint-l": "0.93", "--sf-palette-shade-l": "0.2" },
     },
     {
       label: "Default", desc: "Balanced contrast",
-      patch: Object.fromEntries(MIX_STEPS.map((s) => [s.name, null])) as Record<string, null>,
+      patch: Object.fromEntries(ANCHOR_KNOBS.map((k) => [k.name, null])) as Record<string, null>,
     },
     {
       label: "Punchy", desc: "High contrast palette",
-      patch: {
-        "--sf-palette-mix-50": "6%", "--sf-palette-mix-100": "12%", "--sf-palette-mix-200": "28%",
-        "--sf-palette-mix-300": "52%", "--sf-palette-mix-400": "78%",
-        "--sf-palette-mix-600": "90%", "--sf-palette-mix-700": "72%",
-        "--sf-palette-mix-800": "50%", "--sf-palette-mix-900": "26%", "--sf-palette-mix-950": "12%",
-      },
+      patch: { "--sf-palette-tint-l": "0.98", "--sf-palette-shade-l": "0.05" },
     },
   ];
 
@@ -325,10 +326,11 @@
     )
   ));
 
-  function getMixValue(s: typeof MIX_STEPS[0]): number {
-    const raw = overrides[s.name];
-    if (!raw) return s.default;
-    return parseFloat(raw);
+  function getAnchor(name: string, def: number): number {
+    const raw = overrides[name];
+    if (raw === undefined) return def;
+    const n = parseFloat(raw);
+    return Number.isFinite(n) ? n : def;
   }
 
   // Build brand pairs: group by colorKey then render light/dark
@@ -382,17 +384,22 @@
     return stringifyOklch(Math.min(1.0, Math.max(l + 0.22, 0.88)), c * 0.8, h);
   }
 
-  // Build a concrete color-mix() expression and resolve it via the regular preview probe.
-  // Bypasses the themed probe entirely — produces correct dark tints/shades from literal values.
-  function computePaletteSwatch(sourceColor: string, step: string, surface: string, text: string): string {
+  // Preview one brand palette step with the framework's absolute-anchor model
+  // (core/tokens.css): pull the source lightness a fixed fraction toward
+  // --sf-palette-tint-l (tints) / --sf-palette-shade-l (shades), clamped with
+  // max()/min() so it can't fold, with a chroma taper. Independent of
+  // surface/text — the ramp no longer mixes toward them.
+  function computePaletteSwatch(sourceColor: string, step: string): string {
     void previewVersion.value;
     if (step === "500") return resolveColor(sourceColor) || sourceColor;
-    const isTint = parseInt(step) < 500;
-    const mixStepDef = MIX_STEPS.find((s) => s.label === step);
-    if (!mixStepDef) return sourceColor;
-    const pct = getMixValue(mixStepDef);
-    const endpoint = isTint ? surface : text;
-    const expr = `color-mix(in oklab, ${sourceColor} ${pct}%, ${endpoint})`;
+    const def = RAMP_CURVE.find((s) => s.label === step);
+    if (!def) return sourceColor;
+    const isTint = def.step === "tint";
+    const target = isTint
+      ? getAnchor("--sf-palette-tint-l", 0.97)
+      : getAnchor("--sf-palette-shade-l", 0.1);
+    const clamp = isTint ? "max" : "min";
+    const expr = `oklch(from ${sourceColor} ${clamp}(l, calc(l + (${target} - l) * ${def.frac})) calc(c * ${def.taper}) h)`;
     return resolveColor(expr) || expr;
   }
 
@@ -409,10 +416,10 @@
 
   // Route each color to the correct palette system: base uses the fixed-L ramp,
   // every other key uses the color-mix tint/shade curve toward surface/text.
-  function paletteSwatch(colorKey: string, sourceColor: string, step: string, surface: string, text: string): string {
+  function paletteSwatch(colorKey: string, sourceColor: string, step: string, _surface: string, _text: string): string {
     return colorKey === "base"
       ? computeBasePaletteSwatch(sourceColor, step)
-      : computePaletteSwatch(sourceColor, step, surface, text);
+      : computePaletteSwatch(sourceColor, step);
   }
 
   function handleLightChange(light: ColorSource, dark: ColorSource | undefined, newVal: string) {
@@ -840,7 +847,7 @@
       aria-expanded={showShadeCurve}
       class="w-full flex items-center justify-between cursor-pointer"
     >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Shade / tint curve</div>
+      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Palette ramp</div>
       <span class="text-[10px] text-slate-500">{showShadeCurve ? "▲" : "▼"}</span>
     </button>
     {#if showShadeCurve}
@@ -850,12 +857,10 @@
       ? (BRAND_SOURCES.find(s => s.name === "--sf-color-primary-source-dark")?.default ?? deriveDarkFromLight(_curvePrimLightSrc, "primary"))
       : deriveDarkFromLight(_curvePrimLightSrc, "primary"))}
     {@const _curvePrimSrc = curvePreviewSide === "light" ? _curvePrimLightSrc : _curvePrimDarkSrc}
-    {@const _curveSurface = curvePreviewSide === "light" ? getLightSurface() : getDarkSurface()}
-    {@const _curveText = curvePreviewSide === "light" ? getLightText() : getDarkText()}
-    {@const _miniSurface = curvePreviewSide === "light" ? getLightSurface() : getDarkSurface()}
-    {@const _miniText = curvePreviewSide === "light" ? getLightText() : getDarkText()}
     <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
-      Controls how much color is mixed into each palette step. Step 500 is always the source color.
+      Set how light the lightest step and how dark the darkest step reach; every
+      step in between is derived automatically and stays light→dark for any
+      colour. Step 500 is always the source colour.
     </p>
 
     <div class="grid grid-cols-3 gap-1.5">
@@ -874,35 +879,18 @@
       {/each}
     </div>
 
-    <!-- Tints -->
+    <!-- Lightness anchors -->
     <div>
-      <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-2">Tints (50–400) — mixed toward surface</div>
+      <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-2">Ramp anchors — absolute OKLCH lightness</div>
       <div class="space-y-2">
-        {#each MIX_STEPS.filter((s) => s.step === "tint") as s (s.name)}
+        {#each ANCHOR_KNOBS as k (k.name)}
           <SliderRow
-            label={s.label}
-            value={getMixValue(s)}
-            min={0} max={100} step={1} unit="%"
-            overridden={s.name in overrides}
-            onChange={(v) => onSet(s.name, `${v}%`)}
-            onReset={() => onReset(s.name)}
-          />
-        {/each}
-      </div>
-    </div>
-
-    <!-- Shades -->
-    <div>
-      <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-2">Shades (600–950) — mixed toward text</div>
-      <div class="space-y-2">
-        {#each MIX_STEPS.filter((s) => s.step === "shade") as s (s.name)}
-          <SliderRow
-            label={s.label}
-            value={getMixValue(s)}
-            min={0} max={100} step={1} unit="%"
-            overridden={s.name in overrides}
-            onChange={(v) => onSet(s.name, `${v}%`)}
-            onReset={() => onReset(s.name)}
+            label={k.label}
+            value={getAnchor(k.name, k.default)}
+            min={0} max={1} step={0.01} unit=""
+            overridden={k.name in overrides}
+            onChange={(v) => onSet(k.name, `${v}`)}
+            onReset={() => onReset(k.name)}
           />
         {/each}
       </div>
@@ -925,22 +913,19 @@
         </div>
       </div>
       <div class="flex items-end gap-0.5 h-20">
-        {#each MIX_STEPS as s (s.name)}
-          {@const val = getMixValue(s)}
-          {@const step = s.label}
-          {@const swatch = computePaletteSwatch(_curvePrimSrc, step, _curveSurface, _curveText)}
+        {#each SWATCH_STEPS as step (step)}
+          {@const swatch = computePaletteSwatch(_curvePrimSrc, step)}
           <div class="flex-1 flex flex-col items-center gap-0.5 h-full justify-end">
-            <span class="text-[7px] font-mono text-slate-400 dark:text-slate-600">{Math.round(val)}</span>
             <div
-              class="group relative w-full rounded-sm border-x border-t border-black/10 dark:border-white/10"
-              style={`background:${swatch}; height: ${Math.max((val / 100) * 56, 6)}px`}
-              title={`primary-${step} (${curvePreviewSide}) · mix ${Math.round(val)}%`}
+              class="group relative w-full h-full rounded-sm border-x border-t border-black/10 dark:border-white/10"
+              style={`background:${swatch}`}
+              title={`primary-${step} (${curvePreviewSide})`}
             >{@render swatchTip(`primary-${step}`)}</div>
             <span class="text-[7px] font-mono text-slate-400 dark:text-slate-600">{step}</span>
           </div>
         {/each}
       </div>
-      <p class="text-[8px] text-slate-400 dark:text-slate-600 mt-2">Bar height = mix amount · fill = the resolved primary palette swatch at each step</p>
+      <p class="text-[8px] text-slate-400 dark:text-slate-600 mt-2">Live primary palette, 50 → 950 — always monotonic light→dark</p>
     </div>
 
     <!-- Mini palettes: all brand colors × all steps, reactive to light/dark toggle -->
@@ -969,7 +954,7 @@
           <span class="text-[7px] font-mono text-slate-400 dark:text-slate-600 w-12 shrink-0 truncate">{colorKey}</span>
           <div class="flex gap-0.5 flex-1">
             {#each SWATCH_STEPS as step (step)}
-              {@const swatch = computePaletteSwatch(miniSrc, step, _miniSurface, _miniText)}
+              {@const swatch = computePaletteSwatch(miniSrc, step)}
               <div
                 class="group relative flex-1 h-4 rounded-sm border border-black/10 dark:border-white/10"
                 style={`background:${swatch}`}

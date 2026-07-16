@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedBy": "scripts/gen-token-registry.js",
-    "nextId": 798
+    "nextId": 800
   },
   "tokens": [
     {
@@ -1993,43 +1993,53 @@
     },
     {
       "id": 489,
-      "name": "--sf-palette-mix-100"
+      "name": "--sf-palette-mix-100",
+      "removed": true
     },
     {
       "id": 490,
-      "name": "--sf-palette-mix-200"
+      "name": "--sf-palette-mix-200",
+      "removed": true
     },
     {
       "id": 491,
-      "name": "--sf-palette-mix-300"
+      "name": "--sf-palette-mix-300",
+      "removed": true
     },
     {
       "id": 492,
-      "name": "--sf-palette-mix-400"
+      "name": "--sf-palette-mix-400",
+      "removed": true
     },
     {
       "id": 493,
-      "name": "--sf-palette-mix-50"
+      "name": "--sf-palette-mix-50",
+      "removed": true
     },
     {
       "id": 494,
-      "name": "--sf-palette-mix-600"
+      "name": "--sf-palette-mix-600",
+      "removed": true
     },
     {
       "id": 495,
-      "name": "--sf-palette-mix-700"
+      "name": "--sf-palette-mix-700",
+      "removed": true
     },
     {
       "id": 496,
-      "name": "--sf-palette-mix-800"
+      "name": "--sf-palette-mix-800",
+      "removed": true
     },
     {
       "id": 497,
-      "name": "--sf-palette-mix-900"
+      "name": "--sf-palette-mix-900",
+      "removed": true
     },
     {
       "id": 498,
-      "name": "--sf-palette-mix-950"
+      "name": "--sf-palette-mix-950",
+      "removed": true
     },
     {
       "id": 499,
@@ -3239,6 +3249,14 @@
     {
       "id": 797,
       "name": "--sf-density"
+    },
+    {
+      "id": 798,
+      "name": "--sf-palette-shade-l"
+    },
+    {
+      "id": 799,
+      "name": "--sf-palette-tint-l"
     }
   ]
 }

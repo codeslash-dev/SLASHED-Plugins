@@ -1,6 +1,6 @@
 {
   "macros":     ["prose", "flow-space", "line-clamp", "aspect", "scroll-shadow", "scrim", "surface-color", "surface-bg", "content-intrinsic", "overlap-"],
-  "colors":     ["color", "contrast", "palette-mix", "lumlocker", "gradient"],
+  "colors":     ["color", "contrast", "palette", "lumlocker", "gradient"],
   "typography": ["font", "--sf-text", "leading", "tracking", "weight", "body-font", "heading-font",
                  "body-em", "body-text", "heading-text", "display-l-", "display-m-",
                  "-h1-", "-h2-", "-h3-", "-h4-", "-h5-", "-h6-",

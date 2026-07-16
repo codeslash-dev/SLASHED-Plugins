@@ -2147,44 +2147,12 @@
     "description": "how far .sf-overlap pulls into the adjacent element. .sf-overlap-host's padding compensation defaults to this same value via a var() fallback in the rule itself (not aliased here — see core/macros.css), so one override on the host tunes both unless --sf-overlap-host-pad is set…",
     "category": "Macro tokens"
   },
-  "sf-palette-mix-100": {
-    "description": "Color-mix percentage for palette step 100. Controls blend depth toward the surface. Default 8%.",
+  "sf-palette-shade-l": {
+    "description": "Absolute OKLCH lightness the shade steps (600-950) pull toward; sets how dark the darkest palette step can reach. Default 0.1.",
     "category": "Core tokens"
   },
-  "sf-palette-mix-200": {
-    "description": "Color-mix percentage for palette step 200. Controls blend depth toward the surface. Default 20%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-300": {
-    "description": "Color-mix percentage for palette step 300. Controls blend depth toward the surface. Default 40%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-400": {
-    "description": "Color-mix percentage for palette step 400 (near-mid tint). Controls blend depth. Default 65%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-50": {
-    "description": "Color-mix percentage for the lightest palette step (50). Controls how far step 50 blends toward the surface. Default 4%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-600": {
-    "description": "Color-mix percentage for palette step 600 (near-mid shade). Controls blend depth toward the text color. Default 82%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-700": {
-    "description": "Color-mix percentage for palette step 700. Controls blend depth toward the text color. Default 62%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-800": {
-    "description": "Color-mix percentage for palette step 800 (dark shade). Controls blend depth toward text. Default 38%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-900": {
-    "description": "Color-mix percentage for palette step 900 (very dark shade). Controls blend depth toward text. Default 18%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-950": {
-    "description": "Color-mix percentage for the darkest palette step (950). Controls how far step 950 blends toward the text color. Default 8%.",
+  "sf-palette-tint-l": {
+    "description": "Absolute OKLCH lightness the tint steps (50-400) pull toward; sets how light the lightest palette step can reach. Default 0.97.",
     "category": "Core tokens"
   },
   "sf-print-base-size": {

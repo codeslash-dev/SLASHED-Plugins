@@ -2,7 +2,7 @@
   "_meta": {
     "source": "source (core/ + optional/ token and class files)",
     "counts": {
-      "variables": 754,
+      "variables": 746,
       "sf_classes": 317,
       "is_classes": 0
     }
@@ -545,16 +545,8 @@
     "--sf-opacity-muted",
     "--sf-optical-sizing",
     "--sf-overlap-pull",
-    "--sf-palette-mix-50",
-    "--sf-palette-mix-100",
-    "--sf-palette-mix-200",
-    "--sf-palette-mix-300",
-    "--sf-palette-mix-400",
-    "--sf-palette-mix-600",
-    "--sf-palette-mix-700",
-    "--sf-palette-mix-800",
-    "--sf-palette-mix-900",
-    "--sf-palette-mix-950",
+    "--sf-palette-shade-l",
+    "--sf-palette-tint-l",
     "--sf-print-base-size",
     "--sf-print-page-margin",
     "--sf-print-page-size",
