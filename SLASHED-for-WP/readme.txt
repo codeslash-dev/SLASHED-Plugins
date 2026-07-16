@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.5.11
+Stable tag: 0.5.12
 Requires PHP: 7.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -129,6 +129,11 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.5.12 =
+* Fixed: Cover the minified CSS bundles (`slashed.*.min.css`) in `verify-sync`'s
+* Fixed: drift check, so a corrupted or version-mismatched minified bundle — the
+* Fixed: variant now served by default — fails CI instead of shipping undetected.
 
 = 0.5.11 =
 * Maintenance release.

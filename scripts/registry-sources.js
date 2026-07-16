@@ -27,7 +27,6 @@ const CLASS_FILES = [
   'core/themes.css',
   'optional/forms.css',
   'optional/components.css',
-  'optional/theme-example.css',
   'optional/utilities.css',
 ];
 

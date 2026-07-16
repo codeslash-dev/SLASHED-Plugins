@@ -3,7 +3,7 @@
 // configurable token/class is visible and reacts live to the configurator.
 // Foundations enumerate the real API via ./catalog; components are curated.
 
-import { page, section, specimen, tag, cluster, grid, stack, well, frame, esc } from "./specimen";
+import { page, section, specimen, specimenFull, tag, cluster, grid, stack, well, frame, esc } from "./specimen";
 import { familySteps, classesOfKind, tokensMatching, tokensByGroup, classesByKind, GRADS } from "./catalog";
 
 const RAMP_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
@@ -270,34 +270,34 @@ export function layout(): string {
   const gridCols = stack(
     "s",
     ...([2, 3, 4] as const).map((n) =>
-      specimen(
+      specimenFull(
         `sf-grid-cols-${n}`,
         `<div class="sf-grid sf-grid-cols-${n}">${Array.from({ length: n }, (_, i) => box(String(i + 1))).join("")}</div>`,
       ),
     ),
   );
-  const switcherDemo = specimen(
+  const switcherDemo = specimenFull(
     "sf-switcher (auto row→stack)",
     `<div class="sf-switcher">${box("a")}${box("b")}${box("c")}</div>`,
   );
-  const sidebarDemo = specimen(
+  const sidebarDemo = specimenFull(
     "sf-sidebar",
     `<div class="sf-sidebar"><div class="pv-box pv-box--tall" style="min-inline-size:6rem">aside</div><div class="pv-box pv-box--tall">main content area</div></div>`,
   );
-  const centerDemo = specimen(
+  const centerDemo = specimenFull(
     "sf-center",
     `<div class="sf-center" style="min-block-size:5rem;background:var(--sf-color-inset);border-radius:var(--sf-radius-m)">${box("centered")}</div>`,
   );
   const asymGrid = stack(
     "s",
     ...(["1-2", "2-1", "1-3"] as const).map((c) =>
-      specimen(
+      specimenFull(
         `sf-grid-cols-${c}`,
         `<div class="sf-grid sf-grid-cols-${c}">${box("a")}${box("b")}</div>`,
       ),
     ),
   );
-  const bentoDemo = specimen(
+  const bentoDemo = specimenFull(
     "sf-bento — sf-bento-featured / -wide / -tall span modifiers",
     `<div class="sf-bento">${[
       ["sf-bento-featured", "featured (2×2)"],
@@ -604,21 +604,6 @@ export function macros(): string {
   // Text gradient.
   const textGradient = well(`<h2 class="sf-text-gradient pv-strong" style="margin:0;font-size:var(--sf-text-2xl)">Gradient headline</h2>`);
 
-  // Corner scoop — the notch reveals whatever sits behind the element, so
-  // the card sits on a contrasting frame.
-  const scoopCard = (mods: string) =>
-    `<div class="sf-card ${mods}" style="background:var(--sf-color-surface);inline-size:6rem;block-size:6rem;border-radius:var(--sf-radius-s)"></div>`;
-  const cornerScoop = frame(
-    `<div class="sf-cluster sf-cluster--m" style="background:var(--sf-color-primary-100);padding:var(--sf-space-m);border-radius:var(--sf-radius-m)">${[
-      ["sf-corner-scoop", "default (top-right)"],
-      ["sf-corner-scoop sf-corner-scoop--top-left", "top-left"],
-      ["sf-corner-scoop sf-corner-scoop--bottom-left", "bottom-left"],
-      ["sf-corner-scoop sf-corner-scoop--bottom-right", "bottom-right"],
-    ]
-      .map(([mods, label]) => specimen(label, scoopCard(mods)))
-      .join("")}</div>`,
-  );
-
   // Overlap — an avatar pulled down over the card that follows it
   // (.sf-overlap--down; the plain .sf-overlap pulls UP onto whatever
   // precedes it instead — not what a leading avatar needs here), plus the
@@ -665,7 +650,6 @@ export function macros(): string {
     section("Named background preset (sf-surface-bg)", surfaceBg),
     section("Text protect (sf-text-protect)", well(textProtect)),
     section("Text gradient (sf-text-gradient)", textGradient),
-    section("Corner scoop (sf-corner-scoop + corner modifiers)", cornerScoop),
     section("Overlap (sf-overlap, sf-overlap-host)", well(stack("m", overlapHost, overlapDirections))),
     section("No tap highlight (sf-no-tap-highlight)", noTapHighlight),
   );

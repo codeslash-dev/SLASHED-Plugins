@@ -24,6 +24,17 @@ export function specimen(label: string, body: string): string {
   return `<div class="sf-stack sf-stack--xs sf-stack--center pv-center-text">${body}${tag(label)}</div>`;
 }
 
+/** Like `specimen`, but for primitives whose whole point is filling real
+ *  available width (grid column counts, sidebar, switcher, bento) — the
+ *  `sf-stack--center` in the base variant shrink-wraps its child to
+ *  intrinsic content width (`align-items: center`), which silently
+ *  defeats these: a 4-column grid or a sidebar collapse can't demonstrate
+ *  anything at ~100px. Only the caption is centered here; the demo itself
+ *  stretches to the card's full width, same as it would in real markup. */
+export function specimenFull(label: string, body: string): string {
+  return `<div class="sf-stack sf-stack--xs pv-center-text">${body}${tag(label)}</div>`;
+}
+
 /** A titled section block (eyebrow + optional note + content). */
 export function section(eyebrow: string, content: string, note?: string): string {
   const noteHtml = note ? `<p class="pv-secondary">${esc(note)}</p>` : "";

@@ -9,6 +9,15 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.5.12] - 2026-07-16
+
+### Fixed
+
+- Cover minified CSS bundles in verify-sync's drift check
+- Serve minified framework CSS bundles by default
+
+## [0.5.12] - 2026-07-16
+
 ### Fixed
 
 - Cover the minified CSS bundles (`slashed.*.min.css`) in `verify-sync`'s
