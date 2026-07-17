@@ -15,26 +15,6 @@
     "description": "Pulsing color loop. Use for live-status badges (recording, live). Respect prefers-reduced-motion.",
     "category": "Core tokens"
   },
-  "sf-animation-delay-1": {
-    "description": "Shortest stagger delay. Apply to the first element in a sequentially animated group.",
-    "category": "Core tokens"
-  },
-  "sf-animation-delay-2": {
-    "description": "Second stagger delay step.",
-    "category": "Core tokens"
-  },
-  "sf-animation-delay-3": {
-    "description": "Third stagger delay step.",
-    "category": "Core tokens"
-  },
-  "sf-animation-delay-4": {
-    "description": "Fourth stagger delay step.",
-    "category": "Core tokens"
-  },
-  "sf-animation-delay-5": {
-    "description": "Longest stagger delay. Apply to the last element in a sequentially animated group.",
-    "category": "Core tokens"
-  },
   "sf-animation-fade-in": {
     "description": "Fade-in entrance animation shorthand. Use directly as animation property value.",
     "category": "Core tokens"
@@ -1499,14 +1479,6 @@
     "description": "OKLCH lightness crossover for auto-contrast on colored surfaces. Colors with L above this get dark text; below get light text. Default 0.6.",
     "category": "Core tokens"
   },
-  "sf-corner-scoop-at": {
-    "description": "Corner the .sf-corner-scoop mask cuts, as a radial-gradient origin (e.g. '100% 0' = top-right). Default: 100% 0.",
-    "category": "Macro tokens"
-  },
-  "sf-corner-scoop-size": {
-    "description": "Cut radius of the .sf-corner-scoop mask. Default: var(--sf-radius-2xl).",
-    "category": "Macro tokens"
-  },
   "sf-cover-min-height": {
     "description": "Minimum height of the cover layout (typically 100svh).",
     "category": "Layout tokens"
@@ -1517,6 +1489,10 @@
   },
   "sf-current-font-weight": {
     "description": "Inherits the current font-weight from context. Useful as a reset.",
+    "category": "Core tokens"
+  },
+  "sf-density": {
+    "description": "Compact ↔ comfortable dial for interactive control geometry (the --sf-size-* rung ladder). Default 1; below 1 packs controls tighter (dashboards, data tables), above 1 loosens them. A deliberate design/user choice, not a viewport response — orthogonal to --sf-space-scale (whitespace) and --sf-section-scale (section rhythm). The --sf-touch-target accessibility floor is independent, so a small value can't shrink native controls below the WCAG target. Like the other global multipliers it is a :root dial (the size ladder is computed at :root and inherits, so nested overrides don't retroactively rescale it).",
     "category": "Core tokens"
   },
   "sf-display-l-line-height": {
@@ -2007,6 +1983,22 @@
     "description": "text-wrap for headings. 'balance' prevents orphaned short last lines in multi-line headings.",
     "category": "Core tokens"
   },
+  "sf-hover-grow-scale": {
+    "description": "Scale factor applied by .sf-hover-grow on hover (>1 grows).",
+    "category": "Core tokens"
+  },
+  "sf-hover-lift": {
+    "description": "Translate distance for .sf-hover-float (up) and .sf-hover-sink (down) on hover.",
+    "category": "Core tokens"
+  },
+  "sf-hover-shrink-scale": {
+    "description": "Scale factor applied by .sf-hover-shrink on hover (<1 shrinks).",
+    "category": "Core tokens"
+  },
+  "sf-hover-slide": {
+    "description": "Translate distance for .sf-hover-slide-start / .sf-hover-slide-end on hover.",
+    "category": "Core tokens"
+  },
   "sf-icon-2xl": {
     "description": "2× large icon size (~40px+). Hero or onboarding icons.",
     "category": "Core tokens"
@@ -2155,44 +2147,12 @@
     "description": "how far .sf-overlap pulls into the adjacent element. .sf-overlap-host's padding compensation defaults to this same value via a var() fallback in the rule itself (not aliased here — see core/macros.css), so one override on the host tunes both unless --sf-overlap-host-pad is set…",
     "category": "Macro tokens"
   },
-  "sf-palette-mix-100": {
-    "description": "Color-mix percentage for palette step 100. Controls blend depth toward the surface. Default 8%.",
+  "sf-palette-shade-l": {
+    "description": "Absolute OKLCH lightness the shade steps (600-950) pull toward; sets how dark the darkest palette step can reach. Default 0.1.",
     "category": "Core tokens"
   },
-  "sf-palette-mix-200": {
-    "description": "Color-mix percentage for palette step 200. Controls blend depth toward the surface. Default 20%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-300": {
-    "description": "Color-mix percentage for palette step 300. Controls blend depth toward the surface. Default 40%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-400": {
-    "description": "Color-mix percentage for palette step 400 (near-mid tint). Controls blend depth. Default 65%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-50": {
-    "description": "Color-mix percentage for the lightest palette step (50). Controls how far step 50 blends toward the surface. Default 4%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-600": {
-    "description": "Color-mix percentage for palette step 600 (near-mid shade). Controls blend depth toward the text color. Default 82%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-700": {
-    "description": "Color-mix percentage for palette step 700. Controls blend depth toward the text color. Default 62%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-800": {
-    "description": "Color-mix percentage for palette step 800 (dark shade). Controls blend depth toward text. Default 38%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-900": {
-    "description": "Color-mix percentage for palette step 900 (very dark shade). Controls blend depth toward text. Default 18%.",
-    "category": "Core tokens"
-  },
-  "sf-palette-mix-950": {
-    "description": "Color-mix percentage for the darkest palette step (950). Controls how far step 950 blends toward the text color. Default 8%.",
+  "sf-palette-tint-l": {
+    "description": "Absolute OKLCH lightness the tint steps (50-400) pull toward; sets how light the lightest palette step can reach. Default 0.97.",
     "category": "Core tokens"
   },
   "sf-print-base-size": {
@@ -2602,6 +2562,10 @@
   "sf-stack-gap": {
     "description": "Vertical gap between stacked block-level elements in the stack layout.",
     "category": "Layout tokens"
+  },
+  "sf-stagger-step": {
+    "description": "Per-item delay increment for the .sf-stagger utility. One knob retunes the whole staggered sequence; the class multiplies it by each child's index and by --sf-motion-scale.",
+    "category": "Core tokens"
   },
   "sf-state-pending-opacity": {
     "description": "Opacity for pending / loading state elements.",

@@ -39,9 +39,11 @@ class Slashed_CSS_Loader {
 	 * Get the URL for the SLASHED CSS bundle.
 	 *
 	 * The framework CSS ships with the plugin in its own dist/ directory and is
-	 * always served locally. If the requested bundle file is missing the URL is
-	 * empty so the admin notice in class-admin.php can surface the problem
-	 * clearly.
+	 * always served locally. Serves the minified bundle by default; falls back
+	 * to the unminified (readable) bundle when SCRIPT_DEBUG is enabled, mirroring
+	 * WordPress core's own convention for its bundled assets. If the resolved
+	 * bundle file is missing the URL is empty so the admin notice in
+	 * class-admin.php can surface the problem clearly.
 	 *
 	 * Applies the 'slashed/css_bundle_url' filter so site owners can override
 	 * the URL globally. Integrations apply their own filter on top of this
@@ -52,7 +54,8 @@ class Slashed_CSS_Loader {
 	public static function get_url() {
 		$bundle   = self::get_bundle();
 		$flat     = Slashed_Settings::get_css_flat();
-		$filename = 'slashed.' . $bundle . ( $flat ? '.flat' : '' ) . '.css';
+		$debug    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
+		$filename = 'slashed.' . $bundle . ( $flat ? '.flat' : '' ) . ( $debug ? '' : '.min' ) . '.css';
 
 		$local = SLASHED_PATH . 'dist/' . $filename;
 		$url   = file_exists( $local ) ? SLASHED_URL . 'dist/' . $filename : '';

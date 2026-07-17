@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.16 — slashed.full.css | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.20 — slashed.full.css | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -633,11 +633,11 @@
       --sf-color-warning-muted:  oklch(from var(--sf-color-warning) l c h / 0.3);
       --sf-color-warning-tint:   oklch(from var(--sf-color-warning) l c h / 0.05);
 
-      --sf-color-info-subtle:    oklch(from var(--sf-color-info) l c h / 0.1);
+      --sf-color-info-subtle:    oklch(from var(--sf-color-info) l c h / 0.12);
       --sf-color-info-muted:     oklch(from var(--sf-color-info) l c h / 0.3);
       --sf-color-info-tint:      oklch(from var(--sf-color-info) l c h / 0.05);
 
-      --sf-color-danger-subtle:  oklch(from var(--sf-color-danger) l c h / 0.1);
+      --sf-color-danger-subtle:  oklch(from var(--sf-color-danger) l c h / 0.12);
       --sf-color-danger-muted:   oklch(from var(--sf-color-danger) l c h / 0.3);
       --sf-color-danger-tint:    oklch(from var(--sf-color-danger) l c h / 0.05);
 
@@ -729,37 +729,37 @@
   :root {
 
     /* ----------------------------------------------------------
-       Palette shade mix percentages — PUBLIC-ADVANCED
-       Controls how far each numeric step blends toward surface (tints,
-       steps 50-400) or toward text (shades, steps 600-950). 500 = the
-       base color itself (no mixing). These are <percentage> values
-       consumed by color-mix() in every family below.
+       Palette ramp lightness anchors — PUBLIC-ADVANCED
+       Each numeric step is generated in OKLCH by pulling the family
+       colour's own lightness a fixed fraction toward an ABSOLUTE target:
+       tints (50-400) toward --sf-palette-tint-l, shades (600-950) toward
+       --sf-palette-shade-l. 500 = the family colour itself. Because the
+       targets are absolute (not the theme's surface/text tokens) and the
+       pull is clamped (max()/min()) so a tint can never end darker than
+       the base nor a shade lighter, the ramp is MONOTONIC light→dark for
+       ANY source colour and any anchor configuration — it cannot fold.
+       Per-step pull fractions and chroma taper are baked into each family
+       below; these two knobs set how light the lightest / how dark the
+       darkest step may reach. The `base` family keeps its own absolute
+       ladder (near-white→near-black) and does not read these.
        ---------------------------------------------------------- */
-    --sf-palette-mix-50:  4%;
-    --sf-palette-mix-100: 8%;
-    --sf-palette-mix-200: 20%;
-    --sf-palette-mix-300: 40%;
-    --sf-palette-mix-400: 65%;
-    --sf-palette-mix-600: 82%;
-    --sf-palette-mix-700: 62%;
-    --sf-palette-mix-800: 38%;
-    --sf-palette-mix-900: 18%;
-    --sf-palette-mix-950: 8%;
+    --sf-palette-tint-l:  0.97;
+    --sf-palette-shade-l: 0.1;
 
     /* ----------------------------------------------------------
        primary
        ---------------------------------------------------------- */
-    --sf-color-primary-50:  color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-primary-100: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-primary-200: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-primary-300: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-primary-400: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-primary-50: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-primary-100: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-primary-200: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-primary-300: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-primary-400: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-primary-500: var(--sf-color-primary);
-    --sf-color-primary-600: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-primary-700: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-primary-800: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-primary-900: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-primary-950: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-primary-600: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-primary-700: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-primary-800: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-primary-900: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-primary-950: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-primary-a5:  oklch(from var(--sf-color-primary) l c h / 0.05);
     --sf-color-primary-a10: oklch(from var(--sf-color-primary) l c h / 0.10);
@@ -784,17 +784,17 @@
     /* ----------------------------------------------------------
        secondary
        ---------------------------------------------------------- */
-    --sf-color-secondary-50:  color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-secondary-100: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-secondary-200: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-secondary-300: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-secondary-400: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-secondary-50: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-secondary-100: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-secondary-200: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-secondary-300: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-secondary-400: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-secondary-500: var(--sf-color-secondary);
-    --sf-color-secondary-600: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-secondary-700: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-secondary-800: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-secondary-900: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-secondary-950: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-secondary-600: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-secondary-700: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-secondary-800: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-secondary-900: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-secondary-950: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-secondary-a5:  oklch(from var(--sf-color-secondary) l c h / 0.05);
     --sf-color-secondary-a10: oklch(from var(--sf-color-secondary) l c h / 0.10);
@@ -819,17 +819,17 @@
     /* ----------------------------------------------------------
        tertiary
        ---------------------------------------------------------- */
-    --sf-color-tertiary-50:  color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-tertiary-100: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-tertiary-200: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-tertiary-300: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-tertiary-400: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-tertiary-50: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-tertiary-100: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-tertiary-200: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-tertiary-300: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-tertiary-400: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-tertiary-500: var(--sf-color-tertiary);
-    --sf-color-tertiary-600: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-tertiary-700: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-tertiary-800: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-tertiary-900: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-tertiary-950: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-tertiary-600: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-tertiary-700: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-tertiary-800: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-tertiary-900: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-tertiary-950: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-tertiary-a5:  oklch(from var(--sf-color-tertiary) l c h / 0.05);
     --sf-color-tertiary-a10: oklch(from var(--sf-color-tertiary) l c h / 0.10);
@@ -854,17 +854,17 @@
     /* ----------------------------------------------------------
        action
        ---------------------------------------------------------- */
-    --sf-color-action-50:  color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-action-100: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-action-200: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-action-300: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-action-400: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-action-50: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-action-100: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-action-200: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-action-300: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-action-400: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-action-500: var(--sf-color-action);
-    --sf-color-action-600: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-action-700: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-action-800: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-action-900: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-action-950: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-action-600: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-action-700: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-action-800: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-action-900: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-action-950: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-action-a5:  oklch(from var(--sf-color-action) l c h / 0.05);
     --sf-color-action-a10: oklch(from var(--sf-color-action) l c h / 0.10);
@@ -889,17 +889,17 @@
     /* ----------------------------------------------------------
        neutral
        ---------------------------------------------------------- */
-    --sf-color-neutral-50:  color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-neutral-100: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-neutral-200: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-neutral-300: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-neutral-400: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-neutral-50: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-neutral-100: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-neutral-200: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-neutral-300: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-neutral-400: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-neutral-500: var(--sf-color-neutral);
-    --sf-color-neutral-600: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-neutral-700: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-neutral-800: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-neutral-900: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-neutral-950: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-neutral-600: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-neutral-700: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-neutral-800: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-neutral-900: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-neutral-950: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-neutral-a5:  oklch(from var(--sf-color-neutral) l c h / 0.05);
     --sf-color-neutral-a10: oklch(from var(--sf-color-neutral) l c h / 0.10);
@@ -1201,17 +1201,37 @@
     --sf-space-4xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) * 1rem)) * var(--sf-space-scale));
 
     /* ----------------------------------------------------------
+       Density — the compact ↔ comfortable dial for interactive
+       control GEOMETRY. 1 = default; <1 packs controls tighter
+       (dashboards, data tables, power-user tools), >1 loosens them.
+       It is a discrete design/product choice (or a user preference),
+       NOT a viewport response — control height must never shrink on
+       small screens where touch targets need to be larger, so unlike
+       the fluid text and space scales the size ladder stays non-fluid
+       and is scaled only by this deliberate knob. Orthogonal to
+       --sf-space-scale (overall whitespace) and --sf-section-scale
+       (macro section rhythm); combine them for a fully compact UI.
+       Accessibility is unaffected: the coarse-pointer floor lives on
+       --sf-touch-target (core/accessibility.css), never on a rung, so
+       a small --sf-density can't shrink native controls below the
+       WCAG target. Like the other global multipliers it is a :root
+       dial — the size ladder is computed at :root and inherits, so a
+       nested override does not retroactively rescale it (same
+       computed-value rule as --sf-space-scale et al.). */
+    --sf-density: 1;
+
+    /* ----------------------------------------------------------
        UI sizes — a purely geometric rung ladder (+0.5rem / 8px per
-       step: 24 · 32 · 40 · 48 · 56 px). These are free design knobs:
-       nothing external constrains them, so overriding them just
-       rescales component heights. Accessibility floors live on their
-       own tokens (--sf-touch-target), never on a rung — see below.
+       step: 24 · 32 · 40 · 48 · 56 px at density 1). These are free
+       design knobs, scaled by --sf-density; overriding a rung just
+       rescales that component height. Accessibility floors live on
+       their own tokens (--sf-touch-target), never on a rung.
        ---------------------------------------------------------- */
-    --sf-size-xs: 1.5rem;
-    --sf-size-s:  2rem;
-    --sf-size-m:  2.5rem;
-    --sf-size-l:  3rem;
-    --sf-size-xl: 3.5rem;
+    --sf-size-xs: calc(1.5rem * var(--sf-density));
+    --sf-size-s:  calc(2rem   * var(--sf-density));
+    --sf-size-m:  calc(2.5rem * var(--sf-density));
+    --sf-size-l:  calc(3rem   * var(--sf-density));
+    --sf-size-xl: calc(3.5rem * var(--sf-density));
 
     /* ----------------------------------------------------------
        Containers
@@ -1389,14 +1409,21 @@
     --sf-animation-spin:    sf-spin var(--sf-duration-slower) linear infinite;
     --sf-animation-shimmer: sf-shimmer calc(1.5s * var(--sf-motion-scale)) var(--sf-ease-in-out) infinite;
 
-    /* Stagger delays — apply to successive items for entrance choreography
-       (e.g. style="animation-delay: var(--sf-animation-delay-2)"). Tokens
-       only; SLASHED ships no .sf-stagger utility class (by design — apply via token presets or your own BEM rules). */
-    --sf-animation-delay-1: calc(75ms  * var(--sf-motion-scale));
-    --sf-animation-delay-2: calc(150ms * var(--sf-motion-scale));
-    --sf-animation-delay-3: calc(225ms * var(--sf-motion-scale));
-    --sf-animation-delay-4: calc(300ms * var(--sf-motion-scale));
-    --sf-animation-delay-5: calc(375ms * var(--sf-motion-scale));
+    /* Stagger step — the per-item delay increment consumed by the .sf-stagger
+       utility (core/motion.css). One knob retunes the whole choreography; the
+       class multiplies it by the child's index and by --sf-motion-scale, so the
+       rhythm follows the motion knob without baking the scale in here. */
+    --sf-stagger-step: 75ms;
+
+    /* Hover-transform magnitudes — the .sf-hover-* utilities (optional/
+       utilities.css) read these so the effect strength is one global knob per
+       axis rather than hard-coded per class. --grow/--shrink are scale factors;
+       --lift is the float/sink translate distance; --slide is the slide
+       distance. */
+    --sf-hover-grow-scale:   1.05;
+    --sf-hover-shrink-scale: 0.95;
+    --sf-hover-lift:         0.25em;
+    --sf-hover-slide:        0.5em;
 
     /* ----------------------------------------------------------
        Scroll-driven animation range — consumer API. Attach these
@@ -2042,14 +2069,6 @@
     --sf-surface-bg-animation:  none;
 
     /* ----------------------------------------------------------
-       Concave corner — radius and corner position for .sf-corner-scoop.
-       Override per element: style="--sf-corner-scoop-size: var(--sf-radius-3xl)"
-       (cut radius) or style="--sf-corner-scoop-at: 0 0" (which corner).
-       ---------------------------------------------------------- */
-    --sf-corner-scoop-size: var(--sf-radius-2xl);
-    --sf-corner-scoop-at:   100% 0;
-
-    /* ----------------------------------------------------------
        Overlap recipe — how far .sf-overlap pulls into the adjacent
        element. .sf-overlap-host's padding compensation defaults to this
        same value via a var() fallback in the rule itself (not aliased
@@ -2633,7 +2652,32 @@
    SL-005: every @container query in this file hardcodes its breakpoint
    instead of referencing a --sf-* token — var() is not allowed inside an
    @container condition per the CSS spec. This applies framework-wide to
-   every @container site below; not re-explained at each one. */
+   every @container site below; not re-explained at each one.
+   SL-005a: those hardcoded breakpoints are expressed in REM, never em.
+   Inside an @container condition a font-relative em resolves against the
+   QUERY CONTAINER's own computed font-size — and under SLASHED's default
+   fluid type that font-size is inherited from body (a clamp() over 100vw,
+   ~16–20px), so an em breakpoint would silently slide with the VIEWPORT and
+   break the "responds to its own container width, not the viewport" contract
+   (docs/architecture.md). rem resolves against the ROOT (:root/html stays a
+   fixed 16px; fluid type is applied to body, not html), so the breakpoint is
+   viewport-independent while still honouring user zoom / root-font-size
+   preferences. Note this is the OPPOSITE of the @media convention, where em
+   and rem both resolve against the root — do not copy "use em for a11y
+   breakpoints" from @media into @container. (Matches Tailwind, whose
+   container-query breakpoints are rem; cf. issue #497 fluid-cq work.)
+   SL-034: a query container cannot be the subject of its own @container
+   query — conditions only ever match descendants of the nearest ancestor
+   container, never the element that establishes it (self-querying is a
+   silent no-op, not an error). Primitives that need to resize THEMSELVES
+   (.sf-grid-cols-2/3/4/6, .sf-bento) must therefore rely on an ancestor
+   container (.sf-container / .sf-cq / .sf-fluid-cq) rather than declaring
+   `container` on themselves. .sf-grid-cols-1-2 etc. already follow this —
+   they've never declared their own `container` — so they were unaffected.
+   .sf-alternate is a different, unrelated-but-similar-looking pattern: it
+   DOES declare `container` on itself, but only to restyle its CHILDREN
+   (`.sf-alternate > *`), which is not self-querying and is fine. Not
+   re-explained at each site below. */
 
 @layer slashed.layout {
 
@@ -3114,7 +3158,7 @@
     align-items: center;
   }
 
-  @container sf-alternate (min-width: 48em) {
+  @container sf-alternate (min-width: 48rem) {
     .sf-alternate > * {
       grid-template-columns: 1fr 1fr;
     }
@@ -3137,17 +3181,16 @@
 
   
   .sf-grid-cols-2, .sf-grid-cols-3, .sf-grid-cols-4, .sf-grid-cols-6 {
-    display:   grid;
-    gap:       var(--sf-grid-gap);
-    container: sf-grid / inline-size;
+    display: grid;
+    gap:     var(--sf-grid-gap);
   }
 
-  @container (min-width: 30em) {
+  @container (min-width: 30rem) {
     .sf-grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
     .sf-grid-cols-6 { grid-template-columns: repeat(3, 1fr); }
   }
 
-  @container (min-width: 48em) {
+  @container (min-width: 48rem) {
     .sf-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
     .sf-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
     .sf-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
@@ -3161,7 +3204,7 @@
     gap:     var(--sf-grid-gap);
   }
 
-  @container (min-width: 48em) {
+  @container (min-width: 48rem) {
     .sf-grid-cols-1-2 { grid-template-columns: 1fr 2fr; }
     .sf-grid-cols-2-1 { grid-template-columns: 2fr 1fr; }
     .sf-grid-cols-1-3 { grid-template-columns: 1fr 3fr; }
@@ -3207,14 +3250,13 @@
     grid-auto-rows:        minmax(var(--sf-bento-row, var(--sf-bento-row-default)), auto);
     grid-auto-flow:        dense;
     gap:                   var(--sf-bento-gap);
-    container:             sf-bento / inline-size;
   }
 
-  @container (max-width: 29.99em) {
+  @container (max-width: 29.99rem) {
     .sf-bento { grid-template-columns: 1fr; }
   }
 
-  @container (min-width: 30em) and (max-width: 47.99em) {
+  @container (min-width: 30rem) and (max-width: 47.99rem) {
     .sf-bento { grid-template-columns: repeat(2, 1fr); }
   }
 
@@ -3223,15 +3265,28 @@
   .sf-bento--3       { --sf-bento-cols: 3; }
   .sf-bento--6       { --sf-bento-cols: 6; }
 
-  /* Container row height modifiers */
-  .sf-bento--compact { --sf-bento-row: var(--sf-bento-row-compact); }
-  .sf-bento--tall    { --sf-bento-row: var(--sf-bento-row-tall); }
+  /* Container row height modifiers — named after the --sf-bento-row-* token
+     they set, not just "tall"/"compact", so they can't be mistaken for the
+     child span modifier below. */
+  .sf-bento--row-compact { --sf-bento-row: var(--sf-bento-row-compact); }
+  .sf-bento--row-tall    { --sf-bento-row: var(--sf-bento-row-tall); }
 
-  /* Child span modifiers */
+  /* Child span modifiers — go on an item inside .sf-bento, never on
+     .sf-bento itself. .sf-bento-tall (this item spans 2 rows) is not an
+     alias of .sf-bento--row-tall above (every row in the grid is taller). */
   .sf-bento-wide     { grid-column: span 2; }
   .sf-bento-full     { grid-column: 1 / -1; }
   .sf-bento-tall     { grid-row:    span 2; }
   .sf-bento-featured { grid-column: span 2; grid-row: span 2; }
+
+  /* A spanning child can't request more columns than the 1-column mobile
+     grid has, or CSS Grid adds an implicit column to satisfy the span,
+     breaking the single-column layout the query above exists to guarantee.
+     Placed after the modifiers above (equal specificity) so it wins on
+     source order regardless of query-match state. */
+  @container (max-width: 29.99rem) {
+    .sf-bento-wide, .sf-bento-featured { grid-column: span 1; }
+  }
 
   
   .sf-subgrid      { display: grid; grid-template-columns: subgrid; }
@@ -3629,27 +3684,6 @@
     text-decoration-line: none;
   }
 
-  /* Concave corner — a corner that curves AWAY from the box (revealing
-     whatever sits behind it), via a radial-gradient mask. Physical corner
-     names (mask geometry has no logical form, same rationale as
-     .sf-overflow-fade's physical directions). Cuts the element's full
-     paint at that corner — box-shadow/border don't survive the cut there;
-     put shadows on a wrapper if needed. Named to mirror the future
-     `corner-shape: scoop` keyword for an easy @supports migration. */
-  .sf-corner-scoop {
-    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 18 */
-    -webkit-mask-image: radial-gradient(circle at var(--sf-corner-scoop-at),
-      transparent var(--sf-corner-scoop-size),
-      black calc(var(--sf-corner-scoop-size) + 0.5px));
-    mask-image: radial-gradient(circle at var(--sf-corner-scoop-at),
-      transparent var(--sf-corner-scoop-size),
-      black calc(var(--sf-corner-scoop-size) + 0.5px));
-  }
-  .sf-corner-scoop--top-left     { --sf-corner-scoop-at: 0 0; }
-  .sf-corner-scoop--top-right    { --sf-corner-scoop-at: 100% 0; }
-  .sf-corner-scoop--bottom-left  { --sf-corner-scoop-at: 0 100%; }
-  .sf-corner-scoop--bottom-right { --sf-corner-scoop-at: 100% 100%; }
-
   /* Overlap recipe — one element intentionally overlapping the previous
      one (e.g. an image pulled up over the card below it), via a negative
      logical margin + a raised stacking context. Directional variants are
@@ -3975,6 +4009,45 @@
       .sf-exit--fade-left   { animation-name: sf-slide-out-left; }
       .sf-exit--fade-right  { animation-name: sf-slide-out-right; }
       .sf-exit--scale-down  { animation-name: sf-scale-down; }
+    }
+
+    /* Stagger — choreography, not the animation itself. Put .sf-stagger on a
+       PARENT; every direct child gets an incrementing animation-delay so a
+       time-based entrance (.sf-fade-in / .sf-slide-in-*) plays in sequence.
+       Children WITHOUT an animation just carry an inert delay (no-op), so you
+       opt in per child with no need to exclude anything. Pairs with time-based
+       animations only — the .sf-entrance / .sf-exit families are scroll-driven
+       (their rhythm is animation-range, not animation-delay).
+
+       One formula, one knob (--sf-stagger-step); the two paths below only
+       differ in how --sf-stagger-i (the child's index) is set. */
+    .sf-stagger > * {
+      animation-delay: calc(
+        var(--sf-stagger-i, 0) * var(--sf-stagger-step, 75ms) * var(--sf-motion-scale, 1)
+      );
+    }
+
+    /* Modern path: real, unbounded index straight from the DOM position. */
+    @supports (animation-delay: calc(sibling-index() * 1ms)) {
+      .sf-stagger > * { --sf-stagger-i: calc(sibling-index() - 1); }
+    }
+
+    /* Fallback (no sibling-index()): a bounded :nth-child ramp reusing the same
+       formula. The default is the plateau value, so the 9th child onward shares
+       the last rung's delay instead of growing without limit — 8 rungs cover a
+       4-column grid's first two visible rows. Split into @supports not(...) so
+       the modern override above wins cleanly without a specificity fight
+       (:nth-child would otherwise out-specify the sibling-index rule). */
+    @supports not (animation-delay: calc(sibling-index() * 1ms)) {
+      .sf-stagger > *              { --sf-stagger-i: 8; }
+      .sf-stagger > *:nth-child(1) { --sf-stagger-i: 0; }
+      .sf-stagger > *:nth-child(2) { --sf-stagger-i: 1; }
+      .sf-stagger > *:nth-child(3) { --sf-stagger-i: 2; }
+      .sf-stagger > *:nth-child(4) { --sf-stagger-i: 3; }
+      .sf-stagger > *:nth-child(5) { --sf-stagger-i: 4; }
+      .sf-stagger > *:nth-child(6) { --sf-stagger-i: 5; }
+      .sf-stagger > *:nth-child(7) { --sf-stagger-i: 6; }
+      .sf-stagger > *:nth-child(8) { --sf-stagger-i: 7; }
     }
 
   }
@@ -4546,11 +4619,15 @@
     background-position: left var(--sf-space-s) center;
   }
 
-  /* Button / submit / reset */
-  button:not([class*="sf-"]),
-  input[type="submit"]:not([class*="sf-"]),
-  input[type="reset"]:not([class*="sf-"]),
-  input[type="button"]:not([class*="sf-"]) {
+  /* Button / submit / reset. Scoped to :where(form, fieldset) so a bare
+     <button> or <input type="submit"/"reset"/"button"> used elsewhere on
+     the page (a page-builder's hamburger toggle, a modal close control, a
+     third-party widget) is left alone — only controls living inside an
+     actual form get the classless treatment. */
+  :where(form, fieldset) button:not([class*="sf-"]),
+  :where(form, fieldset) input[type="submit"]:not([class*="sf-"]),
+  :where(form, fieldset) input[type="reset"]:not([class*="sf-"]),
+  :where(form, fieldset) input[type="button"]:not([class*="sf-"]) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -4569,26 +4646,26 @@
     text-decoration: none;
   }
 
-  button:not([class*="sf-"]):hover,
-  input[type="submit"]:not([class*="sf-"]):hover,
-  input[type="reset"]:not([class*="sf-"]):hover,
-  input[type="button"]:not([class*="sf-"]):hover {
+  :where(form, fieldset) button:not([class*="sf-"]):hover,
+  :where(form, fieldset) input[type="submit"]:not([class*="sf-"]):hover,
+  :where(form, fieldset) input[type="reset"]:not([class*="sf-"]):hover,
+  :where(form, fieldset) input[type="button"]:not([class*="sf-"]):hover {
 
     background-color: var(--sf-color-action--hover, var(--sf-color-action));
   }
 
-  button:not([class*="sf-"]):focus-visible,
-  input[type="submit"]:not([class*="sf-"]):focus-visible,
-  input[type="reset"]:not([class*="sf-"]):focus-visible,
-  input[type="button"]:not([class*="sf-"]):focus-visible {
+  :where(form, fieldset) button:not([class*="sf-"]):focus-visible,
+  :where(form, fieldset) input[type="submit"]:not([class*="sf-"]):focus-visible,
+  :where(form, fieldset) input[type="reset"]:not([class*="sf-"]):focus-visible,
+  :where(form, fieldset) input[type="button"]:not([class*="sf-"]):focus-visible {
     outline: var(--sf-focus-ring-width) var(--sf-focus-ring-style, solid) var(--sf-color-border--focus);
     outline-offset: var(--sf-focus-ring-offset);
   }
 
-  button:not([class*="sf-"]):disabled,
-  input[type="submit"]:not([class*="sf-"]):disabled,
-  input[type="reset"]:not([class*="sf-"]):disabled,
-  input[type="button"]:not([class*="sf-"]):disabled {
+  :where(form, fieldset) button:not([class*="sf-"]):disabled,
+  :where(form, fieldset) input[type="submit"]:not([class*="sf-"]):disabled,
+  :where(form, fieldset) input[type="reset"]:not([class*="sf-"]):disabled,
+  :where(form, fieldset) input[type="button"]:not([class*="sf-"]):disabled {
     opacity: var(--sf-opacity-disabled);
     cursor:  not-allowed;
 
@@ -5464,12 +5541,16 @@
     transition-duration:        var(--sf-duration-normal);
     transition-timing-function: var(--sf-ease-out);
   }
-  .sf-hover-grow:hover    { scale: 1.05; }
-  .sf-hover-shrink:hover  { scale: 0.95; }
-  .sf-hover-float:hover   { translate: 0 -0.25em; }
-  .sf-hover-sink:hover    { translate: 0 0.25em; }
-  .sf-hover-slide-start:hover { translate: -0.5em 0; }
-  .sf-hover-slide-end:hover   { translate: 0.5em 0; }
+  .sf-hover-grow:hover    { scale: var(--sf-hover-grow-scale, 1.05); }
+  .sf-hover-shrink:hover  { scale: var(--sf-hover-shrink-scale, 0.95); }
+  .sf-hover-float:hover   { translate: 0 calc(-1 * var(--sf-hover-lift, 0.25em)); }
+  .sf-hover-sink:hover    { translate: 0 var(--sf-hover-lift, 0.25em); }
+  .sf-hover-slide-start:hover { translate: calc(-1 * var(--sf-hover-slide, 0.5em)) 0; }
+  .sf-hover-slide-end:hover   { translate: var(--sf-hover-slide, 0.5em) 0; }
+  /* translate is physical (X axis), but the -start/-end names are logical —
+     flip the horizontal direction under RTL so "start"/"end" stay correct. */
+  :where([dir="rtl"]) .sf-hover-slide-start:hover { translate: var(--sf-hover-slide, 0.5em) 0; }
+  :where([dir="rtl"]) .sf-hover-slide-end:hover   { translate: calc(-1 * var(--sf-hover-slide, 0.5em)) 0; }
 
   /* ============================================================
    * LIST RESET (.sf-list-none)

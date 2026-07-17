@@ -387,27 +387,6 @@
     text-decoration-line: none;
   }
 
-  /* Concave corner — a corner that curves AWAY from the box (revealing
-     whatever sits behind it), via a radial-gradient mask. Physical corner
-     names (mask geometry has no logical form, same rationale as
-     .sf-overflow-fade's physical directions). Cuts the element's full
-     paint at that corner — box-shadow/border don't survive the cut there;
-     put shadows on a wrapper if needed. Named to mirror the future
-     `corner-shape: scoop` keyword for an easy @supports migration. */
-  .sf-corner-scoop {
-    /* stylelint-disable-next-line property-no-vendor-prefix -- required for Safari < 18 */
-    -webkit-mask-image: radial-gradient(circle at var(--sf-corner-scoop-at),
-      transparent var(--sf-corner-scoop-size),
-      black calc(var(--sf-corner-scoop-size) + 0.5px));
-    mask-image: radial-gradient(circle at var(--sf-corner-scoop-at),
-      transparent var(--sf-corner-scoop-size),
-      black calc(var(--sf-corner-scoop-size) + 0.5px));
-  }
-  .sf-corner-scoop--top-left     { --sf-corner-scoop-at: 0 0; }
-  .sf-corner-scoop--top-right    { --sf-corner-scoop-at: 100% 0; }
-  .sf-corner-scoop--bottom-left  { --sf-corner-scoop-at: 0 100%; }
-  .sf-corner-scoop--bottom-right { --sf-corner-scoop-at: 100% 100%; }
-
   /* Overlap recipe — one element intentionally overlapping the previous
      one (e.g. an image pulled up over the card below it), via a negative
      logical margin + a raised stacking context. Directional variants are

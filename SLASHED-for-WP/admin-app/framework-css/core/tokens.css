@@ -608,11 +608,11 @@
       --sf-color-warning-muted:  oklch(from var(--sf-color-warning) l c h / 0.3);
       --sf-color-warning-tint:   oklch(from var(--sf-color-warning) l c h / 0.05);
 
-      --sf-color-info-subtle:    oklch(from var(--sf-color-info) l c h / 0.1);
+      --sf-color-info-subtle:    oklch(from var(--sf-color-info) l c h / 0.12);
       --sf-color-info-muted:     oklch(from var(--sf-color-info) l c h / 0.3);
       --sf-color-info-tint:      oklch(from var(--sf-color-info) l c h / 0.05);
 
-      --sf-color-danger-subtle:  oklch(from var(--sf-color-danger) l c h / 0.1);
+      --sf-color-danger-subtle:  oklch(from var(--sf-color-danger) l c h / 0.12);
       --sf-color-danger-muted:   oklch(from var(--sf-color-danger) l c h / 0.3);
       --sf-color-danger-tint:    oklch(from var(--sf-color-danger) l c h / 0.05);
 
@@ -704,37 +704,37 @@
   :root {
 
     /* ----------------------------------------------------------
-       Palette shade mix percentages — PUBLIC-ADVANCED
-       Controls how far each numeric step blends toward surface (tints,
-       steps 50-400) or toward text (shades, steps 600-950). 500 = the
-       base color itself (no mixing). These are <percentage> values
-       consumed by color-mix() in every family below.
+       Palette ramp lightness anchors — PUBLIC-ADVANCED
+       Each numeric step is generated in OKLCH by pulling the family
+       colour's own lightness a fixed fraction toward an ABSOLUTE target:
+       tints (50-400) toward --sf-palette-tint-l, shades (600-950) toward
+       --sf-palette-shade-l. 500 = the family colour itself. Because the
+       targets are absolute (not the theme's surface/text tokens) and the
+       pull is clamped (max()/min()) so a tint can never end darker than
+       the base nor a shade lighter, the ramp is MONOTONIC light→dark for
+       ANY source colour and any anchor configuration — it cannot fold.
+       Per-step pull fractions and chroma taper are baked into each family
+       below; these two knobs set how light the lightest / how dark the
+       darkest step may reach. The `base` family keeps its own absolute
+       ladder (near-white→near-black) and does not read these.
        ---------------------------------------------------------- */
-    --sf-palette-mix-50:  4%;
-    --sf-palette-mix-100: 8%;
-    --sf-palette-mix-200: 20%;
-    --sf-palette-mix-300: 40%;
-    --sf-palette-mix-400: 65%;
-    --sf-palette-mix-600: 82%;
-    --sf-palette-mix-700: 62%;
-    --sf-palette-mix-800: 38%;
-    --sf-palette-mix-900: 18%;
-    --sf-palette-mix-950: 8%;
+    --sf-palette-tint-l:  0.97;
+    --sf-palette-shade-l: 0.1;
 
     /* ----------------------------------------------------------
        primary
        ---------------------------------------------------------- */
-    --sf-color-primary-50:  color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-primary-100: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-primary-200: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-primary-300: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-primary-400: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-primary-50: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-primary-100: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-primary-200: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-primary-300: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-primary-400: oklch(from var(--sf-color-primary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-primary-500: var(--sf-color-primary);
-    --sf-color-primary-600: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-primary-700: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-primary-800: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-primary-900: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-primary-950: color-mix(in oklab, var(--sf-color-primary) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-primary-600: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-primary-700: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-primary-800: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-primary-900: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-primary-950: oklch(from var(--sf-color-primary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-primary-a5:  oklch(from var(--sf-color-primary) l c h / 0.05);
     --sf-color-primary-a10: oklch(from var(--sf-color-primary) l c h / 0.10);
@@ -759,17 +759,17 @@
     /* ----------------------------------------------------------
        secondary
        ---------------------------------------------------------- */
-    --sf-color-secondary-50:  color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-secondary-100: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-secondary-200: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-secondary-300: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-secondary-400: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-secondary-50: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-secondary-100: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-secondary-200: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-secondary-300: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-secondary-400: oklch(from var(--sf-color-secondary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-secondary-500: var(--sf-color-secondary);
-    --sf-color-secondary-600: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-secondary-700: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-secondary-800: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-secondary-900: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-secondary-950: color-mix(in oklab, var(--sf-color-secondary) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-secondary-600: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-secondary-700: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-secondary-800: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-secondary-900: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-secondary-950: oklch(from var(--sf-color-secondary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-secondary-a5:  oklch(from var(--sf-color-secondary) l c h / 0.05);
     --sf-color-secondary-a10: oklch(from var(--sf-color-secondary) l c h / 0.10);
@@ -794,17 +794,17 @@
     /* ----------------------------------------------------------
        tertiary
        ---------------------------------------------------------- */
-    --sf-color-tertiary-50:  color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-tertiary-100: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-tertiary-200: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-tertiary-300: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-tertiary-400: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-tertiary-50: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-tertiary-100: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-tertiary-200: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-tertiary-300: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-tertiary-400: oklch(from var(--sf-color-tertiary) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-tertiary-500: var(--sf-color-tertiary);
-    --sf-color-tertiary-600: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-tertiary-700: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-tertiary-800: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-tertiary-900: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-tertiary-950: color-mix(in oklab, var(--sf-color-tertiary) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-tertiary-600: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-tertiary-700: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-tertiary-800: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-tertiary-900: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-tertiary-950: oklch(from var(--sf-color-tertiary) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-tertiary-a5:  oklch(from var(--sf-color-tertiary) l c h / 0.05);
     --sf-color-tertiary-a10: oklch(from var(--sf-color-tertiary) l c h / 0.10);
@@ -829,17 +829,17 @@
     /* ----------------------------------------------------------
        action
        ---------------------------------------------------------- */
-    --sf-color-action-50:  color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-action-100: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-action-200: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-action-300: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-action-400: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-action-50: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-action-100: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-action-200: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-action-300: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-action-400: oklch(from var(--sf-color-action) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-action-500: var(--sf-color-action);
-    --sf-color-action-600: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-action-700: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-action-800: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-action-900: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-action-950: color-mix(in oklab, var(--sf-color-action) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-action-600: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-action-700: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-action-800: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-action-900: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-action-950: oklch(from var(--sf-color-action) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-action-a5:  oklch(from var(--sf-color-action) l c h / 0.05);
     --sf-color-action-a10: oklch(from var(--sf-color-action) l c h / 0.10);
@@ -864,17 +864,17 @@
     /* ----------------------------------------------------------
        neutral
        ---------------------------------------------------------- */
-    --sf-color-neutral-50:  color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-50),  var(--sf-color-surface));
-    --sf-color-neutral-100: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-100), var(--sf-color-surface));
-    --sf-color-neutral-200: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-200), var(--sf-color-surface));
-    --sf-color-neutral-300: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-300), var(--sf-color-surface));
-    --sf-color-neutral-400: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-400), var(--sf-color-surface));
+    --sf-color-neutral-50: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.95)) calc(c * 0.2) h);
+    --sf-color-neutral-100: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.88)) calc(c * 0.3) h);
+    --sf-color-neutral-200: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.72)) calc(c * 0.5) h);
+    --sf-color-neutral-300: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.52)) calc(c * 0.72) h);
+    --sf-color-neutral-400: oklch(from var(--sf-color-neutral) max(l, calc(l + (var(--sf-palette-tint-l) - l) * 0.3)) calc(c * 0.88) h);
     --sf-color-neutral-500: var(--sf-color-neutral);
-    --sf-color-neutral-600: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-600), var(--sf-color-text));
-    --sf-color-neutral-700: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-700), var(--sf-color-text));
-    --sf-color-neutral-800: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-800), var(--sf-color-text));
-    --sf-color-neutral-900: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-900), var(--sf-color-text));
-    --sf-color-neutral-950: color-mix(in oklab, var(--sf-color-neutral) var(--sf-palette-mix-950), var(--sf-color-text));
+    --sf-color-neutral-600: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.16)) calc(c * 0.96) h);
+    --sf-color-neutral-700: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.36)) calc(c * 0.88) h);
+    --sf-color-neutral-800: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.58)) calc(c * 0.72) h);
+    --sf-color-neutral-900: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.78)) calc(c * 0.52) h);
+    --sf-color-neutral-950: oklch(from var(--sf-color-neutral) min(l, calc(l + (var(--sf-palette-shade-l) - l) * 0.9)) calc(c * 0.38) h);
 
     --sf-color-neutral-a5:  oklch(from var(--sf-color-neutral) l c h / 0.05);
     --sf-color-neutral-a10: oklch(from var(--sf-color-neutral) l c h / 0.10);
@@ -1176,17 +1176,37 @@
     --sf-space-4xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) * 1rem)) * var(--sf-space-scale));
 
     /* ----------------------------------------------------------
+       Density — the compact ↔ comfortable dial for interactive
+       control GEOMETRY. 1 = default; <1 packs controls tighter
+       (dashboards, data tables, power-user tools), >1 loosens them.
+       It is a discrete design/product choice (or a user preference),
+       NOT a viewport response — control height must never shrink on
+       small screens where touch targets need to be larger, so unlike
+       the fluid text and space scales the size ladder stays non-fluid
+       and is scaled only by this deliberate knob. Orthogonal to
+       --sf-space-scale (overall whitespace) and --sf-section-scale
+       (macro section rhythm); combine them for a fully compact UI.
+       Accessibility is unaffected: the coarse-pointer floor lives on
+       --sf-touch-target (core/accessibility.css), never on a rung, so
+       a small --sf-density can't shrink native controls below the
+       WCAG target. Like the other global multipliers it is a :root
+       dial — the size ladder is computed at :root and inherits, so a
+       nested override does not retroactively rescale it (same
+       computed-value rule as --sf-space-scale et al.). */
+    --sf-density: 1;
+
+    /* ----------------------------------------------------------
        UI sizes — a purely geometric rung ladder (+0.5rem / 8px per
-       step: 24 · 32 · 40 · 48 · 56 px). These are free design knobs:
-       nothing external constrains them, so overriding them just
-       rescales component heights. Accessibility floors live on their
-       own tokens (--sf-touch-target), never on a rung — see below.
+       step: 24 · 32 · 40 · 48 · 56 px at density 1). These are free
+       design knobs, scaled by --sf-density; overriding a rung just
+       rescales that component height. Accessibility floors live on
+       their own tokens (--sf-touch-target), never on a rung.
        ---------------------------------------------------------- */
-    --sf-size-xs: 1.5rem;
-    --sf-size-s:  2rem;
-    --sf-size-m:  2.5rem;
-    --sf-size-l:  3rem;
-    --sf-size-xl: 3.5rem;
+    --sf-size-xs: calc(1.5rem * var(--sf-density));
+    --sf-size-s:  calc(2rem   * var(--sf-density));
+    --sf-size-m:  calc(2.5rem * var(--sf-density));
+    --sf-size-l:  calc(3rem   * var(--sf-density));
+    --sf-size-xl: calc(3.5rem * var(--sf-density));
 
     /* ----------------------------------------------------------
        Containers
@@ -1364,14 +1384,21 @@
     --sf-animation-spin:    sf-spin var(--sf-duration-slower) linear infinite;
     --sf-animation-shimmer: sf-shimmer calc(1.5s * var(--sf-motion-scale)) var(--sf-ease-in-out) infinite;
 
-    /* Stagger delays — apply to successive items for entrance choreography
-       (e.g. style="animation-delay: var(--sf-animation-delay-2)"). Tokens
-       only; SLASHED ships no .sf-stagger utility class (by design — apply via token presets or your own BEM rules). */
-    --sf-animation-delay-1: calc(75ms  * var(--sf-motion-scale));
-    --sf-animation-delay-2: calc(150ms * var(--sf-motion-scale));
-    --sf-animation-delay-3: calc(225ms * var(--sf-motion-scale));
-    --sf-animation-delay-4: calc(300ms * var(--sf-motion-scale));
-    --sf-animation-delay-5: calc(375ms * var(--sf-motion-scale));
+    /* Stagger step — the per-item delay increment consumed by the .sf-stagger
+       utility (core/motion.css). One knob retunes the whole choreography; the
+       class multiplies it by the child's index and by --sf-motion-scale, so the
+       rhythm follows the motion knob without baking the scale in here. */
+    --sf-stagger-step: 75ms;
+
+    /* Hover-transform magnitudes — the .sf-hover-* utilities (optional/
+       utilities.css) read these so the effect strength is one global knob per
+       axis rather than hard-coded per class. --grow/--shrink are scale factors;
+       --lift is the float/sink translate distance; --slide is the slide
+       distance. */
+    --sf-hover-grow-scale:   1.05;
+    --sf-hover-shrink-scale: 0.95;
+    --sf-hover-lift:         0.25em;
+    --sf-hover-slide:        0.5em;
 
     /* ----------------------------------------------------------
        Scroll-driven animation range — consumer API. Attach these

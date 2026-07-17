@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedBy": "scripts/gen-token-registry.js",
-    "nextId": 792
+    "nextId": 800
   },
   "tokens": [
     {
@@ -22,23 +22,28 @@
     },
     {
       "id": 4,
-      "name": "--sf-animation-delay-1"
+      "name": "--sf-animation-delay-1",
+      "removed": true
     },
     {
       "id": 5,
-      "name": "--sf-animation-delay-2"
+      "name": "--sf-animation-delay-2",
+      "removed": true
     },
     {
       "id": 6,
-      "name": "--sf-animation-delay-3"
+      "name": "--sf-animation-delay-3",
+      "removed": true
     },
     {
       "id": 7,
-      "name": "--sf-animation-delay-4"
+      "name": "--sf-animation-delay-4",
+      "removed": true
     },
     {
       "id": 8,
-      "name": "--sf-animation-delay-5"
+      "name": "--sf-animation-delay-5",
+      "removed": true
     },
     {
       "id": 9,
@@ -1988,43 +1993,53 @@
     },
     {
       "id": 489,
-      "name": "--sf-palette-mix-100"
+      "name": "--sf-palette-mix-100",
+      "removed": true
     },
     {
       "id": 490,
-      "name": "--sf-palette-mix-200"
+      "name": "--sf-palette-mix-200",
+      "removed": true
     },
     {
       "id": 491,
-      "name": "--sf-palette-mix-300"
+      "name": "--sf-palette-mix-300",
+      "removed": true
     },
     {
       "id": 492,
-      "name": "--sf-palette-mix-400"
+      "name": "--sf-palette-mix-400",
+      "removed": true
     },
     {
       "id": 493,
-      "name": "--sf-palette-mix-50"
+      "name": "--sf-palette-mix-50",
+      "removed": true
     },
     {
       "id": 494,
-      "name": "--sf-palette-mix-600"
+      "name": "--sf-palette-mix-600",
+      "removed": true
     },
     {
       "id": 495,
-      "name": "--sf-palette-mix-700"
+      "name": "--sf-palette-mix-700",
+      "removed": true
     },
     {
       "id": 496,
-      "name": "--sf-palette-mix-800"
+      "name": "--sf-palette-mix-800",
+      "removed": true
     },
     {
       "id": 497,
-      "name": "--sf-palette-mix-900"
+      "name": "--sf-palette-mix-900",
+      "removed": true
     },
     {
       "id": 498,
-      "name": "--sf-palette-mix-950"
+      "name": "--sf-palette-mix-950",
+      "removed": true
     },
     {
       "id": 499,
@@ -2878,11 +2893,13 @@
     },
     {
       "id": 710,
-      "name": "--sf-corner-scoop-at"
+      "name": "--sf-corner-scoop-at",
+      "removed": true
     },
     {
       "id": 711,
-      "name": "--sf-corner-scoop-size"
+      "name": "--sf-corner-scoop-size",
+      "removed": true
     },
     {
       "id": 712,
@@ -3208,6 +3225,38 @@
     {
       "id": 791,
       "name": "--sf-btn-xs-padding-inline"
+    },
+    {
+      "id": 792,
+      "name": "--sf-hover-grow-scale"
+    },
+    {
+      "id": 793,
+      "name": "--sf-hover-lift"
+    },
+    {
+      "id": 794,
+      "name": "--sf-hover-shrink-scale"
+    },
+    {
+      "id": 795,
+      "name": "--sf-hover-slide"
+    },
+    {
+      "id": 796,
+      "name": "--sf-stagger-step"
+    },
+    {
+      "id": 797,
+      "name": "--sf-density"
+    },
+    {
+      "id": 798,
+      "name": "--sf-palette-shade-l"
+    },
+    {
+      "id": 799,
+      "name": "--sf-palette-tint-l"
     }
   ]
 }

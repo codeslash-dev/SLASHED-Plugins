@@ -170,10 +170,15 @@ async function resolveLatestTag() {
 // Every bundle ships in two variants: the layered build and its flat
 // (`@layer`-stripped) sibling, which the plugin's "Flat CSS" setting serves as
 // slashed.<bundle>.flat.css. Both must be downloaded or the flat setting
-// resolves to a missing file and loads no framework CSS at all.
+// resolves to a missing file and loads no framework CSS at all. Each of those
+// also has a minified sibling (slashed.<bundle>[.flat].min.css), which
+// Slashed_CSS_Loader serves by default (see class-css-loader.php) — SCRIPT_DEBUG
+// falls back to the unminified file, so both must be present too.
 const BUNDLE_FILES = BUNDLES.flatMap((bundle) => [
   `slashed.${bundle}.css`,
+  `slashed.${bundle}.min.css`,
   `slashed.${bundle}.flat.css`,
+  `slashed.${bundle}.flat.min.css`,
 ]);
 
 async function downloadReleaseBundles(tag) {
@@ -185,12 +190,15 @@ async function downloadReleaseBundles(tag) {
       throw new Error(`failed to download ${filename} for ${tag}: HTTP ${res.status} (${url})`);
     }
     const css = await res.text();
-    const header = css.split('\n', 1)[0];
-    if (!header.includes(`SLASHED ${tag} `) && !header.includes(`SLASHED ${tag}\t`)) {
-      throw new Error(`downloaded ${filename} header "${header.trim()}" does not match ${tag} — refusing to ship a mis-stamped bundle`);
+    // Minified bundles lead with the `@layer` order statement (must be the
+    // first rule per the CSS spec), pushing the version banner comment onto
+    // line 2 — so scan a prefix rather than assuming line 1.
+    const head = css.slice(0, 300);
+    if (!head.includes(`SLASHED ${tag} `) && !head.includes(`SLASHED ${tag}\t`)) {
+      throw new Error(`downloaded ${filename} header "${head.split('\n')[0].trim()}" does not match ${tag} — refusing to ship a mis-stamped bundle`);
     }
     fs.writeFileSync(path.join(DEST_DIR, filename), css);
-    log(`↓ SLASHED-for-WP/dist/${filename} (${header.trim()})`);
+    log(`↓ SLASHED-for-WP/dist/${filename} (${tag})`);
   }
 }
 
