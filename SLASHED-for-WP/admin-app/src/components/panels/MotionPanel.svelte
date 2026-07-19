@@ -2,6 +2,8 @@
   import { KNOBS_BY_DOMAIN } from '../../lib/powerKnobs';
   import PowerKnobRow from '../inputs/PowerKnobRow.svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
+  import Toggle from '../inputs/Toggle.svelte';
+  import Section from '../inputs/Section.svelte';
   import { themeState } from '../../lib/theme.svelte';
 
   // <option> only reliably accepts a background via inline style (no dark:
@@ -104,20 +106,11 @@
       <div class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">Disable motion</div>
       <div class="text-[9px] text-slate-500 mt-0.5">Respects prefers-reduced-motion</div>
     </div>
-    <button
+    <Toggle
+      checked={motionDisabled}
       title={motionDisabled ? "Enable motion" : "Disable motion"}
-      onclick={() => {
-        if (motionDisabled) onReset("--sf-motion-scale");
-        else onSet("--sf-motion-scale", "0");
-      }}
-      class={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${
-        motionDisabled ? "bg-indigo-600" : "bg-black/10 dark:bg-white/10"
-      }`}
-    >
-      <div class={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-        motionDisabled ? "translate-x-4" : "translate-x-0.5"
-      }`}></div>
-    </button>
+      onToggle={() => motionDisabled ? onReset("--sf-motion-scale") : onSet("--sf-motion-scale", "0")}
+    />
   </div>
 
   {#if motionDisabled}
@@ -170,16 +163,7 @@
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- DURATIONS (with inline preview) -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showDurations = !showDurations; }}
-      aria-expanded={showDurations}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Durations</div>
-      <span class="text-[10px] text-slate-500">{showDurations ? "▲" : "▼"}</span>
-    </button>
-    {#if showDurations}
+  <Section title="Durations" bind:open={showDurations}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Named duration tokens. Drag to set an absolute ms value, overriding the global scale.
         {#if motionDisabled}<span class="text-amber-600 dark:text-amber-400"> (No effect while motion is disabled.)</span>{/if}
@@ -202,31 +186,22 @@
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 space-y-3">
         {#each DURATIONS as d (d.label)}
           {@const actual = getDuration(d.token, d.base)}
+          {@const maxDur = Math.max(...DURATIONS.map((x) => getDuration(x.token, x.base)), 1)}
           <div class="flex items-center gap-3">
             <span class="text-[10px] text-slate-500 w-14 shrink-0">{d.label}</span>
             <div class="flex-1 h-1 bg-black/8 dark:bg-white/8 rounded-full overflow-hidden">
-              <div class="h-full bg-indigo-500 rounded-full" style={`width: ${Math.min((actual / 1200) * 100, 100)}%`}></div>
+              <div class="h-full bg-indigo-500 rounded-full" style={`width: ${(actual / maxDur) * 100}%`}></div>
             </div>
             <span class="text-[9px] font-mono text-slate-500 w-10 text-right">{actual}ms</span>
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- EASING — editable -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showEasing = !showEasing; }}
-      aria-expanded={showEasing}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Easing curves</div>
-      <span class="text-[10px] text-slate-500">{showEasing ? "▲" : "▼"}</span>
-    </button>
-    {#if showEasing}
+  <Section title="Easing curves" bind:open={showEasing}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Edit the named easing tokens. Accepts any CSS timing function —
         <span class="font-mono text-slate-600 dark:text-slate-400">cubic-bezier(…)</span> or
@@ -270,22 +245,12 @@
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- STAGGER -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showStagger = !showStagger; }}
-      aria-expanded={showStagger}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Stagger</div>
-      <span class="text-[10px] text-slate-500">{showStagger ? "▲" : "▼"}</span>
-    </button>
-    {#if showStagger}
+  <Section title="Stagger" bind:open={showStagger}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         One slider sets all five stagger delays (delay-1 through delay-5 are multiples of this base).
       </p>
@@ -293,7 +258,7 @@
         <div class="flex items-center justify-between mb-1.5">
           <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">Stagger base</span>
           {#if STAGGER_TOKENS.some(t => t in overrides)}
-            <button onclick={resetStagger} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
+            <button onclick={resetStagger} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer ">reset</button>
           {/if}
         </div>
         <SliderRow
@@ -307,31 +272,22 @@
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-1">
         {#each [1,2,3,4,5] as n (n)}
           {@const delayMs = Math.round(staggerBase * n)}
+          {@const maxStaggerDelay = Math.round(staggerBase * 5)}
           <div class="flex items-center gap-2">
             <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-6">–{n}</span>
             <div class="flex-1 h-1.5 bg-black/8 dark:bg-white/8 rounded-full">
-              <div class="h-full bg-indigo-500 rounded-full" style={`width: ${Math.min((delayMs / 600) * 100, 100)}%`}></div>
+              <div class="h-full bg-indigo-500 rounded-full" style={`width: ${maxStaggerDelay > 0 ? (delayMs / maxStaggerDelay) * 100 : 0}%`}></div>
             </div>
             <span class="text-[9px] font-mono text-slate-500 w-10 text-right">{delayMs}ms</span>
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ADVANCED — global scale power knob, theme transition, scroll timeline -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showAdvanced = !showAdvanced; }}
-      aria-expanded={showAdvanced}
-      class="w-full flex items-center justify-between text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors cursor-pointer"
-    >
-      <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
-      <span class="text-[10px]">{showAdvanced ? "▲" : "▼"}</span>
-    </button>
-    {#if showAdvanced}
+  <Section title="Advanced" spacing="space-y-4" variant="advanced" bind:open={showAdvanced}>
       <!-- Global motion scale (power knob) -->
       <div class="space-y-4">
         {#each knobs as k (k.name)}
@@ -383,6 +339,5 @@
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 </div>

@@ -3,6 +3,7 @@
   import PowerKnobRow from '../inputs/PowerKnobRow.svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
+  import Section from '../inputs/Section.svelte';
   import { SPACE_SCALE, RADIUS_SCALE, BORDER_WIDTH_SCALE, type VarOption } from '../../lib/variableScales';
 
   let { overrides, onSet, onReset }: {
@@ -13,7 +14,6 @@
 
   const BORDER_STYLES = ["solid", "dashed", "dotted"];
   const RADIUS_STEPS = ["xs", "s", "m", "l", "xl", "2xl", "full"];
-  const BASE_RADII: Record<string, number> = { xs: 2, s: 4, m: 8, l: 12, xl: 16, "2xl": 24, full: 9999 };
 
   const RADIUS_FINE: Array<{ step: string; name: string; default: number; max: number; step_size: number; rawDefault: string }> = [
     { step: "xs",  name: "--sf-radius-xs",  default: 2,  max: 16, step_size: 0.5, rawDefault: "calc(2px * var(--sf-radius-scale))"  },
@@ -49,7 +49,6 @@
     return isNaN(v) ? fallback : v;
   }
 
-  let radiusScale  = $derived(parseNum(overrides["--sf-radius-scale"], 1));
   let borderScale  = $derived(parseNum(overrides["--sf-border-scale"], 1));
   let focusWidth   = $derived(parseNum(overrides["--sf-focus-ring-width"], 2, "px"));
   let focusOffset  = $derived(parseNum(overrides["--sf-focus-ring-offset"], 2, "px"));
@@ -85,16 +84,7 @@
 <div class="p-4 space-y-5">
 
   <!-- BORDER COLOR -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showBorderColor = !showBorderColor; }}
-      aria-expanded={showBorderColor}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Border color</div>
-      <span class="text-[10px] text-slate-500">{showBorderColor ? "▲" : "▼"}</span>
-    </button>
-    {#if showBorderColor}
+  <Section title="Border color" bind:open={showBorderColor}>
       <ColorInput
         token="--sf-color-border"
         value={borderColor}
@@ -106,22 +96,12 @@
       <p class="text-[9px] text-slate-400 dark:text-slate-600">
         Drives --sf-color-border--strong, --subtle, --translucent automatically.
       </p>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- BORDER SCALE -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showBorderWidths = !showBorderWidths; }}
-      aria-expanded={showBorderWidths}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Border widths</div>
-      <span class="text-[10px] text-slate-500">{showBorderWidths ? "▲" : "▼"}</span>
-    </button>
-    {#if showBorderWidths}
+  <Section title="Border widths" bind:open={showBorderWidths}>
       <SliderRow
         label="Border scale" value={borderScale} min={0} max={4} step={0.25}
         help="Multiplier applied to all border widths. 0 hides all borders."
@@ -148,33 +128,20 @@
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2">
         {#each [1, 2, 3, 4] as base (base)}
           <div class="flex items-center gap-3">
-            <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-10">{base}px →</span>
+            <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-14">width-{base}</span>
             <div
               class="flex-1 bg-indigo-400/50 rounded"
-              style={`height: ${Math.max(base * borderScale, 0.5)}px`}
+              style={`height: max(var(--sf-border-width-${base}, ${base}px), 0.5px)`}
             ></div>
-            <span class="text-[9px] font-mono text-slate-500 w-10 text-right">
-              {(base * borderScale).toFixed(1)}px
-            </span>
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- LINE STYLES -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showLineStyles = !showLineStyles; }}
-      aria-expanded={showLineStyles}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Line styles</div>
-      <span class="text-[10px] text-slate-500">{showLineStyles ? "▲" : "▼"}</span>
-    </button>
-    {#if showLineStyles}
+  <Section title="Line styles" spacing="space-y-4" bind:open={showLineStyles}>
       <div class="grid grid-cols-2 gap-3">
         {#each [
           { label: "Border", token: "--sf-border-style", default: "solid" },
@@ -206,28 +173,18 @@
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center gap-3">
         <div
           class="px-4 py-2 rounded-lg text-[11px] text-slate-700 dark:text-slate-300 bg-black/4 dark:bg-white/4"
-          style={`border: ${Math.max(borderScale, 0.5)}px ${borderStyle} ${borderColor || "var(--sf-color-border, #64748b)"}`}
+          style={`border: var(--sf-border-width-1, 1px) ${borderStyle} ${borderColor || "var(--sf-color-border, #64748b)"}`}
         >
           Border sample
         </div>
-        <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600">{(1 * borderScale).toFixed(1)}px · {borderStyle}</span>
+        <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600">width-1 · {borderStyle}</span>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- DIVIDERS -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showDividers = !showDividers; }}
-      aria-expanded={showDividers}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Dividers</div>
-      <span class="text-[10px] text-slate-500">{showDividers ? "▲" : "▼"}</span>
-    </button>
-    {#if showDividers}
+  <Section title="Dividers" bind:open={showDividers}>
       <div class="flex items-center gap-2">
         <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Color</div>
         <ColorInput
@@ -261,22 +218,12 @@
         currentRaw={overrides["--sf-divider-gap"]}
         onRawSet={(v) => onSet("--sf-divider-gap", v)}
       />
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- FOCUS RING -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showFocusRing = !showFocusRing; }}
-      aria-expanded={showFocusRing}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Focus ring</div>
-      <span class="text-[10px] text-slate-500">{showFocusRing ? "▲" : "▼"}</span>
-    </button>
-    {#if showFocusRing}
+  <Section title="Focus ring" bind:open={showFocusRing}>
       <SliderRow
         label="Ring width" value={focusWidth} min={0} max={6} step={0.5} unit="px"
         help="Thickness of the keyboard focus indicator"
@@ -302,17 +249,34 @@
           onReset={() => onReset("--sf-focus-ring-color")}
         />
       </div>
+      <div>
+        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Ring style</div>
+        <div class="flex gap-2">
+          {#each BORDER_STYLES as style (style)}
+            {@const current = overrides["--sf-focus-ring-style"] ?? "solid"}
+            <button
+              onclick={() => style === "solid" ? onReset("--sf-focus-ring-style") : onSet("--sf-focus-ring-style", style)}
+              class={`flex-1 py-2 rounded-lg text-[10px] border transition-all cursor-pointer capitalize ${
+                current === style
+                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
+              }`}
+            >
+              {style}
+            </button>
+          {/each}
+        </div>
+      </div>
       <!-- Focus ring preview -->
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center">
         <div
           class="px-4 py-2 bg-indigo-600/30 rounded-lg text-[11px] text-indigo-800 dark:text-indigo-200"
-          style={`outline: ${focusWidth}px solid ${focusRingColor || "oklch(0.7 0.2 235)"}; outline-offset: ${focusOffset}px`}
+          style={`outline: var(--sf-focus-ring-width, 2px) var(--sf-focus-ring-style, solid) var(--sf-focus-ring-color, oklch(0.7 0.2 235)); outline-offset: var(--sf-focus-ring-offset, 2px)`}
         >
-          Focus preview
+          Focus ring · {overrides["--sf-focus-ring-style"] ?? "solid"}
         </div>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
@@ -365,12 +329,10 @@
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4">
         <div class="flex gap-3 flex-wrap">
           {#each RADIUS_STEPS as step (step)}
-            {@const base = BASE_RADII[step] ?? 6}
-            {@const computed = step === "full" ? 9999 : base * radiusScale}
             <div class="flex flex-col items-center gap-1">
               <div
                 class="w-10 h-10 bg-indigo-500/40 border border-indigo-500/30"
-                style={`border-radius: ${Math.min(computed, 9999)}px`}
+                style={`border-radius: var(--sf-radius-${step})`}
               ></div>
               <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600">{step}</span>
             </div>
@@ -383,16 +345,7 @@
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- GLOBAL MEDIA RADIUS -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showMediaRadius = !showMediaRadius; }}
-      aria-expanded={showMediaRadius}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global media radius</div>
-      <span class="text-[10px] text-slate-500">{showMediaRadius ? "▲" : "▼"}</span>
-    </button>
-    {#if showMediaRadius}
+  <Section title="Global media radius" bind:open={showMediaRadius}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600">
         --sf-media-radius — 0 by default (off). Rounds every &lt;img&gt;/&lt;figure&gt; globally via a
         zero-specificity :where() rule; .sf-bg-layer and component-level radii still win.
@@ -403,7 +356,7 @@
         overridden={"--sf-media-radius" in overrides}
         onChange={(v) => onSet("--sf-media-radius", `${v}rem`)}
         onReset={() => onReset("--sf-media-radius")}
-        rawDefault="var(--sf-radius-m)"
+        rawDefault="0"
         variableOptions={RADIUS_SCALE}
         currentRaw={overrides["--sf-media-radius"]}
         onRawSet={(v) => onSet("--sf-media-radius", v)}
@@ -411,11 +364,10 @@
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center">
         <div
           class="w-16 h-16 bg-indigo-500/40 border border-indigo-500/30"
-          style={`border-radius: ${mediaRadius}rem`}
+          style={`border-radius: var(--sf-media-radius, 0)`}
         ></div>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 

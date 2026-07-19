@@ -2,21 +2,21 @@
   "_sync": {
     "generatedBy": "configurator/scripts/sync-api.mjs",
     "source": "docs/api-index.json",
-    "tokensHash": "fb3441987ce7",
+    "tokensHash": "2d7e174d5d83",
     "bundles": [
       "full",
       "optimal"
     ],
     "counts": {
-      "tokens": 746,
+      "tokens": 747,
       "byTier": {
         "PUBLIC": 693,
-        "PUBLIC-ADVANCED": 52,
+        "PUBLIC-ADVANCED": 53,
         "INTERNAL": 1
       },
       "byCategory": {
         "Layout tokens": 53,
-        "Core tokens": 615,
+        "Core tokens": 616,
         "Macro tokens": 32,
         "Component tokens": 46
       }
@@ -11031,8 +11031,29 @@
       "category": "Core tokens",
       "group": "LumLocker",
       "description": "OKLCH lightness lock for the data-lumlocker attribute. Pins surface brightness to a fixed L value — useful for always-dark or always-light sections that must stay stable while the rest of the page switches color-scheme.",
-      "note": "OKLCH lightness lock value. When :root has [data-lumlocker], brand colors (primary, secondary, action, base) are remapped to this L so their contrast remains constant as hues shift.",
+      "note": "OKLCH lightness lock value for light mode. When :root has [data-lumlocker], the 4 brand colors (primary, secondary, tertiary, action) are remapped to this L so their contrast remains constant as hues shift. Dark mode uses --sf-lumlocker-dark.",
       "value": "0.65",
+      "aliasOf": null,
+      "registered": false,
+      "syntax": null,
+      "fallbackOnly": false,
+      "optional": false,
+      "layer": "slashed.tokens",
+      "bundles": [
+        "full",
+        "optimal"
+      ]
+    },
+    {
+      "name": "--sf-lumlocker-dark",
+      "tier": "PUBLIC-ADVANCED",
+      "role": "knob",
+      "namespace": "lumlocker",
+      "category": "Core tokens",
+      "group": "LumLocker",
+      "description": "OKLCH lightness lock for the data-lumlocker attribute. Pins surface brightness to a fixed L value — useful for always-dark or always-light sections that must stay stable while the rest of the page switches color-scheme.",
+      "note": "OKLCH lightness lock value for dark mode under [data-lumlocker]. Defaults to clamp(0.5, calc(1.18 - var(--sf-lumlocker)), 0.92) — the mirror of the light L around the light/dark background midpoint — so the lock keeps equivalent contrast against the surface in both themes. Set explicitly to break the mirror.",
+      "value": "clamp(0.5, calc(1.18 - var(--sf-lumlocker)), 0.92)",
       "aliasOf": null,
       "registered": false,
       "syntax": null,

@@ -7,7 +7,9 @@
   import OklchColorDesk from '../inputs/OklchColorDesk.svelte';
   import PowerKnobRow from '../inputs/PowerKnobRow.svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
+  import RangeWithNumber from '../inputs/RangeWithNumber.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
+  import Section from '../inputs/Section.svelte';
 
   let { tokens, overrides, onSet, onReset, onBulkChange, onSelectDomain }: {
     tokens: SlashedToken[];
@@ -219,9 +221,6 @@
   const contrastKnobs = (KNOBS_BY_DOMAIN["colors"] ?? []).filter(
     (k) => k.name === "--sf-contrast-bias" || k.name === "--sf-contrast-threshold"
   );
-  const focusKnobs = (KNOBS_BY_DOMAIN["colors"] ?? []).filter(
-    (k) => k.name === "--sf-focus-ring-width"
-  );
 
   let showBrandSources = $state(false);
   let showTextContrast = $state(false);
@@ -235,7 +234,24 @@
   // Per-gradient structured editors, seeded lazily from the defaults above.
   let gradientEdits = $state<Record<string, { space: string; kind: string; angle: number; dir: string; stop1: string; stop2: string }>>({});
 
-  let lumlockerL = $derived(parseFloat(overrides["--sf-lumlocker"] ?? "0.65"));
+  let lumlockerL = $derived.by(() => {
+    const v = parseFloat(overrides["--sf-lumlocker"] ?? "0.65");
+    return Number.isFinite(v) ? v : 0.65;
+  });
+
+  // Dark-mode lock defaults to the mirror of the light L around 0.59 — the
+  // midpoint between the light/dark page backgrounds — clamped to a visible
+  // band, so the lock keeps equal contrast against the surface in both themes
+  // (a naive 1 - L would leave the dark lock too dark to read). Matches the CSS
+  // default in core/tokens.css. Users can pin --sf-lumlocker-dark to break it.
+  let lumlockerLDark = $derived.by(() => {
+    const raw = overrides["--sf-lumlocker-dark"];
+    if (raw !== undefined) {
+      const v = parseFloat(raw);
+      if (Number.isFinite(v)) return v;
+    }
+    return Math.min(Math.max(1.18 - lumlockerL, 0.5), 0.92);
+  });
 
   function parseLinearGradient(css: string): { space: string; kind: string; angle: number; dir: string; stop1: string; stop2: string } | null {
     const m = css.match(/^linear-gradient\(\s*in\s+(\S+)\s+(to\s+\w+|\d+deg)\s*,(.+)\)$/i);
@@ -281,13 +297,17 @@
     onSet(g.name, composeGradient(g));
   }
 
-  // LumLocker swatch preview: mirrors the framework's oklch(from <source> L c h).
-  // Works for any valid CSS color input, not just oklch() literals.
+  // LumLocker swatch preview — mirrors the framework's lock formula in
+  // core/themes.css EXACTLY, referencing the live source tokens (so overrides,
+  // the auto-derived dark sources and the dark→light fallback all flow through
+  // instead of re-deriving from panel-side defaults, which showed the stock
+  // blue for auto-dark brands). Resolved per-theme via the preview iframe.
   function lockedColor(colorKey: string, side: "light" | "dark"): string {
-    const srcName = `--sf-color-${colorKey}-source-${side}`;
-    const src = overrides[srcName] ?? BRAND_SOURCES.find(s => s.name === srcName)?.default ?? "";
-    if (!src) return "";
-    return `oklch(from ${src} ${lumlockerL} c h)`;
+    const srcVar = side === "dark"
+      ? `var(--sf-color-${colorKey}-source-dark, var(--sf-color-${colorKey}-source-light))`
+      : `var(--sf-color-${colorKey}-source-light)`;
+    const l = side === "dark" ? lumlockerLDark : lumlockerL;
+    return `oklch(from ${srcVar} ${l} c h)`;
   }
 
   // Track which color rows are in Auto dark mode.
@@ -426,6 +446,25 @@
     onSet(light.name, newVal);
   }
 
+  // Brand keys that offer a "Copy to dark" action (snapshot the light source
+  // into the dark source — same effect as pasting the same colour into both).
+  const COPY_TO_DARK_KEYS = ["primary", "secondary", "tertiary", "action"];
+
+  // One-shot: copy the light source's current concrete oklch value into the
+  // dark source token and switch the row to manual. Not live-linked — a later
+  // edit to light leaves this copied dark value untouched (copy-paste, not a ref).
+  function copyLightToDark(colorKey: string, dark: ColorSource | undefined, light: ColorSource) {
+    if (!dark) return;
+    autoDarkSet = new Set([...autoDarkSet].filter(k => k !== colorKey));
+    const lv = sourceValue(light);
+    // Freeze a concrete snapshot. A plain oklch/hex/rgb literal is copied as-is
+    // (keeps the OKLCH authoring intact); only a value that references another
+    // token (var()) is resolved, so the copy can't keep tracking that
+    // dependency. Falls back to the literal if resolution isn't available.
+    const snapshot = lv.includes("var(") ? (resolveColorForTheme(lv, "light") || lv) : lv;
+    onSet(dark.name, snapshot);
+  }
+
   function toggleDarkMode(colorKey: string, dark: ColorSource | undefined, lightName: string) {
     const darkOverridden = !!(dark && (dark.name in overrides));
     const effectivelyAuto = autoDarkSet.has(colorKey) && !darkOverridden;
@@ -506,16 +545,7 @@
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- BRAND SOURCES -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showBrandSources = !showBrandSources; }}
-      aria-expanded={showBrandSources}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Brand color sources</div>
-      <span class="text-[10px] text-slate-500">{showBrandSources ? "▲" : "▼"}</span>
-    </button>
-    {#if showBrandSources}
+  <Section title="Brand color sources" bind:open={showBrandSources}>
     <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
       OKLCH source values — all 200+ derived color steps are computed automatically. Tints (50–400) mix toward Base
       (the "Surface" color) and shades (600–950) mix toward Text (driven by Neutral) — so editing Base or Neutral below
@@ -529,14 +559,23 @@
           <div class="flex items-center justify-between">
             <div class="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">{light.label}</div>
             {#if dark}
-              <button
-                onclick={() => toggleDarkMode(light.colorKey, dark, light.name)}
-                class={`text-[8px] px-1.5 py-0.5 rounded border transition-all cursor-pointer ${
-                  isAutoMode
-                    ? "border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
-                    : "border-black/10 dark:border-white/10 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-                }`}
-              >{isAutoMode ? "Auto dark" : "Manual dark"}</button>
+              <div class="flex items-center gap-1">
+                {#if COPY_TO_DARK_KEYS.includes(light.colorKey)}
+                  <button
+                    onclick={() => copyLightToDark(light.colorKey, dark, light)}
+                    title="Copy the light value into the dark source (snapshot)"
+                    class="text-[8px] px-1.5 py-0.5 rounded border border-black/10 dark:border-white/10 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-all cursor-pointer"
+                  >Copy to dark</button>
+                {/if}
+                <button
+                  onclick={() => toggleDarkMode(light.colorKey, dark, light.name)}
+                  class={`text-[8px] px-1.5 py-0.5 rounded border transition-all cursor-pointer ${
+                    isAutoMode
+                      ? "border-indigo-500/40 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
+                      : "border-black/10 dark:border-white/10 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  }`}
+                >{isAutoMode ? "Auto dark" : "Manual dark"}</button>
+              </div>
             {/if}
           </div>
           <OklchColorDesk
@@ -616,32 +655,31 @@
         </div>
       {/each}
     </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- LUMLOCKER -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showLumlocker = !showLumlocker; }}
-      aria-expanded={showLumlocker}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">LumLocker</div>
-      <span class="text-[10px] text-slate-500">{showLumlocker ? "▲" : "▼"}</span>
-    </button>
-    {#if showLumlocker}
+  <Section title="LumLocker" bind:open={showLumlocker}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Pins brand colors (primary, secondary, tertiary, action) to a fixed OKLCH
-        lightness — useful for always-stable sections. Enable on canvas to preview.
+        lightness — useful for always-stable sections. Light and dark each get
+        their own L: dark defaults to the mirror around the background midpoint
+        so contrast holds in both themes. Enable on canvas to preview.
       </p>
       <SliderRow
-        label="LumLocker lightness (L)" value={lumlockerL} min={0} max={1} step={0.01}
-        help="--sf-lumlocker — fixed OKLCH L applied to lockable brand colors under [data-lumlocker]"
+        label="LumLocker L · light" value={lumlockerL} min={0} max={1} step={0.01}
+        help="--sf-lumlocker — fixed OKLCH L applied to lockable brand colors in light mode under [data-lumlocker]"
         overridden={"--sf-lumlocker" in overrides}
         onChange={(v) => onSet("--sf-lumlocker", String(v))}
         onReset={() => onReset("--sf-lumlocker")}
+      />
+      <SliderRow
+        label="LumLocker L · dark" value={lumlockerLDark} min={0} max={1} step={0.01}
+        help="--sf-lumlocker-dark — fixed OKLCH L in dark mode. Defaults to the light L mirrored around the background midpoint (≈1.18 − L, clamped); set it to break the mirror."
+        overridden={"--sf-lumlocker-dark" in overrides}
+        onChange={(v) => onSet("--sf-lumlocker-dark", String(v))}
+        onReset={() => onReset("--sf-lumlocker-dark")}
       />
 
       <!-- Before / after preview for every lockable color -->
@@ -659,7 +697,7 @@
               <span class="text-[9px] text-slate-500 w-16 shrink-0">{lk.label} <span class="text-slate-400 dark:text-slate-600">{side === "light" ? "L" : "D"}</span></span>
               <span class="flex-1 h-5 rounded border border-black/10 dark:border-white/10" style={`background:${cur || `var(--sf-color-${lk.key})`}`}></span>
               <span class="text-slate-400 dark:text-slate-600 text-[10px] px-1">→</span>
-              <span class="flex-1 h-5 rounded border border-black/10 dark:border-white/10" style={`background:${paint(locked, locked)}`} title={locked}></span>
+              <span class="flex-1 h-5 rounded border border-black/10 dark:border-white/10" style={`background:${paintTheme(locked, side as "light" | "dark", locked)}`} title={locked}></span>
             </div>
           {/each}
         {/each}
@@ -674,22 +712,12 @@
             : "border-black/10 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
         }`}
       >{lumlockerPreview.value ? "✓ LumLocker active on canvas — click to disable" : "Preview LumLocker on live canvas"}</button>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- STATUS SOURCES -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showStatus = !showStatus; }}
-      aria-expanded={showStatus}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status colors</div>
-      <span class="text-[10px] text-slate-500">{showStatus ? "▲" : "▼"}</span>
-    </button>
-    {#if showStatus}
+  <Section title="Status colors" bind:open={showStatus}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Dark mode is auto-derived from each light source by default. Switch to
         Manual dark to set a bespoke dark value.
@@ -774,22 +802,12 @@
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- TEXT CONTRAST -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showTextContrast = !showTextContrast; }}
-      aria-expanded={showTextContrast}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Text contrast</div>
-      <span class="text-[10px] text-slate-500">{showTextContrast ? "▲" : "▼"}</span>
-    </button>
-    {#if showTextContrast}
+  <Section title="Text contrast" spacing="space-y-4" bind:open={showTextContrast}>
     <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
       Controls whether text on brand-coloured surfaces is light or dark.
     </p>
@@ -826,31 +844,12 @@
         >Open contrast tool →</button>
       {/if}
     </div>
-
-    <!-- Focus ring width — logically belongs with contrast/accessibility -->
-    {#each focusKnobs as k (k.name)}
-      <PowerKnobRow
-        knob={k}
-        {overrides}
-        onChange={(name, val) => val === null ? onReset(name) : onSet(name, val)}
-      />
-    {/each}
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SHADE CURVE -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showShadeCurve = !showShadeCurve; }}
-      aria-expanded={showShadeCurve}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Palette ramp</div>
-      <span class="text-[10px] text-slate-500">{showShadeCurve ? "▲" : "▼"}</span>
-    </button>
-    {#if showShadeCurve}
+  <Section title="Palette ramp" spacing="space-y-4" bind:open={showShadeCurve}>
     {@const _curvePrimLightSrc = overrides["--sf-color-primary-source-light"] ?? BRAND_SOURCES.find(s => s.name === "--sf-color-primary-source-light")?.default ?? "oklch(0.47 0.27 264)"}
     {@const _curvePrimDarkOv = overrides["--sf-color-primary-source-dark"]}
     {@const _curvePrimDarkSrc = _curvePrimDarkOv ?? (!autoDarkSet.has("primary") || _curvePrimDarkOv
@@ -965,22 +964,12 @@
         </div>
       {/each}
     </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- GRADIENTS -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showGradients = !showGradients; }}
-      aria-expanded={showGradients}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gradients</div>
-      <span class="text-[10px] text-slate-500">{showGradients ? "▲" : "▼"}</span>
-    </button>
-    {#if showGradients}
+  <Section title="Gradients" bind:open={showGradients}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Auto-derived from your brand colors. Use the angle/direction and stop
         controls, or edit the raw value for full control.
@@ -1017,12 +1006,12 @@
                 {:else if g.kind !== "dir"}
                   <div class="flex items-center gap-2">
                     <span class="text-[8px] text-slate-500 w-10 shrink-0">Angle</span>
-                    <input
-                      type="range" min="0" max="360" step="1" value={e.angle}
-                      oninput={(ev) => setGradientPart(g, "angle", parseInt((ev.target as HTMLInputElement).value))}
-                      class="flex-1 accent-indigo-500"
-                    />
-                    <span class="text-[9px] font-mono text-slate-600 dark:text-slate-400 w-9 text-right shrink-0">{e.angle}°</span>
+                    <div class="flex-1 min-w-0">
+                      <RangeWithNumber
+                        value={e.angle} min={0} max={360} step={1} unit="°"
+                        onChange={(v) => setGradientPart(g, "angle", v)}
+                      />
+                    </div>
                   </div>
                 {/if}
 
@@ -1062,22 +1051,12 @@
           {/each}
         </div>
       {/each}
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- COLOR SCHEME -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showColorScheme = !showColorScheme; }}
-      aria-expanded={showColorScheme}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Color scheme</div>
-      <span class="text-[10px] text-slate-500">{showColorScheme ? "▲" : "▼"}</span>
-    </button>
-    {#if showColorScheme}
+  <Section title="Color scheme" bind:open={showColorScheme}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
         --sf-color-scheme — sets the CSS <span class="font-mono text-slate-600 dark:text-slate-400">color-scheme</span> property on the root, controlling browser UI (scrollbars, inputs) and default background.
       </p>
@@ -1094,22 +1073,12 @@
           >{label}</button>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SEMANTIC OVERRIDES -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showSemanticOverrides = !showSemanticOverrides; }}
-      aria-expanded={showSemanticOverrides}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Semantic overrides</div>
-      <span class="text-[10px] text-slate-500">{showSemanticOverrides ? "▲" : "▼"}</span>
-    </button>
-    {#if showSemanticOverrides}
+  <Section title="Semantic overrides" bind:open={showSemanticOverrides}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Direct color overrides for tokens the framework auto-derives. Use for edge cases.
       </p>
@@ -1129,8 +1098,7 @@
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="rounded-lg bg-black/3 dark:bg-white/3 border border-black/6 dark:border-white/6 p-3">
     <p class="text-[10px] text-slate-500 leading-relaxed">

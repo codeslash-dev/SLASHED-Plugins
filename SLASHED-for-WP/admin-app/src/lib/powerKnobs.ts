@@ -14,26 +14,6 @@ export const KNOBS_BY_DOMAIN: Record<string, PowerKnob[]> = {
       help: "OKLCH lightness above which a swatch is considered 'light' (gets dark text). Below = light text.",
       default: 0.6, min: 0, max: 1, step: 0.01, driving: 11,
     },
-    {
-      name: "--sf-focus-ring-width",
-      label: "Focus ring width",
-      help: "Thickness of the focus ring on every interactive element.",
-      default: 2, min: 0, max: 6, step: 0.5, unit: "px", driving: 1,
-    },
-  ],
-  typography: [
-    {
-      name: "--sf-text-scale",
-      label: "Text scale",
-      help: "Multiplier applied to the entire fluid text ramp (2xs … 2xl).",
-      default: 1, min: 0.5, max: 2, step: 0.05, driving: 9,
-    },
-    {
-      name: "--sf-text-display-scale",
-      label: "Display scale",
-      help: "Multiplier applied to the display ramp (display-s, display-m, display-l).",
-      default: 1, min: 0.5, max: 2, step: 0.05, driving: 3,
-    },
   ],
   spacing: [
     {

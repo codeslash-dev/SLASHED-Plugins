@@ -1,6 +1,8 @@
 <script lang="ts">
   import SliderRow from '../inputs/SliderRow.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
+  import Toggle from '../inputs/Toggle.svelte';
+  import Section from '../inputs/Section.svelte';
   import { SIZE_SCALE } from '../../lib/variableScales';
 
   let { overrides, onSet, onReset, onBulkChange }: {
@@ -11,16 +13,15 @@
   } = $props();
 
   const Z_INDEX_STEPS = [
-    { label: "Below",     token: "--sf-z-below",     note: "Behind content (e.g. decorative BG)" },
-    { label: "Raised",    token: "--sf-z-raised",    note: "Slightly above flow" },
-    { label: "Dropdown",  token: "--sf-z-dropdown",  note: "Dropdowns, popovers" },
-    { label: "Sticky",    token: "--sf-z-sticky",    note: "Sticky headers, toolbars" },
-    { label: "Fixed",     token: "--sf-z-fixed",     note: "Fixed UI chrome" },
-    { label: "Overlay",   token: "--sf-z-overlay",   note: "Modals, drawers backdrop" },
-    { label: "Modal",     token: "--sf-z-modal",     note: "Modal dialogs" },
-    { label: "Popover",   token: "--sf-z-popover",   note: "Tooltips, menus" },
-    { label: "Tooltip",   token: "--sf-z-tooltip",   note: "Inline tooltips" },
-    { label: "Toast",     token: "--sf-z-toast",     note: "Notifications" },
+    { label: "Below",     token: "--sf-z-below",     note: "Behind content (e.g. decorative BG)", def: -1 },
+    { label: "Raised",    token: "--sf-z-raised",    note: "Slightly above flow",                 def: 1 },
+    { label: "Sticky",    token: "--sf-z-sticky",    note: "Sticky headers, toolbars",            def: 1000 },
+    { label: "Fixed",     token: "--sf-z-fixed",     note: "Fixed UI chrome",                     def: 1010 },
+    { label: "Dropdown",  token: "--sf-z-dropdown",  note: "Dropdowns, popovers",                 def: 1020 },
+    { label: "Overlay",   token: "--sf-z-overlay",   note: "Modals, drawers backdrop",            def: 1030 },
+    { label: "Modal",     token: "--sf-z-modal",     note: "Modal dialogs",                       def: 1040 },
+    { label: "Toast",     token: "--sf-z-toast",     note: "Notifications",                       def: 1050 },
+    { label: "Tooltip",   token: "--sf-z-tooltip",   note: "Inline tooltips",                     def: 1060 },
   ];
 
   const SCROLL_BEHAVIORS = [
@@ -48,13 +49,11 @@
   let caretColor = $derived(overrides["--sf-caret-color"] ?? "");
   let underlineOffset = $derived(parseNum(overrides["--sf-link-underline-offset"]?.replace("em",""), 0.15));
   let underlineThickness = $derived(overrides["--sf-link-underline-thickness"] ?? "auto");
-  let focusRingStyle = $derived(overrides["--sf-focus-ring-style"] ?? "solid");
 
   let showTouchTarget = $state(false);
   let showScrollBehavior = $state(false);
   let showZIndex = $state(false);
   let showTextSelection = $state(false);
-  let showFocusRingStyle = $state(false);
   let showComponentSizes = $state(false);
   let showCaretLinks = $state(false);
   let showIconSizes = $state(false);
@@ -71,16 +70,7 @@
 <div class="p-4 space-y-6">
 
   <!-- TOUCH TARGET -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showTouchTarget = !showTouchTarget; }}
-      aria-expanded={showTouchTarget}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Touch target</div>
-      <span class="text-[10px] text-slate-500">{showTouchTarget ? "▲" : "▼"}</span>
-    </button>
-    {#if showTouchTarget}
+  <Section title="Touch target" bind:open={showTouchTarget}>
       <SliderRow
         label="Min touch size" value={touchTarget} min={32} max={64} step={1} unit="px"
         help="--sf-touch-target — minimum tappable area for interactive elements (WCAG 2.5.5)"
@@ -96,28 +86,16 @@
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 flex items-center gap-3">
         <div
           class="bg-indigo-500/30 border border-indigo-500/30 rounded flex items-center justify-center text-[9px] font-mono text-indigo-600/70 dark:text-indigo-400/70 shrink-0"
-          style={`width: ${touchTarget}px; height: ${touchTarget}px`}
-        >
-          {touchTarget}px
-        </div>
+          style={`width: var(--sf-touch-target, 2.75rem); height: var(--sf-touch-target, 2.75rem)`}
+        ></div>
         <p class="text-[9px] text-slate-400 dark:text-slate-600">Minimum interactive area — ensures accessibility on touch devices.</p>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCROLL BEHAVIOR -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showScrollBehavior = !showScrollBehavior; }}
-      aria-expanded={showScrollBehavior}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Scroll behavior</div>
-      <span class="text-[10px] text-slate-500">{showScrollBehavior ? "▲" : "▼"}</span>
-    </button>
-    {#if showScrollBehavior}
+  <Section title="Scroll behavior" bind:open={showScrollBehavior}>
       <div class="flex gap-2">
         {#each SCROLL_BEHAVIORS as b (b.value)}
           <button
@@ -132,22 +110,12 @@
           </button>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- Z-INDEX -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showZIndex = !showZIndex; }}
-      aria-expanded={showZIndex}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Z-index layers</div>
-      <span class="text-[10px] text-slate-500">{showZIndex ? "▲" : "▼"}</span>
-    </button>
-    {#if showZIndex}
+  <Section title="Z-index layers" bind:open={showZIndex}>
       <SliderRow
         label="Base offset" value={zBaseOffset} min={0} max={1000} step={10}
         help="--sf-z-base — added to all z-index tokens to avoid conflicts with existing stacking contexts"
@@ -155,34 +123,23 @@
         onChange={(v) => onSet("--sf-z-base", String(v))}
         onReset={() => onReset("--sf-z-base")}
       />
-      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-1.5">
+      <div class="space-y-2">
         {#each Z_INDEX_STEPS as z (z.token)}
-          {@const isOverridden = z.token in overrides}
-          <div class="flex items-center gap-2">
-            <div class={`w-1.5 h-1.5 rounded-full shrink-0 ${isOverridden ? "bg-amber-400" : "bg-black/20 dark:bg-white/20"}`}></div>
-            <span class="text-[9px] font-mono text-slate-600 dark:text-slate-400 w-20 shrink-0">{z.label}</span>
-            <span class="text-[8px] text-slate-400 dark:text-slate-600 flex-1">{z.note}</span>
-            <span class="text-[8px] font-mono text-slate-500">{z.token.replace("--sf-z-", "")}</span>
-          </div>
+          <SliderRow
+            label={z.label} value={parseNum(overrides[z.token], z.def)} min={-1} max={1100} step={1}
+            help={`${z.token} — ${z.note}`}
+            overridden={z.token in overrides}
+            onChange={(v) => onSet(z.token, String(v))}
+            onReset={() => onReset(z.token)}
+          />
         {/each}
       </div>
-      <p class="text-[9px] text-slate-400 dark:text-slate-600">Override individual z-index tokens in the "All tokens" tab.</p>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SELECTION -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showTextSelection = !showTextSelection; }}
-      aria-expanded={showTextSelection}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Text selection</div>
-      <span class="text-[10px] text-slate-500">{showTextSelection ? "▲" : "▼"}</span>
-    </button>
-    {#if showTextSelection}
+  <Section title="Text selection" bind:open={showTextSelection}>
       <div class="space-y-2">
         <div>
           <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Selection background</div>
@@ -254,62 +211,12 @@
           </p>
         </div>
       </div>
-    {/if}
-  </section>
-
-  <div class="h-px bg-black/6 dark:bg-white/6"></div>
-
-  <!-- FOCUS RING STYLE -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showFocusRingStyle = !showFocusRingStyle; }}
-      aria-expanded={showFocusRingStyle}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Focus ring style</div>
-      <span class="text-[10px] text-slate-500">{showFocusRingStyle ? "▲" : "▼"}</span>
-    </button>
-    {#if showFocusRingStyle}
-      <div class="flex gap-2">
-        {#each ["solid", "dashed", "dotted"] as style (style)}
-          {@const current = overrides["--sf-focus-ring-style"] ?? "solid"}
-          <button
-            onclick={() => style === "solid" ? onReset("--sf-focus-ring-style") : onSet("--sf-focus-ring-style", style)}
-            class={`flex-1 py-2 rounded-lg text-[10px] border transition-all cursor-pointer capitalize ${
-              current === style
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
-                : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
-            }`}
-          >
-            {style}
-          </button>
-        {/each}
-      </div>
-      <!-- Focus ring style preview -->
-      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center">
-        <div
-          class="px-4 py-2 bg-indigo-600/30 rounded-lg text-[11px] text-indigo-800 dark:text-indigo-200"
-          style={`outline: 2px ${focusRingStyle} ${overrides["--sf-focus-ring-color"] || "oklch(0.7 0.2 235)"}; outline-offset: 2px`}
-        >
-          Focus ring · {focusRingStyle}
-        </div>
-      </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- COMPONENT SIZES -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showComponentSizes = !showComponentSizes; }}
-      aria-expanded={showComponentSizes}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Component size scale</div>
-      <span class="text-[10px] text-slate-500">{showComponentSizes ? "▲" : "▼"}</span>
-    </button>
-    {#if showComponentSizes}
+  <Section title="Component size scale" bind:open={showComponentSizes}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Controls the height / tap-target of all sized components (buttons, inputs, badges).
       </p>
@@ -329,31 +236,22 @@
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 flex items-end gap-2">
         {#each SIZE_TOKENS as s (s.token)}
           {@const val = getSizeValue(s)}
+          {@const maxSize = Math.max(...SIZE_TOKENS.map((x) => getSizeValue(x)), 0.001)}
           <div class="flex flex-col items-center gap-1 flex-1">
             <div
               class="w-full bg-indigo-500/30 border border-indigo-500/30 rounded flex items-center justify-center"
-              style={`height: ${Math.min(val * 14, 64)}px`}
+              style={`height: ${(val / maxSize) * 72}px`}
             ></div>
             <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600">{s.label}</span>
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- CARET & LINKS -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showCaretLinks = !showCaretLinks; }}
-      aria-expanded={showCaretLinks}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Caret &amp; links</div>
-      <span class="text-[10px] text-slate-500">{showCaretLinks ? "▲" : "▼"}</span>
-    </button>
-    {#if showCaretLinks}
+  <Section title="Caret &amp; links" bind:open={showCaretLinks}>
       <div>
         <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Caret color</div>
         <ColorInput
@@ -376,7 +274,7 @@
         <div class="flex items-center justify-between mb-1.5">
           <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">Underline thickness</span>
           {#if "--sf-link-underline-thickness" in overrides}
-            <button onclick={() => onReset("--sf-link-underline-thickness")} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100">reset</button>
+            <button onclick={() => onReset("--sf-link-underline-thickness")} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer ">reset</button>
           {/if}
         </div>
         <div class="flex gap-1">
@@ -409,22 +307,12 @@
           >sample link</a> with the current underline settings.
         </p>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ICON SIZES -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showIconSizes = !showIconSizes; }}
-      aria-expanded={showIconSizes}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Icon sizes</div>
-      <span class="text-[10px] text-slate-500">{showIconSizes ? "▲" : "▼"}</span>
-    </button>
-    {#if showIconSizes}
+  <Section title="Icon sizes" bind:open={showIconSizes}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Icon scale tokens used by <span class="font-mono text-slate-600 dark:text-slate-400">.sf-icon-*</span> utilities. Values are in <span class="font-mono text-slate-600 dark:text-slate-400">em</span> units relative to surrounding text.
       </p>
@@ -452,22 +340,12 @@
         onChange={(v) => onSet("--sf-icon-box-pad", `${v}em`)}
         onReset={() => onReset("--sf-icon-box-pad")}
       />
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- OBJECT FIT / POSITION -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showObjectFit = !showObjectFit; }}
-      aria-expanded={showObjectFit}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Object fit</div>
-      <span class="text-[10px] text-slate-500">{showObjectFit ? "▲" : "▼"}</span>
-    </button>
-    {#if showObjectFit}
+  <Section title="Object fit" bind:open={showObjectFit}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600">Default values for <span class="font-mono text-slate-600 dark:text-slate-400">.sf-media</span> images and replaced elements.</p>
       <div class="flex items-center gap-2">
         <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">Fit</span>
@@ -500,22 +378,12 @@
           <button onclick={() => onReset("--sf-object-position")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SAFE AREA INSETS -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showSafeArea = !showSafeArea; }}
-      aria-expanded={showSafeArea}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Safe area insets</div>
-      <span class="text-[10px] text-slate-500">{showSafeArea ? "▲" : "▼"}</span>
-    </button>
-    {#if showSafeArea}
+  <Section title="Safe area insets" bind:open={showSafeArea}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Default to the device's <span class="font-mono text-slate-600 dark:text-slate-400">env(safe-area-inset-*)</span>. Override only if you need fixed padding regardless of notch/home-indicator.
       </p>
@@ -544,22 +412,12 @@
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- PRINT -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showPrint = !showPrint; }}
-      aria-expanded={showPrint}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Print styles</div>
-      <span class="text-[10px] text-slate-500">{showPrint ? "▲" : "▼"}</span>
-    </button>
-    {#if showPrint}
+  <Section title="Print styles" bind:open={showPrint}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600">Applied inside <span class="font-mono text-slate-600 dark:text-slate-400">@media print</span> via <span class="font-mono text-slate-600 dark:text-slate-400">optional/print.css</span>.</p>
       <div class="flex items-center gap-2">
         <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Page size</span>
@@ -594,22 +452,12 @@
           {/if}
         </div>
       {/each}
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- STATE FLAGS -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showStateFlags = !showStateFlags; }}
-      aria-expanded={showStateFlags}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">State flags</div>
-      <span class="text-[10px] text-slate-500">{showStateFlags ? "▲" : "▼"}</span>
-    </button>
-    {#if showStateFlags}
+  <Section title="State flags" bind:open={showStateFlags}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Boolean CSS custom property flags (0 = off, 1 = on). Components toggle these to activate state-specific styles.
         Overriding globally forces all matching elements into that state — useful for testing and demos.
@@ -623,15 +471,12 @@
         ] as f (f.token)}
           {@const cur = overrides[f.token] ?? "0"}
           <div class="flex items-center gap-2 py-0.5">
-            <button
-              type="button"
-              aria-label={f.label}
-              aria-pressed={cur === "1"}
-              onclick={() => cur === "1" ? onReset(f.token) : onSet(f.token, "1")}
-              class={`w-8 h-4 rounded-full transition-colors relative cursor-pointer shrink-0 ${cur === "1" ? "bg-indigo-600" : "bg-black/10 dark:bg-white/10"}`}
-            >
-              <div class={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${cur === "1" ? "translate-x-4" : "translate-x-0.5"}`}></div>
-            </button>
+            <Toggle
+              size="sm"
+              checked={cur === "1"}
+              ariaLabel={f.label}
+              onToggle={() => cur === "1" ? onReset(f.token) : onSet(f.token, "1")}
+            />
             <span class="text-[9px] font-mono text-slate-700 dark:text-slate-300 w-24 shrink-0">{f.label}</span>
             <span class="text-[9px] text-slate-400 dark:text-slate-600 flex-1">{f.note}</span>
             {#if f.token in overrides}
@@ -656,8 +501,7 @@
           <button onclick={() => onReset("--sf-field-required-marker")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 

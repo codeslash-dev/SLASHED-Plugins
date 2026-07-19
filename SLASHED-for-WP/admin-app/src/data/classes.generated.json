@@ -2395,26 +2395,6 @@
       "layer": "slashed.macros"
     },
     {
-      "name": "sf-overlap--end",
-      "selector": ".sf-overlap--end",
-      "kind": "macro",
-      "category": "Macro classes",
-      "group": "",
-      "description": "Overlap recipe — pulls the element toward the inline-end (negative inline-end margin) to overlap horizontally.",
-      "optional": false,
-      "layer": "slashed.macros"
-    },
-    {
-      "name": "sf-overlap--start",
-      "selector": ".sf-overlap--start",
-      "kind": "macro",
-      "category": "Macro classes",
-      "group": "",
-      "description": "Overlap recipe — pulls the element toward the inline-start (negative inline-start margin) to overlap horizontally.",
-      "optional": false,
-      "layer": "slashed.macros"
-    },
-    {
       "name": "sf-overlap-host",
       "selector": ".sf-overlap-host",
       "kind": "macro",

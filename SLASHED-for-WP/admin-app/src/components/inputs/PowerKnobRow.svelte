@@ -36,7 +36,7 @@
     {#if isOverridden}
       <button
         onclick={handleReset}
-        class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100"
+        class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer "
       >
         reset
       </button>

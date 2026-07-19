@@ -392,16 +392,12 @@
      logical margin + a raised stacking context. Directional variants are
      standalone (margins are distinct properties, not a re-pointable knob). */
   .sf-overlap,
-  .sf-overlap--down,
-  .sf-overlap--start,
-  .sf-overlap--end {
+  .sf-overlap--down {
     position: relative;
     z-index:  var(--sf-z-raised);
   }
   .sf-overlap        { margin-block-start:  calc(-1 * var(--sf-overlap-pull)); }
   .sf-overlap--down  { margin-block-end:    calc(-1 * var(--sf-overlap-pull)); }
-  .sf-overlap--start { margin-inline-start: calc(-1 * var(--sf-overlap-pull)); }
-  .sf-overlap--end   { margin-inline-end:   calc(-1 * var(--sf-overlap-pull)); }
 
   /* Card-container recipe — the receiving side of an overlap: an isolated
      stacking context with block-start padding compensation so in-flow

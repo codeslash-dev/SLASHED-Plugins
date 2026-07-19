@@ -281,10 +281,20 @@
        chroma. Neutral and base are excluded — neutral is a desaturated
        grey (locking it to a brand L would make it chromatic) and base
        must remain near-white in light mode for the page background.
-       Override to change the locked lightness:
-         :root { --sf-lumlocker: 0.55 }
+
+       --sf-lumlocker is the LIGHT-mode target. Dark mode uses
+       --sf-lumlocker-dark, which defaults to the mirror of the light L
+       around 0.59 — the midpoint between the light (~0.96) and dark
+       (~0.22) page backgrounds — i.e. calc(1.18 - L). Mirroring around
+       the background midpoint (not 0.5) is what keeps the lock's
+       contrast against the surface equal in both themes; a naive 1 - L
+       would leave the dark lock too dark to read. Clamped to a visible
+       band. A single knob that works in both themes. Override either:
+         :root { --sf-lumlocker: 0.55 }          (light)
+         :root { --sf-lumlocker-dark: 0.82 }     (dark, breaks the mirror)
        ---------------------------------------------------------- */
     --sf-lumlocker: 0.65;
+    --sf-lumlocker-dark: clamp(0.5, calc(1.18 - var(--sf-lumlocker)), 0.92);
 
     /* ----------------------------------------------------------
        Resolved color tokens — auto-switch via light-dark().

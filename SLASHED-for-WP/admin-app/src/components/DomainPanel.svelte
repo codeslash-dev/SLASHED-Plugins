@@ -77,7 +77,7 @@
           {#if domain === "colors"}
             <ColorsPanel {tokens} {overrides} {onSet} {onReset} {onBulkChange} {onSelectDomain} />
           {:else if domain === "typography"}
-            <TypographyPanel {tokens} {overrides} {onSet} {onReset} {onBulkChange} />
+            <TypographyPanel {overrides} {onSet} {onReset} {onBulkChange} />
           {:else if domain === "spacing"}
             <SpacingPanel {tokens} {overrides} {onSet} {onReset} />
           {:else if domain === "layout"}

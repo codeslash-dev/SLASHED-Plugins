@@ -1,5 +1,9 @@
 <script lang="ts">
   import SliderRow from '../inputs/SliderRow.svelte';
+  import ColorInput from '../inputs/ColorInput.svelte';
+  import AspectRatioInput from '../inputs/AspectRatioInput.svelte';
+  import RawTokenRow from '../inputs/RawTokenRow.svelte';
+  import Section from '../inputs/Section.svelte';
   import { SPACE_SCALE, RADIUS_SCALE } from '../../lib/variableScales';
 
   let { overrides, onSet, onReset }: {
@@ -115,16 +119,7 @@
   </p>
 
   <!-- FLOW -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showFlow = !showFlow; }}
-      aria-expanded={showFlow}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Flow rhythm</div>
-      <span class="text-[10px] text-slate-500">{showFlow ? "▲" : "▼"}</span>
-    </button>
-    {#if showFlow}
+  <Section title="Flow rhythm" bind:open={showFlow}>
       <SliderRow
         label="Flow space" value={flowSpace} min={0} max={4} step={0.0625} unit="rem"
         help="--sf-flow-space — vertical gap between adjacent children of .sf-flow"
@@ -136,27 +131,17 @@
         currentRaw={overrides["--sf-flow-space"]}
         onRawSet={(v) => onSet("--sf-flow-space", v)}
       />
-      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3" style={`display:flex;flex-direction:column;gap:${flowSpace}rem`}>
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3" style={`display:flex;flex-direction:column;gap:var(--sf-flow-space, 0.5rem)`}>
         {#each [0, 1, 2] as i (i)}
           <div class="h-2.5 rounded bg-indigo-500/40" style={`width:${90 - i * 12}%`}></div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- LINE CLAMP -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showLineClamp = !showLineClamp; }}
-      aria-expanded={showLineClamp}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Line clamp</div>
-      <span class="text-[10px] text-slate-500">{showLineClamp ? "▲" : "▼"}</span>
-    </button>
-    {#if showLineClamp}
+  <Section title="Line clamp" bind:open={showLineClamp}>
       <SliderRow
         label="Default lines" value={lineClamp} min={1} max={8} step={1}
         help="--sf-line-clamp — default line count for .sf-line-clamp (override per element)"
@@ -175,57 +160,24 @@
           Extra filler text keeps the block taller than the clamp at every setting.
         </p>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ASPECT -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showAspect = !showAspect; }}
-      aria-expanded={showAspect}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Aspect ratio</div>
-      <span class="text-[10px] text-slate-500">{showAspect ? "▲" : "▼"}</span>
-    </button>
-    {#if showAspect}
+  <Section title="Aspect ratio" bind:open={showAspect}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600">--sf-aspect — default ratio for .sf-aspect / .sf-frame</p>
-      <div class="grid grid-cols-3 gap-1.5">
-        {#each ASPECT_PRESETS as p (p.value)}
-          <button
-            onclick={() => p.value === "16 / 9" ? onReset("--sf-aspect") : onSet("--sf-aspect", p.value)}
-            class={`py-1.5 rounded-lg text-[10px] border transition-all cursor-pointer font-mono ${
-              aspectVal.replace(/\s/g, "") === p.value.replace(/\s/g, "")
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
-                : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
-            }`}
-          >{p.label}</button>
-        {/each}
-      </div>
-      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 flex justify-center">
-        <div
-          class="bg-indigo-500/30 border border-indigo-500/30 rounded-lg flex items-center justify-center text-[9px] font-mono text-indigo-800 dark:text-indigo-200"
-          style={`aspect-ratio:${aspectVal};max-height:120px;max-width:100%;width:auto;height:120px`}
-        >{aspectVal}</div>
-      </div>
-    {/if}
-  </section>
+      <AspectRatioInput
+        token="--sf-aspect" value={aspectVal} defaultValue="16 / 9"
+        presets={ASPECT_PRESETS} columns={3} showPreview
+        {onSet} {onReset}
+      />
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCROLL SHADOW -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showScrollShadow = !showScrollShadow; }}
-      aria-expanded={showScrollShadow}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Scroll shadow</div>
-      <span class="text-[10px] text-slate-500">{showScrollShadow ? "▲" : "▼"}</span>
-    </button>
-    {#if showScrollShadow}
+  <Section title="Scroll shadow" bind:open={showScrollShadow}>
       <SliderRow
         label="Fade size" value={scrollSize} min={0} max={6} step={0.25} unit="rem"
         help="--sf-scroll-shadow-size — size of the edge fade mask on .sf-scroll-shadow / .sf-overflow-fade"
@@ -239,38 +191,25 @@
           style={`mask:linear-gradient(to right, transparent, #000 ${scrollSize}rem, #000 calc(100% - ${scrollSize}rem), transparent)`}
         ></div>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SCRIM -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showScrim = !showScrim; }}
-      aria-expanded={showScrim}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Scrim overlay</div>
-      <span class="text-[10px] text-slate-500">{showScrim ? "▲" : "▼"}</span>
-    </button>
-    {#if showScrim}
+  <Section title="Scrim overlay" bind:open={showScrim}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600">--sf-scrim-color / --sf-scrim-direction — darkening gradient for .sf-scrim</p>
       <div class="flex items-center gap-2">
         <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Color</div>
-        <input
-          type="text"
-          value={overrides["--sf-scrim-color"] ?? ""}
-          placeholder="oklch(0 0 0 / 0.55)"
-          oninput={(e) => {
-            const v = (e.target as HTMLInputElement).value.trim();
-            v ? onSet("--sf-scrim-color", v) : onReset("--sf-scrim-color");
-          }}
-          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
-        />
-        {#if "--sf-scrim-color" in overrides}
-          <button onclick={() => onReset("--sf-scrim-color")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
-        {/if}
+        <div class="flex-1 min-w-0">
+          <ColorInput
+            token="--sf-scrim-color"
+            value={overrides["--sf-scrim-color"] ?? ""}
+            placeholder="oklch(0 0 0 / 0.55)"
+            isOverridden={"--sf-scrim-color" in overrides}
+            onSet={(v) => onSet("--sf-scrim-color", v)}
+            onReset={() => onReset("--sf-scrim-color")}
+          />
+        </div>
       </div>
       <div>
         <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Direction</div>
@@ -289,41 +228,23 @@
       </div>
       <div class="relative h-24 rounded-xl border border-black/8 dark:border-white/8 overflow-hidden flex items-end p-2"
         style="background:repeating-linear-gradient(45deg,#475569,#475569 8px,#334155 8px,#334155 16px)">
-        <div class="absolute inset-0" style={`background:linear-gradient(${scrimDir}, ${scrimColor}, transparent)`}></div>
+        <div class="absolute inset-0" style={`background:linear-gradient(var(--sf-scrim-direction, to top), var(--sf-scrim-color, oklch(0 0 0 / 0.55)), transparent)`}></div>
         <span class="relative text-[11px] font-bold text-white">Caption over scrim</span>
       </div>
-      <div class="flex items-center gap-2">
-        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Text shadow</div>
-        <input
-          type="text"
-          value={overrides["--sf-scrim-text-shadow"] ?? ""}
-          placeholder="0 1px 3px oklch(0 0 0 / 0.6)"
-          oninput={(e) => {
-            const v = (e.target as HTMLInputElement).value.trim();
-            v ? onSet("--sf-scrim-text-shadow", v) : onReset("--sf-scrim-text-shadow");
-          }}
-          class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
-        />
-        {#if "--sf-scrim-text-shadow" in overrides}
-          <button onclick={() => onReset("--sf-scrim-text-shadow")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
-        {/if}
-      </div>
-    {/if}
-  </section>
+      <RawTokenRow
+        label="Text shadow"
+        value={overrides["--sf-scrim-text-shadow"] ?? ""}
+        placeholder="0 1px 3px oklch(0 0 0 / 0.6)"
+        overridden={"--sf-scrim-text-shadow" in overrides}
+        onSet={(v) => onSet("--sf-scrim-text-shadow", v)}
+        onReset={() => onReset("--sf-scrim-text-shadow")}
+      />
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- PROSE -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showProse = !showProse; }}
-      aria-expanded={showProse}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prose rhythm</div>
-      <span class="text-[10px] text-slate-500">{showProse ? "▲" : "▼"}</span>
-    </button>
-    {#if showProse}
+  <Section title="Prose rhythm" bind:open={showProse}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600">Spacing tokens for .sf-prose. Defaults track the space scale; sliders write rem overrides.</p>
       <div class="space-y-2">
         {#each PROSE_SPACE as t (t.token)}
@@ -352,35 +273,22 @@
         />
         <div class="flex items-center gap-2 pt-1">
           <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Marker color</div>
-          <input
-            type="text"
-            value={overrides["--sf-prose-marker-color"] ?? ""}
-            placeholder="var(--sf-color-primary)"
-            oninput={(e) => {
-              const v = (e.target as HTMLInputElement).value.trim();
-              v ? onSet("--sf-prose-marker-color", v) : onReset("--sf-prose-marker-color");
-            }}
-            class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
-          />
-          {#if "--sf-prose-marker-color" in overrides}
-            <button onclick={() => onReset("--sf-prose-marker-color")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
-          {/if}
+          <div class="flex-1 min-w-0">
+            <ColorInput
+              token="--sf-prose-marker-color"
+              value={overrides["--sf-prose-marker-color"] ?? ""}
+              placeholder="var(--sf-color-primary)"
+              isOverridden={"--sf-prose-marker-color" in overrides}
+              onSet={(v) => onSet("--sf-prose-marker-color", v)}
+              onReset={() => onReset("--sf-prose-marker-color")}
+            />
+          </div>
         </div>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <!-- CONTENT VISIBILITY -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showContentIntrinsic = !showContentIntrinsic; }}
-      aria-expanded={showContentIntrinsic}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Content visibility</div>
-      <span class="text-[10px] text-slate-500">{showContentIntrinsic ? "▲" : "▼"}</span>
-    </button>
-    {#if showContentIntrinsic}
+  <Section title="Content visibility" bind:open={showContentIntrinsic}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
         --sf-content-intrinsic-size — placeholder size used with <span class="font-mono text-slate-600 dark:text-slate-400">content-visibility: auto</span> to improve scroll performance on tall pages.
       </p>
@@ -400,22 +308,12 @@
           <button onclick={() => onReset("--sf-content-intrinsic-size")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- BACKGROUND SURFACE -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showSurfaceBg = !showSurfaceBg; }}
-      aria-expanded={showSurfaceBg}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Background surface</div>
-      <span class="text-[10px] text-slate-500">{showSurfaceBg ? "▲" : "▼"}</span>
-    </button>
-    {#if showSurfaceBg}
+  <Section title="Background surface" bind:open={showSurfaceBg}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">
         --sf-surface-bg-* — input set composed by the <span class="font-mono text-slate-600 dark:text-slate-400">.sf-surface-bg</span>
         macro into a single reusable background (color, image, overlay, sizing and animation).
@@ -424,18 +322,26 @@
       {#each SURFACE_BG_TEXT as t (t.token)}
         <div class="flex items-center gap-2">
           <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">{t.label}</div>
-          <input
-            type="text"
-            value={overrides[t.token] ?? ""}
-            placeholder={t.placeholder}
-            oninput={(e) => {
-              const v = (e.target as HTMLInputElement).value;
-              v.trim() ? onSet(t.token, v) : onReset(t.token);
-            }}
-            class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
-          />
-          {#if t.token in overrides}
-            <button onclick={() => onReset(t.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
+          {#if t.token === "--sf-surface-bg-color"}
+            <div class="flex-1 min-w-0">
+              <ColorInput
+                token={t.token}
+                value={overrides[t.token] ?? ""}
+                placeholder={t.placeholder}
+                isOverridden={t.token in overrides}
+                onSet={(v) => onSet(t.token, v)}
+                onReset={() => onReset(t.token)}
+              />
+            </div>
+          {:else}
+            <div class="flex-1 min-w-0">
+              <RawTokenRow
+                value={overrides[t.token] ?? ""} placeholder={t.placeholder}
+                overridden={t.token in overrides}
+                onSet={(v) => onSet(t.token, v)}
+                onReset={() => onReset(t.token)}
+              />
+            </div>
           {/if}
         </div>
       {/each}
@@ -460,12 +366,11 @@
 
       <div
         class="h-24 rounded-xl border border-black/8 dark:border-white/8 overflow-hidden flex items-end p-2"
-        style={`background-color:${surfaceBgColor};background-image:${surfaceBgOverlay}, ${surfaceBgImage};background-size:${surfaceBgSize};background-position:${surfaceBgPosition};background-repeat:${surfaceBgRepeat};background-attachment:${surfaceBgAttachment};animation:${surfaceBgAnimation}`}
+        style={`background-color:var(--sf-surface-bg-color, transparent);background-image:var(--sf-surface-bg-overlay, none), var(--sf-surface-bg-image, none);background-size:var(--sf-surface-bg-size, cover);background-position:var(--sf-surface-bg-position, center);background-repeat:var(--sf-surface-bg-repeat, no-repeat);background-attachment:var(--sf-surface-bg-attachment, scroll);animation:var(--sf-surface-bg-animation, none)`}
       >
         <span class="text-[11px] font-bold text-white mix-blend-difference">.sf-surface-bg preview</span>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="rounded-lg bg-black/3 dark:bg-white/3 border border-black/6 dark:border-white/6 p-3">
     <p class="text-[10px] text-slate-500 leading-relaxed">

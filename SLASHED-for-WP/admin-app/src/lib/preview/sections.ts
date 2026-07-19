@@ -607,7 +607,7 @@ export function macros(): string {
   // Overlap — an avatar pulled down over the card that follows it
   // (.sf-overlap--down; the plain .sf-overlap pulls UP onto whatever
   // precedes it instead — not what a leading avatar needs here), plus the
-  // remaining directional variants on their own swatches.
+  // two block-axis directional variants on their own swatches.
   const avatar = `<div style="inline-size:3rem;block-size:3rem;border-radius:var(--sf-radius-full);background:${photo};border:var(--sf-border-width-2) solid var(--sf-color-surface)"></div>`;
   const overlapHost = frame(`<div style="max-inline-size:14rem;margin-inline:auto">
     <div class="sf-overlap--down">${avatar}</div>
@@ -617,8 +617,7 @@ export function macros(): string {
     10,
     ...([
       ["", "sf-overlap (pulls up)"],
-      ["--start", "sf-overlap--start"],
-      ["--end", "sf-overlap--end"],
+      ["--down", "sf-overlap--down (pulls down)"],
     ] as const).map(([m, label]) =>
       specimen(label, `<div style="position:relative;inline-size:3rem;block-size:3rem;border-radius:var(--sf-radius-full);background:${photo}" class="sf-overlap${m}"></div>`),
     ),

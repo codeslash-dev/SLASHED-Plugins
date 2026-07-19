@@ -3,6 +3,8 @@
   import PowerKnobRow from '../inputs/PowerKnobRow.svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
+  import Toggle from '../inputs/Toggle.svelte';
+  import Section from '../inputs/Section.svelte';
 
   let { overrides, onSet, onReset }: {
     overrides: Record<string, string>;
@@ -53,16 +55,7 @@
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SHADOW COLOR -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showShadowColor = !showShadowColor; }}
-      aria-expanded={showShadowColor}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Shadow color</div>
-      <span class="text-[10px] text-slate-500">{showShadowColor ? "▲" : "▼"}</span>
-    </button>
-    {#if showShadowColor}
+  <Section title="Shadow color" spacing="space-y-4" bind:open={showShadowColor}>
       <div>
         <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Shadow color</div>
         <ColorInput
@@ -75,42 +68,23 @@
         />
         <p class="text-[9px] text-slate-400 dark:text-slate-600 mt-1">Warm, cool or brand-tinted shadows. Default uses neutral hue.</p>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- GLOW -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showGlow = !showGlow; }}
-      aria-expanded={showGlow}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Glow</div>
-      <span class="text-[10px] text-slate-500">{showGlow ? "▲" : "▼"}</span>
-    </button>
-    {#if showGlow}
+  <Section title="Glow" bind:open={showGlow}>
       <!-- Glow toggle -->
       <div class="flex items-center justify-between p-3 rounded-xl bg-black/4 dark:bg-white/4 border border-black/8 dark:border-white/8">
         <div>
           <div class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">Shadow glow</div>
           <div class="text-[9px] text-slate-500 mt-0.5">Ambient glow on elevated surfaces</div>
         </div>
-        <button
-          aria-label={glowDisabled ? "Enable shadow glow" : "Disable shadow glow"}
-          onclick={() => {
-            if (glowDisabled) onReset("--sf-shadow-glow");
-            else onSet("--sf-shadow-glow", "none");
-          }}
-          class={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${
-            !glowDisabled ? "bg-indigo-600" : "bg-black/10 dark:bg-white/10"
-          }`}
-        >
-          <div class={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-            !glowDisabled ? "translate-x-4" : "translate-x-0.5"
-          }`}></div>
-        </button>
+        <Toggle
+          checked={!glowDisabled}
+          ariaLabel={glowDisabled ? "Enable shadow glow" : "Disable shadow glow"}
+          onToggle={() => glowDisabled ? onReset("--sf-shadow-glow") : onSet("--sf-shadow-glow", "none")}
+        />
       </div>
 
       {#if !glowDisabled}
@@ -138,22 +112,12 @@
       {#if glowDisabled}
         <p class="text-[9px] text-slate-400 dark:text-slate-600 text-center">Glow disabled.</p>
       {/if}
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ADVANCED (power knob, de-emphasised, at end) -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showAdvanced = !showAdvanced; }}
-      aria-expanded={showAdvanced}
-      class="w-full flex items-center justify-between text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors cursor-pointer"
-    >
-      <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
-      <span class="text-[10px]">{showAdvanced ? "▲" : "▼"}</span>
-    </button>
-    {#if showAdvanced}
+  <Section title="Advanced" variant="advanced" bind:open={showAdvanced}>
       <div class="space-y-4">
         {#each knobs as k (k.name)}
           <PowerKnobRow
@@ -163,6 +127,5 @@
           />
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 </div>

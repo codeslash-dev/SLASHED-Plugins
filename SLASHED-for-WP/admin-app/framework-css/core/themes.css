@@ -34,33 +34,36 @@
     --sf-card-border-color: var(--sf-color-border);
   }
 
-  /* LumLocker: locks 4 brand colors to shared OKLCH L. Neutral/base excluded —
-     forcing them to the same L breaks their semantic role. */
+  /* LumLocker: locks 4 brand colors to a fixed OKLCH L — --sf-lumlocker in
+     light, --sf-lumlocker-dark (default calc(1.18 - L), the mirror around the
+     light/dark background midpoint) in dark, so contrast against the surface
+     holds in both themes. Neutral/base excluded — forcing them to a brand L
+     breaks their semantic role. */
   @supports (color: oklch(from red l c h)) {
   :root[data-lumlocker] {
     --sf-color-primary: light-dark(
       oklch(from var(--sf-color-primary-source-light) var(--sf-lumlocker) c h),
-      oklch(from var(--sf-color-primary-source-dark, var(--sf-color-primary-source-light)) var(--sf-lumlocker) c h)
+      oklch(from var(--sf-color-primary-source-dark, var(--sf-color-primary-source-light)) var(--sf-lumlocker-dark) c h)
     );
     --sf-color-secondary: light-dark(
       oklch(from var(--sf-color-secondary-source-light) var(--sf-lumlocker) c h),
-      oklch(from var(--sf-color-secondary-source-dark, var(--sf-color-secondary-source-light)) var(--sf-lumlocker) c h)
+      oklch(from var(--sf-color-secondary-source-dark, var(--sf-color-secondary-source-light)) var(--sf-lumlocker-dark) c h)
     );
     --sf-color-tertiary: light-dark(
       oklch(from var(--sf-color-tertiary-source-light) var(--sf-lumlocker) c h),
-      oklch(from var(--sf-color-tertiary-source-dark, var(--sf-color-tertiary-source-light)) var(--sf-lumlocker) c h)
+      oklch(from var(--sf-color-tertiary-source-dark, var(--sf-color-tertiary-source-light)) var(--sf-lumlocker-dark) c h)
     );
     --sf-color-action: light-dark(
       oklch(from var(--sf-color-action-source-light) var(--sf-lumlocker) c h),
-      oklch(from var(--sf-color-action-source-dark, var(--sf-color-action-source-light)) var(--sf-lumlocker) c h)
+      oklch(from var(--sf-color-action-source-dark, var(--sf-color-action-source-light)) var(--sf-lumlocker-dark) c h)
     );
   }
 
   :root[data-lumlocker] :is([data-theme="dark"], .sf-theme-dark) {
-    --sf-color-primary:   oklch(from var(--sf-color-primary-source-dark,   var(--sf-color-primary-source-light))   var(--sf-lumlocker) c h);
-    --sf-color-secondary: oklch(from var(--sf-color-secondary-source-dark, var(--sf-color-secondary-source-light)) var(--sf-lumlocker) c h);
-    --sf-color-tertiary:  oklch(from var(--sf-color-tertiary-source-dark,  var(--sf-color-tertiary-source-light))  var(--sf-lumlocker) c h);
-    --sf-color-action:    oklch(from var(--sf-color-action-source-dark,    var(--sf-color-action-source-light))    var(--sf-lumlocker) c h);
+    --sf-color-primary:   oklch(from var(--sf-color-primary-source-dark,   var(--sf-color-primary-source-light))   var(--sf-lumlocker-dark) c h);
+    --sf-color-secondary: oklch(from var(--sf-color-secondary-source-dark, var(--sf-color-secondary-source-light)) var(--sf-lumlocker-dark) c h);
+    --sf-color-tertiary:  oklch(from var(--sf-color-tertiary-source-dark,  var(--sf-color-tertiary-source-light))  var(--sf-lumlocker-dark) c h);
+    --sf-color-action:    oklch(from var(--sf-color-action-source-dark,    var(--sf-color-action-source-light))    var(--sf-lumlocker-dark) c h);
   }
   :root[data-lumlocker] :is([data-theme="light"], .sf-theme-light) {
     --sf-color-primary:   oklch(from var(--sf-color-primary-source-light)   var(--sf-lumlocker) c h);

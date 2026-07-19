@@ -104,7 +104,7 @@
               <button
                 aria-label="Delete theme"
                 onclick={() => handleDelete(theme.id)}
-                class="p-1.5 rounded-lg border border-black/8 dark:border-white/8 text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500/30 transition-all cursor-pointer opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus:opacity-100"
+                class="p-1.5 rounded-lg border border-black/8 dark:border-white/8 text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500/30 transition-all cursor-pointer "
               ><Trash2 class="w-3.5 h-3.5" /></button>
             </div>
           </div>

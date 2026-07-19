@@ -2,6 +2,9 @@
   import type { SlashedToken } from '../../types';
   import SliderRow from '../inputs/SliderRow.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
+  import AspectRatioInput from '../inputs/AspectRatioInput.svelte';
+  import RawTokenRow from '../inputs/RawTokenRow.svelte';
+  import Section from '../inputs/Section.svelte';
   import { themeState } from '../../lib/theme.svelte';
   import { SPACE_SCALE, CONTAINER_SCALE } from '../../lib/variableScales';
 
@@ -31,6 +34,7 @@
   let centerMax         = $derived(parseRem(overrides["--sf-center-max"],        75));
   let centerGutter      = $derived(parseRem(overrides["--sf-center-gutter"],     1));
   let gridMin           = $derived(parseRem(overrides["--sf-grid-min"],          16));
+  let gridGap           = $derived(parseRem(overrides["--sf-grid-gap"],          1));
   let headerMobile      = $derived(parseRem(overrides["--sf-header-height-mobile"],  3.5));
   let headerDesktop     = $derived(parseRem(overrides["--sf-header-height-desktop"], 5));
   let sidebarWidth      = $derived(parseRem(overrides["--sf-sidebar-width"],     18));
@@ -88,16 +92,7 @@
 <div class="p-4 space-y-6">
 
   <!-- CONTAINERS -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showContainerWidths = !showContainerWidths; }}
-      aria-expanded={showContainerWidths}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Container widths</div>
-      <span class="text-[10px] text-slate-500">{showContainerWidths ? "▲" : "▼"}</span>
-    </button>
-    {#if showContainerWidths}
+  <Section title="Container widths" spacing="space-y-4" bind:open={showContainerWidths}>
       <!-- Compact pairs -->
       <div class="grid grid-cols-2 gap-3">
         <div>
@@ -158,22 +153,12 @@
           </div>
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- CENTER WRAPPER -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showCenterWrapper = !showCenterWrapper; }}
-      aria-expanded={showCenterWrapper}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Center wrapper</div>
-      <span class="text-[10px] text-slate-500">{showCenterWrapper ? "▲" : "▼"}</span>
-    </button>
-    {#if showCenterWrapper}
+  <Section title="Center wrapper" bind:open={showCenterWrapper}>
       <SliderRow
         label="Max width" value={centerMax} min={30} max={160} step={1} unit="rem"
         help="--sf-center-max — max-width of the .sf-center centering wrapper"
@@ -196,22 +181,28 @@
         currentRaw={overrides["--sf-center-gutter"]}
         onRawSet={(v) => onSet("--sf-center-gutter", v)}
       />
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- AUTO GRID -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showAutoGrid = !showAutoGrid; }}
-      aria-expanded={showAutoGrid}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Auto grid</div>
-      <span class="text-[10px] text-slate-500">{showAutoGrid ? "▲" : "▼"}</span>
-    </button>
-    {#if showAutoGrid}
+  <Section title="Auto grid" spacing="space-y-4" bind:open={showAutoGrid}>
+      <!-- step 0.0625rem (1px) intentionally matches the gap-token sliders in
+           SpacingPanel (--sf-gap / --sf-content-gap / --sf-gutter), which
+           --sf-grid-gap defaults to — finer than the size controls elsewhere
+           in this panel, so grid gap isn't tuned coarser than the token it
+           inherits from. -->
+      <SliderRow
+        label="Grid gap" value={gridGap} min={0} max={4} step={0.0625} unit="rem"
+        help="--sf-grid-gap — gap between grid cells (.sf-grid, .sf-grid-flex, .sf-grid-cols-*); defaults to --sf-gap"
+        overridden={"--sf-grid-gap" in overrides}
+        onChange={(v) => onSet("--sf-grid-gap", `${v}rem`)}
+        onReset={() => onReset("--sf-grid-gap")}
+        rawDefault="var(--sf-gap)"
+        variableOptions={SPACE_SCALE}
+        currentRaw={overrides["--sf-grid-gap"]}
+        onRawSet={(v) => onSet("--sf-grid-gap", v)}
+      />
       <SliderRow
         label="Grid min cell width" value={gridMin} min={8} max={40} step={0.5} unit="rem"
         help="sf-grid minimum column width — browser auto-fills columns"
@@ -243,30 +234,20 @@
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
         <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-2 font-mono">Preview at 360px panel width</div>
         <div
-          class="grid gap-1"
-          style={`grid-template-columns: repeat(auto-fill, minmax(${Math.min(gridMin * 16 * (360 / 1200), 120)}px, 1fr))`}
+          class="grid"
+          style={`grid-template-columns: repeat(auto-fill, minmax(${Math.min(gridMin * 16 * (360 / 1200), 120)}px, 1fr)); gap: ${gridGap * 16 * (360 / 1200)}px`}
         >
           {#each Array.from({ length: 8 }) as _, i (i)}
             <div class="h-8 bg-indigo-500/20 border border-indigo-500/20 rounded text-[8px] font-mono text-indigo-600/60 dark:text-indigo-400/60 flex items-center justify-center">col</div>
           {/each}
         </div>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- HEADER -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showHeaderHeight = !showHeaderHeight; }}
-      aria-expanded={showHeaderHeight}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Header height</div>
-      <span class="text-[10px] text-slate-500">{showHeaderHeight ? "▲" : "▼"}</span>
-    </button>
-    {#if showHeaderHeight}
+  <Section title="Header height" spacing="space-y-4" bind:open={showHeaderHeight}>
       <div class="grid grid-cols-2 gap-3">
         <div>
           <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-1">Mobile</div>
@@ -301,22 +282,12 @@
         </div>
         <div class="p-2 text-[9px] text-slate-400 dark:text-slate-600 font-mono">{headerMobile}rem mobile · {headerDesktop}rem desktop</div>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- STICKY OFFSETS -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showStickyOffset = !showStickyOffset; }}
-      aria-expanded={showStickyOffset}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sticky offset</div>
-      <span class="text-[10px] text-slate-500">{showStickyOffset ? "▲" : "▼"}</span>
-    </button>
-    {#if showStickyOffset}
+  <Section title="Sticky offset" bind:open={showStickyOffset}>
       <p class="text-[9px] text-slate-400 dark:text-slate-600">Offsets position:sticky elements below a fixed header. Defaults to header heights.</p>
       <div class="grid grid-cols-2 gap-3">
         <div>
@@ -344,22 +315,12 @@
           />
         </div>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- SIDEBAR -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showSidebar = !showSidebar; }}
-      aria-expanded={showSidebar}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sidebar</div>
-      <span class="text-[10px] text-slate-500">{showSidebar ? "▲" : "▼"}</span>
-    </button>
-    {#if showSidebar}
+  <Section title="Sidebar" spacing="space-y-4" bind:open={showSidebar}>
       <SliderRow
         label="Sidebar width" value={sidebarWidth} min={10} max={32} step={0.5} unit="rem"
         help="--sf-sidebar-width — default sidebar / drawer width"
@@ -376,8 +337,7 @@
         </div>
         <div class="flex-1 bg-black/4 dark:bg-white/4 rounded"></div>
       </div>
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
@@ -494,21 +454,19 @@
           />
           <div class="flex items-center gap-2">
             <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Rule style</span>
-            <select
-              value={overrides["--sf-equal-rule-style"] ?? "solid"}
-              onchange={(e) => {
-                const v = (e.target as HTMLSelectElement).value;
-                v === "solid" ? onReset("--sf-equal-rule-style") : onSet("--sf-equal-rule-style", v);
-              }}
-              class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
-            >
+            <div class="flex-1 grid grid-cols-3 gap-1">
               {#each COLUMN_RULE_STYLES as s (s)}
-                <option value={s} style={`background:${optionBg};`}>{s}</option>
+                {@const cur = overrides["--sf-equal-rule-style"] ?? "solid"}
+                <button
+                  onclick={() => s === "solid" ? onReset("--sf-equal-rule-style") : onSet("--sf-equal-rule-style", s)}
+                  class={`py-1 rounded-lg text-[9px] border transition-all cursor-pointer ${
+                    cur === s
+                      ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
+                      : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
+                  }`}
+                >{s}</button>
               {/each}
-            </select>
-            {#if "--sf-equal-rule-style" in overrides}
-              <button onclick={() => onReset("--sf-equal-rule-style")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
-            {/if}
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-20 shrink-0">Rule color</span>
@@ -539,18 +497,11 @@
         <section class="space-y-2">
           <div class="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">Frame ratio</div>
           <p class="text-[9px] text-slate-400 dark:text-slate-600">--sf-frame-ratio — aspect ratio for .sf-frame</p>
-          <div class="grid grid-cols-5 gap-1">
-            {#each FRAME_PRESETS as r (r)}
-              <button
-                onclick={() => r === "16 / 9" ? onReset("--sf-frame-ratio") : onSet("--sf-frame-ratio", r)}
-                class={`py-1 rounded-lg text-[9px] border transition-all cursor-pointer font-mono ${
-                  frameRatio.replace(/\s/g, "") === r.replace(/\s/g, "")
-                    ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
-                    : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
-                }`}
-              >{r}</button>
-            {/each}
-          </div>
+          <AspectRatioInput
+            token="--sf-frame-ratio" value={frameRatio} defaultValue="16 / 9"
+            presets={FRAME_PRESETS} columns={5} dense
+            {onSet} {onReset}
+          />
         </section>
 
         <!-- Reel -->
@@ -673,22 +624,13 @@
           { label: "Cinema",   token: "--sf-ratio-cinema",   def: "21 / 9"  },
           { label: "Golden",   token: "--sf-ratio-golden",   def: "1.618 / 1" },
         ] as r (r.token)}
-          <div class="flex items-center gap-2">
-            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-16 shrink-0">{r.label}</span>
-            <input
-              type="text"
-              value={overrides[r.token] ?? ""}
-              placeholder={r.def}
-              oninput={(e) => {
-                const v = (e.target as HTMLInputElement).value.trim();
-                v ? onSet(r.token, v) : onReset(r.token);
-              }}
-              class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
-            />
-            {#if r.token in overrides}
-              <button onclick={() => onReset(r.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
-            {/if}
-          </div>
+          <RawTokenRow
+            label={r.label} labelWidth="w-16"
+            value={overrides[r.token] ?? ""} placeholder={r.def}
+            overridden={r.token in overrides}
+            onSet={(v) => onSet(r.token, v)}
+            onReset={() => onReset(r.token)}
+          />
         {/each}
       </div>
     {/if}

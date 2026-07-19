@@ -4,6 +4,7 @@
   import PowerKnobRow from '../inputs/PowerKnobRow.svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
   import ClampField from '../inputs/ClampField.svelte';
+  import Section from '../inputs/Section.svelte';
   import { SPACE_SCALE } from '../../lib/variableScales';
 
   let { overrides, onSet, onReset }: {
@@ -42,6 +43,15 @@
   let vwMin      = $derived(num("--sf-fluid-min-vw", 22.5));
   let vwMax      = $derived(num("--sf-fluid-max-vw", 90));
 
+  // Largest step (4xl, offset +5) — used to normalise the preview bars so the
+  // biggest bar fills the track and every other bar stays proportional (no cap
+  // that would make different sizes render identically).
+  let spacePreviewMax = $derived.by(() => {
+    const midBase = (baseMin + baseMax) / 2;
+    const ratio = (ratioMin + ratioMax) / 2;
+    return midBase * Math.pow(ratio, 5) * spaceScale;
+  });
+
   let showLayoutGap = $state(false);
   let showModularScale = $state(false);
   let showAdvanced = $state(false);
@@ -59,7 +69,7 @@
         {@const offset = i - 3}
         {@const rawRem = offset >= 0 ? midBase * Math.pow(ratio, offset) : midBase / Math.pow(ratio, -offset)}
         {@const scaled = rawRem * spaceScale}
-        {@const barWidth = Math.min(scaled * 28, 240)}
+        {@const barWidth = spacePreviewMax > 0 ? (scaled / spacePreviewMax) * 240 : 0}
         <div class="flex items-center gap-2">
           <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-6 text-right shrink-0">{step}</span>
           <div class="bg-indigo-500/50 rounded shrink-0 h-3" style={`width: ${barWidth}px; min-width: 3px`}></div>
@@ -72,16 +82,7 @@
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- GAP TOKENS — most used, at the top -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showLayoutGap = !showLayoutGap; }}
-      aria-expanded={showLayoutGap}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Layout gap</div>
-      <span class="text-[10px] text-slate-500">{showLayoutGap ? "▲" : "▼"}</span>
-    </button>
-    {#if showLayoutGap}
+  <Section title="Layout gap" bind:open={showLayoutGap}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         The two most-referenced spacing tokens. Referenced by every layout primitive (cluster, grid, stack, bento…).
       </p>
@@ -118,22 +119,12 @@
         currentRaw={overrides["--sf-gutter"]}
         onRawSet={(v) => onSet("--sf-gutter", v)}
       />
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- FLUID SCALE -->
-  <section class="space-y-4">
-    <button
-      onclick={() => { showModularScale = !showModularScale; }}
-      aria-expanded={showModularScale}
-      class="w-full flex items-center justify-between cursor-pointer"
-    >
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Modular scale (Mobile → Desktop)</div>
-      <span class="text-[10px] text-slate-500">{showModularScale ? "▲" : "▼"}</span>
-    </button>
-    {#if showModularScale}
+  <Section title="Modular scale (Mobile → Desktop)" spacing="space-y-4" bind:open={showModularScale}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Utopia-style fluid scale — viewport width, base unit and ratio per endpoint.
         The viewport range is shared with the type scale.
@@ -166,22 +157,12 @@
         onRatioMinChange={(v) => onSet("--sf-space-ratio-min", String(v))}
         onRatioMaxChange={(v) => onSet("--sf-space-ratio-max", String(v))}
       />
-    {/if}
-  </section>
+  </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ADVANCED (power knobs, de-emphasised, at end) -->
-  <section class="space-y-3">
-    <button
-      onclick={() => { showAdvanced = !showAdvanced; }}
-      aria-expanded={showAdvanced}
-      class="w-full flex items-center justify-between text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors cursor-pointer"
-    >
-      <div class="text-[10px] font-semibold uppercase tracking-widest">Advanced</div>
-      <span class="text-[10px]">{showAdvanced ? "▲" : "▼"}</span>
-    </button>
-    {#if showAdvanced}
+  <Section title="Advanced" variant="advanced" bind:open={showAdvanced}>
       <div class="space-y-4">
         {#each knobs as k (k.name)}
           <PowerKnobRow
@@ -191,6 +172,5 @@
           />
         {/each}
       </div>
-    {/if}
-  </section>
+  </Section>
 </div>
