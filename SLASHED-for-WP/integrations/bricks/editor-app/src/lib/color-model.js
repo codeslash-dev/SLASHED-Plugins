@@ -88,19 +88,26 @@ export const FAMILY_INFO = {
  * order. The first matcher a token's key satisfies wins; anything unmatched
  * collects into "Other". This is what lets a user scan "Text", "Surfaces",
  * "Borders", "Links"… instead of one long alphabetical list.
+ *
+ * `desc` is a short "reach for these when…" hint spelling out what the tokens
+ * are applied as (text colour, background, border, …) so the panel reads as a
+ * guided system rather than an anonymous swatch wall.
  */
 const SEMANTIC_SUBGROUPS = [
-  { id: 'text-on', label: 'Text on color', match: (k) => k.startsWith('text--on') },
-  { id: 'text', label: 'Text', match: (k) => k === 'text' || k === 'heading' || k.startsWith('text-') },
+  { id: 'text-on', label: 'Text on color', desc: 'Text/icon colour placed on a filled brand or status colour — button labels, badge text.', match: (k) => k.startsWith('text--on') },
+  { id: 'text', label: 'Text', desc: 'Body copy, headings and muted / secondary text colours.', match: (k) => k === 'text' || k === 'heading' || k.startsWith('text-') },
   // Interactive bg states (bg--hover/active/…) before surfaces so the plain
   // surface tokens (bg, surface, inset, raised, overlay, inverse) stay clean.
-  { id: 'state', label: 'Interactive states', match: (k) => k.startsWith('bg--') },
-  { id: 'surface', label: 'Surfaces & backgrounds', match: (k) => ['bg', 'surface', 'inset', 'raised', 'overlay', 'inverse'].some((p) => k === p || k.startsWith(p + '-')) },
-  { id: 'border', label: 'Borders', match: (k) => k === 'border' || k.startsWith('border-') },
-  { id: 'link', label: 'Links', match: (k) => k === 'link' || k.startsWith('link-') },
-  { id: 'select', label: 'Selection & marks', match: (k) => k.startsWith('selection') || k.startsWith('mark') || k === 'dim' },
-  { id: 'code', label: 'Code', match: (k) => k.startsWith('code') },
+  { id: 'state', label: 'Interactive states', desc: 'Hover / active background fills for interactive surfaces.', match: (k) => k.startsWith('bg--') },
+  { id: 'surface', label: 'Surfaces & backgrounds', desc: 'Page and panel backgrounds — bg, surface, raised, inset, overlay, inverse.', match: (k) => ['bg', 'surface', 'inset', 'raised', 'overlay', 'inverse'].some((p) => k === p || k.startsWith(p + '-')) },
+  { id: 'border', label: 'Borders', desc: 'Border and divider colours — card outlines, input borders, rules.', match: (k) => k === 'border' || k.startsWith('border-') },
+  { id: 'link', label: 'Links', desc: 'Link text colour and its hover / visited states.', match: (k) => k === 'link' || k.startsWith('link-') },
+  { id: 'select', label: 'Selection & marks', desc: 'Text-selection highlight, <mark> backgrounds and dim overlays.', match: (k) => k.startsWith('selection') || k.startsWith('mark') || k === 'dim' },
+  { id: 'code', label: 'Code', desc: 'Inline code and code-block text / background colours.', match: (k) => k.startsWith('code') },
 ];
+
+/** Fallback description for the trailing catch-all "Other" section. */
+const SEMANTIC_OTHER_DESC = 'Remaining role tokens that adapt to light / dark.';
 
 /**
  * Classify a single `--sf-color-*` variable.
@@ -263,7 +270,9 @@ function compareSemantic(a, b) {
  * @param {string[]} variables Ordered `--sf-color-*` names from the inventory.
  * @param {Record<string,string>} light Light-mode hex map.
  * @param {Record<string,string>} dark  Dark-mode hex map.
- * @returns {{ groups: Array<{ id: string, label: string, type: 'brand'|'status'|'semantic', count: number, sections: Array<{ id: string, label: string, swatches: object[] }> }> }}
+ * @returns {{ groups: Array<{ id: string, label: string, type: 'brand'|'status'|'semantic', count: number, sections: Array<{ id: string, label: string, desc?: string, swatches: object[] }> }> }}
+ *          `desc` is present on the semantic group's sections (the when-to-use
+ *          hint) and absent on brand/status family sections.
  */
 export function buildColorModel(variables, light, dark) {
   const vars = Array.isArray(variables) ? variables : [];
@@ -338,9 +347,9 @@ export function buildColorModel(variables, light, dark) {
     const sections = [];
     for (const sub of SEMANTIC_SUBGROUPS) {
       const swatches = buckets.get(sub.id);
-      if (swatches.length) sections.push({ id: sub.id, label: sub.label, swatches });
+      if (swatches.length) sections.push({ id: sub.id, label: sub.label, desc: sub.desc, swatches });
     }
-    if (other.length) sections.push({ id: 'other', label: 'Other', swatches: other });
+    if (other.length) sections.push({ id: 'other', label: 'Other', desc: SEMANTIC_OTHER_DESC, swatches: other });
 
     const info = FAMILY_INFO.semantic || {};
     groups.push({

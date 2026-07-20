@@ -64,11 +64,15 @@
   // The 5 aliases shown in each scanner row's preview strip.
   const PREVIEW_WANT = ['Hover', 'Active', 'Subtle', 'Ghost', 'Superlight'];
 
-  let mode           = $state('both');
-  let query          = $state('');
-  let toast          = $state(null);
-  let expandedFamily = $state(null);
-  let alphaOpen      = $state(new Set());
+  let mode             = $state('both');
+  let query            = $state('');
+  let toast            = $state(null);
+  let expandedFamily   = $state(null);
+  let expandedSemantic = $state(null);
+  let alphaOpen        = $state(new Set());
+
+  // The first N swatches shown as a preview strip on a collapsed semantic row.
+  const SEM_PREVIEW = 5;
 
   const fullModel        = $derived(buildColorModel(source?.variables, source?.light, source?.dark));
   const normalizedQuery  = $derived(query.trim());
@@ -76,8 +80,15 @@
   const quickModel       = $derived(buildQuickUseModel(source?.variables, source?.light, source?.dark));
   const totalTokens = $derived(fullModel.groups.reduce((n, g) => n + g.count, 0));
 
-  const brandGroups  = $derived(fullModel.groups.filter(g => g.type === 'brand'));
-  const statusGroups = $derived(fullModel.groups.filter(g => g.type === 'status'));
+  const brandGroups   = $derived(fullModel.groups.filter(g => g.type === 'brand'));
+  const statusGroups  = $derived(fullModel.groups.filter(g => g.type === 'status'));
+  // The catch-all semantic group carries every role token (text, surfaces,
+  // borders, links, text-on-color…) split into purpose-based sections. It is
+  // rendered as its own accordion in the palette so all of them are reachable
+  // without searching — not just the curated Quick Use subset.
+  const semanticSections = $derived(
+    (fullModel.groups.find(g => g.type === 'semantic')?.sections) ?? []
+  );
 
   // ── Canvas theme preview ─────────────────────────────────────────────────
   let _canvasOriginal;
@@ -158,6 +169,9 @@
   function toggleFamily(id) {
     expandedFamily = expandedFamily === id ? null : id;
     alphaOpen = new Set();
+  }
+  function toggleSemantic(id) {
+    expandedSemantic = expandedSemantic === id ? null : id;
   }
   function toggleAlpha(id) {
     const next = new Set(alphaOpen);
@@ -291,6 +305,57 @@
   </div>
 {/snippet}
 
+<!--
+  Semantic scanner — the page-level role tokens (text, surfaces, borders,
+  links, text-on-color…). Same accordion affordance as the family scanner,
+  but each row is a purpose-based *section* rather than a colour family, and
+  carries a when-to-use description so it's clear what the tokens are applied
+  as (text colour, background, border, …). Expanding a row reveals every
+  token in that section as a captioned swatch grid.
+-->
+{#snippet semanticScanner(sections)}
+  <div class="slashed-cp__scanner">
+    {#each sections as section (section.id)}
+      {@const isOpen   = expandedSemantic === section.id}
+      {@const previews = section.swatches.slice(0, SEM_PREVIEW)}
+      <div class="slashed-cp__scan-item">
+        <button
+          type="button"
+          class="slashed-cp__scan-row"
+          class:slashed-cp__scan-row--open={isOpen}
+          aria-expanded={isOpen}
+          onclick={() => toggleSemantic(section.id)}
+        >
+          <span class="slashed-cp__scan-name">{section.label}</span>
+          <span class="slashed-cp__scan-count">{section.swatches.length}</span>
+          <span class="slashed-cp__scan-pre" aria-hidden="true">
+            {#each previews as p (p.var)}
+              <span class="slashed-cp__scan-pre-sw" style="--sw-l: {p.light}; --sw-d: {p.dark}" title={p.label}></span>
+            {/each}
+          </span>
+          <span class="slashed-cp__scan-chev" aria-hidden="true">{isOpen ? '▾' : '▸'}</span>
+        </button>
+
+        {#if isOpen}
+          <div class="slashed-cp__fam">
+            {#if section.desc}
+              <p class="slashed-cp__sem-desc">{section.desc}</p>
+            {/if}
+            <div class="slashed-cp__grid">
+              {#each section.swatches as s (s.var)}
+                <div class="slashed-cp__cell">
+                  <ColorSwatch swatch={s} {mode} onPick={pick} />
+                  <span class="slashed-cp__cap">{s.label}</span>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/if}
+      </div>
+    {/each}
+  </div>
+{/snippet}
+
 <svelte:window onkeydown={handleKeydown} />
 
 <div
@@ -416,6 +481,12 @@
         <!-- Status families -->
         <p class="slashed-cp__pal-cat">Status</p>
         {@render familyScanner(statusGroups)}
+
+        <!-- Semantic role tokens (text, surfaces, borders, links…) -->
+        {#if semanticSections.length}
+          <p class="slashed-cp__pal-cat">Semantic</p>
+          {@render semanticScanner(semanticSections)}
+        {/if}
       </div>
 
     {/if}

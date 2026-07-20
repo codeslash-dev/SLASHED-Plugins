@@ -201,6 +201,15 @@ describe('semantic subgrouping', () => {
     for (const s of semantic.sections) assert.ok(s.label, `section ${s.id} has a label`);
   });
 
+  test('every semantic section carries a non-empty when-to-use description', () => {
+    // The panel renders `desc` as the guided "reach for these when…" blurb;
+    // guard against a future refactor silently dropping it from buildColorModel.
+    for (const s of semantic.sections) {
+      assert.equal(typeof s.desc, 'string', `section ${s.id} has a string desc`);
+      assert.ok(s.desc.trim().length, `section ${s.id} desc is non-empty`);
+    }
+  });
+
   test('interactive bg states are separated from plain surfaces', () => {
     const state = semantic.sections.find((s) => s.id === 'state');
     const surface = semantic.sections.find((s) => s.id === 'surface');
