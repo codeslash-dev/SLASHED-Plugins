@@ -1235,7 +1235,7 @@ li[data-id]:focus-within > .rebemer-badge-host {
 .slashed-cp__cls-name {
   font: 600 11px/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color: var(--rebemer-accent);
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .slashed-cp__cls-desc {
   font-size: 10px;
