@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.24 — slashed.optimal.css | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.25 — slashed.optimal.css | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -2413,19 +2413,22 @@
     background-color: var(--sf-color-bg);
     color:            var(--sf-color-text);
 
-    /* Component-layer tokens that merely alias a themed core token (no
-       light/dark branching of their own, e.g. --sf-card-bg: var(--sf-color-
-       surface)) are declared once in optional/tokens.components.css's plain
-       :root block. Without a redeclaration here, that var() substitutes
-       using :root's OWN --sf-color-surface at computed-value time and the
-       result inherits down frozen — a nested data-theme section further in
-       never gets a chance to re-substitute it, breaking the "data-theme
-       works on any element" guarantee (docs/theming.md) for .sf-card
-       specifically. Re-declaring the alias here, at the same non-root
-       scope, forces a fresh substitution against this section's own
-       (possibly overridden) --sf-color-surface/-border. */
+    /* Component-layer and :root-only alias tokens that merely alias a themed
+       core token (no light/dark branching of their own, e.g. --sf-card-bg:
+       var(--sf-color-surface)) are declared once in :root (tokens.css /
+       optional/tokens.components.css). Without a redeclaration here, that
+       var() substitutes using :root's OWN --sf-color-surface/-heading/-text
+       at computed-value time and the result inherits down frozen — a nested
+       data-theme section further in never gets a chance to re-substitute it,
+       breaking the "data-theme works on any element" guarantee
+       (docs/theming.md) for .sf-card and for heading/body colour (#496).
+       Re-declaring the aliases here, at the same non-root scope, forces a
+       fresh substitution against this section's own (possibly overridden)
+       --sf-color-surface / -border / -heading / -text. */
     --sf-card-bg:           var(--sf-color-surface);
     --sf-card-border-color: var(--sf-color-border);
+    --sf-heading-color:     var(--sf-color-heading);
+    --sf-body-color:        var(--sf-color-text);
   }
 
   /* LumLocker: locks 4 brand colors to a fixed OKLCH L — --sf-lumlocker in
@@ -3596,6 +3599,22 @@
       --sf-caret-color:             var(--sf-surface-contrast);
 
       --sf-shadow-color:            oklch(from var(--sf-surface-color) var(--sf-shadow-lightness) c h);
+
+      /* :root-only alias-overrides seal their value at the DECLARING element
+         (var() resolves on :root), so a heading/body that reads the alias
+         reads the frozen page value and ignores this surface's re-declared
+         semantic token above — leaving headings dark on a dark surface.
+         Re-declare the aliases here so they re-resolve against THIS surface's
+         adapted --sf-color-heading / --sf-color-text. Same class of bug as the
+         [data-theme] block in themes.css (#496), extended to heading/body. */
+      --sf-heading-color:           var(--sf-color-heading);
+      --sf-body-color:              var(--sf-color-text);
+
+      /* INTERNAL flag (inherits): signals "inside an auto-contrast surface" so a
+         nested .sf-card can restore surface-appropriate foreground for its own
+         (non-adapting) background via a style query — see .sf-card in
+         optional/components.css (#496). Not a public hook; read, don't set. */
+      --sf-surface-active:          1;
     }
   }
   .sf-scrim {

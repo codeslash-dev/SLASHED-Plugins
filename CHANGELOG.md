@@ -9,6 +9,19 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-07-20
+
+### Added
+
+- Add colour/surface class cheatsheet to SF color picker
+
+### Fixed
+
+- Stabilise cheatsheet tab selection + complete ARIA tab wiring
+- Use non-deprecated overflow-wrap in class cheatsheet CSS
+
+## [0.6.2] - 2026-07-20
+
 ### Added
 
 - Colour/surface class cheatsheet in the SF color picker (Bricks): a "Classes" view with category tabs that copies utility class names (`.sf-surface--*`, coloured `.sf-btn--*`, `.sf-marker--*`, text/link helpers) to the clipboard

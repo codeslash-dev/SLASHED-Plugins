@@ -19,19 +19,22 @@
     background-color: var(--sf-color-bg);
     color:            var(--sf-color-text);
 
-    /* Component-layer tokens that merely alias a themed core token (no
-       light/dark branching of their own, e.g. --sf-card-bg: var(--sf-color-
-       surface)) are declared once in optional/tokens.components.css's plain
-       :root block. Without a redeclaration here, that var() substitutes
-       using :root's OWN --sf-color-surface at computed-value time and the
-       result inherits down frozen — a nested data-theme section further in
-       never gets a chance to re-substitute it, breaking the "data-theme
-       works on any element" guarantee (docs/theming.md) for .sf-card
-       specifically. Re-declaring the alias here, at the same non-root
-       scope, forces a fresh substitution against this section's own
-       (possibly overridden) --sf-color-surface/-border. */
+    /* Component-layer and :root-only alias tokens that merely alias a themed
+       core token (no light/dark branching of their own, e.g. --sf-card-bg:
+       var(--sf-color-surface)) are declared once in :root (tokens.css /
+       optional/tokens.components.css). Without a redeclaration here, that
+       var() substitutes using :root's OWN --sf-color-surface/-heading/-text
+       at computed-value time and the result inherits down frozen — a nested
+       data-theme section further in never gets a chance to re-substitute it,
+       breaking the "data-theme works on any element" guarantee
+       (docs/theming.md) for .sf-card and for heading/body colour (#496).
+       Re-declaring the aliases here, at the same non-root scope, forces a
+       fresh substitution against this section's own (possibly overridden)
+       --sf-color-surface / -border / -heading / -text. */
     --sf-card-bg:           var(--sf-color-surface);
     --sf-card-border-color: var(--sf-color-border);
+    --sf-heading-color:     var(--sf-color-heading);
+    --sf-body-color:        var(--sf-color-text);
   }
 
   /* LumLocker: locks 4 brand colors to a fixed OKLCH L — --sf-lumlocker in

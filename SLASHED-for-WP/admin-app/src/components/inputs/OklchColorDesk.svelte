@@ -1,5 +1,7 @@
 <script lang="ts">
   import RangeWithNumber from './RangeWithNumber.svelte';
+  import { normalizeColorInput, previewHex } from '../../lib/colorConvert';
+  import { previewVersion } from '../../lib/previewResolver.svelte';
 
   let { label, tokenName, value, overridden, onChange, onReset }: {
     label: string;
@@ -44,9 +46,22 @@
 
   let swatchColor = $derived(oklchToRgbApprox(parsed.l, parsed.c, parsed.h));
   let shortName = $derived(tokenName.replace("--sf-", ""));
+  // Always-visible hex reference so a pasted hex stays recognisable after it's
+  // normalised to oklch(). Reactive via previewVersion (the probe recomputes).
+  let hex = $derived.by(() => { void previewVersion.value; return previewHex(value); });
 
   function update(l: number, c: number, h: number) {
     onChange(oklchToCSS(l, c, h));
+  }
+
+  // Commit the Raw value field. A pasted hex / rgb() / hsl() / named colour is
+  // converted to OKLCH (this desk's canonical space) so the L/C/H sliders stay
+  // in sync; oklch() input and var() references pass through unchanged.
+  function commitRaw() {
+    const raw = localRaw.trim();
+    if (!raw) return;
+    onChange(normalizeColorInput(raw, 'oklch'));
+    localRaw = "";
   }
 </script>
 
@@ -62,7 +77,9 @@
     <div class="flex-1 text-left min-w-0">
       <div class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">{label}</div>
       <div class="text-[9px] font-mono text-slate-500">{shortName}</div>
-      <div class="text-[9px] font-mono text-slate-400 dark:text-slate-600">{value}</div>
+      <div class="text-[9px] font-mono text-slate-400 dark:text-slate-600 truncate">
+        {value}{#if hex}<span class="text-slate-500 dark:text-slate-500"> · {hex}</span>{/if}
+      </div>
     </div>
     {#if overridden}
       <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></div>
@@ -134,23 +151,15 @@
             type="text"
             value={localRaw || value}
             oninput={(e) => { localRaw = (e.target as HTMLInputElement).value; }}
-            onblur={() => {
-              if (localRaw.trim()) {
-                onChange(localRaw.trim());
-                localRaw = "";
-              }
-            }}
+            onblur={commitRaw}
             onkeydown={(e) => {
               if (e.key === "Enter") {
-                if (localRaw.trim()) {
-                  onChange(localRaw.trim());
-                  localRaw = "";
-                }
+                commitRaw();
                 (e.currentTarget as HTMLInputElement).blur();
               }
             }}
             class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-[10px] font-mono text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500"
-            placeholder="oklch(0.6 0.15 264)"
+            placeholder="oklch(…) · paste #hex, rgb(), hsl()…"
           />
           {#if overridden}
             <button

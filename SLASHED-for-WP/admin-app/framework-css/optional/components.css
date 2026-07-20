@@ -416,6 +416,56 @@
     box-shadow:    var(--sf-card-shadow, var(--sf-shadow-s));
   }
 
+  /* Card-on-coloured-surface reset (#496).
+     A .sf-card keeps the page/theme surface for its OWN background
+     (--sf-card-bg = --sf-color-surface, which a coloured .sf-surface--* does
+     NOT override — the card stays a light "elevation" island above the colour).
+     But the surface auto-contrast cascade (core/macros.css) re-points
+     --sf-color-text / -heading / -border to contrast with the SURFACE colour,
+     and those inherit into the card, computing its title/body/border for the
+     wrong background (e.g. light-on-light). Re-derive the surface-appropriate
+     tokens on the card from the ambient neutral so its content stays legible
+     against its own background, and set `color` so inherited body text is
+     re-established too.
+
+     Activation is gated on the surface's --sf-surface-active flag via a style
+     query — NOT a `.sf-surface .sf-card` descendant selector — so (a) ordinary
+     cards and [data-theme] cards (handled in core/themes.css) are untouched,
+     (b) a consumer's own --sf-color-heading override on a non-surface ancestor
+     is still inherited (the flag is unset there), and (c) the surface class
+     names don't leak into this component file's generated class reference.
+     SL-001: the light-dark() derivations below mirror core/tokens.css's
+     "Resolved color tokens" block — keep them in sync if the formulas change. */
+  @supports (color: oklch(from red l c h)) {
+    @container style(--sf-surface-active: 1) {
+      .sf-card {
+
+        --sf-color-heading: light-dark(
+          oklch(from var(--sf-color-neutral-source-light) clamp(0.05, calc(l - 0.4 - var(--sf-contrast-bias)), 0.35) c h),
+          oklch(from var(--sf-color-neutral)              clamp(0.70, calc(l + 0.25 + var(--sf-contrast-bias)), 1)    c h));
+        --sf-color-text: var(--sf-color-heading);
+        --sf-color-text--secondary: light-dark(
+          oklch(from var(--sf-color-neutral-source-light) clamp(0.15, calc(l - 0.25 - var(--sf-contrast-bias)), 0.45) c h),
+          oklch(from var(--sf-color-neutral)              clamp(0.55, calc(l + 0.1 + var(--sf-contrast-bias)), 0.90) c h));
+        --sf-color-border: light-dark(
+          oklch(from var(--sf-color-neutral-source-light) clamp(0.70, calc(l + 0.35), 0.95) 0.005 h),
+          oklch(from var(--sf-color-neutral)              clamp(0.25, calc(l - 0.3),  0.55) 0.005 h));
+        --sf-color-border--subtle: light-dark(
+          oklch(from var(--sf-color-neutral-source-light) clamp(0.75, calc(l + 0.4),  0.97) 0.005 h),
+          oklch(from var(--sf-color-neutral)              clamp(0.20, calc(l - 0.38), 0.45) 0.005 h));
+
+        /* Re-seal the :root aliases against the card's restored tokens. */
+        --sf-heading-color:     var(--sf-color-heading);
+        --sf-body-color:        var(--sf-color-text);
+        --sf-card-border-color: var(--sf-color-border);
+
+        /* Body text inherits the `color` property (not a token) from the surface,
+           so re-establish it from the card's restored --sf-color-text. */
+        color: var(--sf-body-color, var(--sf-color-text));
+      }
+    }
+  }
+
   .sf-card__header,
   .sf-card__body,
   .sf-card__footer {

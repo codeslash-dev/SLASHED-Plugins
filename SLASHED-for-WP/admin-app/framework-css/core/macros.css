@@ -286,6 +286,22 @@
       --sf-caret-color:             var(--sf-surface-contrast);
 
       --sf-shadow-color:            oklch(from var(--sf-surface-color) var(--sf-shadow-lightness) c h);
+
+      /* :root-only alias-overrides seal their value at the DECLARING element
+         (var() resolves on :root), so a heading/body that reads the alias
+         reads the frozen page value and ignores this surface's re-declared
+         semantic token above — leaving headings dark on a dark surface.
+         Re-declare the aliases here so they re-resolve against THIS surface's
+         adapted --sf-color-heading / --sf-color-text. Same class of bug as the
+         [data-theme] block in themes.css (#496), extended to heading/body. */
+      --sf-heading-color:           var(--sf-color-heading);
+      --sf-body-color:              var(--sf-color-text);
+
+      /* INTERNAL flag (inherits): signals "inside an auto-contrast surface" so a
+         nested .sf-card can restore surface-appropriate foreground for its own
+         (non-adapting) background via a style query — see .sf-card in
+         optional/components.css (#496). Not a public hook; read, don't set. */
+      --sf-surface-active:          1;
     }
   }
   .sf-scrim {
