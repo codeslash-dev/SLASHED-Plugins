@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-07-20
+
+### Added
+
+- Expose all semantic color tokens in SF color picker
+
+## [0.6.1] - 2026-07-20
+
+### Added
+
+- Expose all semantic color tokens in SF color picker
+
 ## [0.6.0] - 2026-07-19
 ## [0.6.0] - 2026-07-19
 ## [0.5.13] - 2026-07-16
