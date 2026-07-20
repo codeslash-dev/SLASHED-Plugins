@@ -1016,6 +1016,18 @@ li[data-id]:focus-within > .rebemer-badge-host {
   white-space: nowrap;
   min-width: 0;
 }
+/* Token count on a semantic scanner row. `margin-right:auto` claims the free
+   space so the preview strip + chevron sit at the right edge, aligning with
+   the family rows (which use the flexible tagline for the same purpose). */
+.slashed-cp__scan-count {
+  flex: 0 0 auto;
+  margin-right: auto;
+  font: 600 9px/1 var(--rebemer-font);
+  color: var(--rebemer-fg-muted);
+  background: rgb(255 255 255 / .06);
+  border-radius: 999px;
+  padding: 2px 6px;
+}
 .slashed-cp__scan-pre {
   display: flex;
   gap: 3px;
@@ -1061,6 +1073,14 @@ li[data-id]:focus-within > .rebemer-badge-host {
   letter-spacing: 2px;
   color: rgb(255 255 255 / .9);
   text-shadow: 0 1px 3px rgb(0 0 0 / .6);
+}
+
+/* When-to-use blurb shown at the top of an expanded semantic section. */
+.slashed-cp__sem-desc {
+  margin: 0 0 9px;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--rebemer-fg-muted);
 }
 
 .slashed-cp__fam-sec {
