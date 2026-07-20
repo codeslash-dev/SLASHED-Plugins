@@ -9,6 +9,10 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+### Added
+
+- Colour/surface class cheatsheet in the SF color picker (Bricks): a "Classes" view with category tabs that copies utility class names (`.sf-surface--*`, coloured `.sf-btn--*`, `.sf-marker--*`, text/link helpers) to the clipboard
+
 ## [0.6.1] - 2026-07-20
 
 ### Added
