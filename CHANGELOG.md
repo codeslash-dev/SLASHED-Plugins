@@ -9,7 +9,7 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
-### Changed
+### Fixed
 
 - Trim the SF color-picker class cheatsheet to genuinely colour/surface classes — drop `sf-bg-layer` (a layout primitive), `sf-color-pulse` (motion), `sf-text-protect` (legibility overlay) and `sf-surface-bg` (background-image preset)
 
