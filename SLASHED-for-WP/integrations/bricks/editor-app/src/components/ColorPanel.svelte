@@ -30,6 +30,11 @@
     filterModel,
     swatchValue,
   } from '../lib/color-model.js';
+  import {
+    CLASS_CHEATSHEET_GROUPS,
+    cheatsheetCount,
+    filterCheatsheet,
+  } from '../lib/class-cheatsheet.js';
   import ColorSwatch from './ColorSwatch.svelte';
   import Toast from './Toast.svelte';
 
@@ -71,8 +76,22 @@
   let expandedSemantic = $state(null);
   let alphaOpen        = $state(new Set());
 
+  // Top-level view: the colour browser ('colors') or the class cheatsheet
+  // ('classes'). The cheatsheet is a reference — clicking a class copies its
+  // name to the clipboard (never inserts into a colour field, even in picker
+  // mode, since a class isn't a colour value).
+  let view          = $state('colors');
+  let activeClassTab = $state(CLASS_CHEATSHEET_GROUPS[0]?.id ?? null);
+
+  const VIEWS = [
+    { id: 'colors',  label: 'Colors'  },
+    { id: 'classes', label: 'Classes' },
+  ];
+
   // The first N swatches shown as a preview strip on a collapsed semantic row.
   const SEM_PREVIEW = 5;
+
+  const totalClasses = cheatsheetCount();
 
   const fullModel        = $derived(buildColorModel(source?.variables, source?.light, source?.dark));
   const normalizedQuery  = $derived(query.trim());
@@ -88,6 +107,14 @@
   // without searching — not just the curated Quick Use subset.
   const semanticSections = $derived(
     (fullModel.groups.find(g => g.type === 'semantic')?.sections) ?? []
+  );
+
+  // Class cheatsheet, filtered by the same search box as the colour views.
+  const filteredCheatsheet = $derived(filterCheatsheet(normalizedQuery));
+  // When a search hides the active tab entirely, fall back to the first tab
+  // that still has matches so the classes view never renders blank.
+  const activeClassGroup = $derived(
+    filteredCheatsheet.find(g => g.id === activeClassTab) ?? filteredCheatsheet[0] ?? null
   );
 
   // ── Canvas theme preview ─────────────────────────────────────────────────
@@ -163,6 +190,16 @@
     toast = copied
       ? { kind: 'info',  message: `Copied — ${swatch.name}` }
       : { kind: 'error', message: `Couldn't copy ${value}` };
+  }
+
+  // ── Copy a cheatsheet class name ──────────────────────────────────────────
+  // Always copies (never inserts into a colour field) — a class is a reference,
+  // not a colour value, so this behaves the same in reference and picker modes.
+  async function copyClass(name) {
+    const copied = await copyText(name);
+    toast = copied
+      ? { kind: 'info',  message: `Copied — ${name}` }
+      : { kind: 'error', message: `Couldn't copy ${name}` };
   }
 
   // ── Accordion ────────────────────────────────────────────────────────────
@@ -389,18 +426,68 @@
   </header>
 
   <div class="slashed-cp__toolbar">
+    <div class="slashed-cp__seg slashed-cp__seg--view" role="group" aria-label="Panel view">
+      {#each VIEWS as v (v.id)}
+        <button
+          type="button"
+          class="slashed-cp__seg-btn"
+          class:slashed-cp__seg-btn--on={view === v.id}
+          aria-pressed={view === v.id}
+          onclick={() => (view = v.id)}
+        >{v.label}</button>
+      {/each}
+    </div>
     <input
       type="text"
       class="slashed-cp__search"
-      placeholder={`Search ${totalTokens} tokens…`}
+      placeholder={view === 'classes' ? `Search ${totalClasses} classes…` : `Search ${totalTokens} tokens…`}
       bind:value={query}
-      aria-label="Search colour tokens"
+      aria-label={view === 'classes' ? 'Search classes' : 'Search colour tokens'}
     />
   </div>
 
   <div class="slashed-cp__body">
 
-    {#if normalizedQuery}
+    {#if view === 'classes'}
+
+      <!-- ── CLASS CHEATSHEET ─────────────────────────────────────────── -->
+      {#if filteredCheatsheet.length === 0}
+        <p class="slashed-cp__empty">No classes match "{normalizedQuery}".</p>
+      {:else}
+        <div class="slashed-cp__tabs" role="tablist" aria-label="Class categories">
+          {#each filteredCheatsheet as g (g.id)}
+            <button
+              type="button"
+              role="tab"
+              class="slashed-cp__tab"
+              class:slashed-cp__tab--on={activeClassGroup?.id === g.id}
+              aria-selected={activeClassGroup?.id === g.id}
+              onclick={() => (activeClassTab = g.id)}
+            >
+              {g.label}
+              <span class="slashed-cp__tab-count">{g.classes.length}</span>
+            </button>
+          {/each}
+        </div>
+
+        {#if activeClassGroup}
+          {#if activeClassGroup.blurb}
+            <p class="slashed-cp__tab-blurb">{activeClassGroup.blurb}</p>
+          {/if}
+          <ul class="slashed-cp__cls-list">
+            {#each activeClassGroup.classes as c (c.name)}
+              <li>
+                <button type="button" class="slashed-cp__cls-row" title="Copy {c.name}" onclick={() => copyClass(c.name)}>
+                  <code class="slashed-cp__cls-name">{c.name}</code>
+                  <span class="slashed-cp__cls-desc">{c.desc}</span>
+                </button>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      {/if}
+
+    {:else if normalizedQuery}
 
       <!-- ── SEARCH RESULTS ──────────────────────────────────────────── -->
       {#if filtered.groups.length === 0}
@@ -493,14 +580,18 @@
   </div>
 
   <footer class="slashed-cp__footer">
-    {#if mode === 'both'}
+    {#if mode === 'both' && view !== 'classes'}
       <span aria-hidden="true" class="slashed-cp__legend">
         <span class="slashed-cp__legend-sw"></span> light / dark
       </span>
     {/if}
-    <span class="slashed-cp__hint">
-      {pickerMode ? 'Click to insert' : 'Click to copy'} <code>var()</code>
-    </span>
+    {#if view === 'classes'}
+      <span class="slashed-cp__hint">Click to copy class name</span>
+    {:else}
+      <span class="slashed-cp__hint">
+        {pickerMode ? 'Click to insert' : 'Click to copy'} <code>var()</code>
+      </span>
+    {/if}
   </footer>
 </div>
 

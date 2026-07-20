@@ -1152,6 +1152,98 @@ li[data-id]:focus-within > .rebemer-badge-host {
 }
 
 /* =====================================================================
+   Class cheatsheet (Classes view)
+   ---------------------------------------------------------------------
+   A reference list of colour/surface utility classes, grouped into tabs.
+   Clicking a row copies the class name to the clipboard.
+   ===================================================================== */
+
+/* Colors ⇄ Classes view switch — reuses the segmented-control look but
+   sits left-aligned in the (column) toolbar above the search box. */
+.slashed-cp__seg--view { align-self: flex-start; }
+
+/* Category tab strip. */
+.slashed-cp__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 2px 0 10px;
+}
+.slashed-cp__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  background: var(--rebemer-input-bg);
+  border: 1px solid var(--rebemer-input-border);
+  border-radius: 999px;
+  color: var(--rebemer-fg-muted);
+  font: 600 10px/1 var(--rebemer-font);
+  cursor: pointer;
+  transition: color 80ms, border-color 80ms, background 80ms;
+}
+.slashed-cp__tab:hover { color: var(--rebemer-fg); border-color: var(--rebemer-fg-muted); }
+.slashed-cp__tab--on {
+  color: var(--rebemer-bg);
+  background: var(--rebemer-accent);
+  border-color: var(--rebemer-accent);
+}
+.slashed-cp__tab:focus-visible { outline: 2px solid var(--rebemer-accent); outline-offset: 1px; }
+.slashed-cp__tab-count {
+  font-size: 9px;
+  font-weight: 700;
+  opacity: .75;
+}
+
+/* One-line "when to use these" blurb under the tab strip. */
+.slashed-cp__tab-blurb {
+  margin: 0 0 8px;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--rebemer-fg-muted);
+}
+
+/* Class rows — full-width copy buttons. */
+.slashed-cp__cls-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.slashed-cp__cls-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 6px 8px;
+  background: rgb(255 255 255 / .02);
+  border: 1px solid transparent;
+  border-radius: var(--rebemer-radius);
+  color: var(--rebemer-fg);
+  text-align: left;
+  cursor: pointer;
+  transition: background 80ms, border-color 80ms;
+}
+.slashed-cp__cls-row:hover {
+  background: rgb(255 255 255 / .05);
+  border-color: var(--rebemer-input-border);
+}
+.slashed-cp__cls-row:focus-visible { outline: 2px solid var(--rebemer-accent); outline-offset: -2px; }
+.slashed-cp__cls-name {
+  font: 600 11px/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--rebemer-accent);
+  word-break: break-word;
+}
+.slashed-cp__cls-desc {
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--rebemer-fg-muted);
+}
+
+/* =====================================================================
    Variable hint tooltip
    ---------------------------------------------------------------------
    Shown on hover/focus of the "?" icon injected into each SLASHED
