@@ -270,7 +270,9 @@ function compareSemantic(a, b) {
  * @param {string[]} variables Ordered `--sf-color-*` names from the inventory.
  * @param {Record<string,string>} light Light-mode hex map.
  * @param {Record<string,string>} dark  Dark-mode hex map.
- * @returns {{ groups: Array<{ id: string, label: string, type: 'brand'|'status'|'semantic', count: number, sections: Array<{ id: string, label: string, swatches: object[] }> }> }}
+ * @returns {{ groups: Array<{ id: string, label: string, type: 'brand'|'status'|'semantic', count: number, sections: Array<{ id: string, label: string, desc?: string, swatches: object[] }> }> }}
+ *          `desc` is present on the semantic group's sections (the when-to-use
+ *          hint) and absent on brand/status family sections.
  */
 export function buildColorModel(variables, light, dark) {
   const vars = Array.isArray(variables) ? variables : [];
