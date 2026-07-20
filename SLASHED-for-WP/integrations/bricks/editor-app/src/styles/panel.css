@@ -1195,6 +1195,13 @@ li[data-id]:focus-within > .rebemer-badge-host {
   opacity: .75;
 }
 
+/* Tab panel — single shared container whose content swaps per active tab. */
+.slashed-cp__tabpanel:focus-visible {
+  outline: 2px solid var(--rebemer-accent);
+  outline-offset: 2px;
+  border-radius: var(--rebemer-radius);
+}
+
 /* One-line "when to use these" blurb under the tab strip. */
 .slashed-cp__tab-blurb {
   margin: 0 0 8px;

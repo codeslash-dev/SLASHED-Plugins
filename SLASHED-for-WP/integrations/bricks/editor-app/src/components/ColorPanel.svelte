@@ -117,6 +117,19 @@
     filteredCheatsheet.find(g => g.id === activeClassTab) ?? filteredCheatsheet[0] ?? null
   );
 
+  // Keep activeClassTab pointing at a tab that actually exists in the current
+  // (filtered) result set. Without this, searching for a term that filters out
+  // the active tab shows the fallback tab, but clearing the search would snap
+  // back to the now-reappeared original tab the user hasn't looked at since.
+  // Syncing the selection to the displayed group keeps that transition stable.
+  $effect(() => {
+    if (view !== 'classes') return;
+    const groups = filteredCheatsheet;
+    if (groups.length && !groups.some(g => g.id === activeClassTab)) {
+      activeClassTab = groups[0].id;
+    }
+  });
+
   // ── Canvas theme preview ─────────────────────────────────────────────────
   let _canvasOriginal;
   function canvasRoot() {
@@ -459,6 +472,8 @@
             <button
               type="button"
               role="tab"
+              id={`slashed-cp-tab-${g.id}`}
+              aria-controls="slashed-cp-tabpanel"
               class="slashed-cp__tab"
               class:slashed-cp__tab--on={activeClassGroup?.id === g.id}
               aria-selected={activeClassGroup?.id === g.id}
@@ -471,19 +486,27 @@
         </div>
 
         {#if activeClassGroup}
-          {#if activeClassGroup.blurb}
-            <p class="slashed-cp__tab-blurb">{activeClassGroup.blurb}</p>
-          {/if}
-          <ul class="slashed-cp__cls-list">
-            {#each activeClassGroup.classes as c (c.name)}
-              <li>
-                <button type="button" class="slashed-cp__cls-row" title="Copy {c.name}" onclick={() => copyClass(c.name)}>
-                  <code class="slashed-cp__cls-name">{c.name}</code>
-                  <span class="slashed-cp__cls-desc">{c.desc}</span>
-                </button>
-              </li>
-            {/each}
-          </ul>
+          <div
+            class="slashed-cp__tabpanel"
+            role="tabpanel"
+            id="slashed-cp-tabpanel"
+            aria-labelledby={`slashed-cp-tab-${activeClassGroup.id}`}
+            tabindex="0"
+          >
+            {#if activeClassGroup.blurb}
+              <p class="slashed-cp__tab-blurb">{activeClassGroup.blurb}</p>
+            {/if}
+            <ul class="slashed-cp__cls-list">
+              {#each activeClassGroup.classes as c (c.name)}
+                <li>
+                  <button type="button" class="slashed-cp__cls-row" title="Copy {c.name}" onclick={() => copyClass(c.name)}>
+                    <code class="slashed-cp__cls-name">{c.name}</code>
+                    <span class="slashed-cp__cls-desc">{c.desc}</span>
+                  </button>
+                </li>
+              {/each}
+            </ul>
+          </div>
         {/if}
       {/if}
 
