@@ -42,8 +42,6 @@ export const CLASS_CHEATSHEET_GROUPS = [
       { name: 'sf-surface--warning',   desc: 'Surface in the warning status palette.' },
       { name: 'sf-surface--info',      desc: 'Surface in the info status palette.' },
       { name: 'sf-surface--danger',    desc: 'Surface in the danger status palette.' },
-      { name: 'sf-surface-bg',         desc: 'Named background-surface preset composing the --sf-surface-bg-* token set (colour + image + overlay).' },
-      { name: 'sf-bg-layer',           desc: 'Absolutely-positioned cover media sitting behind a parent’s content (auto-promotes the parent to a stacking context).' },
     ],
   },
   {
@@ -72,7 +70,6 @@ export const CLASS_CHEATSHEET_GROUPS = [
     blurb: 'Colour treatments for inline text and links.',
     classes: [
       { name: 'sf-text-gradient', desc: 'Clips a brand gradient to inline text (transparent text over a gradient background).' },
-      { name: 'sf-text-protect',  desc: 'Translucent dark gradient behind text to keep it legible over a light / busy background image.' },
       { name: 'sf-link--subtle',  desc: 'Renders a link in the body text colour instead of the action colour; underline still shows on hover.' },
     ],
   },
@@ -85,14 +82,6 @@ export const CLASS_CHEATSHEET_GROUPS = [
       { name: 'sf-marker--secondary', desc: 'Colours list ::markers with the secondary brand colour.' },
       { name: 'sf-marker--tertiary',  desc: 'Colours list ::markers with the tertiary brand colour.' },
       { name: 'sf-marker--action',    desc: 'Colours list ::markers with the action colour.' },
-    ],
-  },
-  {
-    id: 'effects',
-    label: 'Effects',
-    blurb: 'Colour-driven motion.',
-    classes: [
-      { name: 'sf-color-pulse', desc: 'Gentle colour-pulse animation to draw attention to a changing value (respects reduced-motion).' },
     ],
   },
 ];
