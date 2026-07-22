@@ -53,6 +53,7 @@ const INCLUDE = [
   { src: `${PLUGIN_ROOT}/integrations/bricks/data`,                     dest: 'integrations/bricks/data' },
   { src: `${PLUGIN_ROOT}/integrations/gutenberg/slashed-gutenberg.php`, dest: 'integrations/gutenberg/slashed-gutenberg.php' },
   { src: `${PLUGIN_ROOT}/integrations/gutenberg/includes`,              dest: 'integrations/gutenberg/includes' },
+  { src: `${PLUGIN_ROOT}/integrations/gutenberg/assets`,                dest: 'integrations/gutenberg/assets' },
 ];
 
 function copyRecursive(src, dest) {
