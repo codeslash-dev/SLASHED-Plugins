@@ -28,7 +28,6 @@
   let blur            = $derived(parseNum(overrides["--sf-blur"], 12, "px"));
   let opacityMuted    = $derived(parseNum(overrides["--sf-opacity-muted"], 0.5));
   let opacityDisabled = $derived(parseNum(overrides["--sf-opacity-disabled"], 0.45));
-  let pendingOpacity  = $derived(parseNum(overrides["--sf-state-pending-opacity"], 0.7));
   let scrollbarThumb  = $derived(overrides["--sf-scrollbar-thumb"] ?? "");
   let scrollbarTrack  = $derived(overrides["--sf-scrollbar-track"] ?? "");
 
@@ -84,19 +83,11 @@
         onChange={(v) => onSet("--sf-opacity-disabled", String(v))}
         onReset={() => onReset("--sf-opacity-disabled")}
       />
-      <SliderRow
-        label="Pending opacity" value={pendingOpacity} min={0.1} max={1} step={0.05}
-        help="--sf-state-pending-opacity — opacity of elements in loading/pending state"
-        overridden={"--sf-state-pending-opacity" in overrides}
-        onChange={(v) => onSet("--sf-state-pending-opacity", String(v))}
-        onReset={() => onReset("--sf-state-pending-opacity")}
-      />
       <!-- Opacity preview -->
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2">
         {#each [
           { label: "muted", token: "--sf-opacity-muted", val: opacityMuted },
           { label: "disabled", token: "--sf-opacity-disabled", val: opacityDisabled },
-          { label: "pending", token: "--sf-state-pending-opacity", val: pendingOpacity },
         ] as row (row.label)}
           <div class="flex items-center gap-3">
             <span class="text-[9px] text-slate-400 dark:text-slate-600 w-14">{row.label}</span>

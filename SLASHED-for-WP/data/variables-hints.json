@@ -1399,8 +1399,8 @@
     "description": "Placeholder text color for inputs and textareas.",
     "category": "Core tokens"
   },
-  "sf-color-text--secondary": {
-    "description": "De-emphasised secondary text (captions, labels, supporting copy).",
+  "sf-color-text--subtle": {
+    "description": "De-emphasised, lower-emphasis text (captions, labels, supporting copy). Second tier below --sf-color-text; sits between it and --sf-color-text--muted.",
     "category": "Core tokens"
   },
   "sf-color-warning": {
@@ -1486,10 +1486,6 @@
   "sf-cover-padding": {
     "description": "Inner padding for the cover layout.",
     "category": "Layout tokens"
-  },
-  "sf-current-font-weight": {
-    "description": "Inherits the current font-weight from context. Useful as a reset.",
-    "category": "Core tokens"
   },
   "sf-density": {
     "description": "Compact ↔ comfortable dial for interactive control geometry (the --sf-size-* rung ladder). Default 1; below 1 packs controls tighter (dashboards, data tables), above 1 loosens them. A deliberate design/user choice, not a viewport response — orthogonal to --sf-space-scale (whitespace) and --sf-section-scale (section rhythm). The --sf-touch-target accessibility floor is independent, so a small value can't shrink native controls below the WCAG target. Like the other global multipliers it is a :root dial (the size ladder is computed at :root and inherits, so nested overrides don't retroactively rescale it).",
@@ -2043,24 +2039,8 @@
     "description": "Margin between the imposter overlay and the viewport edges.",
     "category": "Layout tokens"
   },
-  "sf-is-active": {
-    "description": "Integer state flag for the active state. Set to 1 (via JS or .sf-is-active) to drive branching calc() expressions. 0 = default (inactive).",
-    "category": "Core tokens"
-  },
-  "sf-is-current": {
-    "description": "Integer state flag for the current/selected state. Set to 1 (via .sf-is-current) to drive branching calc() expressions. 0 = default.",
-    "category": "Core tokens"
-  },
   "sf-is-dark": {
     "description": "Mode flag — 0 in light mode, 1 in dark mode. Set automatically by [data-theme='dark'] and prefers-color-scheme. Drives dark-mode formula branches in calc().",
-    "category": "Core tokens"
-  },
-  "sf-is-open": {
-    "description": "Integer state flag for the open/expanded state. Set to 1 (via .sf-is-open) to drive branching calc() expressions. 0 = default (closed).",
-    "category": "Core tokens"
-  },
-  "sf-is-pressed": {
-    "description": "Integer state flag for the pressed state. Set to 1 (via .sf-is-pressed) to drive branching calc() expressions. 0 = default.",
     "category": "Core tokens"
   },
   "sf-leading-normal": {
@@ -2569,10 +2549,6 @@
   },
   "sf-stagger-step": {
     "description": "Per-item delay increment for the .sf-stagger utility. One knob retunes the whole staggered sequence; the class multiplies it by each child's index and by --sf-motion-scale.",
-    "category": "Core tokens"
-  },
-  "sf-state-pending-opacity": {
-    "description": "Opacity for pending / loading state elements.",
     "category": "Core tokens"
   },
   "sf-sticky-offset": {

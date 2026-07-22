@@ -25,7 +25,7 @@
 
   const TEXT_OPTS: ColorOpt[] = [
     { label: "Text",            expr: "var(--sf-color-text)" },
-    { label: "Text secondary",  expr: "var(--sf-color-text--secondary)" },
+    { label: "Text secondary",  expr: "var(--sf-color-text--subtle)" },
     { label: "Text muted",      expr: "var(--sf-color-text--muted)" },
     { label: "White",           expr: "#ffffff" },
     { label: "Black",           expr: "#000000" },

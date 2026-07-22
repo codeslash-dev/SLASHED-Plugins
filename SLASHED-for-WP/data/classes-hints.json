@@ -1,58 +1,42 @@
 {
   "sf-is-disabled": {
-    "description": ".sf-is-hidden {",
+    "description": "No .sf-is-readonly here: it duplicated :read-only for real form controls,",
     "category": "States"
   },
-  "sf-is-readonly": {
-    "description": ".sf-is-hidden {",
-    "category": "States"
-  },
-  "sf-is-active": {
+  "sf-is-skeleton": {
     "description": ".sf-is-loading {",
     "category": "States"
   },
   "sf-is-selected": {
-    "description": ".sf-is-loading {",
-    "category": "States"
-  },
-  "sf-is-current": {
-    "description": ".sf-is-loading {",
+    "description": "No .sf-is-active / .sf-is-open / .sf-is-collapsed / .sf-is-expanded /",
     "category": "States"
   },
   "sf-is-highlighted": {
-    "description": ".sf-is-loading {",
-    "category": "States"
-  },
-  "sf-is-pressed": {
-    "description": ".sf-is-loading {",
+    "description": "No .sf-is-active / .sf-is-open / .sf-is-collapsed / .sf-is-expanded /",
     "category": "States"
   },
   "sf-is-valid": {
-    "description": ".sf-is-open {",
+    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
     "category": "States"
   },
   "sf-is-success": {
-    "description": ".sf-is-open {",
+    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
     "category": "States"
   },
   "sf-is-invalid": {
-    "description": ".sf-is-open {",
+    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
     "category": "States"
   },
   "sf-is-error": {
-    "description": ".sf-is-open {",
+    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
     "category": "States"
   },
   "sf-is-warning": {
-    "description": ".sf-is-open {",
+    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
     "category": "States"
   },
   "sf-is-info": {
-    "description": ".sf-is-open {",
-    "category": "States"
-  },
-  "sf-is-danger": {
-    "description": ".sf-is-open {",
+    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
     "category": "States"
   },
   "sf-is-empty": {

@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.25 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.26 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -118,14 +118,13 @@
    theme. */
 @property --sf-is-dark { syntax: "<integer>"; inherits: true; initial-value: 0; }
 
-/* @property — INTERACTION STATE FLAGS */
-/* PUBLIC hooks for Style Queries — safe to set from consumer code, unlike
-   --sf-is-dark above. Allow components to react to states toggled on
-   ancestors via .sf-is-* classes. */
-@property --sf-is-active  { syntax: "<integer>"; inherits: true; initial-value: 0; }
-@property --sf-is-current { syntax: "<integer>"; inherits: true; initial-value: 0; }
-@property --sf-is-pressed { syntax: "<integer>"; inherits: true; initial-value: 0; }
-@property --sf-is-open    { syntax: "<integer>"; inherits: true; initial-value: 0; }
+/* No --sf-is-active/-current/-pressed/-open here: they registered an
+   INTERACTION STATE FLAGS mechanism (inheritable custom properties set by
+   .sf-is-active/.sf-is-open/etc for a consumer's own calc() to branch on)
+   with zero consumers anywhere in this codebase, its demo, or the
+   configurator beyond its own preview toggle — speculative surface,
+   removed. Style off [aria-current]/[aria-expanded]/[aria-pressed]
+   instead; see docs/states.md § "Prefer native state". */
 
 /* ============================================================
    FLUID SCALE ENGINE — generative inputs
@@ -394,10 +393,9 @@
   --sf-shadow-glow-color: var(--sf-color-primary);
 
   /* ----------------------------------------------------------
-     Opacity — disabled and pending state effects
+     Opacity — disabled state effects
      ---------------------------------------------------------- */
   --sf-opacity-disabled:  0.45;
-  --sf-state-pending-opacity: 0.7;
 
   /* ----------------------------------------------------------
      Focus / form colors
@@ -450,7 +448,7 @@
       oklch(from var(--sf-color-neutral-source-light) clamp(0.35, calc(l - var(--sf-contrast-bias)), 0.62) c h),
       oklch(from var(--sf-color-neutral)       clamp(0.48, calc(l + var(--sf-contrast-bias)), 0.74) c h)
     );
-    --sf-color-text--secondary: light-dark(
+    --sf-color-text--subtle: light-dark(
       oklch(from var(--sf-color-neutral-source-light) clamp(0.15, calc(l - 0.25 - var(--sf-contrast-bias)), 0.45) c h),
       oklch(from var(--sf-color-neutral)       clamp(0.55, calc(l + 0.1 + var(--sf-contrast-bias)), 0.90) c h)
     );
@@ -1030,10 +1028,6 @@
      spaces) — do not introduce a third meaning of "interactive". */
   --sf-font-weight-strong:      var(--sf-font-weight-bold);      /* <strong> / emphasis  */
 
-  /* State token — consumed by .sf-is-current in states.css.
-     Override to match your nav design (e.g. semibold for thin fonts). */
-  --sf-current-font-weight: var(--sf-font-weight-bold);
-
   /* ----------------------------------------------------------
      Font sizes — fluid
      ---------------------------------------------------------- */
@@ -1497,7 +1491,7 @@
   /* Global text-contrast knob. Nudges derived reading-text colours
      toward the extremes (darker in light mode, lighter in dark mode).
      Positive = more contrast; 0 = no change. Consumed by
-     --sf-color-text, --sf-color-text--secondary, --sf-color-heading. */
+     --sf-color-text, --sf-color-text--subtle, --sf-color-heading. */
   --sf-contrast-bias:     0;
   /* Lightness crossover for text-on-color auto-contrast. Colours with
      L above this value get dark text; below get light text.
@@ -4259,7 +4253,7 @@ label:has(+ * :required)::after {
     --sf-color-link:              oklch(from var(--sf-surface-contrast) l calc(c + 0.08) h);
     --sf-color-link--hover:       var(--sf-surface-contrast);
     --sf-color-link--underline:   oklch(from var(--sf-surface-contrast) l c h / 0.5);
-    --sf-color-text--secondary:   oklch(from var(--sf-surface-contrast) l c h / 0.70);
+    --sf-color-text--subtle:   oklch(from var(--sf-surface-contrast) l c h / 0.70);
     --sf-color-text--placeholder: oklch(from var(--sf-surface-contrast) l c h / 0.45);
     --sf-color-text--disabled:    oklch(from var(--sf-surface-contrast) l c h / 0.30);
     --sf-color-border:            oklch(from var(--sf-surface-contrast) l c h / 0.20);
@@ -4419,9 +4413,9 @@ label:has(+ * :required)::after {
 
    Most definitions below are STAGED (commented out) — SLASHED is BEM-first
    by design and ships only a curated subset of utility classes; uncomment
-   a block to activate it. The heading, text-size, hover-transform,
-   list-reset, marker-colour, alternate-selection, and sticky blocks
-   are active. */
+   a block to activate it. The visibility, heading, text-size,
+   hover-transform, list-reset, marker-colour, alternate-selection, and
+   sticky blocks are active. */
 
 
 /* Text wrap — per-element override of the global text-wrap defaults
@@ -4437,6 +4431,18 @@ label:has(+ * :required)::after {
 /* .sf-object-top    { object-position: top; } */
 /* .sf-object-center { object-position: center; } */
 /* .sf-object-bottom { object-position: bottom; } */
+
+/* ============================================================
+ * VISIBILITY HELPERS (.sf-invisible / .sf-visible)
+ * Single-property visibility overrides — not a "state" (core/states.css)
+ * since neither reacts to anything on its own; toggle from JS to hide
+ * something without pulling it out of layout (.sf-invisible), or to
+ * force-show an element that inherited visibility:hidden from a parent
+ * (.sf-visible). This is the hook docs/roadmap.md's "reveal on scroll"
+ * pattern targets — pair with an IntersectionObserver in your own code.
+ * ============================================================ */
+.sf-invisible { visibility: hidden; }
+.sf-visible   { visibility: visible; }
 
 /* ============================================================
  * HEADING HELPER CLASSES (.sf-h1 – .sf-h6)
@@ -4635,24 +4641,31 @@ label:has(+ * :required)::after {
 /* SLASHED — core/states.css
    @layer slashed.states
    Generic runtime states toggled by JS or ARIA: visibility, interactivity, selection, busy/current.
-   Prefix: .sf-is-*; not utilities or component-specific variants. */
+   Prefix: .sf-is-*; not utilities or component-specific variants.
+
+   Reach for a native mechanism first — a pseudo-class (:disabled, :read-only,
+   :empty, :user-invalid), a boolean/enumerated attribute ([hidden], [disabled],
+   [readonly]), or an ARIA state ([aria-busy], [aria-current], [aria-expanded],
+   [aria-selected], [aria-pressed]) — since the browser (and assistive tech)
+   already understands it for free. Add a .sf-is-* class only for states with
+   no native equivalent, or ones this file's own tokens/consumers need as a
+   hook (see docs/states.md). See docs/states.md § "Prefer native state" for
+   the full rationale and the [hidden] precedent that got .sf-is-hidden
+   removed in favour of the attribute it duplicated. */
 
 
-/* -- VISIBILITY -- */
+/* No visibility classes here: .sf-is-hidden duplicated [hidden] (removed —
+   core/reset.css hardens that attribute identically). .sf-invisible /
+   .sf-visible moved to optional/utilities.css as single-property helpers
+   (same call as Bulma's is-hidden/is-invisible living under "helpers",
+   not component/state docs) — still the hook docs/roadmap.md's
+   reveal-on-scroll pattern targets, just renamed and relocated. */
 
-.sf-is-hidden {
-  display: none !important;
-}
-
-.sf-is-invisible {
-  visibility: hidden;
-}
-
-.sf-is-visible {
-  visibility: visible;
-}
-
-/* -- INTERACTIVITY -- */
+/* -- INTERACTIVITY --
+   No .sf-is-readonly here: it duplicated :read-only for real form controls,
+   and its pointer-events:none blocked text selection that a genuinely
+   read-only field should still allow — reach for :read-only, or
+   [aria-readonly] on a non-native widget, instead. */
 
 /* cursor: not-allowed inherits to children with pointer-events: auto —
    intentional, part of the .sf-is-disabled API surface. */
@@ -4661,11 +4674,6 @@ label:has(+ * :required)::after {
   pointer-events: none;
 
   cursor:         not-allowed;
-  user-select:    none;
-}
-
-.sf-is-readonly {
-  pointer-events: none;
   user-select:    none;
 }
 
@@ -4697,15 +4705,11 @@ label:has(+ * :required)::after {
   animation: var(--sf-animation-spin);
 }
 
-.sf-is-busy {
-  cursor: progress;
-}
-
-.sf-is-pending {
-
-  opacity: var(--sf-state-pending-opacity);
-  cursor:  progress;
-}
+/* No .sf-is-busy / .sf-is-pending here: both were a couple of
+   property-value declarations (cursor:progress, plus opacity for
+   pending's "optimistic UI" dimming) with no consumer and no native gap
+   they filled — [aria-busy="true"] covers the semantic, and the visual
+   is two lines to hand-roll in your own component CSS if you want it. */
 
 img.sf-is-skeleton,
 .sf-is-skeleton img {
@@ -4727,48 +4731,32 @@ img.sf-is-skeleton,
   user-select:     none;
 }
 
-/* -- ACTIVE / SELECTED / CURRENT -- */
-
-.sf-is-active {
-
-  --sf-is-active: 1;
-}
+/* -- SELECTED / HIGHLIGHTED --
+   No .sf-is-active / .sf-is-open / .sf-is-collapsed / .sf-is-expanded /
+   .sf-is-current / .sf-is-pressed here: these only ever set an
+   inheritable --sf-is-* custom property for a hypothetical consumer
+   calc() to branch on, with zero consumer anywhere in this codebase or
+   its demo. Speculative "might be useful one day" surface, removed —
+   see docs/states.md § "Prefer native state". Reach for [aria-current],
+   [aria-expanded], [aria-pressed] as the styling hook instead; .sf-is-
+   selected / .sf-is-highlighted below cover the two cases (selection,
+   transient emphasis) that still need their own visual. */
 
 .sf-is-selected {
   background-color: var(--sf-color-bg--selected);
-}
-
-.sf-is-current {
-
-  --sf-is-current: 1;
-  font-weight: var(--sf-current-font-weight, var(--sf-font-weight-bold));
 }
 
 .sf-is-highlighted {
   background-color: var(--sf-color-bg--focus);
 }
 
-.sf-is-pressed {
-
-  --sf-is-pressed: 1;
-  background-color: var(--sf-color-bg--selected);
-}
-
-/* -- OPEN / CLOSED -- */
-
-.sf-is-open {
-  --sf-is-open: 1;
-}
-
-.sf-is-collapsed {
-  --sf-is-open: 0;
-}
-
-.sf-is-expanded {
-  --sf-is-open: 1;
-}
-
-/* -- VALIDATION / FEEDBACK -- */
+/* -- VALIDATION / FEEDBACK --
+   No .sf-is-danger here: identical implementation to .sf-is-invalid/
+   .sf-is-error (both only ever wrote --sf-field-*, so it never worked as
+   the "destructive-action context" its own docs described outside a form
+   field) and, per docs/migration.md, visual variants belong in your own
+   component CSS anyway. Use .sf-is-invalid/.sf-is-error, or your own
+   `--danger` variant class, instead. */
 
 .sf-is-valid,
 .sf-is-success {
@@ -4790,11 +4778,6 @@ img.sf-is-skeleton,
 .sf-is-info {
   --sf-field-border-color: var(--sf-color-info);
   --sf-field-text-color:   var(--sf-color-info-strong);
-}
-
-.sf-is-danger {
-  --sf-field-border-color: var(--sf-color-danger);
-  --sf-field-text-color:   var(--sf-color-danger-strong);
 }
 
 /* -- DRAG & DROP -- */
@@ -4944,7 +4927,7 @@ img.sf-is-skeleton,
     --sf-color-danger:  var(--sf-color-danger-source-dark);
 
     --sf-color-text:              oklch(from var(--sf-color-neutral) clamp(0.70, calc(l + 0.25 + var(--sf-contrast-bias)), 1)    c h);
-    --sf-color-text--secondary:   oklch(from var(--sf-color-neutral) clamp(0.55, calc(l + 0.1 + var(--sf-contrast-bias)), 0.90) c h);
+    --sf-color-text--subtle:   oklch(from var(--sf-color-neutral) clamp(0.55, calc(l + 0.1 + var(--sf-contrast-bias)), 0.90) c h);
     --sf-color-text--placeholder: oklch(from var(--sf-color-neutral) clamp(0.35, calc(l - 0.1),  0.65) c h);
     --sf-color-text--disabled:    oklch(from var(--sf-color-neutral) clamp(0.25, calc(l - 0.2),  0.55) c h);
     --sf-color-text--inverse:     oklch(from var(--sf-color-neutral) clamp(0.05, calc(l - 0.4),  0.35) c h);
@@ -5002,7 +4985,7 @@ img.sf-is-skeleton,
     --sf-color-danger:  var(--sf-color-danger-source-light);
 
     --sf-color-text:              oklch(from var(--sf-color-neutral-source-light) clamp(0.05, calc(l - 0.4 - var(--sf-contrast-bias)), 0.35) c h);
-    --sf-color-text--secondary:   oklch(from var(--sf-color-neutral-source-light) clamp(0.15, calc(l - 0.25 - var(--sf-contrast-bias)), 0.45) c h);
+    --sf-color-text--subtle:   oklch(from var(--sf-color-neutral-source-light) clamp(0.15, calc(l - 0.25 - var(--sf-contrast-bias)), 0.45) c h);
     --sf-color-text--placeholder: oklch(from var(--sf-color-neutral-source-light) clamp(0.45, calc(l + 0.15), 0.75) c h);
     --sf-color-text--disabled:    oklch(from var(--sf-color-neutral-source-light) clamp(0.55, calc(l + 0.25), 0.82) c h);
     --sf-color-text--inverse:     oklch(from var(--sf-color-neutral-source-light) clamp(0.85, calc(l + 0.4),  0.98) c h);
@@ -5364,36 +5347,75 @@ img.sf-is-skeleton,
   }
 }
 
-/* Minimum touch targets.
-   .sf-btn is excluded on purpose: it owns a deliberate XS–XL size ladder
-   (--sf-btn-min-height / --sf-size-* rungs) whose default already clears the
-   WCAG 2.2 AA 24px target, and a blanket floor here would silently override
-   that ladder on every touch device — collapsing the whole size scale to
-   44px. Consumers who want the AAA 44px target on buttons opt in explicitly
-   with `--sf-btn-min-height: var(--sf-touch-target)`. Bare <button>s (no
-   .sf-btn) and native form controls keep the floor.
+/* Minimum touch targets — a backstop for genuinely bare, unstyled controls.
+   The floor targets only controls that carry NO class at all. The moment a
+   control has any class it is considered *owned* — by SLASHED itself (.sf-btn
+   owns a deliberate XS–XL size ladder via --sf-btn-min-height / --sf-size-*
+   rungs), by the author, or by a third-party widget (a page-builder hamburger
+   toggle, a plugin control) — and its sizing belongs to whoever put that class
+   there, not to this blanket rule.
 
-   The exclusion is written as [class~="sf-btn"] rather than :not(.sf-btn) on
-   purpose: the class-catalogue tooling masks quoted string literals, so this
-   keeps .sf-btn filed under its home `components` layer instead of being
-   re-attributed to `accessibility`. It is exactly equivalent to :not(.sf-btn)
-   in behaviour and specificity. */
+   Why so conservative: a blanket floor on *every* button/control silently
+   overrode its owners. It collapsed .sf-btn's whole size ladder to one height
+   on touch, and it stretched narrow custom widgets (e.g. a hamburger icon
+   button) to 44px on BOTH axes — at a specificity higher than a single class,
+   so the owner couldn't even override it without !important. Element-level
+   selectors that reach for someone else's markup are the "too aggressive base
+   style" trap; scoping the floor to classless controls keeps it from ever
+   touching markup the framework doesn't own. It extends the "un-styled
+   element" idiom already used for `a:not([class])` in base.
+
+   "Un-styled" here means *no effective class* — no class attribute at all, OR
+   an empty one (`class=""`), which templating/component renderers routinely
+   emit for a control the author never styled. Both keep the floor. The test
+   is written `:not([class]:not([class=""]))` — read it as "not (has a
+   non-empty class)": it excludes only controls carrying a real class token.
+   (A whitespace-only `class=" "` is treated as owned; that pathological case
+   isn't worth widening the selector for.) `:where()` keeps the element list
+   at zero specificity so the whole rule stays a low, easily-reasoned weight.
+
+   Bare `<button>text</button>` and un-classed native controls — almost always
+   the author's own quick markup — keep the WCAG 2.5.5 44px floor on both axes.
+   To opt a control OUT, give it any class. To put the floor back ON an owned
+   control, add the .sf-touch-target opt-in class below, set its own
+   min-block/inline-size, or on .sf-btn use
+   `--sf-btn-min-height: var(--sf-touch-target)`. */
 @media (pointer: coarse) {
-  button:not([class~="sf-btn"]),
-  input[type="button"],
-  input[type="submit"],
-  input[type="reset"],
-  select,
-  summary {
+  :where(
+    button,
+    input[type="button"], input[type="submit"], input[type="reset"],
+    select, summary,
+    input[type="checkbox"], input[type="radio"]
+  ):not([class]:not([class=""])) {
     min-block-size:  var(--sf-touch-target);
     min-inline-size: var(--sf-touch-target);
   }
+}
 
-  input[type="checkbox"],
-  input[type="radio"] {
-    min-block-size:  var(--sf-touch-target);
-    min-inline-size: var(--sf-touch-target);
-  }
+/* .sf-touch-target — the explicit opt-IN counterpart to the class-less floor
+   above. Because the automatic floor deliberately never touches a control
+   that carries a class, put this class on any control you own (a button with
+   your own class, a third-party widget you can add a class to) to guarantee
+   the WCAG 2.5.5 44px minimum hit area on both axes. Unlike the automatic
+   floor it is NOT gated to a coarse pointer — an explicit opt-in is
+   predictable everywhere. Size follows --sf-touch-target, so a wrapper (or
+   the element itself) can retune it locally.
+
+     <button class="my-menu-toggle sf-touch-target" aria-label="Menu">…</button>
+
+   It sets ONLY the two min-size properties — deliberately no `display` — so it
+   never strips a native affordance (e.g. a <summary>'s list-item marker, a
+   control's baseline alignment). It therefore expects a target whose display
+   already honours min-inline-size: buttons and native form controls
+   (inline-block/flex) do. On a purely inline element (a bare <a>) add your own
+   `display: inline-flex` (or inline-block) alongside it.
+
+   No !important: it's a single class (specificity 0,1,0), so your own
+   component rule can still override it when a specific control needs to opt
+   back out. */
+.sf-touch-target {
+  min-block-size:  var(--sf-touch-target);
+  min-inline-size: var(--sf-touch-target);
 }
 
 /* Disabled states */

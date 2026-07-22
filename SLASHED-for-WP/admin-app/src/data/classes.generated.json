@@ -1885,54 +1885,14 @@
       "layer": "slashed.layout"
     },
     {
-      "name": "sf-is-active",
-      "selector": ".sf-is-active",
-      "kind": "state",
-      "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
-      "description": "Active state — applied to the currently interacted-with element (e.g. pressed button, active menu item). Sets --sf-is-active to 1 for calc() branching.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-busy",
-      "selector": ".sf-is-busy",
-      "kind": "state",
-      "category": "State classes",
-      "group": "LOADING / ASYNC FEEDBACK",
-      "description": "Busy state — shows a progress cursor to indicate background processing. Does not mask content; use sf-is-loading when content should be hidden during loading.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-collapsed",
-      "selector": ".sf-is-collapsed",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OPEN / CLOSED",
-      "description": "Collapsed state for disclosure widgets — hides the expandable region. Pair with sf-is-expanded or sf-is-open. Components add transitions.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-current",
-      "selector": ".sf-is-current",
-      "kind": "state",
-      "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
-      "description": "Current/selected state — marks the active page in navigation or the selected item in a list. Sets --sf-is-current to 1 for calc() branching.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-danger",
-      "selector": ".sf-is-danger",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VALIDATION / FEEDBACK",
-      "description": "Danger status state — applies danger color tokens for destructive actions (e.g. a delete confirmation dialog) and form validation errors.",
-      "optional": false,
-      "layer": "slashed.states"
+      "name": "sf-invisible",
+      "selector": ".sf-invisible",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "VISIBILITY HELPERS (.sf-invisible / .sf-visible)",
+      "description": "Visibility helper (optional/utilities.css) — hides the element visually but keeps it in the layout and accessibility tree (visibility: hidden). Not a runtime state: no JS/ARIA condition of its own.",
+      "optional": true,
+      "layer": "slashed.utilities"
     },
     {
       "name": "sf-is-disabled",
@@ -1990,27 +1950,7 @@
       "kind": "state",
       "category": "State classes",
       "group": "VALIDATION / FEEDBACK",
-      "description": "Error state — alias for sf-is-danger. Applies danger color tokens to indicate a validation failure or system error. Visual styling is identical to sf-is-invalid.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-expanded",
-      "selector": ".sf-is-expanded",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OPEN / CLOSED",
-      "description": "Expanded state for disclosure widgets — shows the expandable region. Inverse of sf-is-collapsed. Components add transitions.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-hidden",
-      "selector": ".sf-is-hidden",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VISIBILITY",
-      "description": "Hidden state — removes the element from layout and accessibility tree (display: none !important).",
+      "description": "Error state — general (not form-field-specific) negative feedback. Applies danger color tokens to indicate a validation failure or system error. Visual styling is identical to sf-is-invalid.",
       "optional": false,
       "layer": "slashed.states"
     },
@@ -2019,7 +1959,7 @@
       "selector": ".sf-is-highlighted",
       "kind": "state",
       "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
+      "group": "SELECTED / HIGHLIGHTED",
       "description": "Highlighted state — applies a highlight background. Useful for search result highlighting and keyboard-navigated lists.",
       "optional": false,
       "layer": "slashed.states"
@@ -2045,16 +1985,6 @@
       "layer": "slashed.states"
     },
     {
-      "name": "sf-is-invisible",
-      "selector": ".sf-is-invisible",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VISIBILITY",
-      "description": "Invisible state — hides the element visually but keeps it in the layout and accessibility tree (visibility: hidden).",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
       "name": "sf-is-loading",
       "selector": ".sf-is-loading",
       "kind": "state",
@@ -2065,51 +1995,11 @@
       "layer": "slashed.states"
     },
     {
-      "name": "sf-is-open",
-      "selector": ".sf-is-open",
-      "kind": "state",
-      "category": "State classes",
-      "group": "OPEN / CLOSED",
-      "description": "Open/shown state for modals, dropdowns, and drawers — counterpart to sf-is-collapsed/sf-is-hidden. Sets --sf-is-open to 1 for calc() branching.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-pending",
-      "selector": ".sf-is-pending",
-      "kind": "state",
-      "category": "State classes",
-      "group": "LOADING / ASYNC FEEDBACK",
-      "description": "Pending state for optimistic UI — content remains visible but dimmed while an async request is in flight. Differs from sf-is-loading (which hides content entirely).",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-pressed",
-      "selector": ".sf-is-pressed",
-      "kind": "state",
-      "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
-      "description": "Pressed/toggled-on state for toggle buttons. Sets --sf-is-pressed to 1 for calc() branching and signals the selected state to components.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-readonly",
-      "selector": ".sf-is-readonly",
-      "kind": "state",
-      "category": "State classes",
-      "group": "INTERACTIVITY",
-      "description": "Readonly state — removes pointer events and text selection. Use for fields that display data but cannot be edited.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
       "name": "sf-is-selected",
       "selector": ".sf-is-selected",
       "kind": "state",
       "category": "State classes",
-      "group": "ACTIVE / SELECTED / CURRENT",
+      "group": "SELECTED / HIGHLIGHTED",
       "description": "Selected state — marks an item as selected in a list, table row, or grid cell. Visual specifics (background, border) are applied by component styles.",
       "optional": false,
       "layer": "slashed.states"
@@ -2141,16 +2031,6 @@
       "category": "State classes",
       "group": "VALIDATION / FEEDBACK",
       "description": "Valid state — applies success color tokens to form fields that have passed validation. Visual styling is identical to sf-is-success; the name signals form-field context.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-visible",
-      "selector": ".sf-is-visible",
-      "kind": "state",
-      "category": "State classes",
-      "group": "VISIBILITY",
-      "description": "Visible state — forces the element to be visible (visibility: visible). Use to un-hide an element that inherited visibility: hidden from a parent.",
       "optional": false,
       "layer": "slashed.states"
     },
@@ -3195,6 +3075,16 @@
       "layer": "slashed.themes"
     },
     {
+      "name": "sf-touch-target",
+      "selector": ".sf-touch-target",
+      "kind": "accessibility",
+      "category": "Accessibility",
+      "group": "",
+      "description": ".sf-touch-target — the explicit opt-IN counterpart to the class-less floor above. Because the automatic floor deliberately never touches a control that carries a class, put this class on any control you own (a button with your own class, a third-party widget you can add a class…",
+      "optional": false,
+      "layer": "slashed.accessibility"
+    },
+    {
       "name": "sf-truncate",
       "selector": ".sf-truncate",
       "kind": "macro",
@@ -3203,6 +3093,16 @@
       "description": "Single-line text overflow with ellipsis. Equivalent to the classic text-overflow: ellipsis trio (white-space nowrap, overflow hidden, text-overflow ellipsis).",
       "optional": false,
       "layer": "slashed.macros"
+    },
+    {
+      "name": "sf-visible",
+      "selector": ".sf-visible",
+      "kind": "utility",
+      "category": "Utilities",
+      "group": "VISIBILITY HELPERS (.sf-invisible / .sf-visible)",
+      "description": "Visibility helper (optional/utilities.css) — forces the element to be visible (visibility: visible). Use to un-hide an element that inherited visibility: hidden from a parent.",
+      "optional": true,
+      "layer": "slashed.utilities"
     },
     {
       "name": "skip-link",

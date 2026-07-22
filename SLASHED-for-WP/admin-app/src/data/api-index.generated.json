@@ -2,21 +2,21 @@
   "_sync": {
     "generatedBy": "configurator/scripts/sync-api.mjs",
     "source": "docs/api-index.json",
-    "tokensHash": "2d7e174d5d83",
+    "tokensHash": "d99951a174ca",
     "bundles": [
       "full",
       "optimal"
     ],
     "counts": {
-      "tokens": 747,
+      "tokens": 741,
       "byTier": {
-        "PUBLIC": 693,
-        "PUBLIC-ADVANCED": 53,
+        "PUBLIC": 691,
+        "PUBLIC-ADVANCED": 49,
         "INTERNAL": 1
       },
       "byCategory": {
         "Layout tokens": 53,
-        "Core tokens": 616,
+        "Core tokens": 610,
         "Macro tokens": 32,
         "Component tokens": 46
       }
@@ -7331,14 +7331,14 @@
       ]
     },
     {
-      "name": "--sf-color-text--secondary",
+      "name": "--sf-color-text--subtle",
       "tier": "PUBLIC",
       "role": "consumption",
       "namespace": "color",
       "category": "Core tokens",
       "group": "Text",
       "description": "Semantic text colors for every content role. All tokens adapt to light and dark mode automatically.",
-      "note": "De-emphasised secondary text (captions, labels, supporting copy).",
+      "note": "De-emphasised, lower-emphasis text (captions, labels, supporting copy). Second tier below --sf-color-text; sits between it and --sf-color-text--muted.",
       "value": "light-dark( oklch(from var(--sf-color-neutral-source-light) clamp(0.15, calc(l - 0.25 - var(--sf-contrast-bias)), 0.45) c h), oklch(from var(--sf-color-neutral) clamp(0.55, calc(l + 0.1 + var(--sf-contrast-bias)), 0.90) c h) )",
       "aliasOf": null,
       "registered": false,
@@ -7782,27 +7782,6 @@
       "note": "Inner padding for the cover layout.",
       "value": "var(--sf-section-pad)",
       "aliasOf": "--sf-section-pad",
-      "registered": false,
-      "syntax": null,
-      "fallbackOnly": false,
-      "optional": false,
-      "layer": "slashed.tokens",
-      "bundles": [
-        "full",
-        "optimal"
-      ]
-    },
-    {
-      "name": "--sf-current-font-weight",
-      "tier": "PUBLIC",
-      "role": "consumption",
-      "namespace": "current",
-      "category": "Core tokens",
-      "group": "Font weights",
-      "description": "Numeric font-weight scale plus named aliases for common roles.",
-      "note": "Inherits the current font-weight from context. Useful as a reset.",
-      "value": "var(--sf-font-weight-bold)",
-      "aliasOf": "--sf-font-weight-bold",
       "registered": false,
       "syntax": null,
       "fallbackOnly": false,
@@ -10709,48 +10688,6 @@
       ]
     },
     {
-      "name": "--sf-is-active",
-      "tier": "PUBLIC-ADVANCED",
-      "role": "knob",
-      "namespace": "is",
-      "category": "Core tokens",
-      "group": "INTERACTION STATE FLAGS",
-      "description": "Integer flags toggled by JS or CSS :has() to drive numeric branching in calc() expressions. Set to 1 to activate the state; 0 is the default off state.",
-      "note": "Integer state flag for the active state. Set to 1 (via JS or .sf-is-active) to drive branching calc() expressions. 0 = default (inactive).",
-      "value": "0",
-      "aliasOf": null,
-      "registered": true,
-      "syntax": "<integer>",
-      "fallbackOnly": false,
-      "optional": false,
-      "layer": "slashed.tokens",
-      "bundles": [
-        "full",
-        "optimal"
-      ]
-    },
-    {
-      "name": "--sf-is-current",
-      "tier": "PUBLIC-ADVANCED",
-      "role": "knob",
-      "namespace": "is",
-      "category": "Core tokens",
-      "group": "INTERACTION STATE FLAGS",
-      "description": "Integer flags toggled by JS or CSS :has() to drive numeric branching in calc() expressions. Set to 1 to activate the state; 0 is the default off state.",
-      "note": "Integer state flag for the current/selected state. Set to 1 (via .sf-is-current) to drive branching calc() expressions. 0 = default.",
-      "value": "0",
-      "aliasOf": null,
-      "registered": true,
-      "syntax": "<integer>",
-      "fallbackOnly": false,
-      "optional": false,
-      "layer": "slashed.tokens",
-      "bundles": [
-        "full",
-        "optimal"
-      ]
-    },
-    {
       "name": "--sf-is-dark",
       "tier": "INTERNAL",
       "role": "knob",
@@ -10759,48 +10696,6 @@
       "group": "DARK SOURCE TOKENS (-dark, animatable)",
       "description": "OKLCH dark source tokens for brand and status colors. Registered as typed <color> so scoped [data-theme=\"dark\"] sections inherit correct absolute values rather than an unresolved var() text string.",
       "note": "Mode flag — 0 in light mode, 1 in dark mode. Set automatically by [data-theme='dark'] and prefers-color-scheme. Drives dark-mode formula branches in calc().",
-      "value": "0",
-      "aliasOf": null,
-      "registered": true,
-      "syntax": "<integer>",
-      "fallbackOnly": false,
-      "optional": false,
-      "layer": "slashed.tokens",
-      "bundles": [
-        "full",
-        "optimal"
-      ]
-    },
-    {
-      "name": "--sf-is-open",
-      "tier": "PUBLIC-ADVANCED",
-      "role": "knob",
-      "namespace": "is",
-      "category": "Core tokens",
-      "group": "INTERACTION STATE FLAGS",
-      "description": "Integer flags toggled by JS or CSS :has() to drive numeric branching in calc() expressions. Set to 1 to activate the state; 0 is the default off state.",
-      "note": "Integer state flag for the open/expanded state. Set to 1 (via .sf-is-open) to drive branching calc() expressions. 0 = default (closed).",
-      "value": "0",
-      "aliasOf": null,
-      "registered": true,
-      "syntax": "<integer>",
-      "fallbackOnly": false,
-      "optional": false,
-      "layer": "slashed.tokens",
-      "bundles": [
-        "full",
-        "optimal"
-      ]
-    },
-    {
-      "name": "--sf-is-pressed",
-      "tier": "PUBLIC-ADVANCED",
-      "role": "knob",
-      "namespace": "is",
-      "category": "Core tokens",
-      "group": "INTERACTION STATE FLAGS",
-      "description": "Integer flags toggled by JS or CSS :has() to drive numeric branching in calc() expressions. Set to 1 to activate the state; 0 is the default off state.",
-      "note": "Integer state flag for the pressed state. Set to 1 (via .sf-is-pressed) to drive branching calc() expressions. 0 = default.",
       "value": "0",
       "aliasOf": null,
       "registered": true,
@@ -11198,7 +11093,7 @@
       "namespace": "opacity",
       "category": "Core tokens",
       "group": "Opacity",
-      "description": "Opacity tokens for specific UI states: --sf-opacity-disabled dims non-interactive elements; --sf-state-pending-opacity dims elements in an async/loading state.",
+      "description": "Opacity tokens for specific UI states: --sf-opacity-disabled dims non-interactive elements.",
       "note": "Opacity for disabled UI elements (typically 0.4–0.5).",
       "value": "0.45",
       "aliasOf": null,
@@ -13469,27 +13364,6 @@
       "description": "Complete animation shorthand values — pair named @keyframes with duration and easing. Use directly as animation property values.",
       "note": "Per-item delay increment for the .sf-stagger utility. One knob retunes the whole staggered sequence; the class multiplies it by each child's index and by --sf-motion-scale.",
       "value": "75ms",
-      "aliasOf": null,
-      "registered": false,
-      "syntax": null,
-      "fallbackOnly": false,
-      "optional": false,
-      "layer": "slashed.tokens",
-      "bundles": [
-        "full",
-        "optimal"
-      ]
-    },
-    {
-      "name": "--sf-state-pending-opacity",
-      "tier": "PUBLIC",
-      "role": "knob",
-      "namespace": "state",
-      "category": "Core tokens",
-      "group": "Opacity",
-      "description": "Opacity tokens for specific UI states: --sf-opacity-disabled dims non-interactive elements; --sf-state-pending-opacity dims elements in an async/loading state.",
-      "note": "Opacity for pending / loading state elements.",
-      "value": "0.7",
       "aliasOf": null,
       "registered": false,
       "syntax": null,

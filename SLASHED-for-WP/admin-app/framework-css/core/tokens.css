@@ -111,14 +111,13 @@
      theme. */
   @property --sf-is-dark { syntax: "<integer>"; inherits: true; initial-value: 0; }
 
-  /* @property — INTERACTION STATE FLAGS */
-  /* PUBLIC hooks for Style Queries — safe to set from consumer code, unlike
-     --sf-is-dark above. Allow components to react to states toggled on
-     ancestors via .sf-is-* classes. */
-  @property --sf-is-active  { syntax: "<integer>"; inherits: true; initial-value: 0; }
-  @property --sf-is-current { syntax: "<integer>"; inherits: true; initial-value: 0; }
-  @property --sf-is-pressed { syntax: "<integer>"; inherits: true; initial-value: 0; }
-  @property --sf-is-open    { syntax: "<integer>"; inherits: true; initial-value: 0; }
+  /* No --sf-is-active/-current/-pressed/-open here: they registered an
+     INTERACTION STATE FLAGS mechanism (inheritable custom properties set by
+     .sf-is-active/.sf-is-open/etc for a consumer's own calc() to branch on)
+     with zero consumers anywhere in this codebase, its demo, or the
+     configurator beyond its own preview toggle — speculative surface,
+     removed. Style off [aria-current]/[aria-expanded]/[aria-pressed]
+     instead; see docs/states.md § "Prefer native state". */
 
   /* ============================================================
      FLUID SCALE ENGINE — generative inputs
@@ -387,10 +386,9 @@
     --sf-shadow-glow-color: var(--sf-color-primary);
 
     /* ----------------------------------------------------------
-       Opacity — disabled and pending state effects
+       Opacity — disabled state effects
        ---------------------------------------------------------- */
     --sf-opacity-disabled:  0.45;
-    --sf-state-pending-opacity: 0.7;
 
     /* ----------------------------------------------------------
        Focus / form colors
@@ -443,7 +441,7 @@
         oklch(from var(--sf-color-neutral-source-light) clamp(0.35, calc(l - var(--sf-contrast-bias)), 0.62) c h),
         oklch(from var(--sf-color-neutral)       clamp(0.48, calc(l + var(--sf-contrast-bias)), 0.74) c h)
       );
-      --sf-color-text--secondary: light-dark(
+      --sf-color-text--subtle: light-dark(
         oklch(from var(--sf-color-neutral-source-light) clamp(0.15, calc(l - 0.25 - var(--sf-contrast-bias)), 0.45) c h),
         oklch(from var(--sf-color-neutral)       clamp(0.55, calc(l + 0.1 + var(--sf-contrast-bias)), 0.90) c h)
       );
@@ -1023,10 +1021,6 @@
        spaces) — do not introduce a third meaning of "interactive". */
     --sf-font-weight-strong:      var(--sf-font-weight-bold);      /* <strong> / emphasis  */
 
-    /* State token — consumed by .sf-is-current in states.css.
-       Override to match your nav design (e.g. semibold for thin fonts). */
-    --sf-current-font-weight: var(--sf-font-weight-bold);
-
     /* ----------------------------------------------------------
        Font sizes — fluid
        ---------------------------------------------------------- */
@@ -1490,7 +1484,7 @@
     /* Global text-contrast knob. Nudges derived reading-text colours
        toward the extremes (darker in light mode, lighter in dark mode).
        Positive = more contrast; 0 = no change. Consumed by
-       --sf-color-text, --sf-color-text--secondary, --sf-color-heading. */
+       --sf-color-text, --sf-color-text--subtle, --sf-color-heading. */
     --sf-contrast-bias:     0;
     /* Lightness crossover for text-on-color auto-contrast. Colours with
        L above this value get dark text; below get light text.

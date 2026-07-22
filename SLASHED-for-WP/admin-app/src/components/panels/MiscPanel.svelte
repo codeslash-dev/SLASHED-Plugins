@@ -1,7 +1,6 @@
 <script lang="ts">
   import SliderRow from '../inputs/SliderRow.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
-  import Toggle from '../inputs/Toggle.svelte';
   import Section from '../inputs/Section.svelte';
   import { SIZE_SCALE } from '../../lib/variableScales';
 
@@ -60,7 +59,7 @@
   let showObjectFit = $state(false);
   let showPrint = $state(false);
   let showSafeArea = $state(false);
-  let showStateFlags = $state(false);
+  let showFieldMarker = $state(false);
 
   function getSizeValue(t: typeof SIZE_TOKENS[0]): number {
     return parseNum(overrides[t.token]?.replace("rem",""), t.default);
@@ -456,35 +455,8 @@
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
-  <!-- STATE FLAGS -->
-  <Section title="State flags" bind:open={showStateFlags}>
-      <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
-        Boolean CSS custom property flags (0 = off, 1 = on). Components toggle these to activate state-specific styles.
-        Overriding globally forces all matching elements into that state — useful for testing and demos.
-      </p>
-      <div class="space-y-1.5">
-        {#each [
-          { label: "sf-is-active",  token: "--sf-is-active",  note: "Active/selected state" },
-          { label: "sf-is-current", token: "--sf-is-current", note: "Current page/item" },
-          { label: "sf-is-open",    token: "--sf-is-open",    note: "Open/expanded state" },
-          { label: "sf-is-pressed", token: "--sf-is-pressed", note: "Pressed/depressed state" },
-        ] as f (f.token)}
-          {@const cur = overrides[f.token] ?? "0"}
-          <div class="flex items-center gap-2 py-0.5">
-            <Toggle
-              size="sm"
-              checked={cur === "1"}
-              ariaLabel={f.label}
-              onToggle={() => cur === "1" ? onReset(f.token) : onSet(f.token, "1")}
-            />
-            <span class="text-[9px] font-mono text-slate-700 dark:text-slate-300 w-24 shrink-0">{f.label}</span>
-            <span class="text-[9px] text-slate-400 dark:text-slate-600 flex-1">{f.note}</span>
-            {#if f.token in overrides}
-              <button onclick={() => onReset(f.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
-            {/if}
-          </div>
-        {/each}
-      </div>
+  <!-- FIELD MARKER -->
+  <Section title="Field marker" bind:open={showFieldMarker}>
       <div class="flex items-center gap-2 pt-1">
         <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Required marker</span>
         <input

@@ -49,7 +49,7 @@ export function color(): string {
   const textRoles = well(`<div class="sf-stack sf-stack--xs">
     <span style="color:var(--sf-color-heading);font-size:var(--sf-text-l);font-weight:600">Heading — --sf-color-heading</span>
     <span style="color:var(--sf-color-text)">Body text — --sf-color-text</span>
-    <span style="color:var(--sf-color-text--secondary)">Secondary — --sf-color-text--secondary</span>
+    <span style="color:var(--sf-color-text--subtle)">Secondary — --sf-color-text--subtle</span>
     <span style="color:var(--sf-color-text--muted)">Muted — --sf-color-text--muted</span>
     <a href="#" onclick="event.preventDefault()" style="color:var(--sf-color-link)">Link — --sf-color-link</a>
   </div>`);

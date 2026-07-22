@@ -24,9 +24,9 @@ export function previewSkinCSS(): string {
   return `
     /* Text roles (framework ships no text utilities — these mirror semantic tokens) */
     .pv-eyebrow{font-size:var(--sf-text-xs);font-weight:var(--sf-font-weight-heading);text-transform:uppercase;letter-spacing:0.08em;color:var(--sf-color-text--muted);}
-    .pv-lead{font-size:var(--sf-text-l);color:var(--sf-color-text--secondary);}
+    .pv-lead{font-size:var(--sf-text-l);color:var(--sf-color-text--subtle);}
     .pv-muted{color:var(--sf-color-text--muted);}
-    .pv-secondary{color:var(--sf-color-text--secondary);}
+    .pv-secondary{color:var(--sf-color-text--subtle);}
     .pv-accent{color:var(--sf-color-primary-600);}
     .pv-on-primary{color:var(--sf-color-text--on-primary);}
     .pv-center-text{text-align:center;}
