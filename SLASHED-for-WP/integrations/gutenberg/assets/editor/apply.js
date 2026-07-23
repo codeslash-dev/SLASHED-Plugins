@@ -15,7 +15,8 @@
 
 /** @returns {object|null} The wp.data stores, or null if unavailable. */
 function stores() {
-  const wp = window.wp;
+  const win = typeof window !== 'undefined' ? window : undefined;
+  const wp = win && win.wp;
   if (!wp || !wp.data) return null;
   const select = wp.data.select('core/block-editor');
   const dispatch = wp.data.dispatch('core/block-editor');
