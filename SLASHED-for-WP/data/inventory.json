@@ -3,7 +3,7 @@
     "source": "source (core/ + optional/ token and class files)",
     "counts": {
       "variables": 741,
-      "sf_classes": 305,
+      "sf_classes": 319,
       "is_classes": 0
     }
   },
@@ -946,7 +946,7 @@
     "sf-is-invalid",
     "sf-is-loading",
     "sf-is-selected",
-    "sf-is-skeleton",
+    "sf-is-shimmer",
     "sf-is-success",
     "sf-is-valid",
     "sf-is-warning",
@@ -1055,7 +1055,21 @@
     "sf-theme-transition",
     "sf-touch-target",
     "sf-truncate",
-    "sf-visible"
+    "sf-visible",
+    "sf-width-10",
+    "sf-width-20",
+    "sf-width-30",
+    "sf-width-40",
+    "sf-width-50",
+    "sf-width-60",
+    "sf-width-70",
+    "sf-width-80",
+    "sf-width-90",
+    "sf-width-auto",
+    "sf-width-fit",
+    "sf-width-full",
+    "sf-width-max",
+    "sf-width-min"
   ],
   "is_classes": []
 }

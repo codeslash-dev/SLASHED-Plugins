@@ -3,7 +3,7 @@
     "description": "No .sf-is-readonly here: it duplicated :read-only for real form controls,",
     "category": "States"
   },
-  "sf-is-skeleton": {
+  "sf-is-shimmer": {
     "description": ".sf-is-loading {",
     "category": "States"
   },

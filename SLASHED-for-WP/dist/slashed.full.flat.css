@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.26 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.27 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -3375,6 +3375,24 @@ label:has(+ * :required)::after {
 
 .sf-section--guttered { padding-inline: var(--sf-gutter); }
 .sf-section--guttered .sf-container { padding-inline: 0; }
+/* .sf-content-grid carries the gutter in its own edge tracks
+   (minmax(gutter,1fr)), not in padding — so unlike .sf-container it can't be
+   de-duplicated by zeroing its padding (it has none). Left alone, the
+   section's padding boxes the grid in: content ends up double-guttered and
+   .sf-full-bleed stops at the padding edge instead of the section edge.
+   Drop the section's own padding so the grid spans edge-to-edge and its
+   tracks provide the single gutter; full-bleed then reaches the true edge.
+   Only when the content grid is the SOLE direct child: dropping the section
+   padding is right for the grid but would strip the gutter from any non-grid
+   sibling (a heading, a plain block) that legitimately relies on it — and
+   those two wants are physically irreconcilable (the gutter *is* the section
+   padding that full-bleed must escape). So we restrict to the unambiguous
+   case; a mixed section keeps its padding and behaves exactly as before this
+   rule existed. Direct-child scope also stops a nested grid deeper in the
+   section from stripping the gutter. */
+.sf-section--guttered:has(> .sf-content-grid):not(:has(> :not(.sf-content-grid))) {
+  padding-inline: 0;
+}
 
 .sf-section-group > .sf-section + .sf-section { padding-block-start: 0; }
 
@@ -3909,6 +3927,21 @@ label:has(+ * :required)::after {
 
 .sf-content-grid {
   display: grid;
+  /* Establish the same NAMED inline-size query container as .sf-container
+     (`sf-layout`), not just an anonymous one. .sf-content-grid is a
+     section-level wrapper that REPLACES .sf-container when you need
+     breakout/full-bleed — but .sf-container carries the CQ scope that
+     .sf-grid-cols-* / .sf-bento rely on, and dropping it silently killed
+     those primitives inside a content grid. Matching the name too means a
+     user's `@container sf-layout (…)` rule keeps matching across the swap, so
+     the two wrappers are genuinely interchangeable (anonymous
+     `@container (…)` queries already matched either — the framework's own
+     primitives use those — but a name-targeted query would not have).
+     Safe re SL-034: .sf-content-grid's own tracks are fixed (they never
+     @container-query themselves), so becoming a query container can't create
+     a self-query. Safe re full-bleed: inline-size containment doesn't change
+     track resolution — the `full` track still reaches the wrapper's edges. */
+  container: sf-layout / inline-size;
   grid-template-columns:
     [full-start]
     minmax(var(--sf-gutter), 1fr)
@@ -4624,6 +4657,39 @@ label:has(+ * :required)::after {
 .sf-sticky--l { inset-block-start: calc(var(--sf-sticky-offset, 0) + var(--sf-space-l)); }
 
 /* ============================================================
+ * CONTENT-WIDTH UTILITIES (.sf-width-*)
+ * Constrain an element to a fraction of the content column
+ * (--sf-content-width) and centre it in normal flow. inline-size:100%
+ * lets it shrink below the cap on a narrower parent; margin-inline:auto
+ * absorbs the leftover space to centre it. The keyword variants map to
+ * CSS width keywords: full = 100% uncapped, plus auto / fit-content /
+ * min-content / max-content. Logical properties throughout, so they
+ * follow the writing mode. Centring assumes normal flow — inside a
+ * flex/grid parent, alignment is governed by the container instead.
+ *   <div class="sf-width-50">Half the content width, centred</div>
+ * ============================================================ */
+.sf-width-10, .sf-width-20, .sf-width-30, .sf-width-40, .sf-width-50,
+.sf-width-60, .sf-width-70, .sf-width-80, .sf-width-90 {
+  inline-size:   100%;
+  margin-inline: auto;
+}
+.sf-width-10 { max-inline-size: calc(var(--sf-content-width) * 0.1); }
+.sf-width-20 { max-inline-size: calc(var(--sf-content-width) * 0.2); }
+.sf-width-30 { max-inline-size: calc(var(--sf-content-width) * 0.3); }
+.sf-width-40 { max-inline-size: calc(var(--sf-content-width) * 0.4); }
+.sf-width-50 { max-inline-size: calc(var(--sf-content-width) * 0.5); }
+.sf-width-60 { max-inline-size: calc(var(--sf-content-width) * 0.6); }
+.sf-width-70 { max-inline-size: calc(var(--sf-content-width) * 0.7); }
+.sf-width-80 { max-inline-size: calc(var(--sf-content-width) * 0.8); }
+.sf-width-90 { max-inline-size: calc(var(--sf-content-width) * 0.9); }
+
+.sf-width-full { inline-size: 100%; max-inline-size: none; }
+.sf-width-auto { inline-size: auto; }
+.sf-width-fit  { inline-size: fit-content; }
+.sf-width-min  { inline-size: min-content; }
+.sf-width-max  { inline-size: max-content; }
+
+/* ============================================================
  * OVERFLOW-DEBUG UTILITY (.sf-debug-overflow)
  * Dev-only diagnostic: apply to <body> (or any container) to outline
  * every descendant, making the element causing horizontal page
@@ -4711,12 +4777,16 @@ label:has(+ * :required)::after {
    they filled — [aria-busy="true"] covers the semantic, and the visual
    is two lines to hand-roll in your own component CSS if you want it. */
 
-img.sf-is-skeleton,
-.sf-is-skeleton img {
+/* Shimmer loading placeholder (was .sf-is-skeleton pre-Unreleased; renamed so
+   "skeleton" names only the planned .sf-skeleton component, not a state —
+   see docs/migration.md and roadmap.md #575). The class name now mirrors its
+   driving token, --sf-animation-shimmer. */
+img.sf-is-shimmer,
+.sf-is-shimmer img {
   opacity: 0 !important;
 }
 
-.sf-is-skeleton {
+.sf-is-shimmer {
   color:           transparent !important;
   background:      linear-gradient(
                      90deg,

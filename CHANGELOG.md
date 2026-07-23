@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.5] - 2026-07-23
+
+### Fixed
+
+- Bump js-yaml and fast-uri to patched versions (audit high)
+- Ship the in-editor token panel assets so it actually loads
+
+## [0.6.5] - 2026-07-23
+
+### Fixed
+
+- Bump js-yaml and fast-uri to patched versions (audit high)
+- Ship the in-editor token panel assets so it actually loads
+
 ## [0.6.4] - 2026-07-22
 ## [0.6.4] - 2026-07-22
 ## [0.6.3] - 2026-07-21

@@ -45,6 +45,24 @@
 
   .sf-section--guttered { padding-inline: var(--sf-gutter); }
   .sf-section--guttered .sf-container { padding-inline: 0; }
+  /* .sf-content-grid carries the gutter in its own edge tracks
+     (minmax(gutter,1fr)), not in padding — so unlike .sf-container it can't be
+     de-duplicated by zeroing its padding (it has none). Left alone, the
+     section's padding boxes the grid in: content ends up double-guttered and
+     .sf-full-bleed stops at the padding edge instead of the section edge.
+     Drop the section's own padding so the grid spans edge-to-edge and its
+     tracks provide the single gutter; full-bleed then reaches the true edge.
+     Only when the content grid is the SOLE direct child: dropping the section
+     padding is right for the grid but would strip the gutter from any non-grid
+     sibling (a heading, a plain block) that legitimately relies on it — and
+     those two wants are physically irreconcilable (the gutter *is* the section
+     padding that full-bleed must escape). So we restrict to the unambiguous
+     case; a mixed section keeps its padding and behaves exactly as before this
+     rule existed. Direct-child scope also stops a nested grid deeper in the
+     section from stripping the gutter. */
+  .sf-section--guttered:has(> .sf-content-grid):not(:has(> :not(.sf-content-grid))) {
+    padding-inline: 0;
+  }
 
   .sf-section-group > .sf-section + .sf-section { padding-block-start: 0; }
 
@@ -579,6 +597,21 @@
   
   .sf-content-grid {
     display: grid;
+    /* Establish the same NAMED inline-size query container as .sf-container
+       (`sf-layout`), not just an anonymous one. .sf-content-grid is a
+       section-level wrapper that REPLACES .sf-container when you need
+       breakout/full-bleed — but .sf-container carries the CQ scope that
+       .sf-grid-cols-* / .sf-bento rely on, and dropping it silently killed
+       those primitives inside a content grid. Matching the name too means a
+       user's `@container sf-layout (…)` rule keeps matching across the swap, so
+       the two wrappers are genuinely interchangeable (anonymous
+       `@container (…)` queries already matched either — the framework's own
+       primitives use those — but a name-targeted query would not have).
+       Safe re SL-034: .sf-content-grid's own tracks are fixed (they never
+       @container-query themselves), so becoming a query container can't create
+       a self-query. Safe re full-bleed: inline-size containment doesn't change
+       track resolution — the `full` track still reaches the wrapper's edges. */
+    container: sf-layout / inline-size;
     grid-template-columns:
       [full-start]
       minmax(var(--sf-gutter), 1fr)
