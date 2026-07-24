@@ -2305,6 +2305,16 @@
       "layer": "slashed.layout"
     },
     {
+      "name": "sf-place-center",
+      "selector": ".sf-place-center",
+      "kind": "layout",
+      "category": "Layout primitives",
+      "group": "",
+      "description": "Box-neutral centring primitive: display:grid + place-items:center centres an element's content on both axes without adopting cluster/stack/imposter semantics. Unlike sf-center (which centres itself), this centres the content; give the box a height for block-axis centring. The named form of the display:grid; place-items:center idiom.",
+      "optional": false,
+      "layer": "slashed.layout"
+    },
+    {
       "name": "sf-prose",
       "selector": ".sf-prose",
       "kind": "macro",

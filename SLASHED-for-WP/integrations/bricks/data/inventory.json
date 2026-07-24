@@ -3,7 +3,7 @@
     "source": "source (core/ + optional/ token and class files)",
     "counts": {
       "variables": 741,
-      "sf_classes": 319,
+      "sf_classes": 320,
       "is_classes": 0
     }
   },
@@ -976,6 +976,7 @@
     "sf-overlap-host",
     "sf-overlay",
     "sf-pancake",
+    "sf-place-center",
     "sf-prose",
     "sf-reel",
     "sf-scale-down",

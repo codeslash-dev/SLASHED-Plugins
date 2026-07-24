@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.27 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.28 — slashed.full.flat.css (flat) | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -3574,6 +3574,18 @@ label:has(+ * :required)::after {
   display:        flex;
   flex-direction: column;
   align-items:    center;
+}
+
+/* Place-center — the box-neutral centring primitive. Unlike .sf-center (which
+   centres ITSELF as a max-width wrapper) this centres an element's CONTENT on
+   both axes, and unlike the flow primitives' --center modifiers it imposes no
+   row/column/wrap semantics: a plain element becomes a centring box. It is
+   the framework's named form of the community `display:grid; place-items:
+   center` idiom (cf. Tailwind's place-items-center). Give the box a size
+   (min-block-size / height) for the block-axis centring to have room. */
+.sf-place-center {
+  display:     grid;
+  place-items: center;
 }
 
 
