@@ -42,9 +42,12 @@ class Slashed_REST_Controller {
 						'overrides' => array(
 							'type'                 => 'object',
 							'required'             => true,
+							// Matches Slashed_CSS_Generator::VALUE_MAX_LENGTH — sized to
+							// clear the framework's longest shipped token default so a
+							// hand-tuned clamp() chain isn't rejected at the door.
 							'additionalProperties' => array(
 								'type'      => 'string',
-								'maxLength' => 512,
+								'maxLength' => Slashed_CSS_Generator::VALUE_MAX_LENGTH,
 							),
 						),
 					),
