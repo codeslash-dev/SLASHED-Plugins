@@ -232,7 +232,8 @@ class Slashed_CSS_Generator {
 	/**
 	 * Validate an arbitrary token value for safe emission into a CSS
 	 * declaration. Accepts a colour, a dimension / number / ratio / math
-	 * expression, or a font-family list, and rejects everything else.
+	 * expression, a gradient image, or a font-family list, and rejects
+	 * everything else.
 	 *
 	 * This is the single gate the flat `{ "--sf-*": value }` override map is
 	 * run through (see Slashed_REST_Controller::sanitize_overrides) so that
@@ -260,7 +261,50 @@ class Slashed_CSS_Generator {
 		if ( false !== $candidate ) {
 			return $candidate;
 		}
+		$candidate = self::valid_gradient( $value );
+		if ( false !== $candidate ) {
+			return $candidate;
+		}
 		return self::valid_font_family( $value );
+	}
+
+	/**
+	 * Maximum accepted gradient length, mirroring the `maxLength` the REST
+	 * override schema applies to every value (see
+	 * Slashed_REST_Controller::register_routes) so the emitter can't be made
+	 * to echo an unbounded string written by some other option writer.
+	 */
+	const GRADIENT_MAX_LENGTH = 512;
+
+	/**
+	 * Validate a CSS gradient image: linear/radial/conic (and their repeating-
+	 * variants), which back the --sf-gradient-* and --sf-scrim-gradient tokens
+	 * the Colors panel edits. Values look like
+	 * `linear-gradient(in oklch 135deg, var(--sf-color-secondary), oklch(from var(--sf-color-secondary) calc(l - 0.08) c h))`.
+	 *
+	 * Behind is_css_safe() like every other branch, then held to a restricted
+	 * charset: letters, digits, whitespace and only the punctuation gradient
+	 * syntax needs. Notably absent are `:` and `!`, so no extra declaration or
+	 * `!important` can ride along inside the value.
+	 *
+	 * @param mixed $value Raw gradient input.
+	 * @return string|false
+	 */
+	private static function valid_gradient( $value ) {
+		$v = trim( (string) $value );
+		if ( ! self::is_css_safe( $v ) ) {
+			return false;
+		}
+		if ( strlen( $v ) > self::GRADIENT_MAX_LENGTH ) {
+			return false;
+		}
+		if ( ! preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\s*\(/i', $v ) ) {
+			return false;
+		}
+		if ( ! preg_match( '#^[a-z0-9\s.,%()/_\#*+-]+$#i', $v ) ) {
+			return false;
+		}
+		return $v;
 	}
 
 	/**

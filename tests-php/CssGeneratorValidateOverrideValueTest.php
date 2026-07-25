@@ -34,6 +34,21 @@ final class CssGeneratorValidateOverrideValueTest extends TestCase {
 			'keyword easing'         => array( 'ease-in-out', 'ease-in-out' ),
 			'cubic-bezier easing'    => array( 'cubic-bezier(0.25, 0, 0.15, 1)', 'cubic-bezier(0.25, 0, 0.15, 1)' ),
 			'timeline range'         => array( 'entry 30%', 'entry 30%' ),
+			'brand gradient formula' => array(
+				'linear-gradient(in oklch 135deg, var(--sf-color-secondary), oklch(from var(--sf-color-secondary) calc(l - 0.08) c h))',
+				'linear-gradient(in oklch 135deg, var(--sf-color-secondary), oklch(from var(--sf-color-secondary) calc(l - 0.08) c h))',
+			),
+			'gradient with hex stops' => array(
+				'linear-gradient(in oklch 90deg, #ff00aa, #00ffaa)',
+				'linear-gradient(in oklch 90deg, #ff00aa, #00ffaa)',
+			),
+			'directional fade gradient' => array(
+				'linear-gradient(in oklch to right, transparent, var(--sf-color-bg))',
+				'linear-gradient(in oklch to right, transparent, var(--sf-color-bg))',
+			),
+			'radial gradient'        => array( 'radial-gradient(circle, red, blue)', 'radial-gradient(circle, red, blue)' ),
+			'conic gradient'         => array( 'conic-gradient(from 45deg, red, blue)', 'conic-gradient(from 45deg, red, blue)' ),
+			'repeating gradient'     => array( 'repeating-linear-gradient(45deg, red 0 10px, blue 10px 20px)', 'repeating-linear-gradient(45deg, red 0 10px, blue 10px 20px)' ),
 			'font family list'       => array( '"Inter", sans-serif', '"Inter", sans-serif' ),
 			'var reference'          => array( 'var(--sf-color-brand)', 'var(--sf-color-brand)' ),
 			'trims surrounding space' => array( '  1rem  ', '1rem' ),
@@ -62,6 +77,12 @@ final class CssGeneratorValidateOverrideValueTest extends TestCase {
 			'unbalanced closing paren'       => array( '1) ; } html{' ),
 			'unbalanced opening paren'       => array( 'calc(1rem + 2px' ),
 			'unrecognised keyword-like junk' => array( '!!!not-a-value!!!' ),
+			'gradient with url() stop'       => array( 'linear-gradient(red, url(https://evil.example/x.png))' ),
+			'gradient with important'        => array( 'linear-gradient(red, blue) !important' ),
+			'gradient with extra declaration' => array( 'linear-gradient(red, blue); color: red' ),
+			'gradient with quoted content'   => array( 'linear-gradient(red, "blue")' ),
+			'over-long gradient'             => array( 'linear-gradient(' . str_repeat( 'red, ', 200 ) . 'blue)' ),
+			'not-a-gradient function'        => array( 'evil-gradient(red, blue)' ),
 		);
 	}
 }
