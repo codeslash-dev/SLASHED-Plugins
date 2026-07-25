@@ -58,15 +58,30 @@ final class CssGeneratorDerivedOverridesTest extends TestCase {
 		$this->assertSame( '12px', $d['--sf-border-width-4'] );
 	}
 
-	public function test_motion_scale_expands_durations_and_animation_delays() {
+	public function test_motion_scale_expands_durations() {
 		$d = $this->derive( array( '--sf-motion-scale' => 2 ) );
 
 		$this->assertSame( '200ms', $d['--sf-duration-instant'] );  // 100 * 2
 		$this->assertSame( '1200ms', $d['--sf-duration-slower'] );  // 600 * 2
 		$this->assertSame( '0ms', $d['--sf-duration-none'] );
 		$this->assertSame( '600ms', $d['--sf-theme-transition-duration'] ); // 300 * 2
-		$this->assertSame( '150ms', $d['--sf-animation-delay-1'] );  // 75 * 1 * 2
-		$this->assertSame( '750ms', $d['--sf-animation-delay-5'] );  // 75 * 5 * 2
+	}
+
+	/**
+	 * The five fixed per-index stagger delay tokens this used to derive were
+	 * removed from the framework when .sf-stagger landed, so deriving them
+	 * emitted dead custom properties. Their replacement, --sf-stagger-step, is
+	 * deliberately NOT derived: core/motion.css multiplies it by
+	 * --sf-motion-scale itself, so a pre-scaled derivation would double-apply
+	 * the scale.
+	 */
+	public function test_motion_scale_derives_no_stagger_tokens() {
+		$d = $this->derive( array( '--sf-motion-scale' => 2 ) );
+
+		foreach ( array_keys( $d ) as $name ) {
+			$this->assertStringStartsNotWith( '--sf-animation-delay-', $name );
+		}
+		$this->assertArrayNotHasKey( '--sf-stagger-step', $d );
 	}
 
 	public function test_fractional_scale_keeps_significant_decimals() {

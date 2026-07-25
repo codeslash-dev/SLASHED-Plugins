@@ -42,9 +42,12 @@ class Slashed_REST_Controller {
 						'overrides' => array(
 							'type'                 => 'object',
 							'required'             => true,
+							// Matches Slashed_CSS_Generator::VALUE_MAX_LENGTH — sized to
+							// clear the framework's longest shipped token default so a
+							// hand-tuned clamp() chain isn't rejected at the door.
 							'additionalProperties' => array(
 								'type'      => 'string',
-								'maxLength' => 512,
+								'maxLength' => Slashed_CSS_Generator::VALUE_MAX_LENGTH,
 							),
 						),
 					),
@@ -305,8 +308,8 @@ class Slashed_REST_Controller {
 	 *      (`--` followed by letters, digits and hyphens) — nothing else can
 	 *      become a declaration property.
 	 *   2. The value must pass Slashed_CSS_Generator::validate_override_value(),
-	 *      the same allowlist (colour / dimension / font-family, each behind
-	 *      is_css_safe()) the section-based token path is held to. A value that
+	 *      the same allowlist (colour / dimension / gradient / font-family, each
+	 *      behind is_css_safe()) the section-based token path is held to. A value that
 	 *      fails is dropped, so this map can never carry a `}`, an @-rule, a
 	 *      url(), or any other CSS breakout into storage.
 	 *

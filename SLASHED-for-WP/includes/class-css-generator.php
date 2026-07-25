@@ -168,9 +168,11 @@ class Slashed_CSS_Generator {
 			}
 			$derived['--sf-duration-none']             = '0ms';
 			$derived['--sf-theme-transition-duration'] = self::fmt_num( 300 * $scale ) . 'ms';
-			for ( $i = 1; $i <= 5; $i++ ) {
-				$derived[ '--sf-animation-delay-' . $i ] = self::fmt_num( 75 * $i * $scale ) . 'ms';
-			}
+			// The five fixed per-index stagger delay tokens this used to derive
+			// were removed from the framework when .sf-stagger landed. Their
+			// replacement, --sf-stagger-step, needs no derivation: core/motion.css
+			// multiplies it by --sf-motion-scale itself, so deriving a pre-scaled
+			// value here would apply the scale twice.
 		}
 
 		return $derived;
@@ -202,7 +204,25 @@ class Slashed_CSS_Generator {
 		if ( preg_match( '#[{};]|url\s*\(|image-set\s*\(|@|/\*|\*/|</|\\\\#i', $v ) ) {
 			return false;
 		}
+		if ( ! self::balanced_quotes( $v ) ) {
+			return false;
+		}
 		return self::balanced_parens( $v );
+	}
+
+	/**
+	 * Verify quote characters are paired. An unterminated string such as
+	 * `"Inter` would otherwise be emitted verbatim and swallow every
+	 * declaration after it in the same block until the next quote — the
+	 * emitter writes one declaration per override, so a single stray quote
+	 * could silently void the rest of the user's theme.
+	 *
+	 * @param string $value Candidate value.
+	 * @return bool
+	 */
+	private static function balanced_quotes( $value ) {
+		return 0 === substr_count( $value, '"' ) % 2
+			&& 0 === substr_count( $value, "'" ) % 2;
 	}
 
 	/**
@@ -232,35 +252,254 @@ class Slashed_CSS_Generator {
 	/**
 	 * Validate an arbitrary token value for safe emission into a CSS
 	 * declaration. Accepts a colour, a dimension / number / ratio / math
-	 * expression, or a font-family list, and rejects everything else.
+	 * expression, an easing, a timeline range, a gradient image, a filter
+	 * function, a quoted content string, a font-family list, or a composite
+	 * built out of those parts (shadow lists, transition/animation shorthands,
+	 * two-value positions), and rejects everything else.
 	 *
 	 * This is the single gate the flat `{ "--sf-*": value }` override map is
 	 * run through (see Slashed_REST_Controller::sanitize_overrides) so that
 	 * path can never store a value the strict typed path would refuse. Every
 	 * branch first passes through is_css_safe(), so url()/@-rules/comments/
 	 * HTML/backslash escapes/unbalanced parens are blocked regardless of type.
+	 * The one deliberate exception is valid_quoted_string(), which runs its own
+	 * stricter anchored pattern so a CSS unicode escape (`"\2197"`) stays
+	 * expressible without opening the backslash door for every other type.
 	 *
 	 * @param mixed $value Raw value.
 	 * @return string|false Trimmed value when valid, false to drop it.
 	 */
 	public static function validate_override_value( $value ) {
-		$candidate = self::valid_color( $value );
+		// One length gate for every type, including the bare-keyword branches
+		// that carry no punctuation to bound them.
+		if ( ! is_string( $value ) && ! is_int( $value ) && ! is_float( $value ) ) {
+			return false;
+		}
+		if ( strlen( trim( (string) $value ) ) > self::VALUE_MAX_LENGTH ) {
+			return false;
+		}
+		$candidate = self::valid_scalar( $value );
 		if ( false !== $candidate ) {
 			return $candidate;
 		}
-		$candidate = self::valid_dimension( $value );
+		$candidate = self::valid_font_family( $value );
 		if ( false !== $candidate ) {
 			return $candidate;
 		}
-		$candidate = self::valid_timing_function( $value );
-		if ( false !== $candidate ) {
-			return $candidate;
+		return self::valid_composite( $value );
+	}
+
+	/**
+	 * Validate a single, indivisible value: the building block every other
+	 * branch is made of. Split out of validate_override_value() so
+	 * valid_composite() can re-use exactly the same allowlist per component
+	 * without recursing into itself.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return string|false
+	 */
+	private static function valid_scalar( $value ) {
+		$branches = array(
+			'valid_color',
+			'valid_dimension',
+			'valid_timing_function',
+			'valid_timeline_range',
+			'valid_gradient',
+			'valid_filter',
+			'valid_quoted_string',
+		);
+		foreach ( $branches as $branch ) {
+			$candidate = self::$branch( $value );
+			if ( false !== $candidate ) {
+				return $candidate;
+			}
 		}
-		$candidate = self::valid_timeline_range( $value );
-		if ( false !== $candidate ) {
-			return $candidate;
+		return false;
+	}
+
+	/**
+	 * Maximum accepted length for any single override value, mirroring the
+	 * `maxLength` the REST override schema applies (see
+	 * Slashed_REST_Controller::register_routes) so the emitter can't be made to
+	 * echo an unbounded string written by some other option writer. Sized to
+	 * clear the framework's longest shipped token default (the ~535-char
+	 * clamp() chains behind --sf-text-display-* and --sf-space-*) with room to
+	 * spare, so a user can hand-tune one without it being silently dropped.
+	 */
+	const VALUE_MAX_LENGTH = 1024;
+
+	/**
+	 * Maximum number of components accepted in a composite value. Well above
+	 * the longest shipped shorthand (--sf-transition-enter lists five
+	 * properties × three parts) while bounding pathological input.
+	 */
+	const COMPOSITE_MAX_PARTS = 64;
+
+	/**
+	 * Validate a composite value: a space- and/or comma-separated list whose
+	 * every component is itself an accepted scalar. This is what makes the
+	 * framework's non-scalar tokens editable — box-shadow lists
+	 * (`0 2px 4px 0 oklch(…)`, `inset 0 2px 4px …`), text-shadows, filter
+	 * chains, transition and animation shorthands
+	 * (`sf-fade-in var(--sf-duration-normal) var(--sf-ease-out) both`) and
+	 * two-value positions (`50% 50%`).
+	 *
+	 * Safety is inherited rather than re-argued: a component is only accepted
+	 * if one of the scalar branches accepts it, and each of those is already
+	 * behind is_css_safe(). Splitting is parenthesis-aware, so a nested
+	 * `oklch(from var(--x) l c h / clamp(0, calc(…)))` stays one component
+	 * instead of being torn into fragments that would each fail.
+	 *
+	 * @param mixed $value Raw composite input.
+	 * @return string|false
+	 */
+	private static function valid_composite( $value ) {
+		$v = trim( (string) $value );
+		if ( ! self::is_css_safe( $v ) ) {
+			return false;
 		}
-		return self::valid_font_family( $value );
+		if ( strlen( $v ) > self::VALUE_MAX_LENGTH ) {
+			return false;
+		}
+		$parts = self::split_components( $v );
+		if ( false === $parts || count( $parts ) < 2 ) {
+			return false;
+		}
+		foreach ( $parts as $part ) {
+			if ( false === self::valid_scalar( $part ) ) {
+				return false;
+			}
+		}
+		return $v;
+	}
+
+	/**
+	 * Split a value into components on top-level whitespace and commas,
+	 * ignoring any separator nested inside parentheses.
+	 *
+	 * @param string $value Value known to be is_css_safe().
+	 * @return array|false Components, or false when the part cap is exceeded.
+	 */
+	private static function split_components( $value ) {
+		$parts   = array();
+		$current = '';
+		$depth   = 0;
+		$len     = strlen( $value );
+
+		for ( $i = 0; $i < $len; $i++ ) {
+			$ch = $value[ $i ];
+			if ( '(' === $ch ) {
+				++$depth;
+			} elseif ( ')' === $ch ) {
+				--$depth;
+			}
+			if ( 0 === $depth && ( ' ' === $ch || "\t" === $ch || "\n" === $ch || "\r" === $ch || ',' === $ch ) ) {
+				if ( '' !== $current ) {
+					$parts[] = $current;
+					$current = '';
+					if ( count( $parts ) > self::COMPOSITE_MAX_PARTS ) {
+						return false;
+					}
+				}
+				continue;
+			}
+			$current .= $ch;
+		}
+		if ( '' !== $current ) {
+			$parts[] = $current;
+		}
+
+		return count( $parts ) > self::COMPOSITE_MAX_PARTS ? false : $parts;
+	}
+
+	/**
+	 * Validate a CSS gradient image: linear/radial/conic (and their repeating-
+	 * variants), which back the --sf-gradient-* and --sf-scrim-gradient tokens
+	 * the Colors panel edits. Values look like
+	 * `linear-gradient(in oklch 135deg, var(--sf-color-secondary), oklch(from var(--sf-color-secondary) calc(l - 0.08) c h))`.
+	 *
+	 * Behind is_css_safe() like every other branch, then held to a restricted
+	 * charset: letters, digits, whitespace and only the punctuation gradient
+	 * syntax needs. Notably absent are `:` and `!`, so no extra declaration or
+	 * `!important` can ride along inside the value.
+	 *
+	 * @param mixed $value Raw gradient input.
+	 * @return string|false
+	 */
+	private static function valid_gradient( $value ) {
+		$v = trim( (string) $value );
+		if ( ! self::is_css_safe( $v ) ) {
+			return false;
+		}
+		if ( strlen( $v ) > self::VALUE_MAX_LENGTH ) {
+			return false;
+		}
+		if ( ! preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\s*\(/i', $v ) ) {
+			return false;
+		}
+		if ( ! preg_match( '#^[a-z0-9\s.,%()/_\#*+-]+$#i', $v ) ) {
+			return false;
+		}
+		return $v;
+	}
+
+	/**
+	 * Validate a single CSS filter function — drop-shadow(), blur(), the colour
+	 * adjusters — which back the --sf-drop-shadow-* tokens the Effects panel
+	 * edits directly. Same restricted charset as gradients (no `:`, no `!`);
+	 * multi-filter chains arrive here one component at a time via
+	 * valid_composite().
+	 *
+	 * @param mixed $value Raw filter input.
+	 * @return string|false
+	 */
+	private static function valid_filter( $value ) {
+		$v = trim( (string) $value );
+		if ( ! self::is_css_safe( $v ) ) {
+			return false;
+		}
+		if ( strlen( $v ) > self::VALUE_MAX_LENGTH ) {
+			return false;
+		}
+		if ( ! preg_match( '/^(blur|brightness|contrast|drop-shadow|grayscale|hue-rotate|invert|opacity|saturate|sepia)\s*\(/i', $v ) ) {
+			return false;
+		}
+		if ( ! preg_match( '#^[a-z0-9\s.,%()/_\#*+-]+$#i', $v ) ) {
+			return false;
+		}
+		return $v;
+	}
+
+	/**
+	 * Validate a quoted content string — the `content:` markers behind
+	 * --sf-field-required-marker (`" *"`) and --sf-link-external-marker
+	 * (`" \2197"`).
+	 *
+	 * This is the one branch that does NOT sit behind is_css_safe(), because a
+	 * CSS unicode escape is exactly the backslash form that guard blocks
+	 * wholesale. Instead of loosening the guard for every type, the pattern
+	 * here is anchored and closed: one pair of matching quotes, and inside them
+	 * only printable characters that are not a quote, a backslash, an angle
+	 * bracket or a declaration delimiter — plus well-formed `\<hex>` escapes.
+	 * `<` stays banned so a `</style>` can never break out of the inline style
+	 * element the override CSS is printed into.
+	 *
+	 * @param mixed $value Raw string input.
+	 * @return string|false
+	 */
+	private static function valid_quoted_string( $value ) {
+		$v = trim( (string) $value );
+		if ( '' === $v || strlen( $v ) > self::VALUE_MAX_LENGTH ) {
+			return false;
+		}
+		if ( preg_match( '/[\x00-\x1F\x7F]/', $v ) ) {
+			return false;
+		}
+		$body = '(?:[^"\'\\\\<>{};@]|\\\\[0-9a-f]{1,6}\s?)*';
+		if ( preg_match( '/^"' . $body . '"$/i', $v ) || preg_match( "/^'" . $body . "'$/i", $v ) ) {
+			return $v;
+		}
+		return false;
 	}
 
 	/**
@@ -330,8 +569,11 @@ class Slashed_CSS_Generator {
 		// Functional notation: rgb/hsl/hwb/lab/lch/oklab/oklch/color/color-mix/
 		// light-dark/var. Restrict the body to a safe charset (digits, units,
 		// punctuation used by colour syntax) so nothing unexpected slips in.
+		// `+` and `*` are in the set because relative colour syntax carries
+		// calc() math — the palette ramps are all
+		// `oklch(from var(--x) calc(l + (…) * 0.88) …)`.
 		if ( preg_match( '/^(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|light-dark|var)\s*\(/i', $v )
-			&& preg_match( '#^[a-z0-9\s.,%()/_\#-]+$#i', $v ) ) {
+			&& preg_match( '#^[a-z0-9\s.,%()/_\#*+-]+$#i', $v ) ) {
 			return $v;
 		}
 		// Bare keyword: named colour, currentColor, transparent, inherit, etc.
@@ -366,8 +608,9 @@ class Slashed_CSS_Generator {
 		if ( preg_match( '#^\d+(\.\d+)?\s*/\s*\d+(\.\d+)?$#', $v ) ) {
 			return $v;
 		}
-		// fit-content() and math functions with a restricted charset.
-		if ( preg_match( '/^(fit-content|calc|clamp|min|max|var)\s*\(/i', $v )
+		// fit-content(), math functions and env() with a restricted charset.
+		// env() backs the --sf-safe-* inset knobs.
+		if ( preg_match( '/^(fit-content|calc|clamp|min|max|round|var|env)\s*\(/i', $v )
 			&& preg_match( '#^[a-z0-9\s.,%()/_*+-]+$#i', $v ) ) {
 			return $v;
 		}
