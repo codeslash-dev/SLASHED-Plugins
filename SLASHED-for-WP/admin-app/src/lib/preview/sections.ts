@@ -29,7 +29,7 @@ export function color(): string {
     9,
     ...GRADS.map((g) => specimen(`--sf-gradient-${g}`, `<div class="pv-grad pv-grad--${g}"></div>`)),
   );
-  const surfaceTokens = tokensMatching("--sf-color-surface", "--sf-color-canvas", "--sf-color-inset", "--sf-color-raised")
+  const surfaceTokens = tokensMatching("--sf-color-surface", "--sf-color-inset", "--sf-color-raised")
     .map((t) => t.name);
   const surfaces = grid(
     10,
@@ -118,7 +118,7 @@ export function type(): string {
   const leading = well(`<div class="sf-cluster sf-cluster--m">
     <p style="line-height:var(--sf-leading-tight);max-inline-size:12rem">Tight leading — --sf-leading-tight. Two or three lines of copy to show the rhythm.</p>
     <p style="line-height:var(--sf-leading-normal);max-inline-size:12rem">Normal leading — --sf-leading-normal. Two or three lines of copy to show the rhythm.</p>
-    <p style="line-height:var(--sf-leading-loose);max-inline-size:12rem">Loose leading — --sf-leading-loose. Two or three lines of copy to show the rhythm.</p>
+    <p style="line-height:var(--sf-leading-relaxed);max-inline-size:12rem">Relaxed leading — --sf-leading-relaxed. Two or three lines of copy to show the rhythm.</p>
   </div>`);
   return page(
     "Typography",

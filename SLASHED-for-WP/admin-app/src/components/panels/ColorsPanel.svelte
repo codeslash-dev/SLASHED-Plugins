@@ -57,6 +57,9 @@
     { name: "--sf-gradient-tertiary",  label: "Tertiary",  group: "brand", kind: "angle", space: "oklch", angle: 135, dir: "right",
       stop1: "var(--sf-color-tertiary)",  stop2: "oklch(from var(--sf-color-tertiary) calc(l - 0.08) c h)",
       formula: "linear-gradient(in oklch 135deg, var(--sf-color-tertiary), oklch(from var(--sf-color-tertiary) calc(l - 0.08) c h))" },
+    { name: "--sf-gradient-action",    label: "Action",    group: "brand", kind: "angle", space: "oklch", angle: 135, dir: "right",
+      stop1: "var(--sf-color-action)", stop2: "oklch(from var(--sf-color-action) calc(l - 0.08) c h)",
+      formula: "linear-gradient(in oklch 135deg, var(--sf-color-action), oklch(from var(--sf-color-action) calc(l - 0.08) c h))" },
     { name: "--sf-gradient-brand",     label: "Brand",     group: "brand", kind: "angle", space: "oklch", angle: 135, dir: "right",
       stop1: "var(--sf-color-primary)",   stop2: "oklch(from var(--sf-color-primary) l c calc(h + 30))",
       formula: "linear-gradient(in oklch 135deg, var(--sf-color-primary), oklch(from var(--sf-color-primary) l c calc(h + 30)))" },
@@ -108,7 +111,7 @@
     { name: "--sf-color-info-source-light",    label: "Info",    side: "light", default: "oklch(0.48 0.18 235)", colorKey: "info" },
     { name: "--sf-color-info-source-dark",     label: "Info",    side: "dark",  default: "oklch(0.71 0.162 235)", colorKey: "info" },
     { name: "--sf-color-danger-source-light",  label: "Danger",  side: "light", default: "oklch(0.48 0.22 12)", colorKey: "danger" },
-    { name: "--sf-color-danger-source-dark",   label: "Danger",  side: "dark",  default: "oklch(0.73 0.198 12)", colorKey: "danger" },
+    { name: "--sf-color-danger-source-dark",   label: "Danger",  side: "dark",  default: "oklch(0.71 0.198 12)", colorKey: "danger" },
   ];
 
   // Baked per-step ramp curve — mirrors core/tokens.css: how far each step
@@ -178,11 +181,13 @@
   const PALETTE_COLOR_KEYS = [...BRAND_COLOR_KEYS, "base"];
 
   // Status families (success/warning/info/danger) have NO numeric 50-950
-  // ramp in the framework — only these four derived values actually exist
-  // (core/tokens.css: resolved color + -subtle/-muted alpha washes + a
-  // light-dark() -strong shift). Mirror that here instead of faking a ramp.
+  // ramp in the framework — only these five derived values actually exist
+  // (core/tokens.css: resolved color + -tint/-subtle/-muted alpha washes at
+  // 0.05/0.12/0.3 + a light-dark() -strong shift). Mirror that here instead of
+  // faking a ramp.
   const STATUS_VARIANTS: { label: string; expr: (key: string) => string }[] = [
     { label: "Base",   expr: (k) => `var(--sf-color-${k})` },
+    { label: "Tint",   expr: (k) => `var(--sf-color-${k}-tint)` },
     { label: "Subtle", expr: (k) => `var(--sf-color-${k}-subtle)` },
     { label: "Muted",  expr: (k) => `var(--sf-color-${k}-muted)` },
     { label: "Strong", expr: (k) => `var(--sf-color-${k}-strong)` },

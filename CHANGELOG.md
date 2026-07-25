@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.7] - 2026-07-25
+
+### Fixed
+
+- Stop dropping composite token values in override validation
+- Accept gradient values in token override validation
+
+## [0.6.7] - 2026-07-25
+
+### Fixed
+
+- Stop dropping composite token values in override validation
+- Accept gradient values in token override validation
+
 ## [0.6.6] - 2026-07-24
 ## [0.6.6] - 2026-07-24
 ## [0.6.5] - 2026-07-23

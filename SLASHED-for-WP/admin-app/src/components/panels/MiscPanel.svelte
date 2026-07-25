@@ -23,11 +23,6 @@
     { label: "Tooltip",   token: "--sf-z-tooltip",   note: "Inline tooltips",                     def: 1060 },
   ];
 
-  const SCROLL_BEHAVIORS = [
-    { label: "Smooth", value: "smooth" },
-    { label: "Auto",   value: "auto"   },
-  ];
-
   const SIZE_TOKENS = [
     { label: "XS", token: "--sf-size-xs", default: 1.5 },
     { label: "S",  token: "--sf-size-s",  default: 2   },
@@ -43,14 +38,12 @@
   }
 
   let touchTarget = $derived(parseNum(overrides["--sf-touch-target"], 44, "px"));
-  let scrollBehavior = $derived(overrides["--sf-scroll-behavior"] ?? "smooth");
   let zBaseOffset = $derived(parseNum(overrides["--sf-z-base"], 0));
   let caretColor = $derived(overrides["--sf-caret-color"] ?? "");
   let underlineOffset = $derived(parseNum(overrides["--sf-link-underline-offset"]?.replace("em",""), 0.15));
   let underlineThickness = $derived(overrides["--sf-link-underline-thickness"] ?? "auto");
 
   let showTouchTarget = $state(false);
-  let showScrollBehavior = $state(false);
   let showZIndex = $state(false);
   let showTextSelection = $state(false);
   let showComponentSizes = $state(false);
@@ -88,26 +81,6 @@
           style={`width: var(--sf-touch-target, 2.75rem); height: var(--sf-touch-target, 2.75rem)`}
         ></div>
         <p class="text-[9px] text-slate-400 dark:text-slate-600">Minimum interactive area — ensures accessibility on touch devices.</p>
-      </div>
-  </Section>
-
-  <div class="h-px bg-black/6 dark:bg-white/6"></div>
-
-  <!-- SCROLL BEHAVIOR -->
-  <Section title="Scroll behavior" bind:open={showScrollBehavior}>
-      <div class="flex gap-2">
-        {#each SCROLL_BEHAVIORS as b (b.value)}
-          <button
-            onclick={() => b.value === "smooth" ? onReset("--sf-scroll-behavior") : onSet("--sf-scroll-behavior", b.value)}
-            class={`flex-1 py-2 rounded-lg text-[10px] border transition-all cursor-pointer ${
-              scrollBehavior === b.value
-                ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
-                : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
-            }`}
-          >
-            {b.label}
-          </button>
-        {/each}
       </div>
   </Section>
 

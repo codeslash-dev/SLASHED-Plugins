@@ -10,11 +10,10 @@
   // variant support), so it's derived from the chrome theme directly.
   let optionBg = $derived(themeState.value === 'dark' ? '#16161e' : '#ffffff');
 
-  let { overrides, onSet, onReset, onBulkChange }: {
+  let { overrides, onSet, onReset }: {
     overrides: Record<string, string>;
     onSet: (name: string, value: string) => void;
     onReset: (name: string) => void;
-    onBulkChange: (patch: Record<string, string | null>) => void;
   } = $props();
 
   const DURATIONS = [
@@ -36,18 +35,25 @@
     { label: "Overshoot",  token: "--sf-ease-overshoot", value: "linear(0, 0.6 30%, 1.08 55%, 0.98 75%, 1)",                   preview: "M0,40 C8,40 20,-10 40,0" },
   ];
 
-  const STAGGER_TOKENS = ["--sf-animation-delay-1","--sf-animation-delay-2","--sf-animation-delay-3","--sf-animation-delay-4","--sf-animation-delay-5"];
+  // The five fixed per-index stagger delay tokens were removed when
+  // .sf-stagger landed; the whole sequence is now one knob, and
+  // core/motion.css multiplies it by the child index and --sf-motion-scale.
+  const STAGGER_TOKEN = "--sf-stagger-step";
+  const STAGGER_DEFAULT_MS = 75;
 
   const knobs = KNOBS_BY_DOMAIN["motion"] ?? [];
 
   let scale = $derived((() => { const v = parseFloat(overrides["--sf-motion-scale"] ?? "1"); return isFinite(v) ? v : 1; })());
   let motionDisabled = $derived(overrides["--sf-motion-scale"] === "0");
   let themeTransition = $derived((() => { const v = parseFloat(overrides["--sf-theme-transition-duration"]?.replace("ms","") ?? String(300 * scale)); return isFinite(v) ? v : Math.round(300 * scale); })());
-  let staggerBase = $derived.by(() => {
-    const raw = overrides[STAGGER_TOKENS[0]];
-    if (raw) return parseFloat(raw.replace("ms",""));
-    return 75 * scale;
+  // The stored knob is the un-scaled step; the preview below shows the
+  // effective delay, so --sf-motion-scale is applied for display only.
+  let staggerStep = $derived.by(() => {
+    const raw = overrides[STAGGER_TOKEN];
+    const v = raw ? parseFloat(raw.replace("ms", "")) : NaN;
+    return isFinite(v) ? v : STAGGER_DEFAULT_MS;
   });
+  let staggerOverridden = $derived(STAGGER_TOKEN in overrides);
 
   // Animation demo — user picks which easing + duration to feel.
   let animating = $state(false);
@@ -85,16 +91,12 @@
     }, dur);
   }
 
-  function setStaggerBase(baseMs: number) {
-    const patch: Record<string, string> = {};
-    for (let i = 1; i <= 5; i++) patch[`--sf-animation-delay-${i}`] = `${Math.round(baseMs * i)}ms`;
-    onBulkChange(patch);
+  function setStaggerStep(ms: number) {
+    onSet(STAGGER_TOKEN, `${Math.round(ms)}ms`);
   }
 
   function resetStagger() {
-    const patch: Record<string, null> = {};
-    for (let i = 1; i <= 5; i++) patch[`--sf-animation-delay-${i}`] = null;
-    onBulkChange(patch);
+    onReset(STAGGER_TOKEN);
   }
 </script>
 
@@ -252,27 +254,28 @@
   <!-- STAGGER -->
   <Section title="Stagger" bind:open={showStagger}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
-        One slider sets all five stagger delays (delay-1 through delay-5 are multiples of this base).
+        Put <code class="text-slate-600 dark:text-slate-400">.sf-stagger</code> on a parent and each child's
+        entrance is delayed by its index × this step × the motion scale. One knob retunes the whole sequence.
       </p>
       <div class="group">
         <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">Stagger base</span>
-          {#if STAGGER_TOKENS.some(t => t in overrides)}
+          <span class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">Stagger step</span>
+          {#if staggerOverridden}
             <button onclick={resetStagger} class="text-[9px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer ">reset</button>
           {/if}
         </div>
         <SliderRow
-          label="" value={Math.round(staggerBase)} min={0} max={200} step={5} unit="ms"
-          help="Base unit for --sf-animation-delay-1 through -5"
-          overridden={STAGGER_TOKENS.some(t => t in overrides)}
-          onChange={(v) => setStaggerBase(v)}
+          label="" value={Math.round(staggerStep)} min={0} max={200} step={5} unit="ms"
+          help="--sf-stagger-step — per-child delay unit for .sf-stagger"
+          overridden={staggerOverridden}
+          onChange={(v) => setStaggerStep(v)}
           onReset={resetStagger}
         />
       </div>
       <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-1">
         {#each [1,2,3,4,5] as n (n)}
-          {@const delayMs = Math.round(staggerBase * n)}
-          {@const maxStaggerDelay = Math.round(staggerBase * 5)}
+          {@const delayMs = Math.round(staggerStep * scale * n)}
+          {@const maxStaggerDelay = Math.round(staggerStep * scale * 5)}
           <div class="flex items-center gap-2">
             <span class="text-[9px] font-mono text-slate-400 dark:text-slate-600 w-6">–{n}</span>
             <div class="flex-1 h-1.5 bg-black/8 dark:bg-white/8 rounded-full">

@@ -87,7 +87,7 @@
           {:else if domain === "shadows"}
             <ShadowsPanel {overrides} {onSet} {onReset} />
           {:else if domain === "motion"}
-            <MotionPanel {overrides} {onSet} {onReset} {onBulkChange} />
+            <MotionPanel {overrides} {onSet} {onReset} />
           {:else if domain === "effects"}
             <EffectsPanel {overrides} {onSet} {onReset} />
           {:else if domain === "macros"}
