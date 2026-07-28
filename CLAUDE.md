@@ -134,6 +134,11 @@ browser (not an npm dependency of this repo) and so are wired into neither
   WordPress but works on the standalone configurator. Run:
   `node tests/override-effect-probe.mjs`.
 
+When that probe says every control group is `OK` but a control still does nothing
+on a real site, the conflict is in that page's CSS environment: paste
+`scripts/diagnose-page-tokens.js` into the browser console there and read the
+result with `docs/troubleshooting-token-overrides.md`.
+
 `tests-php/` is a plain PHPUnit suite (`composer phpunit`, wired into CI's
 `quality` job) covering pure/near-pure PHP logic that needs no WordPress
 runtime — CSS parsing, override-value validation, and REST input
