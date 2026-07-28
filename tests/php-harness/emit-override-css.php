@@ -1,5 +1,14 @@
 <?php
 /**
+ * stdout carries nothing but the JSON the probe parses, so PHP diagnostics go to
+ * stderr. Otherwise a single notice raised while loading or running the emitter
+ * interleaves with json_encode()'s output and the probe dies on an opaque
+ * JSON.parse error instead of reporting the actual PHP problem.
+ */
+ini_set( 'display_errors', 'stderr' );
+error_reporting( E_ALL );
+
+/**
  * Standalone harness: runs the real Slashed_CSS_Generator emission path outside
  * a WordPress bootstrap so tests/override-effect-probe.mjs can measure the
  * exact CSS a site would serve for a given set of token overrides.
@@ -47,7 +56,18 @@ function apply_filters( $tag, $value ) {
 	return $value;
 }
 
-$includes = dirname( __DIR__, 2 ) . '/SLASHED-for-WP/includes/';
+function wp_parse_url( $url, $component = -1 ) {
+	return parse_url( $url, $component ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+}
+
+// Slashed_CSS_Loader::layers_enabled() resolves the served bundle URL to decide
+// the layer mode, so point the plugin's path constants at the committed dist/ —
+// the harness then exercises the same resolution a real install performs.
+$plugin = dirname( __DIR__, 2 ) . '/SLASHED-for-WP/';
+define( 'SLASHED_PATH', $plugin );
+define( 'SLASHED_URL', 'https://example.test/wp-content/plugins/slashed/' );
+
+$includes = $plugin . 'includes/';
 require $includes . 'class-settings.php';
 require $includes . 'class-css-loader.php';
 require $includes . 'class-token-store.php';

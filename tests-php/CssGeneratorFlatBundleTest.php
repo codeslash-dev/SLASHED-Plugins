@@ -26,6 +26,15 @@ final class CssGeneratorFlatBundleTest extends TestCase {
 
 	protected function setUp(): void {
 		slashed_test_reset_state();
+		// layers_enabled() resolves the real bundle URL, so the plugin's path
+		// constants have to point at the committed dist/ for the flat and layered
+		// filenames to exist. Per-test process isolation keeps these local.
+		if ( ! defined( 'SLASHED_PATH' ) ) {
+			define( 'SLASHED_PATH', dirname( __DIR__ ) . '/SLASHED-for-WP/' );
+		}
+		if ( ! defined( 'SLASHED_URL' ) ) {
+			define( 'SLASHED_URL', 'https://example.test/wp-content/plugins/slashed/' );
+		}
 		$includes = dirname( __DIR__ ) . '/SLASHED-for-WP/includes/';
 		require_once $includes . 'class-settings.php';
 		require_once $includes . 'class-css-loader.php';
@@ -73,6 +82,29 @@ final class CssGeneratorFlatBundleTest extends TestCase {
 		$this->assertStringContainsString( '--sf-space-ratio-min: 1.618;', $css );
 		$this->assertStringContainsString( '--sf-radius-m: 16px;', $css );
 		$this->assertStringContainsString( '--sf-radius-scale: 2;', $css );
+	}
+
+	/**
+	 * The setting is not the authority — the served bundle is. `slashed/css_bundle_url`
+	 * can point at a bundle css_flat does not describe, and emitting the wrong
+	 * layer mode for it reintroduces exactly the inert-override bug.
+	 *
+	 * @dataProvider provide_bundle_urls
+	 */
+	public function test_layer_mode_is_read_from_the_resolved_bundle_url( $url, $expected ) {
+		$this->assertSame( $expected, Slashed_CSS_Loader::url_layer_mode( $url ) );
+	}
+
+	public function provide_bundle_urls() {
+		return array(
+			'layered, minified'    => array( 'https://x.test/dist/slashed.optimal.min.css', true ),
+			'layered, unminified'  => array( 'https://x.test/dist/slashed.full.css', true ),
+			'flat, minified'       => array( 'https://x.test/dist/slashed.optimal.flat.min.css', false ),
+			'flat, unminified'     => array( 'https://x.test/dist/slashed.full.flat.css', false ),
+			'query string ignored' => array( 'https://x.test/dist/slashed.optimal.flat.min.css?ver=123', false ),
+			'unrecognised name'    => array( 'https://cdn.test/assets/a1b2c3.css', null ),
+			'empty'                => array( '', null ),
+		);
 	}
 
 	public function test_wrap_layer_follows_the_same_switch() {

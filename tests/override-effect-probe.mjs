@@ -108,12 +108,24 @@ const server = http
       res.writeHead(404);
       res.end();
     }
-  })
-  .listen(0);
+  });
+// Bind loopback explicitly: every consumer below is 127.0.0.1, and a bare
+// listen(0) would expose this fixture server on every interface. Passing a host
+// routes through Node's async bind path, so wait for the listening event —
+// server.address() is still null on the tick listen() returns.
+await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const { port } = server.address();
 
 const browser = await chromium.launch();
 let failures = 0;
+
+// A real Chromium process is running from here on, so every exit path — including
+// the missing-bundle bail-out and any throw inside the measurement loop — has to
+// go through cleanup or it leaves an orphaned browser behind.
+async function shutdown() {
+  server.close();
+  await browser.close();
+}
 
 async function measure(page, bundle, overrideCSS) {
   await page.setContent(
@@ -135,47 +147,49 @@ async function measure(page, bundle, overrideCSS) {
   );
 }
 
-for (const flat of [false, true]) {
-  const bundle = `slashed.optimal${flat ? '.flat' : ''}.min.css`;
-  if (!fs.existsSync(path.join(DIST, bundle))) {
-    console.error(`missing bundle: SLASHED-for-WP/dist/${bundle} — run \`npm run sync-dist\``);
-    process.exit(1);
-  }
+try {
+  for (const flat of [false, true]) {
+    const bundle = `slashed.optimal${flat ? '.flat' : ''}.min.css`;
+    if (!fs.existsSync(path.join(DIST, bundle))) {
+      console.error(`missing bundle: SLASHED-for-WP/dist/${bundle} — run \`npm run sync-dist\``);
+      await shutdown();
+      process.exit(1);
+    }
 
-  const css = emit(CASES, { flat });
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  // The framework's transitions would otherwise still be interpolating when the
-  // probe element is measured (the stylesheet lands after first paint), making
-  // colour/size readings differ run to run. Reduced motion collapses them.
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  // Throwaway pass: the very first load fetches the bundle cold, which lands
-  // after first paint and skews the probe element's computed values. Every
-  // later pass reads it from cache, so take the baseline from a warm page.
-  await measure(page, bundle, null);
-  const baseline = await measure(page, bundle, null);
+    const css = emit(CASES, { flat });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    // The framework's transitions would otherwise still be interpolating when the
+    // probe element is measured (the stylesheet lands after first paint), making
+    // colour/size readings differ run to run. Reduced motion collapses them.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    // Throwaway pass: the very first load fetches the bundle cold, which lands
+    // after first paint and skews the probe element's computed values. Every
+    // later pass reads it from cache, so take the baseline from a warm page.
+    await measure(page, bundle, null);
+    const baseline = await measure(page, bundle, null);
 
-  console.log(`\n===== ${bundle}${flat ? '  (flat mode: css_flat = true)' : ''}`);
-  for (const [label, overrideCSS] of Object.entries(css)) {
-    const now = await measure(page, bundle, overrideCSS);
-    const changed = Object.keys(baseline).filter((k) => baseline[k] !== now[k]);
-    const probes = changed.filter((k) => k.startsWith('@probe.'));
-    // The verdict is the live-token diff: it is exact. The computed properties
-    // are reported as a hint about what a user would actually see move.
-    const tokenCount = changed.length - probes.length;
-    const isControl = label === CONTROL_CASE;
-    const ok = isControl ? tokenCount === 0 : tokenCount > 0;
-    if (!ok) failures += 1;
-    console.log(
-      `${tokenCount === 0 ? 'DEAD' : 'OK  '}${ok ? ' ' : '!'}${label.padEnd(38)}` +
-        ` tokens=${String(tokenCount).padStart(3)}` +
-        `  probe=${probes.map((p) => p.slice(7)).join(',') || '-'}`,
-    );
+    console.log(`\n===== ${bundle}${flat ? '  (flat mode: css_flat = true)' : ''}`);
+    for (const [label, overrideCSS] of Object.entries(css)) {
+      const now = await measure(page, bundle, overrideCSS);
+      const changed = Object.keys(baseline).filter((k) => baseline[k] !== now[k]);
+      const probes = changed.filter((k) => k.startsWith('@probe.'));
+      // The verdict is the live-token diff: it is exact. The computed properties
+      // are reported as a hint about what a user would actually see move.
+      const tokenCount = changed.length - probes.length;
+      const isControl = label === CONTROL_CASE;
+      const ok = isControl ? tokenCount === 0 : tokenCount > 0;
+      if (!ok) failures += 1;
+      console.log(
+        `${tokenCount === 0 ? 'DEAD' : 'OK  '}${ok ? ' ' : '!'}${label.padEnd(38)}` +
+          ` tokens=${String(tokenCount).padStart(3)}` +
+          `  probe=${probes.map((p) => p.slice(7)).join(',') || '-'}`,
+      );
+    }
+    await page.close();
   }
-  await page.close();
+} finally {
+  await shutdown();
 }
-
-server.close();
-await browser.close();
 
 if (failures > 0) {
   console.error(

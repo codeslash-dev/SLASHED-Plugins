@@ -66,6 +66,14 @@ if ( ! function_exists( 'apply_filters' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_parse_url' ) ) {
+	// WordPress's wrapper is a straight parse_url() delegate on the PHP versions
+	// this plugin supports; the wrapper exists for pre-5.4.7 compatibility only.
+	function wp_parse_url( $url, $component = -1 ) {
+		return parse_url( $url, $component ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+	}
+}
+
 /**
  * Reset the in-memory option store and the CSS generator's static cache so
  * each option-touching test starts from a clean slate.
