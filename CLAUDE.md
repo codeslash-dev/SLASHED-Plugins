@@ -115,12 +115,24 @@ release.
 | `npm run check` | Verify generated artifacts (class hints, variables hints, vendored admin-app core) aren't stale — exits non-zero on drift, never writes. Needs the framework source (sibling checkout, `.framework`, or `SLASHED_FRAMEWORK_DIR`); CI clones it at the pinned `SLASHED_CSS_REF` and runs this as the per-PR drift gate |
 | `composer phpunit` | Run the PHP unit suite (`tests-php/`) |
 
-`tests/` is `node --test` specs, run automatically by `npm test`, with one
-exception: `tests/playwright-admin.js` is a manual, local-only dev/QA tool —
-it walks the admin SPA and saves screenshots for a human to review, has no
-pass/fail assertions, and isn't wired into `npm test` or CI (no committed
-HTML fixture, needs a locally-running dev server). Run it directly with
-`node tests/playwright-admin.js`; see the file header for prerequisites.
+`tests/` is `node --test` specs, run automatically by `npm test`, with two
+exceptions — both manual, local-only dev/QA tools that need a Playwright
+browser (not an npm dependency of this repo) and so are wired into neither
+`npm test` nor CI. See each file's header for prerequisites.
+
+- `tests/playwright-admin.js` — walks the admin SPA and saves screenshots for
+  a human to review. No pass/fail assertions (also needs a locally-running dev
+  server serving an uncommitted `test-admin.html`). Run:
+  `node tests/playwright-admin.js`.
+- `tests/override-effect-probe.mjs` — answers "which configurator controls
+  actually change anything on the page?". For each control group it asks the
+  real PHP emitter (`tests/php-harness/emit-override-css.php`) for the CSS a
+  site would serve, then diffs every live `--sf-*` token in a headless browser
+  against the un-overridden page, for both the layered and the flat bundle. A
+  control group that changes nothing prints `DEAD` and the run exits non-zero.
+  Reach for this first whenever a configurator control appears to do nothing in
+  WordPress but works on the standalone configurator. Run:
+  `node tests/override-effect-probe.mjs`.
 
 `tests-php/` is a plain PHPUnit suite (`composer phpunit`, wired into CI's
 `quality` job) covering pure/near-pure PHP logic that needs no WordPress

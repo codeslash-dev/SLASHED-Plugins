@@ -63,9 +63,14 @@ class Slashed_Gutenberg_Enqueue {
 		// Bridge the Gutenberg dark-mode toggle to SLASHED's theme system.
 		// Attaches to whichever code enqueued the shared handle.
 		if ( wp_style_is( 'slashed-framework', 'enqueued' ) ) {
+			// Layered only when the served bundle has layers — against a flat bundle
+			// a layered rule can never win, which would leave the bridge inert.
+			$bridge = 'html[data-wp-dark-mode-active]{color-scheme:dark;--sf-is-dark:1}';
 			wp_add_inline_style(
 				'slashed-framework',
-				'@layer slashed.themes{html[data-wp-dark-mode-active]{color-scheme:dark;--sf-is-dark:1}}'
+				class_exists( 'Slashed_CSS_Loader' )
+					? Slashed_CSS_Loader::wrap_layer( 'slashed.themes', $bridge )
+					: '@layer slashed.themes{' . $bridge . '}'
 			);
 		}
 	}

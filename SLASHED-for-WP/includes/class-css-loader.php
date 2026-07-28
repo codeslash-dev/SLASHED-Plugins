@@ -72,6 +72,35 @@ class Slashed_CSS_Loader {
 	}
 
 	/**
+	 * Whether the served bundle carries @layer, so inline CSS added on top of
+	 * the `slashed-framework` handle should be wrapped in a framework layer.
+	 *
+	 * False when the flat variant is enabled: those bundles are the same rules
+	 * with every @layer stripped, and an unlayered declaration beats ANY layered
+	 * one regardless of specificity or source order. Inline CSS that keeps its
+	 * @layer wrapper is therefore silently inert against a flat bundle — which
+	 * is how token overrides and the builder dark-mode bridges stopped reaching
+	 * the page whenever flat mode was switched on.
+	 *
+	 * @return bool
+	 */
+	public static function layers_enabled() {
+		return ! Slashed_Settings::get_css_flat();
+	}
+
+	/**
+	 * Wrap inline CSS in a framework cascade layer, or return it unlayered when
+	 * the flat bundle is being served (see layers_enabled()).
+	 *
+	 * @param string $layer Layer name, e.g. 'slashed.themes'.
+	 * @param string $css   Rules to wrap.
+	 * @return string
+	 */
+	public static function wrap_layer( $layer, $css ) {
+		return self::layers_enabled() ? '@layer ' . $layer . '{' . $css . '}' : $css;
+	}
+
+	/**
 	 * Derive a cache-busting version string for a resolved CSS URL.
 	 *
 	 * Returns the file's mtime when the URL maps to a local file under
