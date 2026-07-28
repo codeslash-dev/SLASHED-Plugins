@@ -97,7 +97,68 @@
   );
   console.groupEnd();
 
-  console.group('4. Verdict');
+  console.group('4. Is the ladder actually generated from the knobs?');
+  // The framework builds every --sf-space-* step from the knobs above:
+  //   step n = lerp(base_min * ratio_min^n, base_max * ratio_max^n, t) * scale
+  // where t is where the current viewport sits in the fluid range. t and the rem
+  // size are unknown here, but they cancel when each step is measured RELATIVE to
+  // step m (n=0) — so the shape of the ladder alone says whether the knobs
+  // produced it. A ladder that fits no t is being declared by something else,
+  // which is the signature of a knob that reads back correctly yet does nothing.
+  const px = (token) => parseFloat(rootStyle.getPropertyValue(token));
+  const STEPS = [['--sf-space-2xs', -3], ['--sf-space-xs', -2], ['--sf-space-s', -1],
+    ['--sf-space-m', 0], ['--sf-space-l', 1], ['--sf-space-xl', 2],
+    ['--sf-space-2xl', 3], ['--sf-space-3xl', 4], ['--sf-space-4xl', 5]];
+  const knob = (token, fallback) => {
+    const v = parseFloat(rootStyle.getPropertyValue(token));
+    return Number.isFinite(v) ? v : fallback;
+  };
+  const aMin = knob('--sf-space-ratio-min', 1.25);
+  const aMax = knob('--sf-space-ratio-max', 1.333);
+  const bMin = knob('--sf-space-base-min', 1);
+  const bMax = knob('--sf-space-base-max', 2);
+  const measured = STEPS.map(([t, n]) => [n, px(t)]).filter(([, v]) => Number.isFinite(v) && v > 0);
+  const base = measured.find(([n]) => n === 0);
+  if (!base || measured.length < 4) {
+    console.warn('Not enough --sf-space-* steps resolved to check the ladder.');
+  } else {
+    const model = (n, t) => {
+      const lo = bMin * aMin ** n;
+      const hi = bMax * aMax ** n;
+      // The framework wraps the interpolation in clamp(lo, …, hi). When the
+      // knobs make lo exceed hi (a mobile ratio steeper than the desktop one,
+      // which the panel allows), CSS clamp() returns its first argument — so
+      // the step pins to lo instead of interpolating. Model that, or a
+      // perfectly healthy page reads as a mismatch at the top of the ladder.
+      if (lo >= hi) return lo;
+      return lo + t * (hi - lo);
+    };
+    let best = { t: 0, worst: Infinity };
+    for (let t = 0; t <= 1.0001; t += 0.0005) {
+      let worst = 0;
+      for (const [n, value] of measured) {
+        const predicted = model(n, t) / model(0, t);
+        worst = Math.max(worst, Math.abs(predicted - value / base[1]) / (value / base[1]));
+      }
+      if (worst < best.worst) best = { t, worst };
+    }
+    const pct = (best.worst * 100).toFixed(1);
+    if (best.worst > 0.02) {
+      console.warn(
+        `The ladder does NOT match the knobs (best fit is still ${pct}% off).\n` +
+          'The concrete --sf-space-* tokens on this page are declared by something\n' +
+          'other than the framework\'s generative CSS, so the base/ratio knobs feed a\n' +
+          'formula whose result is being thrown away — they read back correctly at\n' +
+          ':root and change nothing. Section 2 lists every rule that declares them:\n' +
+          'find the one outside @layer slashed.tokens and remove that source.',
+      );
+    } else {
+      console.log(`Ladder matches the knobs (within ${pct}%) — the scale IS generated from them.`);
+    }
+  }
+  console.groupEnd();
+
+  console.group('5. Verdict');
   const unlayeredOutputs = found.filter(
     (f) => OUTPUTS.includes(f.token) && f.layer.startsWith('(unlayered'),
   );

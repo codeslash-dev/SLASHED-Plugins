@@ -33,11 +33,12 @@ into DevTools.
 Read the output against this table. "Source knob" = `--sf-space-ratio-min` et al;
 "derived output" = `--sf-space-m`, `--sf-space-4xl`, …
 
-| What section 3 shows | What it means | Fix |
+| What the output shows | What it means | Fix |
 |---|---|---|
-| Source knob = your value, derived outputs = defaults | Something declares the concrete output tokens and shadows the knob. Section 2 names it — look for `layer=(unlayered …)`, which beats every `@layer`, or a declaration in a layer after `slashed.overrides`. | Remove that source. If it is another SLASHED copy loaded by a theme/optimizer, stop the duplicate load. |
+| Section 4 says the ladder does NOT match the knobs | The decisive case. The concrete output tokens are declared by something that is not the framework's generative CSS, so the knobs feed a formula whose result is discarded — they read back correctly at `:root` and change nothing. Note this does **not** require the outputs to sit at their defaults: an unrelated hand-set ladder reads as "not default" and still proves the knobs are inert. Section 2 names the declaring rule. | Remove that source. If it is another SLASHED copy loaded by a theme/optimizer, stop the duplicate load. |
+| Source knob = your value, derived outputs = defaults | Same shadowing, in its most obvious form. Section 2 names it — look for `layer=(unlayered …)`, which beats every `@layer`, or a declaration in a layer after `slashed.overrides`. | As above. |
 | Source knob = default value | The override never reached the page. Section 2 will show no `slashed.overrides` declaration. | Page cache or CSS optimizer serving HTML from before the save — purge it. Confirm `<style id="slashed-framework-inline-css">` exists in view-source. |
-| Both moved | The tokens *are* live on the page. | The element you are looking at does not consume them — e.g. the builder sets padding in px. Check the element's own computed padding in DevTools, not the token. |
+| Section 4 says the ladder matches, and the knobs show your values | The tokens *are* live on the page. | The element you are looking at does not consume them — e.g. the builder sets padding in px. Check the element's own computed padding in DevTools, not the token. |
 | Section 1 flags a `.flat.` bundle | Flat bundles carry no `@layer`. The emitter follows this automatically (`Slashed_CSS_Loader::layers_enabled()`), but a *third-party* optimizer that strips `@layer` from the bundle recreates the same mismatch from outside, and the plugin cannot detect that. | Disable the optimizer's layer stripping, or switch the plugin to flat mode deliberately so both sides agree. |
 
 ## 3. Is a concrete value stored in the override map?
