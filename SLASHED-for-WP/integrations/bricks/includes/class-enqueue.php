@@ -37,9 +37,14 @@ class Slashed_Bricks_Enqueue {
 		}
 
 		// Bridge Bricks' dark mode toggle (data-brx-theme attribute) to SLASHED's theme system.
+		// Layered only when the served bundle has layers — against a flat bundle a
+		// layered rule can never win, which would leave the bridge inert.
+		$bridge = '[data-brx-theme="light"]{color-scheme:light;--sf-is-dark:0}[data-brx-theme="dark"]{color-scheme:dark;--sf-is-dark:1}';
 		wp_add_inline_style(
 			'slashed-framework',
-			'@layer slashed.themes{[data-brx-theme="light"]{color-scheme:light;--sf-is-dark:0}[data-brx-theme="dark"]{color-scheme:dark;--sf-is-dark:1}}'
+			class_exists( 'Slashed_CSS_Loader' )
+				? Slashed_CSS_Loader::wrap_layer( 'slashed.themes', $bridge )
+				: '@layer slashed.themes{' . $bridge . '}'
 		);
 	}
 

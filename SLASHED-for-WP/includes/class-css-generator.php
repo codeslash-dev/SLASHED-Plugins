@@ -7,6 +7,10 @@
  * @layer slashed.overrides { :root { ... } } containing only validated,
  * non-empty values. Framework defaults are untouched when no override is set.
  *
+ * The wrapper follows the bundle actually served: the flat bundles carry no
+ * @layer at all, so against those the overrides must be emitted unlayered —
+ * see get_override_css().
+ *
  * @package SLASHED
  */
 
@@ -61,16 +65,55 @@ class Slashed_CSS_Generator {
 			return self::$cache;
 		}
 
-		$css = "@layer slashed.overrides {\n\t:root {\n";
-		foreach ( $declarations as $declaration ) {
-			$css .= "\t\t" . $declaration . "\n";
+		if ( self::use_cascade_layer() ) {
+			$open   = "@layer slashed.overrides {\n\t:root {\n";
+			$indent = "\t\t";
+			$close  = "\t}\n}";
+		} else {
+			$open   = ":root {\n";
+			$indent = "\t";
+			$close  = '}';
 		}
-		$css .= "\t}\n}";
+
+		$css = $open;
+		foreach ( $declarations as $declaration ) {
+			$css .= $indent . $declaration . "\n";
+		}
+		$css .= $close;
 
 		/** @filter slashed/override_css The generated token override CSS string. */
 		self::$cache = apply_filters( 'slashed/override_css', $css );
 
 		return self::$cache;
+	}
+
+	/**
+	 * Whether the override block should be wrapped in @layer slashed.overrides.
+	 *
+	 * The framework's layered bundles declare every token inside
+	 * @layer slashed.tokens and reserve slashed.overrides as the last layer, so
+	 * wrapping is what lets these declarations win — and keeps them from also
+	 * beating the framework's @media-scoped rules (prefers-reduced-motion
+	 * clamps, colour-scheme defaults), which an unlayered block would.
+	 *
+	 * The flat bundles are the same rules with every @layer stripped. Against
+	 * those, an unlayered framework declaration beats ANY layered one no matter
+	 * the source order, so a wrapped block is silently inert: every token
+	 * override — colours, spacing, the modular scales — stops reaching the page.
+	 * Emit unlayered in that case, matching the bundle Slashed_CSS_Loader
+	 * actually serves.
+	 *
+	 * Slashed_CSS_Loader is absent when an integration plugin runs standalone
+	 * (without slashed.php); it can't serve a flat bundle either, so the
+	 * layered wrapper is the correct default there.
+	 *
+	 * @return bool
+	 */
+	private static function use_cascade_layer() {
+		if ( ! class_exists( 'Slashed_CSS_Loader' ) ) {
+			return true;
+		}
+		return Slashed_CSS_Loader::layers_enabled();
 	}
 
 	/**

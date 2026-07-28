@@ -52,6 +52,17 @@ class Slashed_CSS_Loader {
 	 * @return string
 	 */
 	public static function get_url() {
+		// SLASHED_PATH / SLASHED_URL are defined by slashed.php, i.e. only in
+		// unified mode. An integration plugin running standalone loads this class
+		// but resolves its own bundle URL (slashed_{builder}_get_css_url()), so
+		// there is no local bundle to find here — and dereferencing the constants
+		// would be a fatal error. Fall through to the filter with an empty URL,
+		// exactly as a missing bundle file does.
+		if ( ! defined( 'SLASHED_PATH' ) || ! defined( 'SLASHED_URL' ) ) {
+			/** This filter is documented below. */
+			return apply_filters( 'slashed/css_bundle_url', '' );
+		}
+
 		$bundle   = self::get_bundle();
 		$flat     = Slashed_Settings::get_css_flat();
 		$debug    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
@@ -69,6 +80,74 @@ class Slashed_CSS_Loader {
 		 * @param string $url URL to the CSS bundle file.
 		 */
 		return apply_filters( 'slashed/css_bundle_url', $url );
+	}
+
+	/**
+	 * Whether the served bundle carries @layer, so inline CSS added on top of
+	 * the `slashed-framework` handle should be wrapped in a framework layer.
+	 *
+	 * False when the flat variant is enabled: those bundles are the same rules
+	 * with every @layer stripped, and an unlayered declaration beats ANY layered
+	 * one regardless of specificity or source order. Inline CSS that keeps its
+	 * @layer wrapper is therefore silently inert against a flat bundle — which
+	 * is how token overrides and the builder dark-mode bridges stopped reaching
+	 * the page whenever flat mode was switched on.
+	 *
+	 * Layer support is a property of the bundle actually served, not of the
+	 * setting: `slashed/css_bundle_url` can serve a bundle the css_flat setting
+	 * does not describe, and getting that backwards reintroduces the very bug
+	 * this method exists to prevent (layered overrides over a flat bundle, or
+	 * unlayered rules outranking the framework's @media-scoped rules over a
+	 * layered one). So the resolved URL decides whenever it is recognisably one
+	 * of SLASHED's own bundles, and the setting is only the fallback for a URL
+	 * this cannot read — a CDN path with an arbitrary name, say. Hosts serving
+	 * such a bundle should state its layer mode via `slashed/css_layers_enabled`
+	 * rather than rely on the fallback.
+	 *
+	 * @return bool
+	 */
+	public static function layers_enabled() {
+		$url     = self::get_url();
+		$mode    = '' === $url ? null : self::url_layer_mode( $url );
+		$enabled = null === $mode ? ! Slashed_Settings::get_css_flat() : $mode;
+
+		/**
+		 * Filter whether the served bundle supports @layer.
+		 *
+		 * @param bool   $enabled Whether inline framework CSS should be layered.
+		 * @param string $url     The resolved bundle URL this was derived from.
+		 */
+		return (bool) apply_filters( 'slashed/css_layers_enabled', $enabled, $url );
+	}
+
+	/**
+	 * Layer mode implied by a bundle URL's filename.
+	 *
+	 * Pure and side-effect free so the naming contract can be tested directly.
+	 *
+	 * @param string $url Resolved bundle URL.
+	 * @return bool|null True when the name is a layered SLASHED bundle, false for
+	 *                   a flat one, null when the name is not one this recognises.
+	 */
+	public static function url_layer_mode( $url ) {
+		$path = wp_parse_url( (string) $url, PHP_URL_PATH );
+		$name = is_string( $path ) ? basename( $path ) : '';
+		if ( ! preg_match( '/^slashed\.[a-z0-9-]+(\.flat)?(\.min)?\.css$/i', $name, $m ) ) {
+			return null;
+		}
+		return empty( $m[1] );
+	}
+
+	/**
+	 * Wrap inline CSS in a framework cascade layer, or return it unlayered when
+	 * the flat bundle is being served (see layers_enabled()).
+	 *
+	 * @param string $layer Layer name, e.g. 'slashed.themes'.
+	 * @param string $css   Rules to wrap.
+	 * @return string
+	 */
+	public static function wrap_layer( $layer, $css ) {
+		return self::layers_enabled() ? '@layer ' . $layer . '{' . $css . '}' : $css;
 	}
 
 	/**
