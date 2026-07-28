@@ -56,6 +56,15 @@
       // Note: a plain CSSStyleRule also exposes .cssRules (CSS nesting), so the
       // declaration check must come first and recursion must not be an else-branch.
       if (rule.style) {
+        // Only a rule that actually matches the root element can affect the
+        // tokens read at :root. Builders reset long lists of custom properties
+        // on their own components (Bricks' frontend-layer.min.css sets dozens of
+        // --sf-* to `unset` on .brxe-* selectors); those rows are informative but
+        // must never be reported as shadowing the scale.
+        let matchesRoot = false;
+        try {
+          matchesRoot = !!rule.selectorText && document.documentElement.matches(rule.selectorText);
+        } catch { /* unsupported selector — treat as non-matching */ }
         for (const token of WATCH) {
           const value = rule.style.getPropertyValue(token);
           if (!value) continue;
@@ -65,6 +74,7 @@
             important: rule.style.getPropertyPriority(token) === 'important',
             layer: layer || '(unlayered — beats every layer)',
             selector: rule.selectorText,
+            atRoot: matchesRoot,
             sheet: sheetLabel,
           });
         }
@@ -149,8 +159,8 @@
           'The concrete --sf-space-* tokens on this page are declared by something\n' +
           'other than the framework\'s generative CSS, so the base/ratio knobs feed a\n' +
           'formula whose result is being thrown away — they read back correctly at\n' +
-          ':root and change nothing. Section 2 lists every rule that declares them:\n' +
-          'find the one outside @layer slashed.tokens and remove that source.',
+          ':root and change nothing. Section 5 names the source; section 2 lists every\n' +
+          'rule that declares them.',
       );
     } else {
       console.log(`Ladder matches the knobs (within ${pct}%) — the scale IS generated from them.`);
@@ -159,10 +169,16 @@
   console.groupEnd();
 
   console.group('5. Verdict');
-  const unlayeredOutputs = found.filter(
-    (f) => OUTPUTS.includes(f.token) && f.layer.startsWith('(unlayered'),
+  // A concrete output token declared at :root anywhere later than the framework's
+  // own generative rules shadows the scale. That covers both an unlayered
+  // third-party rule and — the common case — a stale concrete value stored in the
+  // plugin's own override map, which lands in @layer slashed.overrides.
+  const shadowing = found.filter(
+    (f) => OUTPUTS.includes(f.token) && f.atRoot && !/slashed\.tokens/.test(f.layer),
   );
-  const overrideRules = found.filter((f) => /overrides/.test(f.layer));
+  const fromOverrideMap = shadowing.filter((f) => /slashed\.overrides/.test(f.layer));
+  const foreign = shadowing.filter((f) => !/slashed\.overrides/.test(f.layer));
+  const overrideRules = found.filter((f) => /overrides/.test(f.layer) && f.atRoot);
   if (!overrideRules.length) {
     console.warn(
       'No declaration in @layer slashed.overrides (or unlayered override block) was found.\n' +
@@ -171,15 +187,28 @@
         '<style id="slashed-framework-inline-css"> block.',
     );
   }
-  if (unlayeredOutputs.length) {
+  if (fromOverrideMap.length) {
     console.warn(
-      'Concrete --sf-space-* output tokens are declared UNLAYERED on this page.\n' +
-        'Unlayered wins over every @layer, so these shadow the modular-scale knobs\n' +
-        'no matter what the configurator saves. Offending rules:',
+      'Concrete --sf-space-* values are stored in the PLUGIN\'S OWN override map\n' +
+        '(they are emitted into @layer slashed.overrides at :root, after the\n' +
+        'framework\'s generative rules, so they win). This is why the base and ratio\n' +
+        'knobs read back correctly and change nothing: an explicit per-step value\n' +
+        'takes precedence over the knob that would have generated it, by design.\n' +
+        'These are usually left over from an older settings page or an imported\n' +
+        'theme. Inspect with:  wp option get slashed_overrides --format=json\n' +
+        'and remove the --sf-space-* step keys (keep the base/ratio/scale knobs).\n' +
+        'Shadowing declarations:',
     );
-    console.table(unlayeredOutputs);
+    console.table(fromOverrideMap);
   }
-  if (overrideRules.length && !unlayeredOutputs.length) {
+  if (foreign.length) {
+    console.warn(
+      'Concrete --sf-space-* output tokens are declared at :root by CSS outside the\n' +
+        'framework, which shadows the modular-scale knobs. Offending rules:',
+    );
+    console.table(foreign);
+  }
+  if (overrideRules.length && !shadowing.length) {
     console.log(
       'Overrides are present and nothing unlayered is shadowing the output tokens.\n' +
         'Compare section 3: if a source knob shows your value but the derived outputs\n' +

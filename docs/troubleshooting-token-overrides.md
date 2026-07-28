@@ -43,16 +43,27 @@ Read the output against this table. "Source knob" = `--sf-space-ratio-min` et al
 
 ## 3. Is a concrete value stored in the override map?
 
+This is the cause that has actually been observed in the field, so check it
+early — the diagnostic's section 5 calls it out by name.
+
 ```bash
 wp option get slashed_overrides --format=json
 ```
 
-An explicit output token in the map (say `--sf-space-m`) **beats the scale knob
-by design** — fine-tuning wins over the knob that generated it, in both the JS
-preview and the PHP emitter (`array_merge($derived, $overrides)`). Such entries
-can arrive from the All-tokens tab or an imported theme. Then only that one rung
-looks broken while the rest of the scale moves; the fix is to reset that token in
-the configurator, not to change precedence.
+An explicit output token in the map (say
+`--sf-space-m: clamp(1.00rem, 0.85rem + 0.75vw, 1.50rem)`) **beats the scale
+knob by design** — fine-tuning wins over the knob that generated it, in both the
+JS preview and the PHP emitter (`array_merge($derived, $overrides)`), because the
+emitted `@layer slashed.overrides` block lands after the framework's generative
+rules. A full per-step ladder stored this way makes the base *and* ratio knobs
+completely inert while both still read back correctly at `:root`, which is the
+confusing part: nothing looks broken, the values are simply unused.
+
+Such entries arrive from an older settings page, the All-tokens tab, or an
+imported theme. The fix is to drop the `--sf-space-*` **step** keys (`2xs`, `xs`,
+`s`, `m`, `l`, `xl`, `2xl`, `3xl`, `4xl`) and keep the base/ratio/scale knobs —
+reset them from the configurator's All-tokens tab, or rewrite the option. Note
+the same applies to `--sf-text-*` steps and the typography scale.
 
 ## What is already known-good (don't re-audit these)
 
