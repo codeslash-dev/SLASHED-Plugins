@@ -9,6 +9,30 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.8] - 2026-07-28
+
+### Added
+
+- Check whether the space ladder is generated from the knobs
+
+### Fixed
+
+- Derive layer mode from the served bundle, not just the setting
+- Only treat root-matching rules as shadowing, and name the map
+- Emit token overrides unlayered when serving the flat CSS bundle
+
+## [0.6.8] - 2026-07-28
+
+### Added
+
+- Check whether the space ladder is generated from the knobs
+
+### Fixed
+
+- Derive layer mode from the served bundle, not just the setting
+- Only treat root-matching rules as shadowing, and name the map
+- Emit token overrides unlayered when serving the flat CSS bundle
+
 ## [0.6.7] - 2026-07-25
 
 ### Fixed

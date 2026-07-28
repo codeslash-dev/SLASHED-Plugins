@@ -3,7 +3,7 @@ Contributors: codeslash
 Tags: css, bricks, gutenberg, design-tokens, dark-mode
 Requires at least: 6.4
 Tested up to: 7.0
-Stable tag: 0.6.7
+Stable tag: 0.6.8
 Requires PHP: 7.4
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -129,6 +129,12 @@ It ships inside the plugin and is served locally from the plugin's own folder. T
 Chrome 125+, Safari 18.0+, Firefox 129+.
 
 == Changelog ==
+
+= 0.6.8 =
+* Added: Check whether the space ladder is generated from the knobs
+* Fixed: Derive layer mode from the served bundle, not just the setting
+* Fixed: Only treat root-matching rules as shadowing, and name the map
+* Fixed: Emit token overrides unlayered when serving the flat CSS bundle
 
 = 0.6.7 =
 * Fixed: Stop dropping composite token values in override validation

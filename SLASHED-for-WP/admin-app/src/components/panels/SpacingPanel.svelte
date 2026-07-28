@@ -5,7 +5,9 @@
   import SliderRow from '../inputs/SliderRow.svelte';
   import ClampField from '../inputs/ClampField.svelte';
   import Section from '../inputs/Section.svelte';
+  import ScaleShadowNotice from '../inputs/ScaleShadowNotice.svelte';
   import { SPACE_SCALE } from '../../lib/variableScales';
+  import { SPACE_STEP_TOKENS, shadowingSteps } from '../../lib/scaleShadow';
 
   let { overrides, onSet, onReset }: {
     tokens: SlashedToken[];
@@ -52,12 +54,26 @@
     return midBase * Math.pow(ratio, 5) * spaceScale;
   });
 
+  // Concrete per-step values stored in the override map silently outrank every
+  // control in the Modular scale section (see lib/scaleShadow.ts).
+  let shadowedSpaceSteps = $derived(shadowingSteps(overrides, SPACE_STEP_TOKENS));
+
   let showLayoutGap = $state(false);
   let showModularScale = $state(false);
   let showAdvanced = $state(false);
 </script>
 
 <div class="p-4 space-y-6">
+
+  <!-- Shadowing warning sits ABOVE the fold, not inside the collapsed Modular
+       scale section: the preview below and every control in that section are
+       what the stored step values contradict, so a notice the user has to
+       expand a section to find would not be seen at all. -->
+  <ScaleShadowNotice
+    tokens={shadowedSpaceSteps}
+    scaleLabel="spacing"
+    onClear={() => shadowedSpaceSteps.forEach((t) => onReset(t))}
+  />
 
   <!-- SPACE SCALE PREVIEW — category-wide, at the top -->
   <section>
@@ -141,14 +157,23 @@
         onMaxChange={(v) => onSet("--sf-fluid-max-vw", String(v))}
       />
 
+      <!-- This card owns the ratio block as well as the base pair, so its
+           overridden state and reset must cover the ratio tokens too. Tracking
+           only the base pair left a ratio-only change with no override marker
+           and no reset affordance at all, and made the card's reset silently
+           keep the ratio override while presenting itself as pristine. -->
       <ClampField
         title="Base unit &amp; ratio"
         minValue={baseMin} maxValue={baseMax}
         min={0.5} max={4} step={0.05} unit="rem"
         minLabel="Mobile" maxLabel="Desktop"
         previewKind="space"
-        overridden={"--sf-space-base-min" in overrides || "--sf-space-base-max" in overrides}
-        onReset={() => { onReset("--sf-space-base-min"); onReset("--sf-space-base-max"); }}
+        overridden={"--sf-space-base-min" in overrides || "--sf-space-base-max" in overrides
+          || "--sf-space-ratio-min" in overrides || "--sf-space-ratio-max" in overrides}
+        onReset={() => {
+          onReset("--sf-space-base-min"); onReset("--sf-space-base-max");
+          onReset("--sf-space-ratio-min"); onReset("--sf-space-ratio-max");
+        }}
         onMinChange={(v) => onSet("--sf-space-base-min", String(v))}
         onMaxChange={(v) => onSet("--sf-space-base-max", String(v))}
         ratioPresets={RATIO_PRESETS}

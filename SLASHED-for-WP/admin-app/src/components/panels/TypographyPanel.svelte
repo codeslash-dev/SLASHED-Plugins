@@ -4,6 +4,8 @@
   import ClampField from '../inputs/ClampField.svelte';
   import Section from '../inputs/Section.svelte';
   import TypeSpecimenRow from '../inputs/TypeSpecimenRow.svelte';
+  import ScaleShadowNotice from '../inputs/ScaleShadowNotice.svelte';
+  import { TEXT_STEP_TOKENS, DISPLAY_STEP_TOKENS, shadowingSteps } from '../../lib/scaleShadow';
   import { themeState } from '../../lib/theme.svelte';
   import GOOGLE_FONTS_ALL from '../../data/google-fonts.generated.json';
 
@@ -164,6 +166,14 @@
 
   // Sorted section toggles — fonts → scale → rhythm → tracking → weights →
   // elements → measures. Every control lives in exactly one of these.
+  // Concrete per-step values stored in the override map silently outrank the
+  // whole Fluid scale section (see lib/scaleShadow.ts). Text and display are
+  // reported together: both generators live in that one section.
+  let shadowedTypeSteps = $derived([
+    ...shadowingSteps(overrides, TEXT_STEP_TOKENS),
+    ...shadowingSteps(overrides, DISPLAY_STEP_TOKENS),
+  ]);
+
   let showFonts       = $state(false);
   let showScale       = $state(false);
   let showLineHeights = $state(false);
@@ -259,6 +269,15 @@
 {/snippet}
 
 <div class="p-4 space-y-6">
+
+  <!-- Shadowing warning stays above the collapsed sections: it contradicts every
+       control in "Fluid scale", which the user would otherwise have to open to
+       find the notice explaining why those controls do nothing. -->
+  <ScaleShadowNotice
+    tokens={shadowedTypeSteps}
+    scaleLabel="type"
+    onClear={() => shadowedTypeSteps.forEach((t) => onReset(t))}
+  />
 
   <!-- ═══ 1. FONTS — families, loader, OpenType ═══ -->
   <Section title="Fonts" spacing="space-y-4" bind:open={showFonts}>
@@ -422,15 +441,25 @@
       onMaxChange={(v) => onSet("--sf-fluid-max-vw", String(v))}
     />
 
-    <!-- TEXT generator -->
+    <!-- TEXT generator. The card owns the ratio block as well as the base pair,
+         so its overridden state and reset cover the ratio tokens too — tracking
+         only the base pair left a ratio-only change with no override marker and
+         no reset affordance, and made reset silently keep the ratio override.
+         --sf-text-ratio-* is shared with the display generator below (see its
+         comment), so resetting from either card clears it for both, exactly as
+         editing from either card sets it for both. -->
     <ClampField
       title="Text base size &amp; ratio"
       minValue={baseMin} maxValue={baseMax}
       min={0.7} max={2} step={0.01} unit="rem"
       minLabel="Mobile" maxLabel="Desktop"
       previewKind="type"
-      overridden={"--sf-text-base-min" in overrides || "--sf-text-base-max" in overrides}
-      onReset={() => { onReset("--sf-text-base-min"); onReset("--sf-text-base-max"); }}
+      overridden={"--sf-text-base-min" in overrides || "--sf-text-base-max" in overrides
+        || "--sf-text-ratio-min" in overrides || "--sf-text-ratio-max" in overrides}
+      onReset={() => {
+        onReset("--sf-text-base-min"); onReset("--sf-text-base-max");
+        onReset("--sf-text-ratio-min"); onReset("--sf-text-ratio-max");
+      }}
       onMinChange={(v) => onSet("--sf-text-base-min", String(v))}
       onMaxChange={(v) => onSet("--sf-text-base-max", String(v))}
       ratioPresets={RATIO_PRESETS}
@@ -456,8 +485,12 @@
       min={1.5} max={6} step={0.05} unit="rem"
       minLabel="Mobile" maxLabel="Desktop"
       previewKind="type"
-      overridden={"--sf-text-display-base-min" in overrides || "--sf-text-display-base-max" in overrides}
-      onReset={() => { onReset("--sf-text-display-base-min"); onReset("--sf-text-display-base-max"); }}
+      overridden={"--sf-text-display-base-min" in overrides || "--sf-text-display-base-max" in overrides
+        || "--sf-text-ratio-min" in overrides || "--sf-text-ratio-max" in overrides}
+      onReset={() => {
+        onReset("--sf-text-display-base-min"); onReset("--sf-text-display-base-max");
+        onReset("--sf-text-ratio-min"); onReset("--sf-text-ratio-max");
+      }}
       onMinChange={(v) => onSet("--sf-text-display-base-min", String(v))}
       onMaxChange={(v) => onSet("--sf-text-display-base-max", String(v))}
       ratioPresets={RATIO_PRESETS}
