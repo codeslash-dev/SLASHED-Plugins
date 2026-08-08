@@ -35,6 +35,7 @@ class Slashed_Token_Page {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_filter( 'admin_body_class', array( $this, 'add_body_class' ) );
+		add_filter( 'wp_inline_script_attributes', array( $this, 'mark_inline_no_optimize' ), 10, 2 );
 	}
 
 	/**
@@ -201,6 +202,14 @@ class Slashed_Token_Page {
 			'slashed-admin-app',
 			'slashedApp',
 			array(
+				// Same-origin URL to the panel stylesheet. main.ts uses its
+				// presence to mount the panel inside a Shadow DOM (linking this
+				// CSS inside the shadow) — CSS/DOM encapsulation that keeps other
+				// wp-admin plugins' styles and document-level event handlers from
+				// leaving the panel rendered but dead. app.css stays enqueued in
+				// <head> too, so main.ts's light-DOM fallback (no Shadow DOM /
+				// cross-origin URL / stylesheet load failure) is still styled.
+				'cssUrl'             => esc_url_raw( $plugin_url . 'assets/admin-app/app.css' ),
 				'rest'               => array(
 					'url'   => esc_url_raw( rest_url( Slashed_REST_Controller::NAMESPACE ) ),
 					'nonce' => wp_create_nonce( 'wp_rest' ),
@@ -400,7 +409,52 @@ class Slashed_Token_Page {
 		if ( 'slashed-admin-app' !== $handle ) {
 			return $tag;
 		}
-		return preg_replace( '/<script(\b[^>]*)>/', '<script type="module"$1>', $tag, 1 );
+		return preg_replace(
+			'/<script(\b[^>]*)>/',
+			'<script type="module"' . self::NO_OPTIMIZE_ATTRS . '$1>',
+			$tag,
+			1
+		);
+	}
+
+	/**
+	 * Attributes that opt the SPA scripts out of third-party JS optimisers.
+	 *
+	 * The configurator ships as a native ES module. Optimiser plugins that
+	 * concatenate ("combine"), defer, or delay scripts routinely break modules:
+	 * a combined module loses its module scope and Svelte's delegated event
+	 * listeners never bind, so the panel renders but every control is dead — and
+	 * the app's in-memory state is corrupted, so a save posts an empty override
+	 * map (HTTP 200, "saved", yet the page reloads to defaults). Emitting the
+	 * opt-out attributes each optimiser documents keeps the module intact:
+	 *   data-no-optimize  — LiteSpeed Cache, SG Optimizer
+	 *   data-no-defer     — LiteSpeed Cache (skip "Load JS Deferred")
+	 *   data-no-delay     — LiteSpeed Cache / Perfmatters ("delay JS execution")
+	 *   data-no-minify    — WP Rocket
+	 *   data-nowprocket   — WP Rocket ("Delay JavaScript Execution")
+	 *   data-cfasync      — Cloudflare Rocket Loader
+	 * They are inert `data-*` attributes to a browser, so adding them is safe
+	 * even when none of these plugins is present.
+	 */
+	const NO_OPTIMIZE_ATTRS = ' data-no-optimize="1" data-no-defer="1" data-no-delay="1" data-no-minify="1" data-nowprocket="1" data-cfasync="false"';
+
+	/**
+	 * Carry the same optimiser opt-out onto the handle's inline scripts
+	 * (the `__SLASHED_FW_VERSION__` global and the `slashedApp` hydration data),
+	 * so an "inline JS combine" pass can't detach them from the module either.
+	 *
+	 * @param array  $attributes Inline <script> tag attributes (includes `id`).
+	 * @param string $data       The inline script body (unused).
+	 * @return array
+	 */
+	public function mark_inline_no_optimize( $attributes, $data ) {
+		$id = isset( $attributes['id'] ) ? (string) $attributes['id'] : '';
+		if ( 0 === strpos( $id, 'slashed-admin-app-js' ) ) {
+			$attributes['data-no-optimize'] = '1';
+			$attributes['data-nowprocket']  = '1';
+			$attributes['data-cfasync']     = 'false';
+		}
+		return $attributes;
 	}
 
 	public function render_page() {

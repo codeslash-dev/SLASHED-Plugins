@@ -153,9 +153,12 @@
     },
   ];
 
-  const SEMANTIC_OVERRIDES = [
+  const SEMANTIC_OVERRIDES: { name: string; label: string; note?: string }[] = [
     { name: "--sf-color-link",        label: "Link" },
-    { name: "--sf-color-link--visited", label: "Link visited" },
+    // Browsers restrict :visited styling for privacy — the preview links here
+    // have never been visited, so this override can't repaint them live. It
+    // still applies on real, already-visited links on the published site.
+    { name: "--sf-color-link--visited", label: "Link visited", note: "Only affects links already visited in the browser — the preview can't show it (a browser privacy rule), but it applies on your live site." },
     { name: "--sf-color-mark-bg",     label: "Mark background" },
     { name: "--sf-color-mark-text",   label: "Mark text" },
     { name: "--sf-color-code-bg",     label: "Code background" },
@@ -1100,6 +1103,9 @@
               onSet={(v) => onSet(s.name, v)}
               onReset={() => onReset(s.name)}
             />
+            {#if s.note}
+              <div class="mt-1 text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed">{s.note}</div>
+            {/if}
           </div>
         {/each}
       </div>
