@@ -4,7 +4,7 @@
     "frameworkRepo": "https://github.com/codeslash-dev/SLASHED",
     "configuratorSrc": "configurator/src/",
     "source": "local:SLASHED_CONFIGURATOR_SRC",
-    "syncedAt": "2026-08-08T22:47:17.414Z"
+    "syncedAt": "2026-08-09T19:02:47.541Z"
   },
   "vendoredFiles": [
     {
