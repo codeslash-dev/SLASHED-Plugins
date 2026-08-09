@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.9] - 2026-08-09
+
+### Fixed
+
+- Resolve high-severity advisories via npm audit fix
+- Isolate admin panel in a shadow DOM and harden SPA against JS optimizers
+
+## [0.6.9] - 2026-08-09
+
+### Fixed
+
+- Resolve high-severity advisories via npm audit fix
+- Isolate admin panel in a shadow DOM and harden SPA against JS optimizers
+
 ## [0.6.8] - 2026-07-28
 
 ### Added
