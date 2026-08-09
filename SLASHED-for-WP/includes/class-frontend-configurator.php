@@ -24,10 +24,39 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Slashed_Frontend_Configurator {
 
+	/**
+	 * Attributes that opt the overlay's ES-module script out of third-party JS
+	 * optimisers (LiteSpeed / SG Optimizer / WP Rocket / Perfmatters / Cloudflare
+	 * Rocket Loader). Combining or delaying a native module breaks its scope and
+	 * Svelte's delegated events, leaving the overlay rendered but unresponsive.
+	 * See Slashed_Token_Page::NO_OPTIMIZE_ATTRS for the full rationale — kept as a
+	 * local copy so this integration file has no cross-class coupling.
+	 */
+	const NO_OPTIMIZE_ATTRS = ' data-no-optimize="1" data-no-defer="1" data-no-delay="1" data-no-minify="1" data-nowprocket="1" data-cfasync="false"';
+
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 30 );
 		add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_node' ), 100 );
 		add_action( 'wp_footer', array( $this, 'render_container' ), 100 );
+		add_filter( 'wp_inline_script_attributes', array( $this, 'mark_inline_no_optimize' ), 10, 2 );
+	}
+
+	/**
+	 * Carry the optimiser opt-out onto the overlay handle's inline scripts
+	 * (the `__SLASHED_FW_VERSION__` global and the `slashedApp` hydration data).
+	 *
+	 * @param array  $attributes Inline <script> tag attributes (includes `id`).
+	 * @param string $data       The inline script body (unused).
+	 * @return array
+	 */
+	public function mark_inline_no_optimize( $attributes, $data ) {
+		$id = isset( $attributes['id'] ) ? (string) $attributes['id'] : '';
+		if ( 0 === strpos( $id, 'slashed-frontend-overlay-js' ) ) {
+			$attributes['data-no-optimize'] = '1';
+			$attributes['data-nowprocket']  = '1';
+			$attributes['data-cfasync']     = 'false';
+		}
+		return $attributes;
 	}
 
 	/**
@@ -149,7 +178,15 @@ class Slashed_Frontend_Configurator {
 		if ( ! $this->should_load() ) {
 			return;
 		}
-		echo '<div id="slashed-frontend-overlay" style="position:fixed;right:0;top:var(--wp-admin--admin-bar--height,32px);width:min(420px,100vw);height:calc(100vh - var(--wp-admin--admin-bar--height,32px));z-index:99998;"></div>';
+		// pointer-events:none until the Svelte overlay mounts. This container is a
+		// full-height fixed layer (the whole viewport width on mobile), so while it
+		// sits empty — before mount, which plugin-main.ts defers until the panel
+		// CSS loads (up to 5s), and forever if the module is broken by a JS
+		// optimiser — a transparent hit-testing layer would silently swallow every
+		// click over its area. AppOverlay's syncHostBounds() sets pointer-events
+		// back to auto once mounted, and the panel/trigger re-enable it on their
+		// own surfaces, so the live editor stays fully interactive.
+		echo '<div id="slashed-frontend-overlay" style="position:fixed;right:0;top:var(--wp-admin--admin-bar--height,32px);width:min(420px,100vw);height:calc(100vh - var(--wp-admin--admin-bar--height,32px));z-index:99998;pointer-events:none;"></div>';
 	}
 
 	/**
@@ -164,7 +201,12 @@ class Slashed_Frontend_Configurator {
 		if ( 'slashed-frontend-overlay' !== $handle ) {
 			return $tag;
 		}
-		return preg_replace( '/<script(\b[^>]*)>/', '<script type="module"$1>', $tag, 1 );
+		return preg_replace(
+			'/<script(\b[^>]*)>/',
+			'<script type="module"' . self::NO_OPTIMIZE_ATTRS . '$1>',
+			$tag,
+			1
+		);
 	}
 
 	/**
