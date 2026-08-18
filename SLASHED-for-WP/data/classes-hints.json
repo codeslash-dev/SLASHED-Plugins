@@ -432,7 +432,7 @@
     "category": "Macro classes"
   },
   "sf-fluid-cq": {
-    "description": ".sf-fluid-cq: opt a subtree into a CONTAINER-relative fluid scale (issue #497). By default --sf-text-* / --sf-space-* interpolate against 100vw (the viewport); inside .sf-fluid-cq they interpolate against 100cqi (this box's inline size), so type + spacing track the container…",
+    "description": ".sf-fluid-cq: opt a subtree into a CONTAINER-relative fluid scale (issue #497).",
     "category": "Layout primitives"
   },
   "sf-focus-parent": {
@@ -1032,7 +1032,7 @@
     "category": "Layout primitives"
   },
   "sf-stagger": {
-    "description": "Stagger — choreography, not the animation itself. Put .sf-stagger on a PARENT; every direct child gets an incrementing animation-delay so a time-based entrance (.sf-fade-in / .sf-slide-in-*) plays in sequence. Children WITHOUT an animation just carry an inert delay (no-op), so…",
+    "description": "Stagger — choreography, not the animation itself. Put .sf-stagger on a PARENT; every direct child gets an incrementing animation-delay so a time-based entrance (.sf-fade-in / .sf-slide-in-*) plays in sequence.",
     "category": "Motion / animation"
   },
   "sf-sticky": {
@@ -1104,7 +1104,7 @@
     "category": "Macro classes"
   },
   "sf-surface-bg": {
-    "description": "Named background surface preset (issue #523). Composes the --sf-surface-bg-* token set (see tokens.macros.css) into one reusable, named background: base colour + image/gradient/pattern, sizing, an optional overlay layered above the image, and an optional animation. Inert until…",
+    "description": "Named background surface preset (issue #523). Composes the --sf-surface-bg-* token set (see tokens.macros.css) into one reusable, named background: base colour + image/gradient/pattern, sizing, an optional overlay layered above the image, and an optional animation.",
     "category": "Macro classes"
   },
   "sf-switcher": {
@@ -1180,7 +1180,7 @@
     "category": "Theme utilities"
   },
   "sf-touch-target": {
-    "description": ".sf-touch-target — the explicit opt-IN counterpart to the class-less floor above. Because the automatic floor deliberately never touches a control that carries a class, put this class on any control you own (a button with your own class, a third-party widget you can add a class…",
+    "description": ".sf-touch-target — the explicit opt-IN counterpart to the class-less floor above.",
     "category": "Accessibility"
   },
   "sf-truncate": {

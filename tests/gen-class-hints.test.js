@@ -10,7 +10,7 @@
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildClassHints } from '../scripts/gen-class-hints.js';
+import { buildClassHints, normalizeDescription } from '../scripts/gen-class-hints.js';
 
 describe('buildClassHints', () => {
   test('keeps sf-* and is-* class entries with their description and category', () => {
@@ -18,11 +18,15 @@ describe('buildClassHints', () => {
       entries: [
         { type: 'class', name: 'sf-stack', description: 'Flex column.', category: 'Layout primitives' },
         { type: 'class', name: 'sf-is-disabled', description: 'Disabled state.', category: 'State classes' },
+        // Bare is-* branch: the framework has moved states to sf-is-*, but the
+        // generator (like the runtime resolver) still accepts a bare is-* token.
+        { type: 'class', name: 'is-open', description: 'Legacy open state.', category: 'State classes' },
       ],
     };
     const hints = buildClassHints(idx);
     assert.deepEqual(hints['sf-stack'], { description: 'Flex column.', category: 'Layout primitives' });
     assert.deepEqual(hints['sf-is-disabled'], { description: 'Disabled state.', category: 'State classes' });
+    assert.deepEqual(hints['is-open'], { description: 'Legacy open state.', category: 'State classes' });
   });
 
   test('captures BEM modifier classes (double dash) like sf-bento--row-tall', () => {
@@ -68,6 +72,13 @@ describe('buildClassHints', () => {
     assert.equal(hints['sf-x'].description, 'Trimmed.');
   });
 
+  test('normalizes an upstream-truncated description to its last complete sentence', () => {
+    const hints = buildClassHints({
+      entries: [{ type: 'class', name: 'sf-x', description: 'First sentence. Second, truncated clause…', category: 'C' }],
+    });
+    assert.equal(hints['sf-x'].description, 'First sentence.');
+  });
+
   test('tolerates a missing/empty entries array', () => {
     assert.deepEqual(buildClassHints({}), {});
     assert.deepEqual(buildClassHints({ entries: [] }), {});
@@ -77,5 +88,33 @@ describe('buildClassHints', () => {
   test('skips entries whose name is not a string', () => {
     const hints = buildClassHints({ entries: [{ type: 'class', name: 42 }, { type: 'class' }] });
     assert.deepEqual(hints, {});
+  });
+});
+
+describe('normalizeDescription', () => {
+  test('returns a complete description unchanged (aside from trimming)', () => {
+    assert.equal(normalizeDescription('  A full sentence.  '), 'A full sentence.');
+    assert.equal(normalizeDescription('No terminator here'), 'No terminator here');
+  });
+
+  test('cuts a unicode-ellipsis truncation back to the last complete sentence', () => {
+    assert.equal(
+      normalizeDescription('Opt a subtree into a fluid scale (issue #497). By default it tracks the container…'),
+      'Opt a subtree into a fluid scale (issue #497).',
+    );
+  });
+
+  test('handles an ASCII "..." truncation too', () => {
+    assert.equal(normalizeDescription('Done. More stuff that got cut...'), 'Done.');
+  });
+
+  test('does not treat mid-word dots (e.g. tokens.macros.css) as sentence ends', () => {
+    // No terminator followed by whitespace before the ellipsis → strip ellipsis only.
+    assert.equal(normalizeDescription('See tokens.macros.css for the set…'), 'See tokens.macros.css for the set');
+  });
+
+  test('tolerates null / non-string input', () => {
+    assert.equal(normalizeDescription(null), '');
+    assert.equal(normalizeDescription(undefined), '');
   });
 });

@@ -77,7 +77,13 @@ final class ColorResolverTest extends TestCase {
 	}
 
 	public function test_semantic_aliases_point_at_their_target_steps() {
-		$map = Slashed_Color_Resolver::resolve( array() );
+		// build_family_scales() feeds BOTH the light and dark maps, so the alias
+		// wiring is asserted against each — the light/dark key-set test alone
+		// would not catch an alias pointing at the wrong step in one mode.
+		$maps = array(
+			'light' => Slashed_Color_Resolver::resolve( array() ),
+			'dark'  => Slashed_Color_Resolver::resolve_dark( array() ),
+		);
 		// Alias suffix (with its exact separator) => target step. BEM state
 		// modifiers use a double dash (`--hover`, `--active`) to match the
 		// framework tokens in core/tokens.css; tonal aliases use a single dash.
@@ -88,12 +94,14 @@ final class ColorResolverTest extends TestCase {
 			'-muted'   => 'a30',
 			'-tint'    => 'a5',
 		);
-		foreach ( $aliases as $suffix => $target ) {
-			$this->assertSame(
-				$map[ '--sf-color-primary-' . $target ],
-				$map[ '--sf-color-primary' . $suffix ],
-				"alias $suffix must resolve to step -$target"
-			);
+		foreach ( $maps as $mode => $map ) {
+			foreach ( $aliases as $suffix => $target ) {
+				$this->assertSame(
+					$map[ '--sf-color-primary-' . $target ],
+					$map[ '--sf-color-primary' . $suffix ],
+					"$mode: alias $suffix must resolve to step -$target"
+				);
+			}
 		}
 	}
 
@@ -101,13 +109,19 @@ final class ColorResolverTest extends TestCase {
 		// Regression guard: the builder colour-swatch and variable-picker
 		// lookups key off the framework's real token names. `--hover`/`--active`
 		// are BEM state modifiers (double dash); emitting the single-dash form
-		// left those swatches blank in the Bricks variable dropdown.
-		$map = Slashed_Color_Resolver::resolve( array() );
-		foreach ( array( 'primary', 'action', 'neutral', 'success' ) as $family ) {
-			$this->assertArrayHasKey( '--sf-color-' . $family . '--hover', $map, "$family must expose --hover" );
-			$this->assertArrayHasKey( '--sf-color-' . $family . '--active', $map, "$family must expose --active" );
-			$this->assertArrayNotHasKey( '--sf-color-' . $family . '-hover', $map, "$family must NOT expose single-dash -hover" );
-			$this->assertArrayNotHasKey( '--sf-color-' . $family . '-active', $map, "$family must NOT expose single-dash -active" );
+		// left those swatches blank in the Bricks variable dropdown. Checked in
+		// both modes since build_family_scales() feeds the light and dark maps.
+		$maps = array(
+			'light' => Slashed_Color_Resolver::resolve( array() ),
+			'dark'  => Slashed_Color_Resolver::resolve_dark( array() ),
+		);
+		foreach ( $maps as $mode => $map ) {
+			foreach ( array( 'primary', 'action', 'neutral', 'success' ) as $family ) {
+				$this->assertArrayHasKey( '--sf-color-' . $family . '--hover', $map, "$mode: $family must expose --hover" );
+				$this->assertArrayHasKey( '--sf-color-' . $family . '--active', $map, "$mode: $family must expose --active" );
+				$this->assertArrayNotHasKey( '--sf-color-' . $family . '-hover', $map, "$mode: $family must NOT expose single-dash -hover" );
+				$this->assertArrayNotHasKey( '--sf-color-' . $family . '-active', $map, "$mode: $family must NOT expose single-dash -active" );
+			}
 		}
 	}
 

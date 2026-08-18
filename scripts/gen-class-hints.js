@@ -44,12 +44,43 @@ const API_INDEX_FILE = path.join(FRAMEWORK, 'docs', 'api-index.json');
 const OUT = path.join(ROOT, 'SLASHED-for-WP', 'data', 'classes-hints.json');
 
 /**
+ * Normalise a class description for use as an editor tooltip.
+ *
+ * The framework's api-index truncates long descriptions with a trailing
+ * ellipsis (`…` or `...`), which reads as a broken sentence in the small
+ * Bricks tooltip. When a description was truncated this way, cut it back to
+ * the last COMPLETE sentence (a `.`, `!`, or `?` followed by whitespace) so
+ * the tooltip always ends cleanly. Untruncated descriptions are returned
+ * unchanged (aside from trimming). If no internal sentence boundary exists,
+ * the bare ellipsis is stripped rather than dropping the whole description.
+ *
+ * Pure — exported for unit testing.
+ *
+ * @param {string} raw Description as shipped in api-index.json.
+ * @returns {string} Tooltip-ready description.
+ */
+export function normalizeDescription(raw) {
+  let d = String(raw == null ? '' : raw).trim();
+
+  // Only act on descriptions the upstream index truncated mid-sentence.
+  if (!/(?:\u2026|\.\.\.)$/.test(d)) return d;
+
+  // Drop the trailing ellipsis (unicode … or ASCII ...).
+  d = d.replace(/\s*(?:\u2026|\.\.\.)\s*$/, '').trim();
+
+  // Cut back to the last complete sentence (terminator followed by space).
+  const m = d.match(/^[\s\S]*[.!?](?=\s)/);
+  return (m ? m[0] : d).trim();
+}
+
+/**
  * Transform a parsed api-index.json object into the class-hints map.
  *
  * Pure (no fs / no env): keeps only `class` entries whose name is one the
  * Bricks class-hints resolver can actually tag — a single `sf-*` or `is-*`
  * token (see integrations/bricks/editor-app/src/lib/class-hints.js). Entries
- * without a description are skipped (a blank tooltip is worse than none), and
+ * without a description are skipped (a blank tooltip is worse than none),
+ * descriptions are normalised for the tooltip (see normalizeDescription), and
  * the api-index category is preserved verbatim. Exported so the extraction
  * rules can be unit-tested without a framework checkout on disk.
  *
@@ -70,7 +101,7 @@ export function buildClassHints(apiIndex) {
     // framework classes (sr-only, skip-link, …) would ship as dead entries.
     if (!name.startsWith('sf-') && !name.startsWith('is-')) continue;
 
-    const description = typeof entry.description === 'string' ? entry.description.trim() : '';
+    const description = normalizeDescription(entry.description);
     if (!description) continue;
 
     hints[name] = {
