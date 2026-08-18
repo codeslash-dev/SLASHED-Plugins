@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generatedBy": "scripts/gen-token-registry.js",
-    "nextId": 802
+    "nextId": 804
   },
   "tokens": [
     {
@@ -95,7 +95,8 @@
     },
     {
       "id": 21,
-      "name": "--sf-aspect"
+      "name": "--sf-aspect",
+      "removed": true
     },
     {
       "id": 22,
@@ -226,7 +227,7 @@
     },
     {
       "id": 53,
-      "name": "--sf-caret-color"
+      "name": "--sf-color-caret"
     },
     {
       "id": 54,
@@ -1567,7 +1568,8 @@
     },
     {
       "id": 382,
-      "name": "--sf-font-geometric"
+      "name": "--sf-font-geometric",
+      "removed": true
     },
     {
       "id": 383,
@@ -1575,7 +1577,8 @@
     },
     {
       "id": 384,
-      "name": "--sf-font-humanist"
+      "name": "--sf-font-humanist",
+      "removed": true
     },
     {
       "id": 385,
@@ -1587,7 +1590,8 @@
     },
     {
       "id": 387,
-      "name": "--sf-font-slab"
+      "name": "--sf-font-slab",
+      "removed": true
     },
     {
       "id": 388,
@@ -2049,15 +2053,18 @@
     },
     {
       "id": 499,
-      "name": "--sf-print-base-size"
+      "name": "--sf-print-base-size",
+      "removed": true
     },
     {
       "id": 500,
-      "name": "--sf-print-page-margin"
+      "name": "--sf-print-page-margin",
+      "removed": true
     },
     {
       "id": 501,
-      "name": "--sf-print-page-size"
+      "name": "--sf-print-page-size",
+      "removed": true
     },
     {
       "id": 502,
@@ -2930,7 +2937,8 @@
     },
     {
       "id": 716,
-      "name": "--sf-overlap-pull"
+      "name": "--sf-overlap-pull",
+      "removed": true
     },
     {
       "id": 717,
@@ -3255,7 +3263,8 @@
     },
     {
       "id": 797,
-      "name": "--sf-density"
+      "name": "--sf-density",
+      "removed": true
     },
     {
       "id": 798,
@@ -3272,6 +3281,14 @@
     {
       "id": 801,
       "name": "--sf-color-text--subtle"
+    },
+    {
+      "id": 802,
+      "name": "--sf-scroll-offset-gap"
+    },
+    {
+      "id": 803,
+      "name": "--sf-marker-color"
     }
   ]
 }

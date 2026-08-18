@@ -1,4 +1,4 @@
-/*! SLASHED v0.7.31 — slashed.full.css | MIT License | github.com/codeslash-dev/SLASHED */
+/*! SLASHED v0.7.32 — slashed.full.css | MIT License | github.com/codeslash-dev/SLASHED */
 
 /* ─── core/layers.css ─── */
 /* SLASHED — core/layers.css
@@ -197,57 +197,28 @@
   @property --sf-fluid-width           { syntax: "*"; inherits: true; }
 
   /* ── Output token @property registrations ──────────────────────────────────
-     Radius + space: <length> syntax enables CSS transitions on layout values —
-     border-radius/padding/gap etc. now interpolate instead of snapping.
-     Shadow: syntax:"*" (no <shadow> type in spec); inherits:true so :root values
-     cascade normally; registers the properties formally for DevTools inspection.
+     Scope: TYPED registration is reserved for COLOUR output tokens (see the
+     <color> block above), where registering earns its keep — it enables the
+     automatic light/dark theme cross-fade, a common and visible win.
 
-     initial-value ≠ :root default (by spec): a registered <length> requires a
-     computationally-independent initial-value, so these carry `initial-value: 0`
-     while their real defaults are the calc()-derived values set on :root below
-     (see --sf-fluid-width above for the same constraint stated at length). One
-     consequence worth flagging: once a property is registered, the initial
-     value IS a value — so a fallback like `var(--sf-radius-m, 12px)` will NEVER
-     fire; an unset --sf-radius-m resolves to the registered `0`, not to "no
-     value". Author fallbacks against the token's :root default, not this 0. */
+     Length output tokens (radius / space / gap / padding / section-pad /
+     media-radius) are deliberately NOT registered (#676). The only thing a
+     <length> registration bought was transition interpolation on those tokens
+     (border-radius/padding/gap animating instead of snapping) — rare in
+     practice, and no shipped SLASHED rule relies on it (framework transitions
+     name an explicit transform/opacity/colour property set, never `all`).
+     Against that marginal benefit sat a real footgun: a registered <length>
+     requires a computationally-independent initial-value (`0`), so an author
+     fallback like `var(--sf-radius-m, 12px)` could NEVER fire — an unset token
+     resolved to the registered `0`, not to the fallback. Leaving these tokens
+     as plain custom properties removes that trap (fallbacks now behave as
+     written) and simplifies the token layer; the DevTools-typing benefit was
+     minor and not worth the footgun on its own. To animate a specific length,
+     register it yourself in your own CSS.
 
-  @property --sf-radius-none  { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-2xs   { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-xs    { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-s     { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-m     { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-l     { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-xl    { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-2xl   { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-3xl   { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-4xl   { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-radius-full  { syntax: "<length>"; inherits: true; initial-value: 9999px; }
-  @property --sf-radius-pill  { syntax: "<length>"; inherits: true; initial-value: 9999px; }
-  @property --sf-radius-outer { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-media-radius { syntax: "<length>"; inherits: true; initial-value: 0; }
-
-  @property --sf-space-none       { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-space-px         { syntax: "<length>"; inherits: true; initial-value: 1px; }
-  @property --sf-space-2xs        { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-space-xs         { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-space-s          { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-space-m          { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-space-l          { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-space-xl         { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-space-2xl        { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-space-3xl        { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-space-4xl        { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-gap              { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-content-gap      { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-gutter           { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-component-pad    { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-field-block      { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-section-pad--xs  { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-section-pad--s   { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-section-pad--m   { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-section-pad--l   { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-section-pad--xl  { syntax: "<length>"; inherits: true; initial-value: 0; }
-  @property --sf-section-pad--2xl { syntax: "<length>"; inherits: true; initial-value: 0; }
+     Shadow tokens keep `syntax:"*"` — a universal registration has NO typed
+     initial-value, so it carries none of the fallback footgun; it just formally
+     registers the property (inherits:true so :root values cascade) for tooling.  */
 
   @property --sf-shadow-none      { syntax: "*"; inherits: true; }
   @property --sf-shadow-xs        { syntax: "*"; inherits: true; }
@@ -421,7 +392,7 @@
     --sf-focus-ring-color:  var(--sf-color-action);
     --sf-focus-ring-shadow: 0 0 0 var(--sf-focus-ring-offset) var(--sf-color-bg, var(--sf-color-base-source-light, #fff)),
                             0 0 0 calc(var(--sf-focus-ring-offset) + var(--sf-focus-ring-width)) var(--sf-focus-ring-color);
-    --sf-caret-color:       var(--sf-color-action);
+    --sf-color-caret:       var(--sf-color-action);
 
   }
   /* ── @supports gate: light-dark() + oklch(from …) ──
@@ -1013,11 +984,6 @@
     --sf-font-display: var(--sf-font-heading);
     --sf-font-mono:    ui-monospace, monospace;
 
-    /* Optional system-font stacks (zero-cost, no @import) */
-    --sf-font-humanist:  "Seravek", "Gill Sans Nova", "Ubuntu", "Calibri", "DejaVu Sans", source-sans-pro, sans-serif;
-    --sf-font-geometric: "Avenir", "Montserrat", "Corbel", "URW Gothic", source-sans-pro, sans-serif;
-    --sf-font-slab:      "Rockwell", "Rockwell Nova", "Roboto Slab", "DejaVu Serif", "Sitka Small", serif;
-
     /* Opt-in OpenType / variable-font controls (token-only, not applied by the framework) */
     --sf-font-features:  normal;  /* e.g. "cv11", "ss01" */
     --sf-font-variation: normal;  /* e.g. "wght" 450, "opsz" 32 */
@@ -1205,37 +1171,17 @@
     --sf-space-4xl: calc(clamp(calc(var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc((var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) - var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5)) / (var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * (var(--sf-fluid-width) - var(--sf-fluid-min-vw) * 1rem) + var(--sf-space-base-min) * pow(var(--sf-space-ratio-min), 5) * 1rem), calc(var(--sf-space-base-max) * pow(var(--sf-space-ratio-max), 5) * 1rem)) * var(--sf-space-scale));
 
     /* ----------------------------------------------------------
-       Density — the compact ↔ comfortable dial for interactive
-       control GEOMETRY. 1 = default; <1 packs controls tighter
-       (dashboards, data tables, power-user tools), >1 loosens them.
-       It is a discrete design/product choice (or a user preference),
-       NOT a viewport response — control height must never shrink on
-       small screens where touch targets need to be larger, so unlike
-       the fluid text and space scales the size ladder stays non-fluid
-       and is scaled only by this deliberate knob. Orthogonal to
-       --sf-space-scale (overall whitespace) and --sf-section-scale
-       (macro section rhythm); combine them for a fully compact UI.
-       Accessibility is unaffected: the coarse-pointer floor lives on
-       --sf-touch-target (core/accessibility.css), never on a rung, so
-       a small --sf-density can't shrink native controls below the
-       WCAG target. Like the other global multipliers it is a :root
-       dial — the size ladder is computed at :root and inherits, so a
-       nested override does not retroactively rescale it (same
-       computed-value rule as --sf-space-scale et al.). */
-    --sf-density: 1;
-
-    /* ----------------------------------------------------------
        UI sizes — a purely geometric rung ladder (+0.5rem / 8px per
-       step: 24 · 32 · 40 · 48 · 56 px at density 1). These are free
-       design knobs, scaled by --sf-density; overriding a rung just
-       rescales that component height. Accessibility floors live on
-       their own tokens (--sf-touch-target), never on a rung.
+       step: 24 · 32 · 40 · 48 · 56 px). These are free design knobs;
+       overriding a rung just rescales that component height.
+       Accessibility floors live on their own tokens
+       (--sf-touch-target), never on a rung.
        ---------------------------------------------------------- */
-    --sf-size-xs: calc(1.5rem * var(--sf-density));
-    --sf-size-s:  calc(2rem   * var(--sf-density));
-    --sf-size-m:  calc(2.5rem * var(--sf-density));
-    --sf-size-l:  calc(3rem   * var(--sf-density));
-    --sf-size-xl: calc(3.5rem * var(--sf-density));
+    --sf-size-xs: 1.5rem;
+    --sf-size-s:  2rem;
+    --sf-size-m:  2.5rem;
+    --sf-size-l:  3rem;
+    --sf-size-xl: 3.5rem;
 
     /* ----------------------------------------------------------
        Containers
@@ -1259,12 +1205,15 @@
 
     /* ----------------------------------------------------------
        Border widths
-       --sf-border-width-hairline: device-pixel-dependent. On 1x DPR
-       displays (Windows non-Retina) the browser will round 0.5px up
-       to 1px, so it visually matches --sf-border-width-1. On 2x+
-       DPR (macOS/iOS Retina, most modern phones) it renders as a
-       true half-pixel hairline. Use it for subtle separators where
-       1px on low-DPR is acceptable.
+       --sf-border-width-hairline: browsers snap border-width to the nearest
+       device pixel (rounding up to a minimum of 1 device pixel), so the
+       rendered width is device-pixel-dependent. On 1x DPR (Windows
+       non-Retina) 0.5px rounds up to 1px, visually matching
+       --sf-border-width-1. At DPRs where 0.5px lands on a whole device-pixel
+       boundary (2x, 4x — macOS/iOS Retina, most modern phones) it renders as
+       a true 0.5px hairline; at other DPRs (e.g. 3x) the snapped result is
+       close to but not exactly 0.5px. Use it for subtle separators where
+       sub-pixel precision doesn't matter.
        ---------------------------------------------------------- */
     /* --sf-border-scale — global multiplier for border widths. Set to 0 for
        borderless, 2 for heavy borders. Hairline is intentionally excluded
@@ -1496,6 +1445,12 @@
       var(--sf-sticky-offset-mobile),
       calc((var(--sf-sticky-offset-desktop) - var(--sf-sticky-offset-mobile)) / ((var(--sf-fluid-max-vw) - var(--sf-fluid-min-vw)) * 1rem) * (100vw - var(--sf-fluid-min-vw) * 1rem) + var(--sf-sticky-offset-mobile)),
       var(--sf-sticky-offset-desktop));
+    /* Breathing room added below the header when scrolling to an in-page
+       anchor (:target / scroll-padding). Defaults to --sf-space-m so a heading
+       lands a comfortable gap under the sticky header rather than flush against
+       it. Set to 0 to pin the heading flush under the header; set any other
+       length to tune the gap without overriding the whole scroll-padding rule. */
+    --sf-scroll-offset-gap: var(--sf-space-m);
     /* Focus ring dimensions and minimum touch-target size. Governs keyboard
        navigation affordance and WCAG 2.5.5 pointer-target requirements.
        --sf-touch-target owns the 44px WCAG floor as a literal — it is NOT an
@@ -1537,13 +1492,6 @@
     --sf-safe-bottom: env(safe-area-inset-bottom, 0px);
     --sf-safe-left:   env(safe-area-inset-left,   0px);
     --sf-safe-right:  env(safe-area-inset-right,  0px);
-
-    /* ----------------------------------------------------------
-       Print
-       ---------------------------------------------------------- */
-    --sf-print-page-margin: 2cm;
-    --sf-print-page-size:   a4;
-    --sf-print-base-size:   11pt;
 
     /* ----------------------------------------------------------
        Object fit / position — global defaults for replaced elements.
@@ -1974,10 +1922,12 @@
     --sf-line-clamp: 3;
 
     /* ----------------------------------------------------------
-       Aspect ratio — default for .sf-aspect (generic ratio container,
-       distinct from layout's .sf-frame which has its own --sf-frame-ratio).
+       List markers — single source of truth for ::marker colour.
+       Drives both the .sf-marker--* utilities and .sf-prose markers
+       (via --sf-prose-marker-color below), so one knob retunes every
+       list marker. Defaults to the primary brand colour.
        ---------------------------------------------------------- */
-    --sf-aspect: 16 / 9;
+    --sf-marker-color:           var(--sf-color-primary);
 
     /* ----------------------------------------------------------
        Prose — per-instance override knobs for .sf-prose.
@@ -1993,7 +1943,7 @@
     --sf-prose-media-margin:     var(--sf-space-m);
     --sf-prose-media-radius:     var(--sf-radius-m);
     --sf-prose-figure-margin:    var(--sf-space-l);
-    --sf-prose-marker-color:     var(--sf-color-primary);
+    --sf-prose-marker-color:     var(--sf-marker-color);
     --sf-prose-figcaption-size:  var(--sf-text-s);
     --sf-prose-blockquote-padding: var(--sf-space-m);
     --sf-prose-blockquote-border:  var(--sf-border-width-2) solid var(--sf-color-border--subtle);
@@ -2021,7 +1971,7 @@
     --sf-scroll-shadow-size: 2rem;
 
     /* ----------------------------------------------------------
-       Content visibility — placeholder size for .sf-content-auto.
+       Content visibility — placeholder size for .sf-render-lazy.
        Feeds contain-intrinsic-size so offscreen sections reserve
        space before their first render, keeping the scrollbar and
        scroll position stable. Override per element:
@@ -2072,15 +2022,6 @@
     --sf-surface-bg-attachment: scroll;
     --sf-surface-bg-animation:  none;
 
-    /* ----------------------------------------------------------
-       Overlap recipe — how far .sf-overlap pulls into the adjacent
-       element. .sf-overlap-host's padding compensation defaults to this
-       same value via a var() fallback in the rule itself (not aliased
-       here — see core/macros.css), so one override on the host tunes
-       both unless --sf-overlap-host-pad is set independently.
-       ---------------------------------------------------------- */
-    --sf-overlap-pull: var(--sf-space-xl);
-
   }
 }
 
@@ -2100,7 +2041,7 @@
     /* stylelint-disable-next-line property-no-vendor-prefix -- Safari <17: unprefixed text-size-adjust only landed in Safari 17 */
     -webkit-text-size-adjust: 100%;
     text-size-adjust:          100%;
-    scroll-padding-block-start: calc(var(--sf-header-height, 5rem) + var(--sf-space-m, 1rem));
+    scroll-padding-block-start: calc(var(--sf-header-height, 5rem) + var(--sf-scroll-offset-gap, 1rem));
     scrollbar-gutter:    stable;
     color-scheme:        var(--sf-color-scheme, light dark);
     hanging-punctuation: first last;
@@ -2326,7 +2267,7 @@
   }
 
   input, textarea {
-    caret-color: var(--sf-caret-color);
+    caret-color: var(--sf-color-caret);
   }
 
   input, progress {
@@ -3206,14 +3147,7 @@
     .sf-alternate > :nth-child(even) > :last-child  { order: 1; }
   }
 
-  
-  .sf-pancake {
-    display:             grid;
-    grid-template-rows:  auto 1fr auto;
-    min-height:          100dvh;
-  }
 
-  
   .sf-grid-cols-1 {
     display: grid;
     gap:     var(--sf-grid-gap);
@@ -3440,10 +3374,6 @@
     flex:       1 1 auto;
   }
 
-  .sf-aspect {
-    aspect-ratio: var(--sf-aspect, 16 / 9);
-  }
-
   .sf-scroll-shadow {
     overflow-y:     auto;
     overflow-block: auto;
@@ -3635,7 +3565,7 @@
       --sf-color-border--subtle:    oklch(from var(--sf-surface-contrast) l c h / 0.12);
       --sf-color-border--strong:    oklch(from var(--sf-surface-contrast) l c h / 0.35);
       --sf-focus-ring-color:        var(--sf-surface-contrast);
-      --sf-caret-color:             var(--sf-surface-contrast);
+      --sf-color-caret:             var(--sf-surface-contrast);
 
       --sf-shadow-color:            oklch(from var(--sf-surface-color) var(--sf-shadow-lightness) c h);
 
@@ -3719,7 +3649,7 @@
     }
   }
 
-  .sf-content-auto {
+  .sf-render-lazy {
     content-visibility:     auto;
     contain-intrinsic-size: auto var(--sf-content-intrinsic-size, 500px);
   }
@@ -3753,31 +3683,6 @@
   .sf-link--reverse:is(:link, :visited):hover,
   .sf-link--reverse:is(:link, :visited):focus-visible {
     text-decoration-line: none;
-  }
-
-  /* Overlap recipe — one element intentionally overlapping the previous
-     one (e.g. an image pulled up over the card below it), via a negative
-     logical margin + a raised stacking context. Directional variants are
-     standalone (margins are distinct properties, not a re-pointable knob). */
-  .sf-overlap,
-  .sf-overlap--down {
-    position: relative;
-    z-index:  var(--sf-z-raised);
-  }
-  .sf-overlap        { margin-block-start:  calc(-1 * var(--sf-overlap-pull)); }
-  .sf-overlap--down  { margin-block-end:    calc(-1 * var(--sf-overlap-pull)); }
-
-  /* Card-container recipe — the receiving side of an overlap: an isolated
-     stacking context with block-start padding compensation so in-flow
-     content clears an element intruding from above. The padding knob
-     defaults to the pull knob so one override tunes both. */
-  .sf-overlap-host {
-    position:  relative;
-    isolation: isolate;
-    /* var() fallback resolved on this element, not pre-baked at :root —
-       so a local --sf-overlap-pull override (even without setting
-       --sf-overlap-host-pad) is honored (#496-class pitfall). */
-    padding-block-start: var(--sf-overlap-host-pad, var(--sf-overlap-pull));
   }
 
 }
@@ -3930,25 +3835,12 @@
     --sf-field-text-color:   var(--sf-color-info-strong);
   }
 
-  /* -- DRAG & DROP -- */
+  /* -- HIDE-IF-EMPTY -- */
 
-  .sf-is-dragging {
-    opacity: var(--sf-opacity-muted);
-    cursor:  grabbing;
-  }
-
-  .sf-is-drop-target {
-    outline:        var(--sf-focus-ring-width) dashed var(--sf-color-action);
-    outline-offset: var(--sf-focus-ring-offset);
-  }
-
-  .sf-is-draggable {
-    cursor: grab;
-  }
-
-  /* -- EMPTY STATE -- */
-
-  .sf-is-empty:empty {
+  /* Action-on-state, not a state assertion: hides the element when it has no
+     children. The name states the behaviour (deliberately breaking the
+     .sf-is-* "asserts a state" convention for clarity — see #674). */
+  .sf-is-hidden-if-empty:empty {
     display: none;
   }
 
@@ -4446,26 +4338,15 @@
 
 @layer slashed.print {
 
-  
-  .print-only {
-    display: none;
-  }
-
   @media print {
 
-    /* --sf-print-page-size / -margin are read here so a :root override retunes
-       the printed page box. Each fallback equals the historical literal, so the
-       default print render is unchanged. Verified in Chromium that var() is
-       substituted inside @page descriptors; engines lacking general custom-
-       property substitution in @page fall back to the literal. */
     @page {
-
-      size:   var(--sf-print-page-size, a4) portrait;
-      margin: var(--sf-print-page-margin, 2cm);
+      size:   a4 portrait;
+      margin: 2cm;
     }
 
     body {
-      font-size: var(--sf-print-base-size, 11pt);
+      font-size: 11pt;
     }
 
     *,
@@ -4528,28 +4409,9 @@
       display: none !important;
     }
 
-    .print-only {
-      display: revert !important;
-    }
-
     details { display: block; }
     details > summary { display: none !important; }
     details > :not(summary) { display: block; }
-
-    
-    .print-color-exact,
-    .print-color-exact * {
-      print-color-adjust:         exact !important;
-      -webkit-print-color-adjust: exact !important;
-    }
-
-    .print-no-color,
-    .print-no-color *,
-    .print-no-color *::before,
-    .print-no-color *::after {
-      background:  transparent !important;
-      color:       CanvasText  !important;
-    }
 
   }
 
@@ -5436,7 +5298,7 @@
           oklch(from var(--sf-color-neutral-source-light) clamp(0.05, calc(l - 0.4 - var(--sf-contrast-bias)), 0.35) c h),
           oklch(from var(--sf-color-neutral)              clamp(0.70, calc(l + 0.25 + var(--sf-contrast-bias)), 1)    c h));
         --sf-color-text: var(--sf-color-heading);
-        --sf-color-text--secondary: light-dark(
+        --sf-color-text--subtle: light-dark(
           oklch(from var(--sf-color-neutral-source-light) clamp(0.15, calc(l - 0.25 - var(--sf-contrast-bias)), 0.45) c h),
           oklch(from var(--sf-color-neutral)              clamp(0.55, calc(l + 0.1 + var(--sf-contrast-bias)), 0.90) c h));
         --sf-color-border: light-dark(
@@ -5714,17 +5576,25 @@
   /* ============================================================
    * LIST MARKER COLOUR (.sf-marker--*)
    * Colour the ::marker of an arbitrary list. Brand/action families
-   * only — for any other colour set `::marker { color }` yourself.
-   * The :not(.sf-prose *) guard keeps this utility from reaching into
-   * a .sf-prose subtree, which owns its markers via
+   * only — for any other colour set `--sf-marker-color` (or
+   * `::marker { color }`) yourself. Each modifier points the shared
+   * --sf-marker-color knob at a brand family; the ::marker then reads
+   * that single token, so marker colour has one source of truth across
+   * the utilities and .sf-prose (which reads it via --sf-prose-marker-color).
+   * The :not(.sf-prose *) guard keeps this utility's own ::marker rule
+   * from reaching into a .sf-prose subtree, which owns its markers via
    * --sf-prose-marker-color (utilities are layered after macros, so
    * without the guard this would win). Covers the element's own marker
    * and descendant list-item markers.
    * ============================================================ */
-  .sf-marker--primary :not(.sf-prose *)::marker, .sf-marker--primary:not(.sf-prose *)::marker { color: var(--sf-color-primary); }
-  .sf-marker--secondary :not(.sf-prose *)::marker, .sf-marker--secondary:not(.sf-prose *)::marker { color: var(--sf-color-secondary); }
-  .sf-marker--tertiary :not(.sf-prose *)::marker, .sf-marker--tertiary:not(.sf-prose *)::marker { color: var(--sf-color-tertiary); }
-  .sf-marker--action :not(.sf-prose *)::marker, .sf-marker--action:not(.sf-prose *)::marker { color: var(--sf-color-action); }
+  .sf-marker--primary   { --sf-marker-color: var(--sf-color-primary); }
+  .sf-marker--secondary { --sf-marker-color: var(--sf-color-secondary); }
+  .sf-marker--tertiary  { --sf-marker-color: var(--sf-color-tertiary); }
+  .sf-marker--action    { --sf-marker-color: var(--sf-color-action); }
+  .sf-marker--primary :not(.sf-prose *)::marker,   .sf-marker--primary:not(.sf-prose *)::marker,
+  .sf-marker--secondary :not(.sf-prose *)::marker, .sf-marker--secondary:not(.sf-prose *)::marker,
+  .sf-marker--tertiary :not(.sf-prose *)::marker,  .sf-marker--tertiary:not(.sf-prose *)::marker,
+  .sf-marker--action :not(.sf-prose *)::marker,    .sf-marker--action:not(.sf-prose *)::marker { color: var(--sf-marker-color); }
 
   /* ============================================================
    * ALTERNATE SELECTION COLOUR (.sf-selection--alt)
@@ -5757,31 +5627,13 @@
 
   /* ============================================================
    * CONTENT-WIDTH UTILITIES (.sf-width-*)
-   * Constrain an element to a fraction of the content column
-   * (--sf-content-width) and centre it in normal flow. inline-size:100%
-   * lets it shrink below the cap on a narrower parent; margin-inline:auto
-   * absorbs the leftover space to centre it. The keyword variants map to
-   * CSS width keywords: full = 100% uncapped, plus auto / fit-content /
-   * min-content / max-content. Logical properties throughout, so they
-   * follow the writing mode. Centring assumes normal flow — inside a
-   * flex/grid parent, alignment is governed by the container instead.
-   *   <div class="sf-width-50">Half the content width, centred</div>
+   * Keyword width caps mapping to CSS width keywords: full = 100%
+   * uncapped, plus auto / fit-content / min-content / max-content.
+   * Logical properties throughout, so they follow the writing mode.
+   * For a fractional cap, set max-inline-size yourself (e.g.
+   * `style="max-inline-size: calc(var(--sf-content-width) * 0.5)"`).
+   *   <div class="sf-width-fit">Shrink-to-fit width</div>
    * ============================================================ */
-  .sf-width-10, .sf-width-20, .sf-width-30, .sf-width-40, .sf-width-50,
-  .sf-width-60, .sf-width-70, .sf-width-80, .sf-width-90 {
-    inline-size:   100%;
-    margin-inline: auto;
-  }
-  .sf-width-10 { max-inline-size: calc(var(--sf-content-width) * 0.1); }
-  .sf-width-20 { max-inline-size: calc(var(--sf-content-width) * 0.2); }
-  .sf-width-30 { max-inline-size: calc(var(--sf-content-width) * 0.3); }
-  .sf-width-40 { max-inline-size: calc(var(--sf-content-width) * 0.4); }
-  .sf-width-50 { max-inline-size: calc(var(--sf-content-width) * 0.5); }
-  .sf-width-60 { max-inline-size: calc(var(--sf-content-width) * 0.6); }
-  .sf-width-70 { max-inline-size: calc(var(--sf-content-width) * 0.7); }
-  .sf-width-80 { max-inline-size: calc(var(--sf-content-width) * 0.8); }
-  .sf-width-90 { max-inline-size: calc(var(--sf-content-width) * 0.9); }
-
   .sf-width-full { inline-size: 100%; max-inline-size: none; }
   .sf-width-auto { inline-size: auto; }
   .sf-width-fit  { inline-size: fit-content; }

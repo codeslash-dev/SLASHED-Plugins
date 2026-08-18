@@ -32,9 +32,9 @@
 
   const BODY_STACKS = [
     { label: "System sans-serif", value: "" },
-    { label: "Geometric (Avenir, Montserrat…)", value: "var(--sf-font-geometric)" },
-    { label: "Humanist (Seravek, Gill Sans…)", value: "var(--sf-font-humanist)" },
-    { label: "Slab serif (Rockwell, Roboto Slab…)", value: "var(--sf-font-slab)" },
+    { label: "Geometric (Avenir, Montserrat…)", value: "'Avenir', 'Montserrat', 'Corbel', 'URW Gothic', source-sans-pro, sans-serif" },
+    { label: "Humanist (Seravek, Gill Sans…)", value: "'Seravek', 'Gill Sans Nova', 'Ubuntu', 'Calibri', 'DejaVu Sans', source-sans-pro, sans-serif" },
+    { label: "Slab serif (Rockwell, Roboto Slab…)", value: "'Rockwell', 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif" },
     { label: "Inter", value: "Inter, system-ui, sans-serif" },
     { label: "Georgia (serif)", value: "Georgia, 'Times New Roman', serif" },
     { label: "Merriweather (serif)", value: "'Merriweather', Georgia, serif" },
@@ -43,9 +43,9 @@
 
   const HEADING_STACKS = [
     { label: "Same as body", value: "" },
-    { label: "Geometric (Avenir, Montserrat…)", value: "var(--sf-font-geometric)" },
-    { label: "Humanist (Seravek, Gill Sans…)", value: "var(--sf-font-humanist)" },
-    { label: "Slab serif (Rockwell, Roboto Slab…)", value: "var(--sf-font-slab)" },
+    { label: "Geometric (Avenir, Montserrat…)", value: "'Avenir', 'Montserrat', 'Corbel', 'URW Gothic', source-sans-pro, sans-serif" },
+    { label: "Humanist (Seravek, Gill Sans…)", value: "'Seravek', 'Gill Sans Nova', 'Ubuntu', 'Calibri', 'DejaVu Sans', source-sans-pro, sans-serif" },
+    { label: "Slab serif (Rockwell, Roboto Slab…)", value: "'Rockwell', 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif" },
     { label: "Inter", value: "Inter, system-ui, sans-serif" },
     { label: "Georgia (serif)", value: "Georgia, 'Times New Roman', serif" },
     { label: "Impact / condensed", value: "Impact, 'Arial Narrow', sans-serif" },
@@ -423,10 +423,13 @@
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
   <!-- ═══ 2. FLUID SCALE — text & display, identical generators ═══ -->
-  <Section title="Fluid scale (Mobile → Desktop)" spacing="space-y-4" bind:open={showScale}>
+  <Section title="Fluid scale — body text &amp; display" spacing="space-y-4" bind:open={showScale}>
     <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
-      Utopia-style fluid scale. The viewport range and the modular ratio are shared;
-      text and display each have their own base size and multiplier.
+      Utopia-style fluid scale. Two inputs are <strong class="text-slate-500 dark:text-slate-400">shared</strong>
+      by both scales — the viewport range and the modular ratio — so headlines stay
+      in tune with body copy. Each scale then adds only its own
+      <strong class="text-slate-500 dark:text-slate-400">base size</strong> and a
+      <strong class="text-slate-500 dark:text-slate-400">scale multiplier</strong>.
     </p>
 
     <!-- Shared viewport endpoints (also used by the space scale) -->
@@ -448,8 +451,16 @@
          --sf-text-ratio-* is shared with the display generator below (see its
          comment), so resetting from either card clears it for both, exactly as
          editing from either card sets it for both. -->
+    <!-- ── BODY TYPE SCALE ── owns the shared modular ratio. -->
+    <div class="flex items-baseline gap-2 pt-1">
+      <span class="text-[10px] font-bold text-slate-700 dark:text-slate-300">Body type scale</span>
+      <span class="text-[9px] text-slate-400 dark:text-slate-600">base size + shared ratio</span>
+    </div>
+    <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed -mt-2">
+      The modular ratio set here is <strong class="text-slate-500 dark:text-slate-400">shared with the display scale below</strong>.
+    </p>
     <ClampField
-      title="Text base size &amp; ratio"
+      title="Base size &amp; ratio"
       minValue={baseMin} maxValue={baseMax}
       min={0.7} max={2} step={0.01} unit="rem"
       minLabel="Mobile" maxLabel="Desktop"
@@ -470,35 +481,45 @@
     />
     <SliderRow
       label="Text scale multiplier" value={textScale} min={0.5} max={2} step={0.05}
-      help="--sf-text-scale — multiplies every text size at once."
+      help="--sf-text-scale — multiplies every body text size at once."
       overridden={"--sf-text-scale" in overrides}
       onChange={(v) => onSet("--sf-text-scale", String(v))}
       onReset={() => onReset("--sf-text-scale")}
     />
 
-    <!-- DISPLAY generator — identical controls; the ratio block edits the SAME
-         shared --sf-text-ratio-* tokens (the framework derives display sizes
-         from the text ratio), so the two generators stay in lockstep. -->
+    <!-- ── DISPLAY SCALE ── its own base + multiplier; the modular ratio is
+         INHERITED from the body scale above (both read --sf-text-ratio-*), so
+         this card exposes NO ratio picker — a read-only readout makes the link
+         explicit and avoids the old footgun where editing a "display ratio"
+         silently retuned body text. -->
+    <div class="flex items-baseline gap-2 pt-1">
+      <span class="text-[10px] font-bold text-slate-700 dark:text-slate-300">Display scale</span>
+      <span class="text-[9px] rounded-full px-1.5 py-0.5 bg-indigo-500/12 text-indigo-700 dark:text-indigo-300">headlines / hero</span>
+    </div>
+    <p class="text-[9px] text-slate-400 dark:text-slate-600 leading-relaxed -mt-2">
+      Its own base size + multiplier. The modular
+      <strong class="text-slate-500 dark:text-slate-400">ratio is inherited from the body type scale above</strong> —
+      change it there and both move together.
+    </p>
     <ClampField
-      title="Display base size &amp; ratio"
+      title="Display base size"
       minValue={dispMin} maxValue={dispMax}
       min={1.5} max={6} step={0.05} unit="rem"
       minLabel="Mobile" maxLabel="Desktop"
       previewKind="type"
-      overridden={"--sf-text-display-base-min" in overrides || "--sf-text-display-base-max" in overrides
-        || "--sf-text-ratio-min" in overrides || "--sf-text-ratio-max" in overrides}
+      overridden={"--sf-text-display-base-min" in overrides || "--sf-text-display-base-max" in overrides}
       onReset={() => {
         onReset("--sf-text-display-base-min"); onReset("--sf-text-display-base-max");
-        onReset("--sf-text-ratio-min"); onReset("--sf-text-ratio-max");
       }}
       onMinChange={(v) => onSet("--sf-text-display-base-min", String(v))}
       onMaxChange={(v) => onSet("--sf-text-display-base-max", String(v))}
-      ratioPresets={RATIO_PRESETS}
-      ratioMin={ratioMin} ratioMax={ratioMax}
-      ratioMin_bound={1.05} ratioMax_bound={1.8}
-      onRatioMinChange={(v) => onSet("--sf-text-ratio-min", String(v))}
-      onRatioMaxChange={(v) => onSet("--sf-text-ratio-max", String(v))}
     />
+    <!-- Inherited-ratio readout — ties the display scale to the body scale's
+         ratio without a second editable control. -->
+    <div class="flex items-center justify-between rounded-lg bg-black/4 dark:bg-white/4 border border-dashed border-black/10 dark:border-white/10 px-2.5 py-1.5">
+      <span class="text-[9px] text-slate-500 dark:text-slate-400">Modular ratio <span class="text-slate-400 dark:text-slate-600">(inherited from body scale)</span></span>
+      <span class="text-[10px] font-mono text-slate-700 dark:text-slate-300">{ratioMin} <span class="text-slate-400 dark:text-slate-600">→</span> {ratioMax}</span>
+    </div>
     <SliderRow
       label="Display scale multiplier" value={displayScale} min={0.5} max={2} step={0.05}
       help="--sf-text-display-scale — multiplies every display size at once."

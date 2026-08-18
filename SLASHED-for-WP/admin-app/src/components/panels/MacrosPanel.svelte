@@ -1,7 +1,6 @@
 <script lang="ts">
   import SliderRow from '../inputs/SliderRow.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
-  import AspectRatioInput from '../inputs/AspectRatioInput.svelte';
   import RawTokenRow from '../inputs/RawTokenRow.svelte';
   import Section from '../inputs/Section.svelte';
   import { SPACE_SCALE, RADIUS_SCALE } from '../../lib/variableScales';
@@ -18,15 +17,6 @@
     const v = parseFloat(strip ? raw.replace(strip, "") : raw);
     return isNaN(v) ? fallback : v;
   }
-
-  const ASPECT_PRESETS = [
-    { label: "16 / 9", value: "16 / 9" },
-    { label: "4 / 3",  value: "4 / 3" },
-    { label: "3 / 2",  value: "3 / 2" },
-    { label: "1 / 1",  value: "1 / 1" },
-    { label: "21 / 9", value: "21 / 9" },
-    { label: "9 / 16", value: "9 / 16" },
-  ];
 
   const SCRIM_DIRECTIONS = [
     { label: "↑ top",        value: "to top" },
@@ -75,7 +65,6 @@
 
   let showFlow = $state(false);
   let showLineClamp = $state(false);
-  let showAspect = $state(false);
   let showScrollShadow = $state(false);
   let showScrim = $state(false);
   let showProse = $state(false);
@@ -85,7 +74,6 @@
   let lineClamp   = $derived(num("--sf-line-clamp", 3));
   let flowSpace   = $derived(num("--sf-flow-space", 0.5, "rem"));
   let scrollSize  = $derived(num("--sf-scroll-shadow-size", 2, "rem"));
-  let aspectVal   = $derived(overrides["--sf-aspect"] ?? "16 / 9");
   let scrimColor  = $derived(overrides["--sf-scrim-color"] ?? "oklch(0 0 0 / 0.55)");
   let scrimDir    = $derived(overrides["--sf-scrim-direction"] ?? "to top");
   let mediaRadius = $derived(num("--sf-prose-media-radius", 6, "px"));
@@ -114,7 +102,7 @@
   <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
     Tokens for the framework's utility macros — <span class="font-mono text-slate-600 dark:text-slate-400">.sf-prose</span>,
     <span class="font-mono text-slate-600 dark:text-slate-400">.sf-flow</span>, <span class="font-mono text-slate-600 dark:text-slate-400">.sf-line-clamp</span>,
-    <span class="font-mono text-slate-600 dark:text-slate-400">.sf-aspect</span>, <span class="font-mono text-slate-600 dark:text-slate-400">.sf-scroll-shadow</span>
+    <span class="font-mono text-slate-600 dark:text-slate-400">.sf-scroll-shadow</span>
     and <span class="font-mono text-slate-600 dark:text-slate-400">.sf-scrim</span>.
   </p>
 
@@ -160,18 +148,6 @@
           Extra filler text keeps the block taller than the clamp at every setting.
         </p>
       </div>
-  </Section>
-
-  <div class="h-px bg-black/6 dark:bg-white/6"></div>
-
-  <!-- ASPECT -->
-  <Section title="Aspect ratio" bind:open={showAspect}>
-      <p class="text-[9px] text-slate-400 dark:text-slate-600">--sf-aspect — default ratio for .sf-aspect / .sf-frame</p>
-      <AspectRatioInput
-        token="--sf-aspect" value={aspectVal} defaultValue="16 / 9"
-        presets={ASPECT_PRESETS} columns={3} showPreview
-        {onSet} {onReset}
-      />
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>

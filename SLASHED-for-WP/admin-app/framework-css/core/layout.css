@@ -549,14 +549,7 @@
     .sf-alternate > :nth-child(even) > :last-child  { order: 1; }
   }
 
-  
-  .sf-pancake {
-    display:             grid;
-    grid-template-rows:  auto 1fr auto;
-    min-height:          100dvh;
-  }
 
-  
   .sf-grid-cols-1 {
     display: grid;
     gap:     var(--sf-grid-gap);

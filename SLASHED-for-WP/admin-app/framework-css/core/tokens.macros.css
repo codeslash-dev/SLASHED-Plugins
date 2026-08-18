@@ -22,10 +22,12 @@
     --sf-line-clamp: 3;
 
     /* ----------------------------------------------------------
-       Aspect ratio — default for .sf-aspect (generic ratio container,
-       distinct from layout's .sf-frame which has its own --sf-frame-ratio).
+       List markers — single source of truth for ::marker colour.
+       Drives both the .sf-marker--* utilities and .sf-prose markers
+       (via --sf-prose-marker-color below), so one knob retunes every
+       list marker. Defaults to the primary brand colour.
        ---------------------------------------------------------- */
-    --sf-aspect: 16 / 9;
+    --sf-marker-color:           var(--sf-color-primary);
 
     /* ----------------------------------------------------------
        Prose — per-instance override knobs for .sf-prose.
@@ -41,7 +43,7 @@
     --sf-prose-media-margin:     var(--sf-space-m);
     --sf-prose-media-radius:     var(--sf-radius-m);
     --sf-prose-figure-margin:    var(--sf-space-l);
-    --sf-prose-marker-color:     var(--sf-color-primary);
+    --sf-prose-marker-color:     var(--sf-marker-color);
     --sf-prose-figcaption-size:  var(--sf-text-s);
     --sf-prose-blockquote-padding: var(--sf-space-m);
     --sf-prose-blockquote-border:  var(--sf-border-width-2) solid var(--sf-color-border--subtle);
@@ -69,7 +71,7 @@
     --sf-scroll-shadow-size: 2rem;
 
     /* ----------------------------------------------------------
-       Content visibility — placeholder size for .sf-content-auto.
+       Content visibility — placeholder size for .sf-render-lazy.
        Feeds contain-intrinsic-size so offscreen sections reserve
        space before their first render, keeping the scrollbar and
        scroll position stable. Override per element:
@@ -119,15 +121,6 @@
     --sf-surface-bg-repeat:     no-repeat;
     --sf-surface-bg-attachment: scroll;
     --sf-surface-bg-animation:  none;
-
-    /* ----------------------------------------------------------
-       Overlap recipe — how far .sf-overlap pulls into the adjacent
-       element. .sf-overlap-host's padding compensation defaults to this
-       same value via a var() fallback in the rule itself (not aliased
-       here — see core/macros.css), so one override on the host tunes
-       both unless --sf-overlap-host-pad is set independently.
-       ---------------------------------------------------------- */
-    --sf-overlap-pull: var(--sf-space-xl);
 
   }
 }

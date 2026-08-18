@@ -25,36 +25,6 @@
       "layer": "slashed.print"
     },
     {
-      "name": "print-color-exact",
-      "selector": ".print-color-exact",
-      "kind": "print",
-      "category": "Print",
-      "group": "",
-      "description": "Forces exact color rendering in print (print-color-adjust: exact). Use on charts and colored badges that must preserve their fill colors in print.",
-      "optional": false,
-      "layer": "slashed.print"
-    },
-    {
-      "name": "print-no-color",
-      "selector": ".print-no-color",
-      "kind": "print",
-      "category": "Print",
-      "group": "",
-      "description": "Strips color information in print (print-color-adjust: economy). Defers to the printer's ink-saving mode for backgrounds and non-critical color fills.",
-      "optional": false,
-      "layer": "slashed.print"
-    },
-    {
-      "name": "print-only",
-      "selector": ".print-only",
-      "kind": "print",
-      "category": "Print",
-      "group": "",
-      "description": "Hides the element on screen (display: none) but shows it in @media print. Use for print-only headers, footers, and supplementary content not needed on screen.",
-      "optional": false,
-      "layer": "slashed.print"
-    },
-    {
       "name": "sf-alternate",
       "selector": ".sf-alternate",
       "kind": "layout",
@@ -63,16 +33,6 @@
       "description": "Zigzag / alternating two-column layout. Even children align image-left/text-right; odd children flip. Collapses to a single column below the breakpoint.",
       "optional": false,
       "layer": "slashed.layout"
-    },
-    {
-      "name": "sf-aspect",
-      "selector": ".sf-aspect",
-      "kind": "macro",
-      "category": "Macro classes",
-      "group": "",
-      "description": "Sets aspect-ratio from a --sf-aspect-ratio scoped token. Override the token inline to get any ratio without a new class.",
-      "optional": false,
-      "layer": "slashed.macros"
     },
     {
       "name": "sf-bento",
@@ -713,16 +673,6 @@
       "description": "Container variant with a wider max-width (--sf-container-l). Use for dashboards and wide media.",
       "optional": false,
       "layer": "slashed.layout"
-    },
-    {
-      "name": "sf-content-auto",
-      "selector": ".sf-content-auto",
-      "kind": "macro",
-      "category": "Macro classes",
-      "group": "",
-      "description": "Sets content-visibility: auto on the element. The browser skips rendering off-screen content, improving LCP for long pages.",
-      "optional": false,
-      "layer": "slashed.macros"
     },
     {
       "name": "sf-content-grid",
@@ -1905,52 +1855,22 @@
       "layer": "slashed.states"
     },
     {
-      "name": "sf-is-draggable",
-      "selector": ".sf-is-draggable",
-      "kind": "state",
-      "category": "State classes",
-      "group": "DRAG & DROP",
-      "description": "Draggable state — shows a grab cursor to indicate the element can be dragged. Apply before a drag interaction begins.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-dragging",
-      "selector": ".sf-is-dragging",
-      "kind": "state",
-      "category": "State classes",
-      "group": "DRAG & DROP",
-      "description": "Active drag state — shows a grabbing cursor while the element is being dragged. Apply during the drag event.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-drop-target",
-      "selector": ".sf-is-drop-target",
-      "kind": "state",
-      "category": "State classes",
-      "group": "DRAG & DROP",
-      "description": "Drop-target state — applies a visual highlight to indicate a valid drag-and-drop destination. Toggle on drag-over events.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
-      "name": "sf-is-empty",
-      "selector": ".sf-is-empty",
-      "kind": "state",
-      "category": "State classes",
-      "group": "EMPTY STATE",
-      "description": "Empty state — hides the element when it has no child nodes (:empty). Used for dynamic lists or containers that may render empty.",
-      "optional": false,
-      "layer": "slashed.states"
-    },
-    {
       "name": "sf-is-error",
       "selector": ".sf-is-error",
       "kind": "state",
       "category": "State classes",
       "group": "VALIDATION / FEEDBACK",
       "description": "Error state — general (not form-field-specific) negative feedback. Applies danger color tokens to indicate a validation failure or system error. Visual styling is identical to sf-is-invalid.",
+      "optional": false,
+      "layer": "slashed.states"
+    },
+    {
+      "name": "sf-is-hidden-if-empty",
+      "selector": ".sf-is-hidden-if-empty",
+      "kind": "state",
+      "category": "State classes",
+      "group": "HIDE-IF-EMPTY",
+      "description": "Hides the element when it has no child nodes (:empty). An action-on-state helper (the name states the behaviour) for dynamic lists or containers that may render empty.",
       "optional": false,
       "layer": "slashed.states"
     },
@@ -2255,52 +2175,12 @@
       "layer": "slashed.macros"
     },
     {
-      "name": "sf-overlap",
-      "selector": ".sf-overlap",
-      "kind": "macro",
-      "category": "Macro classes",
-      "group": "",
-      "description": "Overlap recipe — pulls the element upward (negative block-start margin) so it overlaps the previous sibling by --sf-overlap-pull.",
-      "optional": false,
-      "layer": "slashed.macros"
-    },
-    {
-      "name": "sf-overlap--down",
-      "selector": ".sf-overlap--down",
-      "kind": "macro",
-      "category": "Macro classes",
-      "group": "",
-      "description": "Overlap recipe — pulls following content up (negative block-end margin) so this element overlaps the sibling below it.",
-      "optional": false,
-      "layer": "slashed.macros"
-    },
-    {
-      "name": "sf-overlap-host",
-      "selector": ".sf-overlap-host",
-      "kind": "macro",
-      "category": "Macro classes",
-      "group": "",
-      "description": "Card-container recipe — the receiving side of an overlap: an isolated stacking context with block-start padding compensation so in-flow content clears an element intruding from above. The padding knob defaults to the pull knob so one override tunes both.",
-      "optional": false,
-      "layer": "slashed.macros"
-    },
-    {
       "name": "sf-overlay",
       "selector": ".sf-overlay",
       "kind": "layout",
       "category": "Layout primitives",
       "group": "",
       "description": "Overlay layout helper — absolutely fills its positioned parent (`position: absolute; inset: 0`) for overlays, backdrops, and media scrims.",
-      "optional": false,
-      "layer": "slashed.layout"
-    },
-    {
-      "name": "sf-pancake",
-      "selector": ".sf-pancake",
-      "kind": "layout",
-      "category": "Layout primitives",
-      "group": "",
-      "description": "Three-row layout (header, main, footer) where main takes all remaining vertical space via flex-grow. The footer always sticks to the bottom on tall viewports.",
       "optional": false,
       "layer": "slashed.layout"
     },
@@ -2333,6 +2213,16 @@
       "description": "Horizontally scrollable row of fixed-height items with snap scrolling. Children don't shrink below their intrinsic width, creating a card carousel effect.",
       "optional": false,
       "layer": "slashed.layout"
+    },
+    {
+      "name": "sf-render-lazy",
+      "selector": ".sf-render-lazy",
+      "kind": "macro",
+      "category": "Macro classes",
+      "group": "",
+      "description": "Defers rendering of off-screen content via content-visibility: auto. The browser skips layout+paint for content outside the viewport, improving LCP for long pages.",
+      "optional": false,
+      "layer": "slashed.macros"
     },
     {
       "name": "sf-scale-down",
@@ -3115,102 +3005,12 @@
       "layer": "slashed.utilities"
     },
     {
-      "name": "sf-width-10",
-      "selector": ".sf-width-10",
-      "kind": "utility",
-      "category": "Utilities",
-      "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
-      "optional": true,
-      "layer": "slashed.utilities"
-    },
-    {
-      "name": "sf-width-20",
-      "selector": ".sf-width-20",
-      "kind": "utility",
-      "category": "Utilities",
-      "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
-      "optional": true,
-      "layer": "slashed.utilities"
-    },
-    {
-      "name": "sf-width-30",
-      "selector": ".sf-width-30",
-      "kind": "utility",
-      "category": "Utilities",
-      "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
-      "optional": true,
-      "layer": "slashed.utilities"
-    },
-    {
-      "name": "sf-width-40",
-      "selector": ".sf-width-40",
-      "kind": "utility",
-      "category": "Utilities",
-      "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
-      "optional": true,
-      "layer": "slashed.utilities"
-    },
-    {
-      "name": "sf-width-50",
-      "selector": ".sf-width-50",
-      "kind": "utility",
-      "category": "Utilities",
-      "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
-      "optional": true,
-      "layer": "slashed.utilities"
-    },
-    {
-      "name": "sf-width-60",
-      "selector": ".sf-width-60",
-      "kind": "utility",
-      "category": "Utilities",
-      "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
-      "optional": true,
-      "layer": "slashed.utilities"
-    },
-    {
-      "name": "sf-width-70",
-      "selector": ".sf-width-70",
-      "kind": "utility",
-      "category": "Utilities",
-      "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
-      "optional": true,
-      "layer": "slashed.utilities"
-    },
-    {
-      "name": "sf-width-80",
-      "selector": ".sf-width-80",
-      "kind": "utility",
-      "category": "Utilities",
-      "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
-      "optional": true,
-      "layer": "slashed.utilities"
-    },
-    {
-      "name": "sf-width-90",
-      "selector": ".sf-width-90",
-      "kind": "utility",
-      "category": "Utilities",
-      "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
-      "optional": true,
-      "layer": "slashed.utilities"
-    },
-    {
       "name": "sf-width-auto",
       "selector": ".sf-width-auto",
       "kind": "utility",
       "category": "Utilities",
       "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
+      "description": "Intrinsic auto width (inline-size:auto) — sizes to the box’s normal layout.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -3220,7 +3020,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
+      "description": "Width sized to its own content (fit-content).",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -3230,7 +3030,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
+      "description": "Full width, uncapped (inline-size:100%, max-inline-size:none).",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -3240,7 +3040,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
+      "description": "Widest content-driven width (max-content) — grows to full intrinsic width, no wrapping.",
       "optional": true,
       "layer": "slashed.utilities"
     },
@@ -3250,7 +3050,7 @@
       "kind": "utility",
       "category": "Utilities",
       "group": "CONTENT-WIDTH UTILITIES (.sf-width-*)",
-      "description": "Constrain an element to a fraction of the content column (--sf-content-width) and centre it in normal flow. inline-size:100% lets it shrink below the cap on a narrower parent; margin-inline:auto absorbs the leftover space to centre it. The keyword variants map to CSS width…",
+      "description": "Narrowest content-driven width (min-content) — shrinks to the longest unbreakable content.",
       "optional": true,
       "layer": "slashed.utilities"
     },

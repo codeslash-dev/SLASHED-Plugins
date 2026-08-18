@@ -39,8 +39,8 @@
     "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
     "category": "States"
   },
-  "sf-is-empty": {
-    "description": ".sf-is-dragging {",
+  "sf-is-hidden-if-empty": {
+    "description": "/* Action-on-state, not a state assertion: hides the element when it has no",
     "category": "States"
   },
   "is-hidden": {

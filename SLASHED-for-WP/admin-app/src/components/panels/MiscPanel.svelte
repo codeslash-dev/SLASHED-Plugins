@@ -39,7 +39,7 @@
 
   let touchTarget = $derived(parseNum(overrides["--sf-touch-target"], 44, "px"));
   let zBaseOffset = $derived(parseNum(overrides["--sf-z-base"], 0));
-  let caretColor = $derived(overrides["--sf-caret-color"] ?? "");
+  let caretColor = $derived(overrides["--sf-color-caret"] ?? "");
   let underlineOffset = $derived(parseNum(overrides["--sf-link-underline-offset"]?.replace("em",""), 0.15));
   let underlineThickness = $derived(overrides["--sf-link-underline-thickness"] ?? "auto");
 
@@ -50,7 +50,6 @@
   let showCaretLinks = $state(false);
   let showIconSizes = $state(false);
   let showObjectFit = $state(false);
-  let showPrint = $state(false);
   let showSafeArea = $state(false);
   let showFieldMarker = $state(false);
 
@@ -227,12 +226,12 @@
       <div>
         <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Caret color</div>
         <ColorInput
-          token="--sf-caret-color"
+          token="--sf-color-caret"
           value={caretColor}
           placeholder="default (action color)"
-          isOverridden={"--sf-caret-color" in overrides}
-          onSet={(v) => onSet("--sf-caret-color", v)}
-          onReset={() => onReset("--sf-caret-color")}
+          isOverridden={"--sf-color-caret" in overrides}
+          onSet={(v) => onSet("--sf-color-caret", v)}
+          onReset={() => onReset("--sf-color-caret")}
         />
       </div>
       <SliderRow
@@ -384,46 +383,6 @@
           </div>
         {/each}
       </div>
-  </Section>
-
-  <div class="h-px bg-black/6 dark:bg-white/6"></div>
-
-  <!-- PRINT -->
-  <Section title="Print styles" bind:open={showPrint}>
-      <p class="text-[9px] text-slate-400 dark:text-slate-600">Applied inside <span class="font-mono text-slate-600 dark:text-slate-400">@media print</span> via <span class="font-mono text-slate-600 dark:text-slate-400">optional/print.css</span>.</p>
-      <div class="flex items-center gap-2">
-        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Page size</span>
-        <div class="flex gap-1 flex-1">
-          {#each ["a4","letter","legal","a3"] as v (v)}
-            {@const cur = overrides["--sf-print-page-size"] ?? "a4"}
-            <button
-              onclick={() => v === "a4" ? onReset("--sf-print-page-size") : onSet("--sf-print-page-size", v)}
-              class={`flex-1 py-1.5 rounded-lg text-[9px] border transition-all cursor-pointer ${cur === v ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200" : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5"}`}
-            >{v}</button>
-          {/each}
-        </div>
-      </div>
-      {#each [
-        { label: "Base size", token: "--sf-print-base-size", placeholder: "11pt" },
-        { label: "Page margin", token: "--sf-print-page-margin", placeholder: "2cm" },
-      ] as row (row.token)}
-        <div class="flex items-center gap-2">
-          <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">{row.label}</span>
-          <input
-            type="text"
-            value={overrides[row.token] ?? ""}
-            placeholder={row.placeholder}
-            oninput={(e) => {
-              const v = (e.target as HTMLInputElement).value.trim();
-              v ? onSet(row.token, v) : onReset(row.token);
-            }}
-            class="flex-1 min-w-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-1.5 py-1 text-[9px] font-mono text-slate-700 dark:text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
-          />
-          {#if row.token in overrides}
-            <button onclick={() => onReset(row.token)} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
-          {/if}
-        </div>
-      {/each}
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>

@@ -1,15 +1,60 @@
 <script lang="ts">
-  import { Check, Copy, Download, Link } from '@lucide/svelte';
+  import { Check, Copy, Download, Link, Upload, TriangleAlert } from '@lucide/svelte';
   import { generateCSS, buildShareUrl } from '../../lib/codec';
   import { getShareBaseUrl } from '../../lib/persistence';
+  import { serializeThemeFile, importThemeFile } from '../../lib/themeFile';
+  import type { SlashedToken } from '../../types';
 
-  let { overrides }: {
+  let { overrides, tokens = [], onApplyTheme }: {
     overrides: Record<string, string>;
+    tokens?: SlashedToken[];
+    onApplyTheme?: (overrides: Record<string, string>) => void;
   } = $props();
+
+  // Declared globally in src/vite-env.d.ts, injected by Vite at build time.
+  const frameworkVersion =
+    typeof __SLASHED_VERSION__ !== "undefined" ? __SLASHED_VERSION__ : undefined;
 
   let outputMode = $state<"layer" | "root">("layer");
   let copied = $state(false);
   let copiedLink = $state(false);
+
+  // Theme-file import feedback: what the migration did, or why it refused.
+  let importNotes = $state<string[]>([]);
+  let importErrors = $state<string[]>([]);
+  let fileInput = $state<HTMLInputElement | null>(null);
+
+  let liveTokenNames = $derived(new Set(tokens.map((t) => t.name)));
+
+  function handleDownloadTheme() {
+    const json = serializeThemeFile({ overrides, slashedVersion: frameworkVersion });
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "slashed-theme.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleImportTheme(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    importNotes = [];
+    importErrors = [];
+
+    const result = await importThemeFile(file, liveTokenNames);
+    if (!result.overrides) {
+      importErrors = result.errors;
+    } else {
+      importNotes = result.notes;
+      onApplyTheme?.(result.overrides);
+    }
+    // Allow re-selecting the same file after a fix.
+    input.value = "";
+  }
 
   let css = $derived(generateCSS(overrides, { mode: outputMode, banner: true }));
   let count = $derived(Object.keys(overrides).length);
@@ -137,6 +182,64 @@
         <Download class="w-3 h-3" />
       </button>
     </div>
+  </div>
+
+  <!-- Portable theme file: the reviewable, committable form of this override set -->
+  <div class="space-y-2">
+    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Theme file</div>
+    <p class="text-[10px] text-slate-600 dark:text-slate-400 leading-relaxed">
+      A named, sorted JSON snapshot you can commit next to your CSS and review in a diff.
+      Importing one migrates tokens renamed since it was written.
+    </p>
+
+    <div class="flex gap-2">
+      <button
+        onclick={handleDownloadTheme}
+        disabled={count === 0}
+        class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-black/8 dark:border-white/8 bg-black/4 dark:bg-white/4 text-[10px] font-bold text-slate-600 dark:text-slate-400 hover:bg-black/8 dark:hover:bg-white/8 hover:text-slate-800 dark:hover:text-slate-200 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <Download class="w-3 h-3" />
+        Download .json
+      </button>
+      <button
+        onclick={() => fileInput?.click()}
+        class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-black/8 dark:border-white/8 bg-black/4 dark:bg-white/4 text-[10px] font-bold text-slate-600 dark:text-slate-400 hover:bg-black/8 dark:hover:bg-white/8 hover:text-slate-800 dark:hover:text-slate-200 transition-all cursor-pointer"
+      >
+        <Upload class="w-3 h-3" />
+        Import…
+      </button>
+    </div>
+
+    <input
+      bind:this={fileInput}
+      type="file"
+      accept="application/json,.json"
+      onchange={handleImportTheme}
+      class="hidden"
+    />
+
+    {#if importErrors.length}
+      <div class="rounded-lg bg-red-500/8 border border-red-500/20 p-3 space-y-1">
+        <div class="flex items-center gap-1.5 text-[10px] font-bold text-red-700 dark:text-red-300">
+          <TriangleAlert class="w-3 h-3" />
+          Import refused — nothing was changed
+        </div>
+        {#each importErrors as err}
+          <div class="text-[10px] text-red-700/80 dark:text-red-300/80 leading-relaxed font-mono">{err}</div>
+        {/each}
+      </div>
+    {/if}
+
+    {#if importNotes.length}
+      <div class="rounded-lg bg-amber-500/8 border border-amber-500/20 p-3 space-y-1">
+        <div class="text-[10px] font-bold text-amber-700 dark:text-amber-300">
+          Imported with {importNotes.length} adjustment{importNotes.length !== 1 ? "s" : ""}
+        </div>
+        {#each importNotes as note}
+          <div class="text-[10px] text-amber-700/80 dark:text-amber-300/80 leading-relaxed font-mono">{note}</div>
+        {/each}
+      </div>
+    {/if}
   </div>
 
   <!-- W3C Design Tokens export -->

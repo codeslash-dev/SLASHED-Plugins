@@ -40,6 +40,7 @@
   let sidebarWidth      = $derived(parseRem(overrides["--sf-sidebar-width"],     18));
   let stickyMobile      = $derived(parseRem(overrides["--sf-sticky-offset-mobile"],  3.5));
   let stickyDesktop     = $derived(parseRem(overrides["--sf-sticky-offset-desktop"], 5));
+  let scrollOffsetGap   = $derived(parseRem(overrides["--sf-scroll-offset-gap"],  1));
 
   const BENTO_TOKENS = [
     { label: "Columns",    token: "--sf-bento-cols-default", min: 1, max: 12, step: 1, unit: "", default: 4 },
@@ -314,6 +315,18 @@
             onRawSet={(v) => onSet("--sf-sticky-offset-desktop", v)}
           />
         </div>
+      </div>
+      <div class="pt-1">
+        <SliderRow
+          label="Scroll-to-anchor gap" value={scrollOffsetGap} min={0} max={6} step={0.25} unit="rem"
+          help="--sf-scroll-offset-gap — breathing room below the header when scrolling to an in-page anchor; 0 = heading flush under the header."
+          overridden={"--sf-scroll-offset-gap" in overrides}
+          onChange={(v) => onSet("--sf-scroll-offset-gap", `${v}rem`)}
+          onReset={() => onReset("--sf-scroll-offset-gap")}
+          rawDefault="var(--sf-space-m)"
+          currentRaw={overrides["--sf-scroll-offset-gap"]}
+          onRawSet={(v) => onSet("--sf-scroll-offset-gap", v)}
+        />
       </div>
   </Section>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   /**
    * AspectRatioInput — one shared preset grid for "pick a raw aspect ratio for
-   * a single token" controls (Macros --sf-aspect, Layout --sf-frame-ratio).
+   * a single token" controls (e.g. Layout --sf-frame-ratio).
    * Clicking the default preset resets the override. Optional live preview box.
    */
   type Preset = string | { label: string; value: string };

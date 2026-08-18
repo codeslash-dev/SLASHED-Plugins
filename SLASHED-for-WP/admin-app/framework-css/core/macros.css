@@ -88,10 +88,6 @@
     flex:       1 1 auto;
   }
 
-  .sf-aspect {
-    aspect-ratio: var(--sf-aspect, 16 / 9);
-  }
-
   .sf-scroll-shadow {
     overflow-y:     auto;
     overflow-block: auto;
@@ -283,7 +279,7 @@
       --sf-color-border--subtle:    oklch(from var(--sf-surface-contrast) l c h / 0.12);
       --sf-color-border--strong:    oklch(from var(--sf-surface-contrast) l c h / 0.35);
       --sf-focus-ring-color:        var(--sf-surface-contrast);
-      --sf-caret-color:             var(--sf-surface-contrast);
+      --sf-color-caret:             var(--sf-surface-contrast);
 
       --sf-shadow-color:            oklch(from var(--sf-surface-color) var(--sf-shadow-lightness) c h);
 
@@ -367,7 +363,7 @@
     }
   }
 
-  .sf-content-auto {
+  .sf-render-lazy {
     content-visibility:     auto;
     contain-intrinsic-size: auto var(--sf-content-intrinsic-size, 500px);
   }
@@ -401,31 +397,6 @@
   .sf-link--reverse:is(:link, :visited):hover,
   .sf-link--reverse:is(:link, :visited):focus-visible {
     text-decoration-line: none;
-  }
-
-  /* Overlap recipe — one element intentionally overlapping the previous
-     one (e.g. an image pulled up over the card below it), via a negative
-     logical margin + a raised stacking context. Directional variants are
-     standalone (margins are distinct properties, not a re-pointable knob). */
-  .sf-overlap,
-  .sf-overlap--down {
-    position: relative;
-    z-index:  var(--sf-z-raised);
-  }
-  .sf-overlap        { margin-block-start:  calc(-1 * var(--sf-overlap-pull)); }
-  .sf-overlap--down  { margin-block-end:    calc(-1 * var(--sf-overlap-pull)); }
-
-  /* Card-container recipe — the receiving side of an overlap: an isolated
-     stacking context with block-start padding compensation so in-flow
-     content clears an element intruding from above. The padding knob
-     defaults to the pull knob so one override tunes both. */
-  .sf-overlap-host {
-    position:  relative;
-    isolation: isolate;
-    /* var() fallback resolved on this element, not pre-baked at :root —
-       so a local --sf-overlap-pull override (even without setting
-       --sf-overlap-host-pad) is honored (#496-class pitfall). */
-    padding-block-start: var(--sf-overlap-host-pad, var(--sf-overlap-pull));
   }
 
 }

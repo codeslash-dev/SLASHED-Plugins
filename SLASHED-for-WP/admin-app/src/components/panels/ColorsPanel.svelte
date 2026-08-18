@@ -161,6 +161,7 @@
     { name: "--sf-color-link--visited", label: "Link visited", note: "Only affects links already visited in the browser — the preview can't show it (a browser privacy rule), but it applies on your live site." },
     { name: "--sf-color-mark-bg",     label: "Mark background" },
     { name: "--sf-color-mark-text",   label: "Mark text" },
+    { name: "--sf-marker-color",      label: "List marker", note: "Drives the .sf-marker--* utilities and .sf-prose ::marker alike (via --sf-prose-marker-color)." },
     { name: "--sf-color-code-bg",     label: "Code background" },
     { name: "--sf-color-code-text",   label: "Code text" },
     { name: "--sf-color-overlay",     label: "Overlay" },

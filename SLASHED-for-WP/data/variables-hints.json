@@ -79,10 +79,6 @@
     "description": "Continuous rotation loop. Use for loading spinners and progress indicators.",
     "category": "Core tokens"
   },
-  "sf-aspect": {
-    "description": "Aspect ratio value for the .aspect-ratio macro.",
-    "category": "Macro tokens"
-  },
   "sf-bento-cols-default": {
     "description": "Default column count for the bento grid.",
     "category": "Layout tokens"
@@ -196,7 +192,7 @@
     "category": "Core tokens"
   },
   "sf-border-width-hairline": {
-    "description": "1px border width (hairline).",
+    "description": "~0.5px hairline border. Browsers snap border-width to the nearest device pixel (rounding up to a minimum of 1 device pixel), so the rendered width is device-pixel- and browser-dependent: on 1x DPR it rounds up to 1px (visually matching --sf-border-width-1); at DPRs where 0.5px lands on a whole device-pixel boundary (2x, 4x, …) it renders as a true 0.5px hairline; at other DPRs (e.g. 3x) the snapped result is close to but not exactly 0.5px. Use for subtle separators where sub-pixel precision doesn't matter.",
     "category": "Core tokens"
   },
   "sf-box-border-color": {
@@ -387,10 +383,6 @@
     "description": "Drop shadow applied on hover/focus by the .sf-card--interactive modifier.",
     "category": "Component tokens"
   },
-  "sf-caret-color": {
-    "description": "Cursor caret color inside text inputs and contenteditable elements.",
-    "category": "Core tokens"
-  },
   "sf-center-gutter": {
     "description": "Minimum side gutter for the center layout.",
     "category": "Layout tokens"
@@ -492,11 +484,11 @@
     "category": "Core tokens"
   },
   "sf-color-action-darker": {
-    "description": "Deep action shade for high-contrast contexts.",
+    "description": "Deep action shade — alias of --sf-color-action-600.",
     "category": "Core tokens"
   },
   "sf-color-action-lighter": {
-    "description": "Light action shade for soft accents.",
+    "description": "Light action shade for soft accents — alias of --sf-color-action-400.",
     "category": "Core tokens"
   },
   "sf-color-action-muted": {
@@ -516,23 +508,23 @@
     "category": "Core tokens"
   },
   "sf-color-action-superdark": {
-    "description": "Near-black action shade for maximum contrast on light surfaces.",
+    "description": "Near-black action shade for maximum contrast on light surfaces — alias of --sf-color-action-950.",
     "category": "Core tokens"
   },
   "sf-color-action-superlight": {
-    "description": "Near-white action shade for maximum contrast on dark surfaces.",
+    "description": "Near-white action shade — alias of --sf-color-action-50.",
     "category": "Core tokens"
   },
   "sf-color-action-tint": {
-    "description": "Near-transparent action tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
+    "description": "Near-transparent action tint (5% alpha) for hover-state washes and the most subtle backgrounds — alias of --sf-color-action-a5.",
     "category": "Core tokens"
   },
   "sf-color-action-xdark": {
-    "description": "Extra-dark action shade.",
+    "description": "Extra-dark action shade — alias of --sf-color-action-800.",
     "category": "Core tokens"
   },
   "sf-color-action-xlight": {
-    "description": "Extra-light action shade.",
+    "description": "Extra-light action shade — alias of --sf-color-action-200.",
     "category": "Core tokens"
   },
   "sf-color-base": {
@@ -628,7 +620,7 @@
     "category": "Core tokens"
   },
   "sf-color-base-tint": {
-    "description": "Near-transparent base-surface tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
+    "description": "Near-transparent base-surface tint (5% alpha) for hover-state washes and the most subtle backgrounds — alias of --sf-color-base-a5.",
     "category": "Core tokens"
   },
   "sf-color-bg": {
@@ -681,6 +673,10 @@
   },
   "sf-color-border--translucent": {
     "description": "Translucent border for glass-morphism and frosted surfaces.",
+    "category": "Core tokens"
+  },
+  "sf-color-caret": {
+    "description": "Cursor caret color inside text inputs and contenteditable elements.",
     "category": "Core tokens"
   },
   "sf-color-code-bg": {
@@ -872,7 +868,7 @@
     "category": "Core tokens"
   },
   "sf-color-neutral-darker": {
-    "description": "Deep neutral shade for high-contrast contexts.",
+    "description": "Deep neutral shade — alias of --sf-color-neutral-600.",
     "category": "Core tokens"
   },
   "sf-color-neutral-lighter": {
@@ -900,19 +896,19 @@
     "category": "Core tokens"
   },
   "sf-color-neutral-superlight": {
-    "description": "Near-white neutral shade.",
+    "description": "Near-white neutral shade — alias of --sf-color-neutral-50.",
     "category": "Core tokens"
   },
   "sf-color-neutral-tint": {
-    "description": "Near-transparent neutral tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
+    "description": "Near-transparent neutral tint (5% alpha) for hover-state washes and the most subtle backgrounds — alias of --sf-color-neutral-a5.",
     "category": "Core tokens"
   },
   "sf-color-neutral-xdark": {
-    "description": "Extra-dark neutral shade.",
+    "description": "Extra-dark neutral shade — alias of --sf-color-neutral-800.",
     "category": "Core tokens"
   },
   "sf-color-neutral-xlight": {
-    "description": "Extra-light neutral shade.",
+    "description": "Extra-light neutral shade — alias of --sf-color-neutral-200.",
     "category": "Core tokens"
   },
   "sf-color-overlay": {
@@ -996,7 +992,7 @@
     "category": "Core tokens"
   },
   "sf-color-primary-darker": {
-    "description": "Deep primary shade.",
+    "description": "Deep primary shade — alias of --sf-color-primary-600.",
     "category": "Core tokens"
   },
   "sf-color-primary-lighter": {
@@ -1024,19 +1020,19 @@
     "category": "Core tokens"
   },
   "sf-color-primary-superlight": {
-    "description": "Near-white primary shade.",
+    "description": "Near-white primary shade — alias of --sf-color-primary-50.",
     "category": "Core tokens"
   },
   "sf-color-primary-tint": {
-    "description": "Near-transparent primary tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
+    "description": "Near-transparent primary tint (5% alpha) for hover-state washes and the most subtle backgrounds — alias of --sf-color-primary-a5.",
     "category": "Core tokens"
   },
   "sf-color-primary-xdark": {
-    "description": "Extra-dark primary shade.",
+    "description": "Extra-dark primary shade — alias of --sf-color-primary-800.",
     "category": "Core tokens"
   },
   "sf-color-primary-xlight": {
-    "description": "Extra-light primary shade.",
+    "description": "Extra-light primary shade — alias of --sf-color-primary-200.",
     "category": "Core tokens"
   },
   "sf-color-raised": {
@@ -1124,7 +1120,7 @@
     "category": "Core tokens"
   },
   "sf-color-secondary-darker": {
-    "description": "Deep secondary shade.",
+    "description": "Deep secondary shade — alias of --sf-color-secondary-600.",
     "category": "Core tokens"
   },
   "sf-color-secondary-lighter": {
@@ -1152,19 +1148,19 @@
     "category": "Core tokens"
   },
   "sf-color-secondary-superlight": {
-    "description": "Near-white secondary shade.",
+    "description": "Near-white secondary shade — alias of --sf-color-secondary-50.",
     "category": "Core tokens"
   },
   "sf-color-secondary-tint": {
-    "description": "Near-transparent secondary tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
+    "description": "Near-transparent secondary tint (5% alpha) for hover-state washes and the most subtle backgrounds — alias of --sf-color-secondary-a5.",
     "category": "Core tokens"
   },
   "sf-color-secondary-xdark": {
-    "description": "Extra-dark secondary shade.",
+    "description": "Extra-dark secondary shade — alias of --sf-color-secondary-800.",
     "category": "Core tokens"
   },
   "sf-color-secondary-xlight": {
-    "description": "Extra-light secondary shade.",
+    "description": "Extra-light secondary shade — alias of --sf-color-secondary-200.",
     "category": "Core tokens"
   },
   "sf-color-selection-bg": {
@@ -1292,7 +1288,7 @@
     "category": "Core tokens"
   },
   "sf-color-tertiary-darker": {
-    "description": "Deep tertiary shade.",
+    "description": "Deep tertiary shade — alias of --sf-color-tertiary-600.",
     "category": "Core tokens"
   },
   "sf-color-tertiary-lighter": {
@@ -1320,19 +1316,19 @@
     "category": "Core tokens"
   },
   "sf-color-tertiary-superlight": {
-    "description": "Near-white tertiary shade.",
+    "description": "Near-white tertiary shade — alias of --sf-color-tertiary-50.",
     "category": "Core tokens"
   },
   "sf-color-tertiary-tint": {
-    "description": "Near-transparent tertiary tint (5% alpha) for hover-state washes and the most subtle backgrounds.",
+    "description": "Near-transparent tertiary tint (5% alpha) for hover-state washes and the most subtle backgrounds — alias of --sf-color-tertiary-a5.",
     "category": "Core tokens"
   },
   "sf-color-tertiary-xdark": {
-    "description": "Extra-dark tertiary shade.",
+    "description": "Extra-dark tertiary shade — alias of --sf-color-tertiary-800.",
     "category": "Core tokens"
   },
   "sf-color-tertiary-xlight": {
-    "description": "Extra-light tertiary shade.",
+    "description": "Extra-light tertiary shade — alias of --sf-color-tertiary-200.",
     "category": "Core tokens"
   },
   "sf-color-text": {
@@ -1486,10 +1482,6 @@
   "sf-cover-padding": {
     "description": "Inner padding for the cover layout.",
     "category": "Layout tokens"
-  },
-  "sf-density": {
-    "description": "Compact ↔ comfortable dial for interactive control geometry (the --sf-size-* rung ladder). Default 1; below 1 packs controls tighter (dashboards, data tables), above 1 loosens them. A deliberate design/user choice, not a viewport response — orthogonal to --sf-space-scale (whitespace) and --sf-section-scale (section rhythm). The --sf-touch-target accessibility floor is independent, so a small value can't shrink native controls below the WCAG target. Like the other global multipliers it is a :root dial (the size ladder is computed at :root and inherits, so nested overrides don't retroactively rescale it).",
-    "category": "Core tokens"
   },
   "sf-display-l-line-height": {
     "description": "Line height for large display text (--sf-text-display-l). Very tight to avoid excessive gaps at oversized sizes.",
@@ -1683,16 +1675,8 @@
     "description": "OpenType feature-settings string for body text (e.g. 'ss01', 'cv11'). Default 'normal'. Override on :root or a subtree to enable ligatures, alternate glyphs, etc.",
     "category": "Core tokens"
   },
-  "sf-font-geometric": {
-    "description": "Geometric sans-serif slot — circular letterforms for brand alternates.",
-    "category": "Core tokens"
-  },
   "sf-font-heading": {
     "description": "Font family for headings. Defaults to display if not overridden separately.",
-    "category": "Core tokens"
-  },
-  "sf-font-humanist": {
-    "description": "Humanist sans-serif slot — warm, readable alternate typeface.",
     "category": "Core tokens"
   },
   "sf-font-mono": {
@@ -1701,10 +1685,6 @@
   },
   "sf-font-numeric": {
     "description": "font-variant-numeric shorthand (e.g. tabular-nums) for aligned numeric data.",
-    "category": "Core tokens"
-  },
-  "sf-font-slab": {
-    "description": "Slab-serif slot for editorial or display headings.",
     "category": "Core tokens"
   },
   "sf-font-variation": {
@@ -2091,6 +2071,10 @@
     "description": "OKLCH lightness lock value for dark mode under [data-lumlocker]. Defaults to clamp(0.5, calc(1.18 - var(--sf-lumlocker)), 0.92) — the mirror of the light L around the light/dark background midpoint — so the lock keeps equivalent contrast against the surface in both themes. Set explicitly to break the mirror.",
     "category": "Core tokens"
   },
+  "sf-marker-color": {
+    "description": "Shared list-marker (::marker) colour — single source of truth for the .sf-marker--* utilities and .sf-prose markers alike. Defaults to the primary brand colour; set it on any list (or globally) to retune every marker at once.",
+    "category": "Macro tokens"
+  },
   "sf-mask-scrim-end": {
     "description": "End stop for edge-fade mask gradients. Mirrors --sf-mask-scrim-start for the trailing edge of a scroll container.",
     "category": "Core tokens"
@@ -2100,7 +2084,7 @@
     "category": "Core tokens"
   },
   "sf-media-radius": {
-    "description": "Radius + space: <length> syntax enables CSS transitions on layout values — border-radius/padding/gap etc. now interpolate instead of snapping. Shadow: syntax:\"*\" (no <shadow> type in spec); inherits:true so :root values cascade normally; registers the properties formally for…",
+    "description": "Opt-in global corner radius for <img>/<figure>. 0 (off) by default; set it to a --sf-radius-* value to round media globally. Applied via :where() so it never fights .sf-bg-layer or a component's own radius.",
     "category": "Core tokens"
   },
   "sf-motion-scale": {
@@ -2127,28 +2111,12 @@
     "description": "CSS font-optical-sizing value. 'auto' lets the browser optimize letterforms for the rendered size. Set 'none' to disable optical sizing.",
     "category": "Core tokens"
   },
-  "sf-overlap-pull": {
-    "description": "how far .sf-overlap pulls into the adjacent element. .sf-overlap-host's padding compensation defaults to this same value via a var() fallback in the rule itself (not aliased here — see core/macros.css), so one override on the host tunes both unless --sf-overlap-host-pad is set…",
-    "category": "Macro tokens"
-  },
   "sf-palette-shade-l": {
     "description": "Absolute OKLCH lightness the shade steps (600-950) pull toward; sets how dark the darkest palette step can reach. Default 0.1.",
     "category": "Core tokens"
   },
   "sf-palette-tint-l": {
     "description": "Absolute OKLCH lightness the tint steps (50-400) pull toward; sets how light the lightest palette step can reach. Default 0.97.",
-    "category": "Core tokens"
-  },
-  "sf-print-base-size": {
-    "description": "Base font size for @media print stylesheets. Default 11pt. Override on :root to adjust printed body text size.",
-    "category": "Core tokens"
-  },
-  "sf-print-page-margin": {
-    "description": "Page margin for printed output. Default 2cm. Maps to @page margin.",
-    "category": "Core tokens"
-  },
-  "sf-print-page-size": {
-    "description": "Target paper size for printing. Default 'a4'. Maps to @page size. Common values: a4, letter, legal.",
     "category": "Core tokens"
   },
   "sf-prose-block-margin": {
@@ -2184,7 +2152,7 @@
     "category": "Macro tokens"
   },
   "sf-prose-marker-color": {
-    "description": "Color of list bullets and ordered-list numbers inside .prose.",
+    "description": "Color of list bullets and ordered-list numbers inside .sf-prose. Defaults to the shared --sf-marker-color; override per-instance for prose-scoped marker colour.",
     "category": "Macro tokens"
   },
   "sf-prose-media-margin": {
@@ -2334,6 +2302,10 @@
   "sf-scrim-text-shadow": {
     "description": "Text-shadow layered over the scrim gradient to ensure legibility for text placed directly on image backgrounds.",
     "category": "Macro tokens"
+  },
+  "sf-scroll-offset-gap": {
+    "description": "Breathing room added below the header when scrolling to an in-page anchor (scroll-padding). Defaults to --sf-space-m so a heading lands a comfortable gap under the sticky header; set to 0 for the heading flush under the header, or any length to tune the gap without overriding the whole scroll-padding rule.",
+    "category": "Core tokens"
   },
   "sf-scroll-shadow-size": {
     "description": "Size of the scroll-shadow fade effect on overflowing containers.",

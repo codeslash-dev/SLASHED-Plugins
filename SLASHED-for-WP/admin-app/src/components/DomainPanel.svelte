@@ -64,7 +64,7 @@
   {:else if domain === "wcag"}
     <WcagPanel {tokens} {overrides} {onSet} {onBulkChange} />
   {:else if domain === "setup"}
-    <ExportPanel {overrides} />
+    <ExportPanel {overrides} {tokens} {onApplyTheme} />
   {:else if domain === "cheatsheet"}
     <CheatsheetPanel />
   {/if}

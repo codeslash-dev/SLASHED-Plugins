@@ -9,6 +9,18 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.10] - 2026-08-18
+
+### Fixed
+
+- Replace stale .sf-aspect reference in bundle description text
+
+## [0.6.10] - 2026-08-18
+
+### Fixed
+
+- Replace stale .sf-aspect reference in bundle description text
+
 ## [0.6.9] - 2026-08-09
 
 ### Fixed
