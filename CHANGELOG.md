@@ -9,6 +9,20 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.11] - 2026-08-18
+
+### Fixed
+
+- Clean truncated class-hint tooltips; expand test coverage
+- Restore color-state swatches and class-dropdown hints
+
+## [0.6.11] - 2026-08-18
+
+### Fixed
+
+- Clean truncated class-hint tooltips; expand test coverage
+- Restore color-state swatches and class-dropdown hints
+
 ## [0.6.10] - 2026-08-18
 
 ### Fixed
