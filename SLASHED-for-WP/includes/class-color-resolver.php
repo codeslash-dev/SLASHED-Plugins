@@ -260,11 +260,17 @@ class Slashed_Color_Resolver {
 			$hex_map['--sf-color-caret'] = $hex_map['--sf-color-action'];
 		}
 
-		// Alt selection — opposite-scheme treatment; approximate with the
-		// same-scheme selection swatch (both are an action-tinted highlight).
-		if ( isset( $hex_map['--sf-color-selection-bg'] ) ) {
-			$hex_map['--sf-color-selection-bg--alt'] = $hex_map['--sf-color-selection-bg'];
+		// Alt selection background — the OPPOSITE scheme's treatment (see
+		// core/tokens.css, where the light/dark branches are swapped relative to
+		// --sf-color-selection-bg): in light mode it uses the dark selection
+		// formula composited over the light page; in dark mode the light formula
+		// over the dark surface. Approximated to an opaque swatch.
+		$alt_bg = self::resolve_alt_selection_bg( $hex_map, $light_sources, $dark_sources, $mode );
+		if ( null !== $alt_bg ) {
+			$hex_map['--sf-color-selection-bg--alt'] = $alt_bg;
 		}
+		// selection-text--alt is `inherit` in the framework → the current text
+		// colour, which the resolver models as --sf-color-selection-text.
 		if ( isset( $hex_map['--sf-color-selection-text'] ) ) {
 			$hex_map['--sf-color-selection-text--alt'] = $hex_map['--sf-color-selection-text'];
 		}
@@ -286,6 +292,47 @@ class Slashed_Color_Resolver {
 		}
 
 		return $hex_map;
+	}
+
+	/**
+	 * Resolve the alternate selection background swatch for one mode.
+	 *
+	 * Mirrors core/tokens.css, where `--sf-color-selection-bg--alt` deliberately
+	 * inverts the scheme of `--sf-color-selection-bg`:
+	 *   - light page → the DARK formula: action dark-source at clamp(0.62,
+	 *     0.93 - l*0.4, 0.78) lightness, 55% over the (white) page;
+	 *   - dark page  → the LIGHT formula: action light-source at 28% over the
+	 *     dark surface.
+	 * The translucent CSS value is approximated as an opaque composite, matching
+	 * how the rest of this resolver previews alpha tokens.
+	 *
+	 * @param array  $hex_map       Map built so far (used for the dark surface).
+	 * @param array  $light_sources Family => [L, C, H] (light).
+	 * @param array  $dark_sources  Family => [L, C, H] (dark).
+	 * @param string $mode          'light' or 'dark'.
+	 * @return string|null Hex string, or null when the action source is missing.
+	 */
+	private static function resolve_alt_selection_bg( $hex_map, $light_sources, $dark_sources, $mode ) {
+		if ( 'light' === $mode ) {
+			if ( ! isset( $dark_sources['action'] ) ) {
+				return null;
+			}
+			list( $dl, $dc, $dh ) = $dark_sources['action'];
+			$l   = max( 0.62, min( 0.93 - $dl * 0.4, 0.78 ) );
+			$rgb = Slashed_Color_Math::hex_to_rgb( Slashed_Color_Math::oklch_to_hex( $l, $dc, $dh ) );
+			return Slashed_Color_Math::rgb_to_hex( Slashed_Color_Math::mix_rgb( $rgb, array( 255, 255, 255 ), 0.55 ) );
+		}
+
+		if ( ! isset( $light_sources['action'] ) ) {
+			return null;
+		}
+		list( $ll, $lc, $lh ) = $light_sources['action'];
+		$rgb         = Slashed_Color_Math::hex_to_rgb( Slashed_Color_Math::oklch_to_hex( $ll, $lc, $lh ) );
+		$surface_hex = isset( $hex_map['--sf-color-surface'] )
+			? $hex_map['--sf-color-surface']
+			: ( isset( $hex_map['--sf-color-base'] ) ? $hex_map['--sf-color-base'] : '#1a1b1e' );
+		$surface_rgb = Slashed_Color_Math::hex_to_rgb( $surface_hex );
+		return Slashed_Color_Math::rgb_to_hex( Slashed_Color_Math::mix_rgb( $rgb, $surface_rgb, 0.28 ) );
 	}
 
 	/**

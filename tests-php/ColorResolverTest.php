@@ -158,16 +158,31 @@ final class ColorResolverTest extends TestCase {
 
 	public function test_source_tokens_are_mode_independent_and_match_the_family_base() {
 		// A -source-light / -source-dark token is an absolute input value, so it
-		// reads the same in the light and dark maps, and -source-light equals the
-		// family base (which is the light source).
+		// reads the same in the light and dark maps; -source-light equals the
+		// LIGHT family base and -source-dark equals the DARK family base.
 		$light = Slashed_Color_Resolver::resolve( array() );
 		$dark  = Slashed_Color_Resolver::resolve_dark( array() );
-		foreach ( array( 'primary', 'action', 'neutral', 'success' ) as $family ) {
+
+		// Cover EVERY family the resolver actually emits a source token for
+		// (derived from the map so a newly-added family is covered automatically).
+		$families = array();
+		foreach ( array_keys( $light ) as $key ) {
+			if ( preg_match( '/^--sf-color-(.+)-source-light$/', $key, $m ) ) {
+				$families[] = $m[1];
+			}
+		}
+		$this->assertNotEmpty( $families, 'resolver must emit per-family source tokens' );
+
+		foreach ( $families as $family ) {
 			$sl = '--sf-color-' . $family . '-source-light';
 			$sd = '--sf-color-' . $family . '-source-dark';
+			$this->assertArrayHasKey( $sd, $light, "$family must also expose -source-dark" );
+
 			$this->assertSame( $light[ $sl ], $dark[ $sl ], "$family -source-light must be mode-independent" );
 			$this->assertSame( $light[ $sd ], $dark[ $sd ], "$family -source-dark must be mode-independent" );
+
 			$this->assertSame( $light[ '--sf-color-' . $family ], $light[ $sl ], "$family -source-light must equal the light family base" );
+			$this->assertSame( $dark[ '--sf-color-' . $family ], $dark[ $sd ], "$family -source-dark must equal the dark family base" );
 		}
 	}
 
@@ -176,6 +191,30 @@ final class ColorResolverTest extends TestCase {
 		$this->assertSame( '#ffffff', $light['--sf-color-white'] );
 		$this->assertSame( '#000000', $light['--sf-color-black'] );
 		$this->assertSame( $light['--sf-color-action'], $light['--sf-color-caret'], 'caret aliases action' );
+	}
+
+	public function test_alt_selection_bg_uses_the_opposite_mode_formula() {
+		// --sf-color-selection-bg--alt inverts the scheme of --sf-color-selection-bg
+		// (see core/tokens.css), so it must NOT simply copy the same-mode value.
+		$light = Slashed_Color_Resolver::resolve( array() );
+		$dark  = Slashed_Color_Resolver::resolve_dark( array() );
+
+		$this->assertArrayHasKey( '--sf-color-selection-bg--alt', $light );
+		$this->assertArrayHasKey( '--sf-color-selection-bg--alt', $dark );
+		$this->assertNotSame(
+			$light['--sf-color-selection-bg'],
+			$light['--sf-color-selection-bg--alt'],
+			'alt selection must differ from the same-mode selection background'
+		);
+
+		// Exact-value guard: recompute the light-mode alt (the dark formula —
+		// action dark-source clamped, 55% over white) from the public primitives.
+		$dark_action = Slashed_Color_Math::parse_oklch( 'oklch(0.70 0.198 235)' ); // action -source-dark default
+		list( $dl, $dc, $dh ) = $dark_action;
+		$l        = max( 0.62, min( 0.93 - $dl * 0.4, 0.78 ) );
+		$rgb      = Slashed_Color_Math::hex_to_rgb( Slashed_Color_Math::oklch_to_hex( $l, $dc, $dh ) );
+		$expected = Slashed_Color_Math::rgb_to_hex( Slashed_Color_Math::mix_rgb( $rgb, array( 255, 255, 255 ), 0.55 ) );
+		$this->assertSame( $expected, $light['--sf-color-selection-bg--alt'], 'light alt selection uses the dark formula over white' );
 	}
 
 	public function test_light_and_dark_resolve_the_same_variable_set() {
