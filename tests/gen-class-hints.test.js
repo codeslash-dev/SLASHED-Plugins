@@ -1,89 +1,81 @@
 /**
- * Unit tests for the pure logic in scripts/gen-class-hints.js.
- *
- * The generator parses framework CSS section comments into class-name hints.
- * A silent change to the framework's comment format would produce wrong hints
- * that the drift check (which only compares "regen == committed") can't flag as
- * *wrong*, only as *changed*. These tests lock the parser's contract and the
- * curated-merge precedence against a synthetic CSS fixture — no framework
- * checkout required (the module's CLI is guarded, so importing runs no I/O).
+ * Unit tests for buildClassHints() in scripts/gen-class-hints.js — the pure
+ * api-index.json → class-hints transform. Locks the extraction rules (class
+ * entries only, sf-* / is-* names only, description required, category
+ * preserved) so a framework api-index shape change surfaces as a failing test
+ * rather than a silently wrong hint map. No framework checkout needed (the
+ * module CLI is guarded, so importing runs no I/O).
  *
  * Run: node --test tests/gen-class-hints.test.js
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseCss, applyCuratedHints, MANUAL_HINTS, OVERRIDE_HINTS } from '../scripts/gen-class-hints.js';
+import { buildClassHints } from '../scripts/gen-class-hints.js';
 
-describe('parseCss', () => {
-  test('assigns a section description to its base class and all modifiers', () => {
-    const css = [
-      '/* -- Stack -----------',
-      '   Flex column with even vertical spacing between children. */',
-      '.sf-stack     { }',
-      '.sf-stack--xs { }',
-      '.sf-stack--xl { }',
-    ].join('\n');
-
-    const hints = parseCss(css, 'Layout');
-    const expected = { description: 'Flex column with even vertical spacing between children.', category: 'Layout' };
-    assert.deepEqual(hints['sf-stack'], expected);
-    assert.deepEqual(hints['sf-stack--xs'], expected);
-    assert.deepEqual(hints['sf-stack--xl'], expected);
+describe('buildClassHints', () => {
+  test('keeps sf-* and is-* class entries with their description and category', () => {
+    const idx = {
+      entries: [
+        { type: 'class', name: 'sf-stack', description: 'Flex column.', category: 'Layout primitives' },
+        { type: 'class', name: 'sf-is-disabled', description: 'Disabled state.', category: 'State classes' },
+      ],
+    };
+    const hints = buildClassHints(idx);
+    assert.deepEqual(hints['sf-stack'], { description: 'Flex column.', category: 'Layout primitives' });
+    assert.deepEqual(hints['sf-is-disabled'], { description: 'Disabled state.', category: 'State classes' });
   });
 
-  test('separates consecutive sections and captures is-* classes', () => {
-    const css = [
-      '/* -- Stack -----',
-      '   Stack desc. */',
-      '.sf-stack { }',
-      '/* -- Cluster -----',
-      '   Cluster desc. */',
-      '.sf-cluster { }',
-      '.is-clustered { }',
-    ].join('\n');
-
-    const hints = parseCss(css, 'Layout');
-    assert.equal(hints['sf-stack'].description, 'Stack desc.');
-    assert.equal(hints['sf-cluster'].description, 'Cluster desc.');
-    assert.equal(hints['is-clustered'].description, 'Cluster desc.');
+  test('captures BEM modifier classes (double dash) like sf-bento--row-tall', () => {
+    const idx = {
+      entries: [
+        { type: 'class', name: 'sf-bento--row-tall', description: 'Taller default row height.', category: 'Layout primitives' },
+      ],
+    };
+    assert.deepEqual(buildClassHints(idx)['sf-bento--row-tall'], {
+      description: 'Taller default row height.',
+      category: 'Layout primitives',
+    });
   });
 
-  test('falls back to the section title when the body has no description line', () => {
-    const css = '/* -- LonelyTitle ------\n   -------------- */\n.sf-lonely { }';
-    assert.equal(parseCss(css, 'Cat')['sf-lonely'].description, 'LonelyTitle');
+  test('skips token entries and non-sf/is class names', () => {
+    const idx = {
+      entries: [
+        { type: 'token', name: '--sf-color-primary', description: 'Primary', category: 'Colors' }, // not a class
+        { type: 'class', name: 'sr-only', description: 'Screen-reader only', category: 'Accessibility' }, // unprefixed
+        { type: 'class', name: 'no-print', description: 'Hidden in print', category: 'Print' }, // unprefixed
+      ],
+    };
+    assert.deepEqual(buildClassHints(idx), {});
   });
 
-  test('ignores class names that appear only inside a comment', () => {
-    const css = '/* -- X -----\n  desc */\n.sf-real { }\n/* .sf-ghost lives in a comment */';
-    const hints = parseCss(css, 'Cat');
-    assert.ok(hints['sf-real']);
-    assert.equal(hints['sf-ghost'], undefined);
+  test('skips class entries that have no description', () => {
+    const idx = {
+      entries: [
+        { type: 'class', name: 'sf-nodesc', category: 'Layout primitives' },
+        { type: 'class', name: 'sf-blankdesc', description: '   ', category: 'Layout primitives' },
+      ],
+    };
+    assert.deepEqual(buildClassHints(idx), {});
   });
 
-  test('ignores classes that appear before any section comment', () => {
-    assert.deepEqual(parseCss('.sf-orphan { }', 'Cat'), {});
-  });
-});
-
-describe('applyCuratedHints', () => {
-  test('OVERRIDE_HINTS always win over a parsed entry', () => {
-    const merged = applyCuratedHints({ 'sf-bento': { description: 'auto-parsed', category: 'X' } });
-    assert.equal(merged['sf-bento'].description, OVERRIDE_HINTS['sf-bento'].description);
+  test('defaults a missing category to "Classes"', () => {
+    const hints = buildClassHints({ entries: [{ type: 'class', name: 'sf-x', description: 'X.' }] });
+    assert.deepEqual(hints['sf-x'], { description: 'X.', category: 'Classes' });
   });
 
-  test('MANUAL_HINTS fill gaps for classes that were not parsed', () => {
-    const merged = applyCuratedHints({});
-    assert.deepEqual(merged['is-hidden'], MANUAL_HINTS['is-hidden']);
+  test('trims surrounding whitespace from the description', () => {
+    const hints = buildClassHints({ entries: [{ type: 'class', name: 'sf-x', description: '  Trimmed.  ', category: 'C' }] });
+    assert.equal(hints['sf-x'].description, 'Trimmed.');
   });
 
-  test('MANUAL_HINTS do NOT override an already-parsed entry', () => {
-    const merged = applyCuratedHints({ 'is-hidden': { description: 'PARSED', category: 'Y' } });
-    assert.equal(merged['is-hidden'].description, 'PARSED');
+  test('tolerates a missing/empty entries array', () => {
+    assert.deepEqual(buildClassHints({}), {});
+    assert.deepEqual(buildClassHints({ entries: [] }), {});
+    assert.deepEqual(buildClassHints(null), {});
   });
 
-  test('does not mutate its input', () => {
-    const input = { 'sf-x': { description: 'd', category: 'c' } };
-    applyCuratedHints(input);
-    assert.deepEqual(Object.keys(input), ['sf-x']);
+  test('skips entries whose name is not a string', () => {
+    const hints = buildClassHints({ entries: [{ type: 'class', name: 42 }, { type: 'class' }] });
+    assert.deepEqual(hints, {});
   });
 });

@@ -1,254 +1,1214 @@
 {
-  "sf-is-disabled": {
-    "description": "No .sf-is-readonly here: it duplicated :read-only for real form controls,",
-    "category": "States"
-  },
-  "sf-is-shimmer": {
-    "description": ".sf-is-loading {",
-    "category": "States"
-  },
-  "sf-is-selected": {
-    "description": "No .sf-is-active / .sf-is-open / .sf-is-collapsed / .sf-is-expanded /",
-    "category": "States"
-  },
-  "sf-is-highlighted": {
-    "description": "No .sf-is-active / .sf-is-open / .sf-is-collapsed / .sf-is-expanded /",
-    "category": "States"
-  },
-  "sf-is-valid": {
-    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
-    "category": "States"
-  },
-  "sf-is-success": {
-    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
-    "category": "States"
-  },
-  "sf-is-invalid": {
-    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
-    "category": "States"
-  },
-  "sf-is-error": {
-    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
-    "category": "States"
-  },
-  "sf-is-warning": {
-    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
-    "category": "States"
-  },
-  "sf-is-info": {
-    "description": "No .sf-is-danger here: identical implementation to .sf-is-invalid/",
-    "category": "States"
-  },
-  "sf-is-hidden-if-empty": {
-    "description": "/* Action-on-state, not a state assertion: hides the element when it has no",
-    "category": "States"
-  },
-  "is-hidden": {
-    "description": "Hides the element (display: none). Toggled by JS or ARIA.",
-    "category": "States"
-  },
-  "is-invisible": {
-    "description": "Makes the element invisible but still occupies space.",
-    "category": "States"
-  },
-  "is-visible": {
-    "description": "Forces visibility: visible on a hidden element.",
-    "category": "States"
-  },
-  "is-disabled": {
-    "description": "Marks the element as non-interactive. Reduces opacity and blocks pointer events.",
-    "category": "States"
-  },
-  "is-readonly": {
-    "description": "Marks the element as read-only. Reduces opacity; pointer events still active.",
-    "category": "States"
-  },
-  "is-loading": {
-    "description": "Indicates the element is in a loading state. Shows a spinner cursor.",
-    "category": "States"
-  },
-  "is-current": {
-    "description": "Marks the element as the current item (e.g. active nav link).",
-    "category": "States"
-  },
-  "is-active": {
-    "description": "Marks the element as active/selected.",
-    "category": "States"
-  },
-  "is-selected": {
-    "description": "Marks the element as selected.",
-    "category": "States"
-  },
-  "is-expanded": {
-    "description": "Marks the element as expanded (e.g. accordion open).",
-    "category": "States"
-  },
-  "is-collapsed": {
-    "description": "Marks the element as collapsed.",
-    "category": "States"
-  },
-  "is-open": {
-    "description": "Marks the element as open (e.g. dropdown visible).",
-    "category": "States"
-  },
-  "is-closed": {
-    "description": "Marks the element as closed.",
-    "category": "States"
-  },
-  "is-checked": {
-    "description": "Marks the element as checked.",
-    "category": "States"
-  },
-  "is-indeterminate": {
-    "description": "Marks a checkbox as indeterminate.",
-    "category": "States"
-  },
-  "is-valid": {
-    "description": "Marks a form field as passing validation.",
-    "category": "States"
-  },
-  "is-invalid": {
-    "description": "Marks a form field as failing validation.",
-    "category": "States"
-  },
-  "is-required": {
-    "description": "Marks a form field as required.",
-    "category": "States"
-  },
-  "is-error": {
-    "description": "Marks the element as being in an error state.",
-    "category": "States"
-  },
-  "is-success": {
-    "description": "Marks the element as being in a success state.",
-    "category": "States"
-  },
-  "is-warning": {
-    "description": "Marks the element as being in a warning state.",
-    "category": "States"
-  },
-  "is-info": {
-    "description": "Marks the element as carrying informational state.",
-    "category": "States"
-  },
-  "is-sticky": {
-    "description": "Applies position: sticky with top: 0.",
-    "category": "States"
-  },
-  "is-fixed": {
-    "description": "Applies position: fixed.",
-    "category": "States"
-  },
-  "is-pinned": {
-    "description": "Alias for sticky positioning.",
-    "category": "States"
-  },
-  "is-scrolled": {
-    "description": "Applied by JS when the page has scrolled past a threshold.",
-    "category": "States"
-  },
-  "is-truncated": {
-    "description": "Truncates text with an ellipsis (single line).",
-    "category": "States"
-  },
-  "is-sr-only": {
-    "description": "Visually hidden but accessible to screen readers.",
-    "category": "States"
+  "sf-alternate": {
+    "description": "Zigzag / alternating two-column layout. Even children align image-left/text-right; odd children flip. Collapses to a single column below the breakpoint.",
+    "category": "Layout primitives"
   },
   "sf-bento": {
     "description": "Auto-fill bento grid for card dashboards. Children span 1 column by default; use span modifiers (sf-bento-wide, sf-bento-tall, sf-bento-full, sf-bento-featured) to break the grid.",
-    "category": "Layout"
+    "category": "Layout primitives"
   },
   "sf-bento--2": {
     "description": "Bento grid variant with a 2-column base layout.",
-    "category": "Layout"
+    "category": "Layout primitives"
   },
   "sf-bento--3": {
     "description": "Bento grid variant with a 3-column base layout.",
-    "category": "Layout"
+    "category": "Layout primitives"
   },
   "sf-bento--6": {
     "description": "Bento grid variant with a 6-column base layout.",
-    "category": "Layout"
+    "category": "Layout primitives"
   },
-  "sf-bento--compact": {
+  "sf-bento--row-compact": {
     "description": "Bento grid variant with shorter default row height.",
-    "category": "Layout"
+    "category": "Layout primitives"
   },
-  "sf-bento--tall": {
+  "sf-bento--row-tall": {
     "description": "Bento grid variant with taller default row height.",
-    "category": "Layout"
-  },
-  "sf-bento-wide": {
-    "description": "Span modifier for a bento item: spans 2 columns (wide card).",
-    "category": "Layout"
-  },
-  "sf-bento-full": {
-    "description": "Span modifier for a bento item: stretches across all columns (full-width banner).",
-    "category": "Layout"
-  },
-  "sf-bento-tall": {
-    "description": "Span modifier for a bento item: doubles the row height (tall card).",
-    "category": "Layout"
+    "category": "Layout primitives"
   },
   "sf-bento-featured": {
     "description": "Span modifier for a bento item: takes up 2×2 cells (featured hero placement).",
-    "category": "Layout"
+    "category": "Layout primitives"
   },
-  "sf-surface": {
-    "description": "Generic semantic surface: applies --sf-surface-color as the background and automatically sets a contrasting text color. Tone variants (--primary, --action, etc.) activate preset palettes.",
-    "category": "Macros"
+  "sf-bento-full": {
+    "description": "Span modifier for a bento item: stretches across all columns (full-width banner).",
+    "category": "Layout primitives"
   },
-  "sf-surface--primary": {
-    "description": "Surface variant using the primary brand color palette.",
-    "category": "Macros"
+  "sf-bento-tall": {
+    "description": "Span modifier for a bento item: doubles the row height (tall card).",
+    "category": "Layout primitives"
   },
-  "sf-surface--secondary": {
-    "description": "Surface variant using the secondary brand color palette.",
-    "category": "Macros"
+  "sf-bento-wide": {
+    "description": "Span modifier for a bento item: spans 2 columns (wide card).",
+    "category": "Layout primitives"
   },
-  "sf-surface--tertiary": {
-    "description": "Surface variant using the tertiary brand color palette.",
-    "category": "Macros"
+  "sf-bg-layer": {
+    "description": "Background layer — absolutely-positioned cover media that sits behind a parent's content. The parent is auto-promoted to a positioned, isolated stacking context via :has(), so .sf-bg-layer composes natively under .sf-scrim (background → scrim gradient → content). Works as a bare <img class=\"sf-bg-layer\"> or as a wrapper with a nested > img / > video / > picture.",
+    "category": "Layout primitives"
   },
-  "sf-surface--action": {
-    "description": "Surface variant using the action color palette (button/CTA primary color).",
-    "category": "Macros"
+  "sf-box": {
+    "description": "Minimal padding container that applies --sf-component-pad on all sides. The simplest layout primitive for adding breathing room.",
+    "category": "Layout primitives"
   },
-  "sf-surface--neutral": {
-    "description": "Surface variant using the neutral palette (muted/gray).",
-    "category": "Macros"
+  "sf-breakout": {
+    "description": "Breaks a child element out of a parent sf-content-grid, spanning full bleed (or a named grid area) regardless of the parent column. Useful for full-width sections inside constrained prose.",
+    "category": "Layout primitives"
   },
-  "sf-surface--inverse": {
-    "description": "Surface variant that inverts light/dark, creating an always-dark surface in light mode and always-light in dark mode.",
-    "category": "Macros"
+  "sf-btn": {
+    "description": "Interactive call-to-action button. Apply to <button> or <a>. Intrinsic width by default; owns its own styling (excluded from the classless <button> look). Three orthogonal axes — colour family, style treatment (fill/--soft/--outline), gradient — plus a size modifier.",
+    "category": "Components"
   },
-  "sf-surface--success": {
-    "description": "Surface variant using the success status palette.",
-    "category": "Macros"
+  "sf-btn--action": {
+    "description": "Button in the action colour family (same as the unmodified default, named explicitly).",
+    "category": "Components"
   },
-  "sf-surface--warning": {
-    "description": "Surface variant using the warning status palette.",
-    "category": "Macros"
+  "sf-btn--base": {
+    "description": "Button in the base (surface-neutral) colour family.",
+    "category": "Components"
   },
-  "sf-surface--error": {
-    "description": "Surface variant using the error status palette.",
-    "category": "Macros"
+  "sf-btn--block": {
+    "description": "Full-width button (100% inline size) everywhere.",
+    "category": "Components"
   },
-  "sf-surface--info": {
-    "description": "Surface variant using the info status palette.",
-    "category": "Macros"
+  "sf-btn--block-cq": {
+    "description": "Full-width button only inside a query container narrower than 20rem; intrinsic otherwise.",
+    "category": "Components"
   },
-  "sf-surface--danger": {
-    "description": "Surface variant using the danger status palette.",
-    "category": "Macros"
+  "sf-btn--danger": {
+    "description": "Button in the danger (destructive) colour family.",
+    "category": "Components"
   },
-  "sf-overflow-fade": {
-    "description": "Adds a gradient fade at the inline-end of an overflowing element to hint at hidden content. Use inside sf-reel or any scroll container.",
-    "category": "Macros"
+  "sf-btn--gradient": {
+    "description": "Gradient axis: paints the fill (or, with --outline, the border ring) with the family's --sf-gradient-* token. Core-4 brand families (primary/secondary/tertiary/action); solid no-op for other families. Composes with any colour family.",
+    "category": "Components"
+  },
+  "sf-btn--info": {
+    "description": "Button in the info colour family.",
+    "category": "Components"
+  },
+  "sf-btn--l": {
+    "description": "Large button size.",
+    "category": "Components"
+  },
+  "sf-btn--neutral": {
+    "description": "Button in the neutral colour family.",
+    "category": "Components"
+  },
+  "sf-btn--outline": {
+    "description": "Outlined button (coloured border/text, transparent fill) that fills with the family colour on hover. Composes with any colour family.",
+    "category": "Components"
+  },
+  "sf-btn--primary": {
+    "description": "Button in the primary brand colour family.",
+    "category": "Components"
+  },
+  "sf-btn--s": {
+    "description": "Small button size.",
+    "category": "Components"
+  },
+  "sf-btn--secondary": {
+    "description": "Button in the secondary brand colour family.",
+    "category": "Components"
+  },
+  "sf-btn--soft": {
+    "description": "Soft tonal-fill button: a light wash of the family colour (subtle at rest, muted on hover), coloured text, no border. Lower-emphasis than the solid fill. Composes with any colour family.",
+    "category": "Components"
+  },
+  "sf-btn--success": {
+    "description": "Button in the success (positive) colour family.",
+    "category": "Components"
+  },
+  "sf-btn--tertiary": {
+    "description": "Button in the tertiary brand colour family.",
+    "category": "Components"
+  },
+  "sf-btn--warning": {
+    "description": "Button in the warning (caution) colour family.",
+    "category": "Components"
+  },
+  "sf-btn--xl": {
+    "description": "Extra-large button size.",
+    "category": "Components"
+  },
+  "sf-btn--xs": {
+    "description": "Extra-small button size.",
+    "category": "Components"
+  },
+  "sf-card": {
+    "description": "Padded content container with optional __header/__body/__footer and __media/__avatar/__title subcomponents. Uses concentric radius math so inner corners stay proportional.",
+    "category": "Components"
+  },
+  "sf-card__avatar": {
+    "description": "Circular avatar image inside a card, sized via --sf-card-avatar-size.",
+    "category": "Components"
+  },
+  "sf-card__body": {
+    "description": "Card body slot.",
+    "category": "Components"
+  },
+  "sf-card__footer": {
+    "description": "Card footer slot with a top divider.",
+    "category": "Components"
+  },
+  "sf-card__header": {
+    "description": "Card header slot with a bottom divider.",
+    "category": "Components"
+  },
+  "sf-card__media": {
+    "description": "Full-width cover image/video for a card, cropped to --sf-card-media-ratio (16/9 by default).",
+    "category": "Components"
+  },
+  "sf-card__title": {
+    "description": "Card title heading, sized via --sf-card-heading-size.",
+    "category": "Components"
+  },
+  "sf-card--bordered": {
+    "description": "Flat, outlined card: keeps the border, drops the shadow.",
+    "category": "Components"
+  },
+  "sf-card--elevated": {
+    "description": "Floating card: hides the border, applies a larger shadow.",
+    "category": "Components"
+  },
+  "sf-card--interactive": {
+    "description": "Adds a pointer cursor and a shadow/translate lift on hover or keyboard focus. Pair with .sf-clickable-parent for a fully clickable card. Lift is suppressed under prefers-reduced-motion.",
+    "category": "Components"
+  },
+  "sf-center": {
+    "description": "Centers children both horizontally and vertically using flexbox. Optionally add sf-center--intrinsic to size the container to its content.",
+    "category": "Layout primitives"
+  },
+  "sf-center--intrinsic": {
+    "description": "Modifier for sf-center: constrains the container to the natural width of its children (no stretching to fill available space).",
+    "category": "Layout primitives"
+  },
+  "sf-clickable-parent": {
+    "description": "Makes the entire card or list-item clickable via an absolutely-positioned child overlay link. Apply to the container; place sf-clickable-parent__overlay on the <a>.",
+    "category": "Accessibility"
+  },
+  "sf-clickable-parent__overlay": {
+    "description": "The full-bleed overlay link inside an sf-clickable-parent. Stretches to cover the parent and uses pointer-events to let interactive children keep their own clicks.",
+    "category": "Accessibility"
+  },
+  "sf-cluster": {
+    "description": "Flex-wrap row of variable-width items with automatic gap. Children wrap when the container is too narrow. Use for tag lists, button groups, and icon rows.",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--2xl": {
+    "description": "Cluster variant with 2xl gap between items.",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--between": {
+    "description": "Cluster variant that distributes items with space-between alignment.",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--center": {
+    "description": "Cluster variant that centers the item row horizontally.",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--end": {
+    "description": "Cluster variant that aligns items to the inline end (right in LTR).",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--l": {
+    "description": "Cluster variant with large (l) gap between items.",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--m": {
+    "description": "Cluster variant with medium (m) gap between items.",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--no-wrap": {
+    "description": "Cluster variant that prevents item wrapping (single-line row).",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--s": {
+    "description": "Cluster variant with small (s) gap between items.",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--xl": {
+    "description": "Cluster variant with xl gap between items.",
+    "category": "Layout primitives"
+  },
+  "sf-cluster--xs": {
+    "description": "Cluster variant with xs gap between items.",
+    "category": "Layout primitives"
+  },
+  "sf-color-pulse": {
+    "description": "Applies a gentle color-pulse animation to draw attention to a dynamic value change (e.g. a counter updating). Scoped to users who have not requested reduced motion.",
+    "category": "Motion / animation"
+  },
+  "sf-container": {
+    "description": "Max-width page container, centered with auto side gutters. Establishes a named inline-size container (cq-container) for container queries. Default width is --sf-container-m.",
+    "category": "Layout primitives"
+  },
+  "sf-container--full": {
+    "description": "Container variant that spans the full viewport width (no max-width cap).",
+    "category": "Layout primitives"
+  },
+  "sf-container--narrow": {
+    "description": "Container variant with a narrower max-width (--sf-container-s). Use for single-column prose and forms.",
+    "category": "Layout primitives"
+  },
+  "sf-container--prose": {
+    "description": "Container variant with a prose-optimised max-width (--sf-container-prose). Ideal for long-form reading content.",
+    "category": "Layout primitives"
+  },
+  "sf-container--wide": {
+    "description": "Container variant with a wider max-width (--sf-container-l). Use for dashboards and wide media.",
+    "category": "Layout primitives"
+  },
+  "sf-content-grid": {
+    "description": "Holy-grail content grid with named areas: full-bleed, popout, and content columns. Use sf-breakout on children to escape the content column.",
+    "category": "Layout primitives"
+  },
+  "sf-cover": {
+    "description": "Vertically stretches to at least a viewport height with a centered element (sf-cover__center). Typical use: hero sections.",
+    "category": "Layout primitives"
+  },
+  "sf-cover__center": {
+    "description": "The centered focal element inside an sf-cover. Stays vertically centered even when the cover content is shorter than the viewport.",
+    "category": "Layout primitives"
+  },
+  "sf-cover--max": {
+    "description": "Cover variant that uses a max-height instead of min-height for the viewport constraint.",
+    "category": "Layout primitives"
+  },
+  "sf-cover--min": {
+    "description": "Cover variant that reduces the minimum height to half a viewport.",
+    "category": "Layout primitives"
+  },
+  "sf-cover--padding-l": {
+    "description": "Cover variant with large vertical padding above and below the centered content.",
+    "category": "Layout primitives"
+  },
+  "sf-cover--padding-s": {
+    "description": "Cover variant with small vertical padding above and below the centered content.",
+    "category": "Layout primitives"
+  },
+  "sf-cq": {
+    "description": "Assigns an inline-size container context to any element. Children can then use @container rules or container-query-aware tokens.",
+    "category": "Layout primitives"
+  },
+  "sf-divide": {
+    "description": "Rules between direct children (a border on each child after the first), reusing .sf-divider's tokens — no per-gap markup needed.",
+    "category": "Layout primitives"
+  },
+  "sf-divide--vertical": {
+    "description": "Vertical rules between direct children (inline-start borders), for row/horizontal layouts.",
+    "category": "Layout primitives"
+  },
+  "sf-divider": {
+    "description": "Horizontal rule (divider line). Uses --sf-divider-* tokens for color, width, and style. Modifiers change dash style or orientation.",
+    "category": "Layout primitives"
+  },
+  "sf-divider--dashed": {
+    "description": "Divider variant with a dashed stroke.",
+    "category": "Layout primitives"
+  },
+  "sf-divider--dotted": {
+    "description": "Divider variant with a dotted stroke.",
+    "category": "Layout primitives"
+  },
+  "sf-divider--gradient": {
+    "description": "Divider variant rendered as a gradient that fades to transparent at both ends.",
+    "category": "Layout primitives"
+  },
+  "sf-divider--soft": {
+    "description": "Divider variant with reduced opacity (subtle separator).",
+    "category": "Layout primitives"
+  },
+  "sf-divider--strong": {
+    "description": "Divider variant with stronger/darker color for a more prominent separator.",
+    "category": "Layout primitives"
+  },
+  "sf-divider--vertical": {
+    "description": "Divider variant rendered as a vertical line. Use inside flex or grid containers.",
+    "category": "Layout primitives"
+  },
+  "sf-drop-shadow-l": {
+    "description": "Large filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-l).",
+    "category": "Macro classes"
+  },
+  "sf-drop-shadow-m": {
+    "description": "Medium filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-m).",
+    "category": "Macro classes"
+  },
+  "sf-drop-shadow-s": {
+    "description": "Small filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-s).",
+    "category": "Macro classes"
+  },
+  "sf-drop-shadow-xl": {
+    "description": "Extra-large filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-xl).",
+    "category": "Macro classes"
+  },
+  "sf-drop-shadow-xs": {
+    "description": "Extra-small filter drop-shadow — follows the element's alpha shape (--sf-drop-shadow-xs).",
+    "category": "Macro classes"
+  },
+  "sf-entrance--fade": {
+    "description": "Scroll-driven entrance: element fades in as it enters the viewport. Animation tied to scroll progress via animation-timeline.",
+    "category": "Motion / animation"
+  },
+  "sf-entrance--fade-down": {
+    "description": "Scroll-driven entrance: element fades in while moving downward into position.",
+    "category": "Motion / animation"
+  },
+  "sf-entrance--fade-left": {
+    "description": "Scroll-driven entrance: element fades in while moving from the right toward the left.",
+    "category": "Motion / animation"
+  },
+  "sf-entrance--fade-right": {
+    "description": "Scroll-driven entrance: element fades in while moving from the left toward the right.",
+    "category": "Motion / animation"
+  },
+  "sf-entrance--fade-up": {
+    "description": "Scroll-driven entrance: element fades in while moving upward into position.",
+    "category": "Motion / animation"
+  },
+  "sf-entrance--scale-up": {
+    "description": "Scroll-driven entrance: element fades in while scaling up from a slightly smaller size.",
+    "category": "Motion / animation"
+  },
+  "sf-equal": {
+    "description": "Flowing CSS multi-column layout (not a grid) — content distributes across columns like a newspaper instead of sitting in fixed cells. Reach for .sf-grid/.sf-grid--fit for discrete grid cells instead.",
+    "category": "Layout primitives"
+  },
+  "sf-equal--2": {
+    "description": "Equal-columns variant locked to column-count: 2.",
+    "category": "Layout primitives"
+  },
+  "sf-equal--3": {
+    "description": "Equal-columns variant locked to column-count: 3.",
+    "category": "Layout primitives"
+  },
+  "sf-equal--4": {
+    "description": "Equal-columns variant locked to column-count: 4.",
+    "category": "Layout primitives"
+  },
+  "sf-equal--6": {
+    "description": "Equal-columns variant locked to column-count: 6.",
+    "category": "Layout primitives"
+  },
+  "sf-equal-height": {
+    "description": "Forces all flex children to equal height (align-items: stretch). Use on a flex row to make cards in a grid share the tallest card's height.",
+    "category": "Macro classes"
+  },
+  "sf-exit--fade": {
+    "description": "Scroll-out exit animation: fades the element out in place (sf-fade-out).",
+    "category": "Motion / animation"
+  },
+  "sf-exit--fade-down": {
+    "description": "Scroll-out exit animation: fades out while sliding downward (sf-slide-out-down).",
+    "category": "Motion / animation"
+  },
+  "sf-exit--fade-left": {
+    "description": "Scroll-out exit animation: fades out while sliding to the left (sf-slide-out-left).",
+    "category": "Motion / animation"
+  },
+  "sf-exit--fade-right": {
+    "description": "Scroll-out exit animation: fades out while sliding to the right (sf-slide-out-right).",
+    "category": "Motion / animation"
+  },
+  "sf-exit--fade-up": {
+    "description": "Scroll-out exit animation: fades out while sliding upward (sf-slide-out-up).",
+    "category": "Motion / animation"
+  },
+  "sf-exit--scale-down": {
+    "description": "Scroll-out exit animation: fades out while shrinking (sf-scale-down).",
+    "category": "Motion / animation"
+  },
+  "sf-fade-in": {
+    "description": "One-shot fade-in animation (opacity 0 → 1). Scoped to no-preference so it stops automatically for reduced-motion users.",
+    "category": "Motion / animation"
+  },
+  "sf-fade-out": {
+    "description": "One-shot fade-out animation (opacity 1 → 0). Scoped to no-preference.",
+    "category": "Motion / animation"
+  },
+  "sf-flow": {
+    "description": "Applies --sf-flow-space as margin-block-start to all direct children except the first. Establishes consistent vertical rhythm in prose-like containers.",
+    "category": "Macro classes"
+  },
+  "sf-fluid-cq": {
+    "description": ".sf-fluid-cq: opt a subtree into a CONTAINER-relative fluid scale (issue #497). By default --sf-text-* / --sf-space-* interpolate against 100vw (the viewport); inside .sf-fluid-cq they interpolate against 100cqi (this box's inline size), so type + spacing track the container…",
+    "category": "Layout primitives"
+  },
+  "sf-focus-parent": {
+    "description": "Forwards focus-visible styling to this container when any descendant is keyboard-focused. Useful for custom controls that wrap a visually-hidden <input>.",
+    "category": "Accessibility"
+  },
+  "sf-focus-shadow": {
+    "description": "Applies the standard focus ring as a box-shadow to any element. Use on custom controls where the native :focus-visible ring doesn't render correctly.",
+    "category": "Accessibility"
+  },
+  "sf-frame": {
+    "description": "Aspect-ratio container for media (images, video, maps). Children fill and cover the fixed-ratio box. Default ratio is 16:9.",
+    "category": "Layout primitives"
+  },
+  "sf-frame--3-2": {
+    "description": "Frame variant locked to a 3:2 aspect ratio.",
+    "category": "Layout primitives"
+  },
+  "sf-frame--4-3": {
+    "description": "Frame variant locked to a 4:3 aspect ratio.",
+    "category": "Layout primitives"
+  },
+  "sf-frame--cinema": {
+    "description": "Frame variant locked to a cinematic 21:9 aspect ratio.",
+    "category": "Layout primitives"
+  },
+  "sf-frame--golden": {
+    "description": "Frame variant locked to the golden ratio (1.618:1).",
+    "category": "Layout primitives"
+  },
+  "sf-frame--portrait": {
+    "description": "Frame variant locked to a portrait 2:3 aspect ratio.",
+    "category": "Layout primitives"
+  },
+  "sf-frame--square": {
+    "description": "Frame variant locked to a square 1:1 aspect ratio.",
+    "category": "Layout primitives"
+  },
+  "sf-frame--video": {
+    "description": "Frame variant locked to the standard 16:9 video aspect ratio.",
+    "category": "Layout primitives"
+  },
+  "sf-full-bleed": {
+    "description": "Forces an element to span the full viewport width, breaking out of any centered container. Use for full-bleed images and section backgrounds.",
+    "category": "Layout primitives"
+  },
+  "sf-gap": {
+    "description": "Injects the default --sf-gap into an existing flex or grid container without imposing display:flex itself. Use when the parent is already a flex or grid.",
+    "category": "Layout primitives"
+  },
+  "sf-gap--2xl": {
+    "description": "Gap injection variant with 2xl gap value.",
+    "category": "Layout primitives"
+  },
+  "sf-gap--l": {
+    "description": "Gap injection variant with large (l) gap value.",
+    "category": "Layout primitives"
+  },
+  "sf-gap--m": {
+    "description": "Gap injection variant with medium (m) gap value.",
+    "category": "Layout primitives"
+  },
+  "sf-gap--s": {
+    "description": "Gap injection variant with small (s) gap value.",
+    "category": "Layout primitives"
+  },
+  "sf-gap--xl": {
+    "description": "Gap injection variant with xl gap value.",
+    "category": "Layout primitives"
+  },
+  "sf-gap--xs": {
+    "description": "Gap injection variant with xs gap value.",
+    "category": "Layout primitives"
+  },
+  "sf-grid": {
+    "description": "Auto-fill CSS grid. Columns are sized with RAM pattern (Repeat, Auto-fill, Minmax) and wrap automatically. Default column min-width is --sf-grid-min-col.",
+    "category": "Layout primitives"
+  },
+  "sf-grid--2xl": {
+    "description": "Grid variant with a 2xl minimum column width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid--dense": {
+    "description": "Grid variant with grid-auto-flow: dense, allowing the grid to fill holes created by span modifiers.",
+    "category": "Layout primitives"
+  },
+  "sf-grid--fit": {
+    "description": "Grid variant that switches from auto-fill to auto-fit, collapsing empty columns.",
+    "category": "Layout primitives"
+  },
+  "sf-grid--l": {
+    "description": "Grid variant with a large (l) minimum column width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid--m": {
+    "description": "Grid variant with a medium (m) minimum column width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid--s": {
+    "description": "Grid variant with a small (s) minimum column width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid--xl": {
+    "description": "Grid variant with an xl minimum column width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid--xs": {
+    "description": "Grid variant with an xs minimum column width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-cols-1": {
+    "description": "Single-column layout (forces all children to one column).",
+    "category": "Layout primitives"
+  },
+  "sf-grid-cols-1-2": {
+    "description": "Two-column ratio grid: first child takes 1fr, second takes 2fr. Container-query responsive.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-cols-1-3": {
+    "description": "Two-column ratio grid: first child takes 1fr, second takes 3fr. Container-query responsive.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-cols-2": {
+    "description": "Responsive 2-column fixed grid. Uses container queries to collapse to one column on narrow containers.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-cols-2-1": {
+    "description": "Two-column ratio grid: first child takes 2fr, second takes 1fr. Container-query responsive.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-cols-3": {
+    "description": "Responsive 3-column fixed grid. Collapses progressively on narrow containers.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-cols-3-1": {
+    "description": "Two-column ratio grid: first child takes 3fr, second takes 1fr. Container-query responsive.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-cols-4": {
+    "description": "Responsive 4-column fixed grid. Collapses progressively on narrow containers.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-cols-6": {
+    "description": "Responsive 6-column fixed grid. Collapses progressively on narrow containers.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-flex": {
+    "description": "Flexbox alternative to .sf-grid for item counts that don't divide evenly: leftover last-row items stretch to fill the row by default, or stay fixed-width and centered with --center.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-flex--2xl": {
+    "description": "Grid-flex variant with a 2xl minimum item width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-flex--center": {
+    "description": "Grid-flex variant that keeps last-row leftover items fixed-width and centered instead of stretching.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-flex--l": {
+    "description": "Grid-flex variant with a large (l) minimum item width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-flex--m": {
+    "description": "Grid-flex variant with a medium (m) minimum item width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-flex--s": {
+    "description": "Grid-flex variant with a small (s) minimum item width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-flex--xl": {
+    "description": "Grid-flex variant with an xl minimum item width.",
+    "category": "Layout primitives"
+  },
+  "sf-grid-flex--xs": {
+    "description": "Grid-flex variant with an xs minimum item width.",
+    "category": "Layout primitives"
+  },
+  "sf-h1": {
+    "description": "Applies h1-level typography (size, line-height, weight, tracking, max-width) to any element without changing its semantic level.",
+    "category": "Utilities"
+  },
+  "sf-h2": {
+    "description": "Applies h2-level typography to any element without changing its semantic level.",
+    "category": "Utilities"
+  },
+  "sf-h3": {
+    "description": "Applies h3-level typography to any element without changing its semantic level.",
+    "category": "Utilities"
+  },
+  "sf-h4": {
+    "description": "Applies h4-level typography to any element without changing its semantic level.",
+    "category": "Utilities"
+  },
+  "sf-h5": {
+    "description": "Applies h5-level typography to any element without changing its semantic level.",
+    "category": "Utilities"
+  },
+  "sf-h6": {
+    "description": "Applies h6-level typography to any element without changing its semantic level.",
+    "category": "Utilities"
+  },
+  "sf-header--l": {
+    "description": "Header block padding at the l step (--sf-space-l).",
+    "category": "Layout primitives"
+  },
+  "sf-header--m": {
+    "description": "Header block padding at the m step (--sf-space-m).",
+    "category": "Layout primitives"
+  },
+  "sf-header--s": {
+    "description": "Header block padding at the s step (--sf-space-s).",
+    "category": "Layout primitives"
+  },
+  "sf-header--xl": {
+    "description": "Header block padding at the xl step (--sf-space-xl).",
+    "category": "Layout primitives"
+  },
+  "sf-header--xs": {
+    "description": "Header block padding at the xs step (--sf-space-xs).",
+    "category": "Layout primitives"
+  },
+  "sf-hover-float": {
+    "description": "Hover-triggered transform: translates the element up slightly on hover.",
+    "category": "Utilities"
+  },
+  "sf-hover-grow": {
+    "description": "Hover-triggered transform: scales the element up slightly on hover.",
+    "category": "Utilities"
+  },
+  "sf-hover-shrink": {
+    "description": "Hover-triggered transform: scales the element down slightly on hover.",
+    "category": "Utilities"
+  },
+  "sf-hover-sink": {
+    "description": "Hover-triggered transform: translates the element down slightly on hover.",
+    "category": "Utilities"
+  },
+  "sf-hover-slide-end": {
+    "description": "Hover-triggered transform: translates the element toward the inline-end on hover.",
+    "category": "Utilities"
+  },
+  "sf-hover-slide-start": {
+    "description": "Hover-triggered transform: translates the element toward the inline-start on hover.",
+    "category": "Utilities"
+  },
+  "sf-icon": {
+    "description": "Inline icon sizing primitive. Sets width and height to --sf-icon-m via em-based tokens so the icon scales with the surrounding text.",
+    "category": "Layout primitives"
+  },
+  "sf-icon--2xl": {
+    "description": "Icon variant sized to --sf-icon-2xl (extra-extra-large).",
+    "category": "Layout primitives"
+  },
+  "sf-icon--boxed": {
+    "description": "Icon variant with a square bordered box background. Useful for standalone icon buttons and feature icons.",
+    "category": "Layout primitives"
+  },
+  "sf-icon--l": {
+    "description": "Icon variant sized to --sf-icon-l (large).",
+    "category": "Layout primitives"
+  },
+  "sf-icon--m": {
+    "description": "Icon variant sized to --sf-icon-m (medium, same as base sf-icon).",
+    "category": "Layout primitives"
+  },
+  "sf-icon--s": {
+    "description": "Icon variant sized to --sf-icon-s (small).",
+    "category": "Layout primitives"
+  },
+  "sf-icon--xl": {
+    "description": "Icon variant sized to --sf-icon-xl (extra-large).",
+    "category": "Layout primitives"
+  },
+  "sf-icon--xs": {
+    "description": "Icon variant sized to --sf-icon-xs (extra-small).",
+    "category": "Layout primitives"
+  },
+  "sf-imposter": {
+    "description": "Absolutely positions an element at the center of its nearest positioned ancestor. Use for overlays, badges, and floating labels.",
+    "category": "Layout primitives"
+  },
+  "sf-imposter--contain": {
+    "description": "Imposter variant that clamps the element within the bounds of its parent using overflow:hidden on the parent.",
+    "category": "Layout primitives"
+  },
+  "sf-imposter--fixed": {
+    "description": "Imposter variant that uses position:fixed instead of absolute. Use for viewport-level overlays and modals.",
+    "category": "Layout primitives"
+  },
+  "sf-invisible": {
+    "description": "Visibility helper (optional/utilities.css) — hides the element visually but keeps it in the layout and accessibility tree (visibility: hidden). Not a runtime state: no JS/ARIA condition of its own.",
+    "category": "Utilities"
+  },
+  "sf-is-disabled": {
+    "description": "Disabled state — dims the element (--sf-opacity-disabled), removes pointer events, and sets cursor: not-allowed. Inherited by child elements that re-enable pointer events.",
+    "category": "State classes"
+  },
+  "sf-is-error": {
+    "description": "Error state — general (not form-field-specific) negative feedback. Applies danger color tokens to indicate a validation failure or system error. Visual styling is identical to sf-is-invalid.",
+    "category": "State classes"
+  },
+  "sf-is-hidden-if-empty": {
+    "description": "Hides the element when it has no child nodes (:empty). An action-on-state helper (the name states the behaviour) for dynamic lists or containers that may render empty.",
+    "category": "State classes"
+  },
+  "sf-is-highlighted": {
+    "description": "Highlighted state — applies a highlight background. Useful for search result highlighting and keyboard-navigated lists.",
+    "category": "State classes"
+  },
+  "sf-is-info": {
+    "description": "Info status state — applies info color tokens. Use for neutral informational messages and hints.",
+    "category": "State classes"
+  },
+  "sf-is-invalid": {
+    "description": "Invalid state — applies danger color tokens to form fields with validation failures. Identical visual output to sf-is-error; the name signals form-field context.",
+    "category": "State classes"
+  },
+  "sf-is-loading": {
+    "description": "Loading state — hides the element's text (color: transparent), removes pointer events, and renders a spinner via ::after. Use for buttons and containers awaiting async results.",
+    "category": "State classes"
+  },
+  "sf-is-selected": {
+    "description": "Selected state — marks an item as selected in a list, table row, or grid cell. Visual specifics (background, border) are applied by component styles.",
+    "category": "State classes"
+  },
+  "sf-is-shimmer": {
+    "description": "Shimmer loading placeholder state. Applies a shimmer animation over the element to indicate that content is loading. Works on both img and non-media elements. (Renamed from .sf-is-skeleton so \"skeleton\" refers only to the planned .sf-skeleton component.)",
+    "category": "State classes"
+  },
+  "sf-is-success": {
+    "description": "Success status state — applies success color tokens. Use for confirmation messages, completed form steps, and positive feedback.",
+    "category": "State classes"
+  },
+  "sf-is-valid": {
+    "description": "Valid state — applies success color tokens to form fields that have passed validation. Visual styling is identical to sf-is-success; the name signals form-field context.",
+    "category": "State classes"
+  },
+  "sf-is-warning": {
+    "description": "Warning status state — applies warning color tokens. Use for cautionary messages and non-critical alerts.",
+    "category": "State classes"
+  },
+  "sf-line-clamp-2": {
+    "description": "Clamps text to 2 lines with an ellipsis. Applies -webkit-line-clamp: 2.",
+    "category": "Macro classes"
+  },
+  "sf-line-clamp-3": {
+    "description": "Clamps text to 3 lines with an ellipsis. Applies -webkit-line-clamp: 3.",
+    "category": "Macro classes"
+  },
+  "sf-line-clamp-N": {
+    "description": "Clamps text to a custom N lines. Set --sf-line-clamp on the element to control the number of visible lines.",
+    "category": "Macro classes"
+  },
+  "sf-link--reverse": {
+    "description": "Link color modifier: reverses the default link color to work on dark/inverted backgrounds. Sets color to --sf-color-text--inverse.",
+    "category": "Macro classes"
+  },
+  "sf-link--subtle": {
+    "description": "Link color modifier: renders the link in the body text color instead of the default action color. Underline still indicates the link on hover.",
+    "category": "Macro classes"
+  },
+  "sf-link-external": {
+    "description": "Automatically appends an external-link icon (via ::after content) to indicate the link opens in a new tab or goes to an external domain.",
+    "category": "Macro classes"
+  },
+  "sf-list-none": {
+    "description": "Drops marker + inline start-padding in one class, on any <ul>/<ol> (or element with list-style applied).",
+    "category": "Utilities"
+  },
+  "sf-live-validate": {
+    "description": "Scopes native constraint-validation feedback to this subtree: within it, :user-invalid/:user-valid on input/select/textarea drive --sf-field-border-color (the same token .sf-is-invalid/.sf-is-valid set explicitly). Apply to a <form> or <fieldset>. Off by default so a still-empty required field isn't marked invalid before a submit is attempted.",
+    "category": "Forms"
+  },
+  "sf-marker--action": {
+    "description": "Colours list ::markers with the action colour.",
+    "category": "Utilities"
+  },
+  "sf-marker--primary": {
+    "description": "Colours list ::markers with the primary brand colour.",
+    "category": "Utilities"
+  },
+  "sf-marker--secondary": {
+    "description": "Colours list ::markers with the secondary brand colour.",
+    "category": "Utilities"
+  },
+  "sf-marker--tertiary": {
+    "description": "Colours list ::markers with the tertiary brand colour.",
+    "category": "Utilities"
   },
   "sf-no-tap-highlight": {
     "description": "Removes the mobile tap highlight color (-webkit-tap-highlight-color: transparent). Use on interactive elements with a custom active state.",
-    "category": "Macros"
+    "category": "Macro classes"
+  },
+  "sf-not-prose": {
+    "description": "Opt-out of sf-prose typography styles within a prose block. Apply to an element that should keep default browser or component styles.",
+    "category": "Macro classes"
+  },
+  "sf-overflow-fade": {
+    "description": "Adds a gradient fade at the inline-end of an overflowing element to hint at hidden content. Use inside sf-reel or any scroll container.",
+    "category": "Macro classes"
+  },
+  "sf-overflow-fade--block": {
+    "description": "Overflow fade variant: fades both the top and bottom edges simultaneously (block axis).",
+    "category": "Macro classes"
+  },
+  "sf-overflow-fade--bottom": {
+    "description": "Overflow fade variant: fades the bottom (block-end) edge.",
+    "category": "Macro classes"
+  },
+  "sf-overflow-fade--inline": {
+    "description": "Overflow fade variant: fades both the left and right edges simultaneously (inline axis).",
+    "category": "Macro classes"
+  },
+  "sf-overflow-fade--left": {
+    "description": "Overflow fade variant: fades the left (inline-start) edge.",
+    "category": "Macro classes"
+  },
+  "sf-overflow-fade--right": {
+    "description": "Overflow fade variant: fades the right (inline-end) edge. Explicit alias for the default sf-overflow-fade behaviour.",
+    "category": "Macro classes"
+  },
+  "sf-overflow-fade--top": {
+    "description": "Overflow fade variant: fades the top (block-start) edge.",
+    "category": "Macro classes"
+  },
+  "sf-overlay": {
+    "description": "Overlay layout helper — absolutely fills its positioned parent (`position: absolute; inset: 0`) for overlays, backdrops, and media scrims.",
+    "category": "Layout primitives"
+  },
+  "sf-place-center": {
+    "description": "Box-neutral centring primitive: display:grid + place-items:center centres an element's content on both axes without adopting cluster/stack/imposter semantics. Unlike sf-center (which centres itself), this centres the content; give the box a height for block-axis centring. The named form of the display:grid; place-items:center idiom.",
+    "category": "Layout primitives"
+  },
+  "sf-prose": {
+    "description": "Opinionated typographic defaults for long-form content: heading hierarchy, paragraph spacing, blockquote, code, and list styling. Override with sf-not-prose.",
+    "category": "Macro classes"
+  },
+  "sf-reel": {
+    "description": "Horizontally scrollable row of fixed-height items with snap scrolling. Children don't shrink below their intrinsic width, creating a card carousel effect.",
+    "category": "Layout primitives"
+  },
+  "sf-render-lazy": {
+    "description": "Defers rendering of off-screen content via content-visibility: auto. The browser skips layout+paint for content outside the viewport, improving LCP for long pages.",
+    "category": "Macro classes"
+  },
+  "sf-scale-down": {
+    "description": "One-shot scale-down animation (element shrinks from full size). Scoped to no-preference.",
+    "category": "Motion / animation"
+  },
+  "sf-scale-up": {
+    "description": "One-shot scale-up animation (element grows from smaller size). Scoped to no-preference.",
+    "category": "Motion / animation"
+  },
+  "sf-scrim": {
+    "description": "Overlay container with a gradient darkening scrim behind text placed on an image or colored background.",
+    "category": "Macro classes"
+  },
+  "sf-scrim__content": {
+    "description": "Content area inside an sf-scrim. Positioned above the gradient overlay layer.",
+    "category": "Macro classes"
+  },
+  "sf-scrim--bottom": {
+    "description": "Scrim variant with the gradient emanating from the bottom edge (bottom-to-top fade).",
+    "category": "Macro classes"
+  },
+  "sf-scrim--full": {
+    "description": "Scrim variant that covers the entire surface with a uniform translucent overlay.",
+    "category": "Macro classes"
+  },
+  "sf-scrim--top": {
+    "description": "Scrim variant with the gradient emanating from the top edge (top-to-bottom fade).",
+    "category": "Macro classes"
+  },
+  "sf-scroll-shadow": {
+    "description": "Adds inset box-shadows at the top and bottom of a scrollable container to indicate hidden overflow above or below.",
+    "category": "Macro classes"
+  },
+  "sf-scroll-snap": {
+    "description": "Enables CSS scroll-snap-type: x mandatory on a horizontal scroll container. Children should have scroll-snap-align.",
+    "category": "Macro classes"
+  },
+  "sf-section": {
+    "description": "Full-width page section with vertical padding (--sf-section-pad-default). Use to create visually distinct content bands.",
+    "category": "Layout primitives"
+  },
+  "sf-section--2xl": {
+    "description": "Section variant with 2xl vertical padding.",
+    "category": "Layout primitives"
+  },
+  "sf-section--collapse": {
+    "description": "Section variant that removes vertical padding (zero-padding section for adjacent same-color blocks).",
+    "category": "Layout primitives"
+  },
+  "sf-section--guttered": {
+    "description": "Adds horizontal page gutters directly to a section — use when you want to skip a separate .sf-container wrapper (gutterless layout inside section). Neutralises container gutter to prevent double padding.",
+    "category": "Layout primitives"
+  },
+  "sf-section--l": {
+    "description": "Section variant with large (l) vertical padding.",
+    "category": "Layout primitives"
+  },
+  "sf-section--m": {
+    "description": "Section variant with medium (m) vertical padding.",
+    "category": "Layout primitives"
+  },
+  "sf-section--s": {
+    "description": "Section variant with small (s) vertical padding.",
+    "category": "Layout primitives"
+  },
+  "sf-section--xl": {
+    "description": "Section variant with xl vertical padding.",
+    "category": "Layout primitives"
+  },
+  "sf-section--xs": {
+    "description": "Section variant with xs vertical padding.",
+    "category": "Layout primitives"
+  },
+  "sf-section-group": {
+    "description": "Groups adjacent sf-section elements so their combined padding collapses correctly at the top and bottom edges.",
+    "category": "Layout primitives"
+  },
+  "sf-selection--alt": {
+    "description": "Overrides the ::selection custom properties (core/base.css) on the element and its descendants, for surfaces where the default selection colours land with poor contrast (e.g. a dark card on a light page). Backed by --sf-color-selection-*--alt (core/tokens.css).",
+    "category": "Utilities"
+  },
+  "sf-sidebar": {
+    "description": "Two-column sidebar layout: first child is the sidebar, second child is main content. The sidebar collapses below the breakpoint (--sf-sidebar-min-width). Default sidebar on the left.",
+    "category": "Layout primitives"
+  },
+  "sf-sidebar--narrow": {
+    "description": "Sidebar variant with a narrower sidebar column.",
+    "category": "Layout primitives"
+  },
+  "sf-sidebar--right": {
+    "description": "Sidebar variant with the sidebar on the right (second child becomes the sidebar).",
+    "category": "Layout primitives"
+  },
+  "sf-sidebar--wide": {
+    "description": "Sidebar variant with a wider sidebar column.",
+    "category": "Layout primitives"
+  },
+  "sf-slide-in-down": {
+    "description": "One-shot slide-in-from-above animation. Scoped to no-preference.",
+    "category": "Motion / animation"
+  },
+  "sf-slide-in-left": {
+    "description": "One-shot slide-in-from-right animation (slides to the left). Scoped to no-preference.",
+    "category": "Motion / animation"
+  },
+  "sf-slide-in-right": {
+    "description": "One-shot slide-in-from-left animation (slides to the right). Scoped to no-preference.",
+    "category": "Motion / animation"
+  },
+  "sf-slide-in-up": {
+    "description": "One-shot slide-in-from-below animation. Scoped to no-preference.",
+    "category": "Motion / animation"
+  },
+  "sf-stack": {
+    "description": "Flex column with even vertical spacing between children (--sf-stack-gap). Stacking context for vertical rhythm.",
+    "category": "Layout primitives"
+  },
+  "sf-stack--2xl": {
+    "description": "Stack variant with 2xl gap between children.",
+    "category": "Layout primitives"
+  },
+  "sf-stack--center": {
+    "description": "Stack variant that centers children on the cross axis.",
+    "category": "Layout primitives"
+  },
+  "sf-stack--end": {
+    "description": "Stack variant that aligns children to the cross-axis end (right in LTR).",
+    "category": "Layout primitives"
+  },
+  "sf-stack--l": {
+    "description": "Stack variant with large (l) gap between children.",
+    "category": "Layout primitives"
+  },
+  "sf-stack--m": {
+    "description": "Stack variant with medium (m) gap between children.",
+    "category": "Layout primitives"
+  },
+  "sf-stack--s": {
+    "description": "Stack variant with small (s) gap between children.",
+    "category": "Layout primitives"
+  },
+  "sf-stack--stretch": {
+    "description": "Stack variant that stretches children to fill the full available width.",
+    "category": "Layout primitives"
+  },
+  "sf-stack--xl": {
+    "description": "Stack variant with xl gap between children.",
+    "category": "Layout primitives"
+  },
+  "sf-stack--xs": {
+    "description": "Stack variant with xs gap between children.",
+    "category": "Layout primitives"
+  },
+  "sf-stagger": {
+    "description": "Stagger — choreography, not the animation itself. Put .sf-stagger on a PARENT; every direct child gets an incrementing animation-delay so a time-based entrance (.sf-fade-in / .sf-slide-in-*) plays in sequence. Children WITHOUT an animation just carry an inert delay (no-op), so…",
+    "category": "Motion / animation"
+  },
+  "sf-sticky": {
+    "description": "position: sticky pinned at the header-aware --sf-sticky-offset.",
+    "category": "Utilities"
+  },
+  "sf-sticky--l": {
+    "description": "Sticky positioning with an extra large gap (--sf-space-l) above the header-aware offset.",
+    "category": "Utilities"
+  },
+  "sf-sticky--m": {
+    "description": "Sticky positioning with an extra medium gap (--sf-space-m) above the header-aware offset.",
+    "category": "Utilities"
+  },
+  "sf-sticky--s": {
+    "description": "Sticky positioning with an extra small gap (--sf-space-s) above the header-aware offset.",
+    "category": "Utilities"
+  },
+  "sf-subgrid": {
+    "description": "Passes the parent grid columns through to children via subgrid. Place on a grid item that should align its own children to the outer grid columns.",
+    "category": "Layout primitives"
+  },
+  "sf-subgrid-rows": {
+    "description": "Passes the parent grid rows through to children via subgrid. Place on a grid item that should align its own children to the outer grid rows.",
+    "category": "Layout primitives"
+  },
+  "sf-surface": {
+    "description": "Generic semantic surface: applies --sf-surface-color as the background and automatically sets a contrasting text color. Tone variants (--primary, --action, etc.) activate preset palettes.",
+    "category": "Macro classes"
+  },
+  "sf-surface--action": {
+    "description": "Surface variant using the action color palette (button/CTA primary color).",
+    "category": "Macro classes"
+  },
+  "sf-surface--danger": {
+    "description": "Surface variant using the danger status palette.",
+    "category": "Macro classes"
+  },
+  "sf-surface--info": {
+    "description": "Surface variant using the info status palette.",
+    "category": "Macro classes"
+  },
+  "sf-surface--inverse": {
+    "description": "Surface variant that inverts light/dark, creating an always-dark surface in light mode and always-light in dark mode.",
+    "category": "Macro classes"
+  },
+  "sf-surface--neutral": {
+    "description": "Surface variant using the neutral palette (muted/gray).",
+    "category": "Macro classes"
+  },
+  "sf-surface--primary": {
+    "description": "Surface variant using the primary brand color palette.",
+    "category": "Macro classes"
+  },
+  "sf-surface--secondary": {
+    "description": "Surface variant using the secondary brand color palette.",
+    "category": "Macro classes"
+  },
+  "sf-surface--success": {
+    "description": "Surface variant using the success status palette.",
+    "category": "Macro classes"
+  },
+  "sf-surface--tertiary": {
+    "description": "Surface variant using the tertiary brand color palette.",
+    "category": "Macro classes"
+  },
+  "sf-surface--warning": {
+    "description": "Surface variant using the warning status palette.",
+    "category": "Macro classes"
+  },
+  "sf-surface-bg": {
+    "description": "Named background surface preset (issue #523). Composes the --sf-surface-bg-* token set (see tokens.macros.css) into one reusable, named background: base colour + image/gradient/pattern, sizing, an optional overlay layered above the image, and an optional animation. Inert until…",
+    "category": "Macro classes"
+  },
+  "sf-switcher": {
+    "description": "Flex layout that switches from a horizontal row to a vertical column when the container is narrower than --sf-switcher-threshold.",
+    "category": "Layout primitives"
+  },
+  "sf-switcher--no-wrap": {
+    "description": "Switcher variant that stays horizontal and never wraps (single-line regardless of container width).",
+    "category": "Layout primitives"
+  },
+  "sf-switcher--vertical": {
+    "description": "Switcher variant that starts in the vertical (stacked) direction on all sizes.",
+    "category": "Layout primitives"
+  },
+  "sf-tabular-nums": {
+    "description": "Forces tabular (monospaced) number rendering. Use on price tables, counters, and anywhere numbers need to align vertically across rows.",
+    "category": "Macro classes"
+  },
+  "sf-text-2xl": {
+    "description": "Applies the 2xl text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+    "category": "Utilities"
+  },
+  "sf-text-2xs": {
+    "description": "Applies the 2xs text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+    "category": "Utilities"
+  },
+  "sf-text-3xl": {
+    "description": "Applies the 3xl text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+    "category": "Utilities"
+  },
+  "sf-text-4xl": {
+    "description": "Applies the 4xl text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+    "category": "Utilities"
+  },
+  "sf-text-gradient": {
+    "description": "Applies a brand gradient to inline text. Sets the background to the gradient, clips it to the text, and makes the text color transparent.",
+    "category": "Macro classes"
+  },
+  "sf-text-l": {
+    "description": "Applies the l text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+    "category": "Utilities"
+  },
+  "sf-text-m": {
+    "description": "Applies the m (body) text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+    "category": "Utilities"
+  },
+  "sf-text-protect": {
+    "description": "Wraps text in a translucent dark gradient overlay to ensure legibility when placed over a light or variable background image.",
+    "category": "Macro classes"
+  },
+  "sf-text-s": {
+    "description": "Applies the s text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+    "category": "Utilities"
+  },
+  "sf-text-xl": {
+    "description": "Applies the xl text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+    "category": "Utilities"
+  },
+  "sf-text-xs": {
+    "description": "Applies the xs text-size role: font-size, line-height, font-weight, letter-spacing, and measure (max-inline-size) in one class.",
+    "category": "Utilities"
+  },
+  "sf-theme-dark": {
+    "description": "Forces dark colour scheme on the element and its subtree (class alias of [data-theme=\"dark\"]).",
+    "category": "Theme utilities"
+  },
+  "sf-theme-light": {
+    "description": "Forces light colour scheme on the element and its subtree (class alias of [data-theme=\"light\"]).",
+    "category": "Theme utilities"
+  },
+  "sf-theme-transition": {
+    "description": "Opt-in animated light/dark theme crossfade. Apply to <html> (or a subtree) so color tokens transition smoothly when [data-theme] changes. Duration controlled by --sf-theme-transition-duration.",
+    "category": "Theme utilities"
+  },
+  "sf-touch-target": {
+    "description": ".sf-touch-target — the explicit opt-IN counterpart to the class-less floor above. Because the automatic floor deliberately never touches a control that carries a class, put this class on any control you own (a button with your own class, a third-party widget you can add a class…",
+    "category": "Accessibility"
+  },
+  "sf-truncate": {
+    "description": "Single-line text overflow with ellipsis. Equivalent to the classic text-overflow: ellipsis trio (white-space nowrap, overflow hidden, text-overflow ellipsis).",
+    "category": "Macro classes"
+  },
+  "sf-visible": {
+    "description": "Visibility helper (optional/utilities.css) — forces the element to be visible (visibility: visible). Use to un-hide an element that inherited visibility: hidden from a parent.",
+    "category": "Utilities"
+  },
+  "sf-width-auto": {
+    "description": "Intrinsic auto width (inline-size:auto) — sizes to the box’s normal layout.",
+    "category": "Utilities"
+  },
+  "sf-width-fit": {
+    "description": "Width sized to its own content (fit-content).",
+    "category": "Utilities"
+  },
+  "sf-width-full": {
+    "description": "Full width, uncapped (inline-size:100%, max-inline-size:none).",
+    "category": "Utilities"
+  },
+  "sf-width-max": {
+    "description": "Widest content-driven width (max-content) — grows to full intrinsic width, no wrapping.",
+    "category": "Utilities"
+  },
+  "sf-width-min": {
+    "description": "Narrowest content-driven width (min-content) — shrinks to the longest unbreakable content.",
+    "category": "Utilities"
   }
 }

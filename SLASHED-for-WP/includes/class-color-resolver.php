@@ -132,22 +132,29 @@ class Slashed_Color_Resolver {
 	);
 
 	/**
-	 * Semantic alias mappings: alias => target step.
+	 * Semantic alias mappings: alias-suffix => target step.
+	 *
+	 * The suffix includes its exact separator so the generated key matches the
+	 * framework's own token names (see core/tokens.css): BEM *state* modifiers
+	 * use a DOUBLE dash (`--hover`, `--active`), while the tonal aliases use a
+	 * SINGLE dash (`-lighter`, `-subtle`, …). Emitting `-hover`/`-active` here
+	 * produced keys the builder swatch/variable lookups never matched, so those
+	 * two tokens rendered without a colour swatch.
 	 *
 	 * @var array<string, string>
 	 */
 	private static $semantic_aliases = array(
-		'superlight' => '50',
-		'xlight'     => '200',
-		'lighter'    => '400',
-		'darker'     => '600',
-		'xdark'      => '800',
-		'superdark'  => '950',
-		'hover'      => '600',
-		'active'     => '800',
-		'subtle'     => 'a10',
-		'muted'      => 'a30',
-		'tint'       => 'a5',
+		'-superlight' => '50',
+		'-xlight'     => '200',
+		'-lighter'    => '400',
+		'-darker'     => '600',
+		'-xdark'      => '800',
+		'-superdark'  => '950',
+		'--hover'     => '600',
+		'--active'    => '800',
+		'-subtle'     => 'a10',
+		'-muted'      => 'a30',
+		'-tint'       => 'a5',
 	);
 
 	/**
@@ -254,11 +261,13 @@ class Slashed_Color_Resolver {
 				$hex_map[ '--sf-color-' . $family . '-' . $suffix ] = Slashed_Color_Math::rgb_to_hex( $mixed );
 			}
 
-			// Semantic aliases: map to their computed step values.
-			foreach ( self::$semantic_aliases as $alias => $target ) {
+			// Semantic aliases: map to their computed step values. The suffix
+			// carries its own separator (single dash for tonal aliases, double
+			// dash for BEM state modifiers) so keys match the framework tokens.
+			foreach ( self::$semantic_aliases as $suffix => $target ) {
 				$target_key = '--sf-color-' . $family . '-' . $target;
 				if ( isset( $hex_map[ $target_key ] ) ) {
-					$hex_map[ '--sf-color-' . $family . '-' . $alias ] = $hex_map[ $target_key ];
+					$hex_map[ '--sf-color-' . $family . $suffix ] = $hex_map[ $target_key ];
 				}
 			}
 		}
