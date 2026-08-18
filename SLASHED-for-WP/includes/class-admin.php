@@ -172,7 +172,7 @@ class Slashed_Admin {
 							__( 'Design tokens — color, type, spacing, layout, motion, macros, shadows, radius, z-index', 'slashed' ),
 							__( 'CSS reset &amp; base element styles', 'slashed' ),
 							__( 'Layout primitives — .sf-container, .sf-stack, .sf-grid, .sf-cluster, .sf-sidebar…', 'slashed' ),
-							__( 'Macro-classes — .sf-prose, .sf-flow, .sf-truncate, .sf-aspect, .sf-scroll-shadow…', 'slashed' ),
+							__( 'Macro-classes — .sf-prose, .sf-flow, .sf-truncate, .sf-scroll-snap, .sf-scroll-shadow…', 'slashed' ),
 							__( 'Interaction states (.is-* and .has-* classes)', 'slashed' ),
 							__( 'Themes — light &amp; dark mode via light-dark(); [data-theme] scoping', 'slashed' ),
 							__( 'Motion, accessibility &amp; print layers', 'slashed' ),
