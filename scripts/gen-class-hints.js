@@ -1,15 +1,26 @@
 #!/usr/bin/env node
 /**
  * Generates data/classes-hints.json — a map of .sf-* / .is-* class names to
- * short descriptions extracted from the section comments in the CSS source.
+ * short descriptions and categories, extracted from the SLASHED framework's
+ * api-index.json (the same source gen-variables-hints.js uses).
  *
  * Format:
- *   { "sf-stack": "Flex column with even vertical spacing between children.",
- *     "sf-stack--xs": "Flex column with even vertical spacing between children.",
+ *   { "sf-stack":            { "description": "Flex column …", "category": "Layout primitives" },
+ *     "sf-bento--row-tall":  { "description": "Bento grid variant …", "category": "Layout primitives" },
+ *     "sf-is-disabled":      { "description": "Disabled state …", "category": "State classes" },
  *     ... }
  *
- * Modifier classes (e.g. sf-stack--xl) inherit their parent's description.
- * Descriptions are the first non-blank line after the section heading comment.
+ * Why api-index.json and not the CSS source comments?
+ *   This generator used to scrape section-heading comments out of the framework
+ *   CSS. That coupled the hint map to a specific comment format, and when the
+ *   framework adopted its "source comment policy" (short `/* Label *\/`
+ *   separators, long-form docs moved to docs/) the scraper silently matched
+ *   almost nothing — the class dropdown in Bricks lost most of its hints while
+ *   the drift `--check` still passed (regen == committed, just wrong). The
+ *   framework now publishes docs/api-index.json as its machine-readable class
+ *   + token contract (generated from source), so we read that directly: it is
+ *   robust to comment reformatting and always tracks the real class names
+ *   (e.g. the sf-bento--row-* rename and the is-* → sf-is-* namespace move).
  *
  * Usage:
  *   node scripts/gen-class-hints.js          — write data/classes-hints.json
@@ -20,215 +31,106 @@ import fs   from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-// Class descriptions are parsed from the SLASHED framework's CSS source files,
-// which live in a separate repo. Point SLASHED_FRAMEWORK_DIR at a local
-// checkout; defaults to a sibling ../SLASHED checkout.
+// Class descriptions are read from the SLASHED framework's api-index.json,
+// which lives in a separate repo. Point SLASHED_FRAMEWORK_DIR at a local
+// checkout; defaults to a ./.framework clone, then a sibling ../SLASHED.
 const FRAMEWORK = process.env.SLASHED_FRAMEWORK_DIR
   ? path.resolve(process.env.SLASHED_FRAMEWORK_DIR)
   : fs.existsSync(path.join(ROOT, '.framework'))
     ? path.join(ROOT, '.framework')
     : path.resolve(ROOT, '..', 'SLASHED');
-const OUT  = path.join(ROOT, 'SLASHED-for-WP', 'data', 'classes-hints.json');
 
-// Files to parse, in generation order. Must match FILE_META in gen-class-reference.js.
-const SOURCE_FILES = [
-  { file: 'core/layout.css',        category: 'Layout' },
-  { file: 'core/macros.css',        category: 'Macros' },
-  { file: 'core/states.css',        category: 'States' },
-  { file: 'core/accessibility.css', category: 'Accessibility' },
-  { file: 'core/motion.css',        category: 'Motion' },
-  { file: 'core/print.css',         category: 'Print' },
-  { file: 'core/themes.css',        category: 'Themes' },
-  { file: 'optional/forms.css',     category: 'Forms' },
-];
-
-// Curated overrides — always win over auto-parsed CSS-comment descriptions.
-// Use this for classes whose section comment produces a wrong/shared/truncated hint.
-export const OVERRIDE_HINTS = {
-  // Bento container variants inherit the section description instead of getting their own.
-  'sf-bento':          { description: 'Auto-fill bento grid for card dashboards. Children span 1 column by default; use span modifiers (sf-bento-wide, sf-bento-tall, sf-bento-full, sf-bento-featured) to break the grid.', category: 'Layout' },
-  'sf-bento--2':       { description: 'Bento grid variant with a 2-column base layout.', category: 'Layout' },
-  'sf-bento--3':       { description: 'Bento grid variant with a 3-column base layout.', category: 'Layout' },
-  'sf-bento--6':       { description: 'Bento grid variant with a 6-column base layout.', category: 'Layout' },
-  'sf-bento--compact': { description: 'Bento grid variant with shorter default row height.', category: 'Layout' },
-  'sf-bento--tall':    { description: 'Bento grid variant with taller default row height.', category: 'Layout' },
-  'sf-bento-wide':     { description: 'Span modifier for a bento item: spans 2 columns (wide card).', category: 'Layout' },
-  'sf-bento-full':     { description: 'Span modifier for a bento item: stretches across all columns (full-width banner).', category: 'Layout' },
-  'sf-bento-tall':     { description: 'Span modifier for a bento item: doubles the row height (tall card).', category: 'Layout' },
-  'sf-bento-featured': { description: 'Span modifier for a bento item: takes up 2×2 cells (featured hero placement).', category: 'Layout' },
-  // Surface section comment is multi-line; auto-parser only captures the first line.
-  'sf-surface':           { description: 'Generic semantic surface: applies --sf-surface-color as the background and automatically sets a contrasting text color. Tone variants (--primary, --action, etc.) activate preset palettes.', category: 'Macros' },
-  'sf-surface--primary':  { description: 'Surface variant using the primary brand color palette.', category: 'Macros' },
-  'sf-surface--secondary':{ description: 'Surface variant using the secondary brand color palette.', category: 'Macros' },
-  'sf-surface--tertiary': { description: 'Surface variant using the tertiary brand color palette.', category: 'Macros' },
-  'sf-surface--action':   { description: 'Surface variant using the action color palette (button/CTA primary color).', category: 'Macros' },
-  'sf-surface--neutral':  { description: 'Surface variant using the neutral palette (muted/gray).', category: 'Macros' },
-  'sf-surface--inverse':  { description: 'Surface variant that inverts light/dark, creating an always-dark surface in light mode and always-light in dark mode.', category: 'Macros' },
-  'sf-surface--success':  { description: 'Surface variant using the success status palette.', category: 'Macros' },
-  'sf-surface--warning':  { description: 'Surface variant using the warning status palette.', category: 'Macros' },
-  'sf-surface--error':    { description: 'Surface variant using the error status palette.', category: 'Macros' },
-  'sf-surface--info':     { description: 'Surface variant using the info status palette.', category: 'Macros' },
-  'sf-surface--danger':   { description: 'Surface variant using the danger status palette.', category: 'Macros' },
-  // Overflow fade and no-tap-highlight section comments are parsed correctly
-  // but the first line alone is incomplete.
-  'sf-overflow-fade':     { description: 'Adds a gradient fade at the inline-end of an overflowing element to hint at hidden content. Use inside sf-reel or any scroll container.', category: 'Macros' },
-  'sf-no-tap-highlight':  { description: 'Removes the mobile tap highlight color (-webkit-tap-highlight-color: transparent). Use on interactive elements with a custom active state.', category: 'Macros' },
-};
-
-// Manual descriptions for classes whose source format can't be auto-parsed.
-// States use /* === SECTION === */ comments with no inline descriptions.
-export const MANUAL_HINTS = {
-  'is-hidden':      { description: 'Hides the element (display: none). Toggled by JS or ARIA.', category: 'States' },
-  'is-invisible':   { description: 'Makes the element invisible but still occupies space.', category: 'States' },
-  'is-visible':     { description: 'Forces visibility: visible on a hidden element.', category: 'States' },
-  'is-disabled':    { description: 'Marks the element as non-interactive. Reduces opacity and blocks pointer events.', category: 'States' },
-  'is-readonly':    { description: 'Marks the element as read-only. Reduces opacity; pointer events still active.', category: 'States' },
-  'is-loading':     { description: 'Indicates the element is in a loading state. Shows a spinner cursor.', category: 'States' },
-  'is-current':     { description: 'Marks the element as the current item (e.g. active nav link).', category: 'States' },
-  'is-active':      { description: 'Marks the element as active/selected.', category: 'States' },
-  'is-selected':    { description: 'Marks the element as selected.', category: 'States' },
-  'is-expanded':    { description: 'Marks the element as expanded (e.g. accordion open).', category: 'States' },
-  'is-collapsed':   { description: 'Marks the element as collapsed.', category: 'States' },
-  'is-open':        { description: 'Marks the element as open (e.g. dropdown visible).', category: 'States' },
-  'is-closed':      { description: 'Marks the element as closed.', category: 'States' },
-  'is-checked':     { description: 'Marks the element as checked.', category: 'States' },
-  'is-indeterminate': { description: 'Marks a checkbox as indeterminate.', category: 'States' },
-  'is-valid':       { description: 'Marks a form field as passing validation.', category: 'States' },
-  'is-invalid':     { description: 'Marks a form field as failing validation.', category: 'States' },
-  'is-required':    { description: 'Marks a form field as required.', category: 'States' },
-  'is-error':       { description: 'Marks the element as being in an error state.', category: 'States' },
-  'is-success':     { description: 'Marks the element as being in a success state.', category: 'States' },
-  'is-warning':     { description: 'Marks the element as being in a warning state.', category: 'States' },
-  'is-info':        { description: 'Marks the element as carrying informational state.', category: 'States' },
-  'is-sticky':      { description: 'Applies position: sticky with top: 0.', category: 'States' },
-  'is-fixed':       { description: 'Applies position: fixed.', category: 'States' },
-  'is-pinned':      { description: 'Alias for sticky positioning.', category: 'States' },
-  'is-scrolled':    { description: 'Applied by JS when the page has scrolled past a threshold.', category: 'States' },
-  'is-truncated':   { description: 'Truncates text with an ellipsis (single line).', category: 'States' },
-  'is-sr-only':     { description: 'Visually hidden but accessible to screen readers.', category: 'States' },
-};
+const API_INDEX_FILE = path.join(FRAMEWORK, 'docs', 'api-index.json');
+const OUT = path.join(ROOT, 'SLASHED-for-WP', 'data', 'classes-hints.json');
 
 /**
- * Parse a CSS file and return a map of className → description.
+ * Normalise a class description for use as an editor tooltip.
  *
- * Strategy:
- *  1. Find every section-heading comment: `/* -- Title ----- \n   Description \n ... *\/`
- *  2. Record the first non-blank description line as the hint for that section.
- *  3. After the comment, all .sf-* / .is-* class selectors on their own line belong
- *     to that section until the next section comment.
- *  4. Modifier classes (e.g. sf-stack--xl) inherit the parent's description.
+ * The framework's api-index truncates long descriptions with a trailing
+ * ellipsis (`…` or `...`), which reads as a broken sentence in the small
+ * Bricks tooltip. When a description was truncated this way, cut it back to
+ * the last COMPLETE sentence (a `.`, `!`, or `?` followed by whitespace) so
+ * the tooltip always ends cleanly. Untruncated descriptions are returned
+ * unchanged (aside from trimming). If no internal sentence boundary exists,
+ * the bare ellipsis is stripped rather than dropping the whole description.
+ *
+ * Pure — exported for unit testing.
+ *
+ * @param {string} raw Description as shipped in api-index.json.
+ * @returns {string} Tooltip-ready description.
  */
-function parseFile(rel, category) {
-  const abs = path.join(FRAMEWORK, rel);
-  if (!fs.existsSync(abs)) return {};
+export function normalizeDescription(raw) {
+  let d = String(raw == null ? '' : raw).trim();
 
-  return parseCss(fs.readFileSync(abs, 'utf8'), category);
+  // Only act on descriptions the upstream index truncated mid-sentence.
+  if (!/(?:\u2026|\.\.\.)$/.test(d)) return d;
+
+  // Drop the trailing ellipsis (unicode … or ASCII ...).
+  d = d.replace(/\s*(?:\u2026|\.\.\.)\s*$/, '').trim();
+
+  // Cut back to the last complete sentence (terminator followed by space).
+  const m = d.match(/^[\s\S]*[.!?](?=\s)/);
+  return (m ? m[0] : d).trim();
 }
 
 /**
- * Pure section-comment parser: extract a { className → { description, category } }
- * map from a CSS source string. Exported (no fs / no env) so the comment-format
- * assumptions can be unit-tested — this is the logic that would silently produce
- * wrong hints if the framework changed its section-comment style.
+ * Transform a parsed api-index.json object into the class-hints map.
  *
- * @param {string} src      Raw CSS source.
- * @param {string} category Category label to tag every class found.
- * @returns {object}
+ * Pure (no fs / no env): keeps only `class` entries whose name is one the
+ * Bricks class-hints resolver can actually tag — a single `sf-*` or `is-*`
+ * token (see integrations/bricks/editor-app/src/lib/class-hints.js). Entries
+ * without a description are skipped (a blank tooltip is worse than none),
+ * descriptions are normalised for the tooltip (see normalizeDescription), and
+ * the api-index category is preserved verbatim. Exported so the extraction
+ * rules can be unit-tested without a framework checkout on disk.
+ *
+ * @param {object} apiIndex Parsed api-index.json ({ entries: [...] }).
+ * @returns {object} map of class name to { description, category }
  */
-export function parseCss(src, category) {
+export function buildClassHints(apiIndex) {
   const hints = {};
+  const entries = (apiIndex && apiIndex.entries) || [];
 
-  // Split into tokens: either a block comment or code.
-  // We walk through in order, tracking current section description.
-  let currentDesc = '';
+  for (const entry of entries) {
+    if (!entry || entry.type !== 'class') continue;
 
-  // Regex to find /* -- Heading ----- \n   Description \n ... */ blocks.
-  // Captures the description line(s) inside.
-  const sectionRe = /\/\*\s*--\s+([^\n]+?)[-\s]*\n([\s\S]*?)\*\//g;
-  const classRe   = /\.((sf|is)-[\w-]+)/g;
+    const name = entry.name;
+    if (typeof name !== 'string' || !name) continue;
 
-  // Build a list of (offset, type, value) tokens.
-  const tokens = [];
-  let m;
+    // The Bricks resolver only recognises sf-* / is-* tokens; unprefixed
+    // framework classes (sr-only, skip-link, …) would ship as dead entries.
+    if (!name.startsWith('sf-') && !name.startsWith('is-')) continue;
 
-  // Reset regex state
-  sectionRe.lastIndex = 0;
-  while ((m = sectionRe.exec(src)) !== null) {
-    const title = m[1].trim();
-    // Extract first non-blank, non-dashes line from body as description.
-    const bodyLines = m[2].split('\n')
-      .map(l => l.replace(/^\s*\*?\s*/, '').trim())
-      .filter(l => l && !/^-+$/.test(l));
-    const desc = bodyLines[0] || title;
-    tokens.push({ offset: m.index, end: m.index + m[0].length, type: 'section', desc, title });
-  }
+    const description = normalizeDescription(entry.description);
+    if (!description) continue;
 
-  // Walk the file in order: between section markers, extract class names.
-  for (let i = 0; i < tokens.length; i++) {
-    const section = tokens[i];
-    currentDesc = section.desc;
-
-    const codeStart = section.end;
-    const codeEnd   = i + 1 < tokens.length ? tokens[i + 1].offset : src.length;
-    const code = src.slice(codeStart, codeEnd)
-      // strip remaining block comments
-      .replace(/\/\*[\s\S]*?\*\//g, '');
-
-    classRe.lastIndex = 0;
-    let cm;
-    while ((cm = classRe.exec(code)) !== null) {
-      const name = cm[1]; // e.g. "sf-stack" or "sf-stack--xl"
-      hints[name] = { description: currentDesc, category };
-    }
+    hints[name] = {
+      description,
+      category: entry.category || 'Classes',
+    };
   }
 
   return hints;
 }
 
 /**
- * The framework CSS source files (relative to FRAMEWORK) that are NOT present
- * on disk. parseFile() silently returns {} for a missing source, so ANY absent
- * file would drop that whole category's hints; generate() would then produce a
- * partial map (down to just the hardcoded MANUAL_HINTS + OVERRIDE_HINTS when
- * the checkout is missing entirely). Writing that would clobber the committed
- * classes-hints.json, so the writer below refuses unless EVERY source resolves
- * — a mispointed or partial checkout is rejected, not silently truncated.
- * Mirrors gen-bricks-inventory.js, which likewise fails on any missing source.
- * (--check mode still runs generate() and reports the resulting drift loudly,
- * which is safe.)
+ * Read the api-index.json and extract class hints.
+ * @returns {object} map of class name to { description, category }
  */
-function missingFrameworkSources() {
-  return SOURCE_FILES
-    .map(({ file }) => file)
-    .filter((file) => !fs.existsSync(path.join(FRAMEWORK, file)));
-}
-
-/**
- * Layer the curated hint maps over an auto-parsed map, applying the precedence
- * the generator guarantees: MANUAL_HINTS only fill gaps (never override a
- * parsed entry), OVERRIDE_HINTS always win. Pure — exported for unit testing.
- *
- * @param {object} parsed Auto-parsed { className → hint } map.
- * @returns {object} Merged map.
- */
-export function applyCuratedHints(parsed) {
-  const all = { ...parsed };
-  // Manual hints fill gaps (states, non-standard comment formats).
-  // They don't override auto-parsed entries unless the class wasn't found.
-  for (const [name, hint] of Object.entries(MANUAL_HINTS)) {
-    if (!all[name]) all[name] = hint;
-  }
-  // Curated overrides always win — correct wrong/shared/truncated descriptions.
-  Object.assign(all, OVERRIDE_HINTS);
-  return all;
-}
-
 function generate() {
-  const all = {};
-  for (const { file, category } of SOURCE_FILES) {
-    Object.assign(all, parseFile(file, category));
+  if (!fs.existsSync(API_INDEX_FILE)) {
+    throw new Error(`[gen-class-hints] Missing API index file: ${API_INDEX_FILE}`);
   }
-  return applyCuratedHints(all);
+
+  let apiIndex;
+  try {
+    const raw = fs.readFileSync(API_INDEX_FILE, 'utf8');
+    apiIndex = JSON.parse(raw);
+  } catch (err) {
+    throw new Error(`[gen-class-hints] Failed to parse ${API_INDEX_FILE}: ${err.message}`);
+  }
+
+  return buildClassHints(apiIndex);
 }
 
 // ── CLI ─────────────────────────────────────────────────────────────────────
@@ -251,21 +153,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
     console.log(`[gen-class-hints] OK — ${Object.keys(hints).length} class hints`);
   } else {
-    // Refuse to overwrite the committed file with a truncated result: every
-    // framework CSS source must resolve, or the generated map would silently
-    // drop the categories whose sources are missing.
-    const missing = missingFrameworkSources();
-    if (missing.length > 0) {
-      console.error(
-        `[gen-class-hints] framework CSS source incomplete — refusing to overwrite ${OUT_REL} ` +
-        `with a truncated hints map.\n` +
-        `  Missing ${missing.length}/${SOURCE_FILES.length} source file(s) under FRAMEWORK=${FRAMEWORK}:\n` +
-        missing.map((f) => `    - ${f}`).join('\n') + '\n' +
-        `  Point SLASHED_FRAMEWORK_DIR at a complete SLASHED checkout, add a ./.framework clone, ` +
-        `or place a sibling ../SLASHED checkout, then re-run.`,
-      );
-      process.exit(1);
-    }
     fs.mkdirSync(path.dirname(OUT), { recursive: true });
     fs.writeFileSync(OUT, json);
     console.log(`[gen-class-hints] → ${OUT_REL} (${Object.keys(hints).length} class hints)`);
