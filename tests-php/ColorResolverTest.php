@@ -125,6 +125,59 @@ final class ColorResolverTest extends TestCase {
 		}
 	}
 
+	public function test_picker_only_tokens_are_resolved_in_both_modes() {
+		// Regression guard: these tokens ship in the framework's variable picker
+		// but are not produced by the per-family scale or the semantic passes.
+		// Without them the Bricks colour dropdown rendered those rows swatch-less.
+		$maps = array(
+			'light' => Slashed_Color_Resolver::resolve( array() ),
+			'dark'  => Slashed_Color_Resolver::resolve_dark( array() ),
+		);
+		$expected = array(
+			// Per-family raw source tokens.
+			'--sf-color-primary-source-light',
+			'--sf-color-primary-source-dark',
+			'--sf-color-action-source-light',
+			'--sf-color-action-source-dark',
+			'--sf-color-base-source-light',
+			'--sf-color-base-source-dark',
+			// Literals, caret alias, alt selection, subtle text.
+			'--sf-color-white',
+			'--sf-color-black',
+			'--sf-color-caret',
+			'--sf-color-selection-bg--alt',
+			'--sf-color-selection-text--alt',
+			'--sf-color-text--subtle',
+		);
+		foreach ( $maps as $mode => $map ) {
+			foreach ( $expected as $key ) {
+				$this->assertArrayHasKey( $key, $map, "$mode map must resolve $key" );
+			}
+		}
+	}
+
+	public function test_source_tokens_are_mode_independent_and_match_the_family_base() {
+		// A -source-light / -source-dark token is an absolute input value, so it
+		// reads the same in the light and dark maps, and -source-light equals the
+		// family base (which is the light source).
+		$light = Slashed_Color_Resolver::resolve( array() );
+		$dark  = Slashed_Color_Resolver::resolve_dark( array() );
+		foreach ( array( 'primary', 'action', 'neutral', 'success' ) as $family ) {
+			$sl = '--sf-color-' . $family . '-source-light';
+			$sd = '--sf-color-' . $family . '-source-dark';
+			$this->assertSame( $light[ $sl ], $dark[ $sl ], "$family -source-light must be mode-independent" );
+			$this->assertSame( $light[ $sd ], $dark[ $sd ], "$family -source-dark must be mode-independent" );
+			$this->assertSame( $light[ '--sf-color-' . $family ], $light[ $sl ], "$family -source-light must equal the light family base" );
+		}
+	}
+
+	public function test_caret_and_literals_resolve_as_expected() {
+		$light = Slashed_Color_Resolver::resolve( array() );
+		$this->assertSame( '#ffffff', $light['--sf-color-white'] );
+		$this->assertSame( '#000000', $light['--sf-color-black'] );
+		$this->assertSame( $light['--sf-color-action'], $light['--sf-color-caret'], 'caret aliases action' );
+	}
+
 	public function test_light_and_dark_resolve_the_same_variable_set() {
 		$light = array_keys( Slashed_Color_Resolver::resolve( array() ) );
 		$dark  = array_keys( Slashed_Color_Resolver::resolve_dark( array() ) );
