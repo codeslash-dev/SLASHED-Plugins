@@ -181,133 +181,133 @@ class Slashed_Category_Map {
 	}
 
 	/**
-	 * Semantic ordering rank for a token's trailing scale keyword.
+	 * Semantic ordering rank for a t-shirt scale keyword.
 	 *
-	 * Design tokens use a t-shirt scale (2xs → 7xl) plus a handful of edge
-	 * keywords (none, px, base, full, max). A plain alphabetical / natural
-	 * sort renders these in the wrong visual order — e.g. Spacing comes out as
-	 * 2xl, 2xs, 3xl, l, m, s, xl, xs — because "2xl" sorts before "2xs" and the
-	 * single letters land wherever the alphabet puts them. This map assigns
-	 * each keyword a rank so a comparator can restore the intended small→large
-	 * progression (2xs, xs, s, m, l, xl, 2xl, 3xl …).
+	 * Design tokens size their variants on a t-shirt scale (4xs → 7xl, plus
+	 * px). A plain alphabetical / natural sort renders these in the wrong
+	 * visual order — e.g. Spacing comes out as 2xl, 2xs, 3xl, l, m, s, xl, xs —
+	 * because "2xl" sorts before "2xs" and the single letters land wherever the
+	 * alphabet puts them. This map assigns each size a rank so {@see compare()}
+	 * can restore the intended small→large progression (2xs, xs, s, m, l, xl,
+	 * 2xl, 3xl …).
 	 *
-	 * Lower rank sorts earlier. Keywords absent from this map are treated as
-	 * non-scale tokens by {@see compare()}.
+	 * Only unambiguous *size* keywords live here. Words that a family or value
+	 * can legitimately be named after — e.g. "base" (--sf-color-base) or "none"
+	 * (--sf-duration-none) — are deliberately excluded so they keep their
+	 * natural position beside the rest of their family rather than being
+	 * misread as a size. Lower rank sorts earlier.
 	 *
 	 * @return array<string, int>
 	 */
 	public static function scale_order() {
 		return array(
-			'none' => 0,
-			'px'   => 1,
-			'4xs'  => 10,
-			'3xs'  => 11,
-			'2xs'  => 12,
-			'xs'   => 13,
-			'sm'   => 14,
-			's'    => 15,
-			'base' => 16,
-			'md'   => 17,
-			'm'    => 18,
-			'lg'   => 19,
-			'l'    => 20,
-			'xl'   => 21,
-			'2xl'  => 22,
-			'3xl'  => 23,
-			'4xl'  => 24,
-			'5xl'  => 25,
-			'6xl'  => 26,
-			'7xl'  => 27,
-			'full' => 40,
-			'max'  => 41,
+			'px'  => 1,
+			'4xs' => 10,
+			'3xs' => 11,
+			'2xs' => 12,
+			'xs'  => 13,
+			'sm'  => 14,
+			's'   => 15,
+			'md'  => 16,
+			'm'   => 17,
+			'lg'  => 18,
+			'l'   => 19,
+			'xl'  => 20,
+			'2xl' => 21,
+			'3xl' => 22,
+			'4xl' => 23,
+			'5xl' => 24,
+			'6xl' => 25,
+			'7xl' => 26,
 		);
 	}
 
 	/**
 	 * Compare two --sf-* variable names for semantic (scale-aware) ordering.
 	 *
-	 * Names are first grouped by their "base" (the name with any trailing
-	 * scale keyword or numeric step removed), then, within a base, ordered by
-	 * scale rank (see {@see scale_order()}) or numeric step. This keeps a
-	 * family such as Spacing in small→large order (--sf-space-2xs, -xs, -s, -m,
-	 * -l, -xl, -2xl …) and colour steps in numeric order (--sf-color-primary-50,
-	 * -100, …, -950) instead of the lexicographic jumble a plain sort()
-	 * produces. Non-scale tokens keep their natural, case-insensitive order.
+	 * Names are compared segment by segment (splitting on "-"). At the first
+	 * segment that differs, each side is classed as a scale size, a numeric
+	 * step, or a plain word, and ordered so that sizes come first (by scale
+	 * rank), then numeric steps (numerically), then plain words (natural,
+	 * case-insensitive). When one name is a prefix of the other, the shorter
+	 * one sorts first — this keeps a bare family token (--sf-color-base) right
+	 * before its own steps (--sf-color-base-50 …).
 	 *
-	 * Suitable as the callback for usort().
+	 * The result: scale families read small→large (--sf-space-2xs, -xs, -s, -m,
+	 * -l, -xl, -2xl …) and colour steps stay numeric (--sf-color-primary-50,
+	 * -100, …, -950), while every other token — including families whose name
+	 * merely contains a size-like word — keeps the natural, contiguous order it
+	 * had before. Comparing per-segment (rather than stripping a trailing
+	 * "suffix") is what guarantees a consistent, transitive ordering suitable
+	 * for usort().
 	 *
 	 * @param string $a First variable name (including leading "--").
 	 * @param string $b Second variable name.
 	 * @return int Negative, zero, or positive per the usort() contract.
 	 */
 	public static function compare( $a, $b ) {
-		$pa = self::split_scale( (string) $a );
-		$pb = self::split_scale( (string) $b );
+		$sa  = explode( '-', (string) $a );
+		$sb  = explode( '-', (string) $b );
+		$len = min( count( $sa ), count( $sb ) );
 
-		// Different families/bases: fall back to natural, case-insensitive
-		// order so category members stay grouped the way they always were.
-		$base_cmp = strnatcasecmp( $pa['base'], $pb['base'] );
-		if ( 0 !== $base_cmp ) {
-			return $base_cmp;
+		for ( $i = 0; $i < $len; $i++ ) {
+			$cmp = self::compare_segment( $sa[ $i ], $sb[ $i ] );
+			if ( 0 !== $cmp ) {
+				return $cmp;
+			}
 		}
 
-		// Same base: order by semantic rank (scale keyword or numeric step).
-		if ( $pa['rank'] !== $pb['rank'] ) {
-			return ( $pa['rank'] < $pb['rank'] ) ? -1 : 1;
-		}
-
-		// Identical rank (e.g. two unrelated non-scale tokens): stable,
-		// natural, case-insensitive tie-break on the full names.
-		return strnatcasecmp( (string) $a, (string) $b );
+		// Every shared segment matched: the shorter name is a prefix of the
+		// longer one (bare family token vs its numbered steps) and sorts first.
+		return count( $sa ) <=> count( $sb );
 	}
 
 	/**
-	 * Split a variable name into its scale "base" and a numeric ordering rank.
+	 * Compare a single "-"-delimited segment of two variable names.
 	 *
-	 * The trailing "-{segment}" is inspected: a known scale keyword yields its
-	 * {@see scale_order()} rank; a purely numeric segment yields that integer
-	 * offset past the keyword band (so 50 < 100 < 950 and a bare base token
-	 * still sorts before its numbered steps); anything else is treated as a
-	 * non-scale token whose base is the full name and whose rank is 0.
+	 * Segments are classed as scale size (0), numeric step (1) or plain word
+	 * (2); a lower class sorts first so a family's sized/numbered members stay
+	 * ahead of its alpha variants. Within the same class, sizes and numbers
+	 * compare by value and plain words by natural, case-insensitive order.
 	 *
-	 * @param string $name Full variable name.
-	 * @return array{base: string, rank: int}
+	 * @param string $a First segment.
+	 * @param string $b Second segment.
+	 * @return int Negative, zero, or positive.
 	 */
-	private static function split_scale( $name ) {
-		$dash = strrpos( $name, '-' );
-		if ( false === $dash || strlen( $name ) - 1 === $dash ) {
-			return array(
-				'base' => $name,
-				'rank' => 0,
-			);
+	private static function compare_segment( $a, $b ) {
+		$ka = self::segment_key( $a );
+		$kb = self::segment_key( $b );
+
+		if ( $ka[0] !== $kb[0] ) {
+			return $ka[0] <=> $kb[0];
 		}
 
-		$suffix = substr( $name, $dash + 1 );
-		$base   = substr( $name, 0, $dash );
+		// Plain words: natural, case-insensitive. Sizes / numbers: by value.
+		if ( 2 === $ka[0] ) {
+			return strnatcasecmp( (string) $ka[1], (string) $kb[1] );
+		}
+		return $ka[1] <=> $kb[1];
+	}
 
+	/**
+	 * Classify a segment for ordering: [ class, value ].
+	 *
+	 * Class 0 = scale size (value is its {@see scale_order()} rank), class 1 =
+	 * numeric step (value is the integer), class 2 = plain word (value is the
+	 * original string, compared naturally).
+	 *
+	 * @param string $segment A single "-"-delimited segment.
+	 * @return array{0: int, 1: int|string}
+	 */
+	private static function segment_key( $segment ) {
 		$scale = self::scale_order();
-		$key   = strtolower( $suffix );
+		$key   = strtolower( $segment );
 		if ( isset( $scale[ $key ] ) ) {
-			return array(
-				'base' => $base,
-				'rank' => $scale[ $key ],
-			);
+			return array( 0, $scale[ $key ] );
 		}
-
-		// Numeric step (colour scales: -50, -100, … -950). Offset past the
-		// keyword-rank band so a bare base token still sorts before its steps.
-		if ( '' !== $suffix && ctype_digit( $suffix ) ) {
-			return array(
-				'base' => $base,
-				'rank' => 100 + (int) $suffix,
-			);
+		if ( '' !== $segment && ctype_digit( $segment ) ) {
+			return array( 1, (int) $segment );
 		}
-
-		// Non-scale token: keep the full name as its own base so unrelated
-		// tokens simply fall back to natural ordering against each other.
-		return array(
-			'base' => $name,
-			'rank' => 0,
-		);
+		return array( 2, $segment );
 	}
 }

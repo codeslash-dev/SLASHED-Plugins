@@ -104,10 +104,11 @@ final class CategoryMapTest extends TestCase {
 	}
 
 	/**
-	 * Edge keywords (none, px, base) slot into the scale, and non-scale config
-	 * tokens (ratio, scale) sort after the scale members of the family.
+	 * The size keyword px sorts into the scale (ahead of 2xs), while non-size
+	 * words — including the ambiguous "none" and config tokens (ratio, scale) —
+	 * keep their natural order after the sized members of the family.
 	 */
-	public function test_compare_places_edge_keywords_and_non_scale_tokens() {
+	public function test_compare_places_sizes_ahead_of_non_scale_words() {
 		$input = array(
 			'--sf-space-scale',
 			'--sf-space-m',
@@ -120,14 +121,70 @@ final class CategoryMapTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				// none → px → xs → m are the scale members (base "--sf-space").
-				'--sf-space-none',
+				// px → xs → m are the sized members (px is 1px, the smallest).
 				'--sf-space-px',
 				'--sf-space-xs',
 				'--sf-space-m',
-				// Non-scale config tokens keep natural order, after the scale.
+				// Non-size words keep natural order, after the sized members.
+				'--sf-space-none',
 				'--sf-space-ratio',
 				'--sf-space-scale',
+			),
+			$input
+		);
+	}
+
+	/**
+	 * Regression guard for issue #232 review feedback: a family whose name
+	 * merely contains a size-like word ("base") must stay contiguous with its
+	 * own steps and keep its natural position — it must NOT be reparsed as a
+	 * size and scattered. --sf-color-base is the colour "base" family, not a
+	 * size of --sf-color.
+	 */
+	public function test_compare_keeps_family_named_after_a_size_word_intact() {
+		$input = array(
+			'--sf-color-base-100',
+			'--sf-color-primary',
+			'--sf-color-base',
+			'--sf-color-base-50',
+			'--sf-color-action',
+		);
+		usort( $input, array( 'Slashed_Category_Map', 'compare' ) );
+
+		$this->assertSame(
+			array(
+				// Families keep natural alphabetical order: action < base < primary…
+				'--sf-color-action',
+				// …and the "base" family stays together, bare token before steps.
+				'--sf-color-base',
+				'--sf-color-base-50',
+				'--sf-color-base-100',
+				'--sf-color-primary',
+			),
+			$input
+		);
+	}
+
+	/**
+	 * Regression guard for issue #232 review feedback: "none" is a value, not a
+	 * size, so --sf-duration-none must keep its natural position among the
+	 * other duration keywords rather than jumping to the front.
+	 */
+	public function test_compare_does_not_treat_none_as_a_size() {
+		$input = array(
+			'--sf-duration-normal',
+			'--sf-duration-none',
+			'--sf-duration-fast',
+			'--sf-duration-instant',
+		);
+		usort( $input, array( 'Slashed_Category_Map', 'compare' ) );
+
+		$this->assertSame(
+			array(
+				'--sf-duration-fast',
+				'--sf-duration-instant',
+				'--sf-duration-none',
+				'--sf-duration-normal',
 			),
 			$input
 		);
