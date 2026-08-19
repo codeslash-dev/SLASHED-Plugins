@@ -2,7 +2,6 @@
   import SliderRow from '../inputs/SliderRow.svelte';
   import ColorInput from '../inputs/ColorInput.svelte';
   import Section from '../inputs/Section.svelte';
-  import { SIZE_SCALE } from '../../lib/variableScales';
 
   let { overrides, onSet, onReset, onBulkChange }: {
     overrides: Record<string, string>;
@@ -27,7 +26,7 @@
     { label: "XS", token: "--sf-size-xs", default: 1.5 },
     { label: "S",  token: "--sf-size-s",  default: 2   },
     { label: "M",  token: "--sf-size-m",  default: 2.5 },
-    { label: "L",  token: "--sf-size-l",  default: 2.75 },
+    { label: "L",  token: "--sf-size-l",  default: 3   },
     { label: "XL", token: "--sf-size-xl", default: 3.5 },
   ];
 
@@ -64,12 +63,11 @@
   <Section title="Touch target" bind:open={showTouchTarget}>
       <SliderRow
         label="Min touch size" value={touchTarget} min={32} max={64} step={1} unit="px"
-        help="--sf-touch-target — minimum tappable area for interactive elements (WCAG 2.5.5)"
+        help="--sf-touch-target — minimum tappable area for interactive elements (WCAG 2.5.5). Independent literal (2.75rem / 44px) — deliberately NOT an alias of the --sf-size-* scale, so retuning sizes never drops below the accessibility floor."
         overridden={"--sf-touch-target" in overrides}
         onChange={(v) => onSet("--sf-touch-target", `${v}px`)}
         onReset={() => onReset("--sf-touch-target")}
-        rawDefault="var(--sf-size-l)"
-        variableOptions={SIZE_SCALE}
+        rawDefault="2.75rem"
         currentRaw={overrides["--sf-touch-target"]}
         onRawSet={(v) => onSet("--sf-touch-target", v)}
       />
@@ -88,8 +86,8 @@
   <!-- Z-INDEX -->
   <Section title="Z-index layers" bind:open={showZIndex}>
       <SliderRow
-        label="Base offset" value={zBaseOffset} min={0} max={1000} step={10}
-        help="--sf-z-base — added to all z-index tokens to avoid conflicts with existing stacking contexts"
+        label="Base" value={zBaseOffset} min={0} max={1000} step={10}
+        help="--sf-z-base — base local-stacking rung (default 0), consumed by the .sf-z-base utility. It is NOT added to the other rungs: every ladder step below is an independent literal."
         overridden={"--sf-z-base" in overrides}
         onChange={(v) => onSet("--sf-z-base", String(v))}
         onReset={() => onReset("--sf-z-base")}
@@ -285,7 +283,7 @@
   <!-- ICON SIZES -->
   <Section title="Icon sizes" bind:open={showIconSizes}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
-        Icon scale tokens used by <span class="font-mono text-slate-600 dark:text-slate-400">.sf-icon-*</span> utilities. Values are in <span class="font-mono text-slate-600 dark:text-slate-400">em</span> units relative to surrounding text.
+        Icon scale tokens used by <span class="font-mono text-slate-600 dark:text-slate-400">.sf-icon--*</span> utilities. Values are in <span class="font-mono text-slate-600 dark:text-slate-400">em</span> units relative to surrounding text.
       </p>
       <div class="space-y-1.5">
         {#each [
@@ -306,7 +304,7 @@
       </div>
       <SliderRow
         label="Box padding" value={parseNum(overrides["--sf-icon-box-pad"]?.replace("em",""), 0.5)} min={0} max={2} step={0.125} unit="em"
-        help="--sf-icon-box-pad — padding around icon when using .sf-icon-box"
+        help="--sf-icon-box-pad — padding around icon when using .sf-icon--boxed"
         overridden={"--sf-icon-box-pad" in overrides}
         onChange={(v) => onSet("--sf-icon-box-pad", `${v}em`)}
         onReset={() => onReset("--sf-icon-box-pad")}

@@ -9,6 +9,24 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.12] - 2026-08-19
+
+### Fixed
+
+- Compare variables per-segment so family names keep natural order
+- Order variable dropdowns by scale instead of alphabetically
+- Use opposite-mode formula for alt selection swatch; widen tests
+- Resolve swatches for all remaining picker color tokens
+
+## [0.6.12] - 2026-08-19
+
+### Fixed
+
+- Compare variables per-segment so family names keep natural order
+- Order variable dropdowns by scale instead of alphabetically
+- Use opposite-mode formula for alt selection swatch; widen tests
+- Resolve swatches for all remaining picker color tokens
+
 ## [0.6.11] - 2026-08-18
 
 ### Fixed

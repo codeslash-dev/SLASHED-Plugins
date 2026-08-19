@@ -26,10 +26,25 @@
 
   function guessType(t: SlashedToken): "color" | "font" | "number" | "text" {
     const n = t.name;
-    if (n.includes("color") || n.includes("source") || n.includes("-bg") || n.includes("-border")) return "color";
-    if (n.includes("font") || n.includes("family")) return "font";
     const syntax = t.syntax?.toLowerCase() ?? "";
-    if (syntax.includes("number") || syntax.includes("length") || syntax.includes("integer")) return "number";
+
+    // Prefer the generated syntax metadata — it is authoritative and avoids the
+    // name-substring guessing that used to misfire (border shorthands / length
+    // scales / background shorthands wrongly getting a color picker).
+    if (syntax.includes("<color>")) return "color";
+    if (syntax.includes("number") || syntax.includes("length") || syntax.includes("integer") || syntax.includes("percentage")) return "number";
+
+    // Name-based fallback for tokens without a registered syntax. Deliberately
+    // narrow so compound / shorthand tokens are never treated as colors:
+    //   • border shorthands (--sf-border, --sf-icon-box-border) and border-width
+    //     length scales (--sf-border-width-*) must NOT get a color picker;
+    //   • background shorthand parts (--sf-surface-bg-*, --sf-bg-layer-*) likewise.
+    // Genuine border/bg colors either live under the --sf-color-* namespace
+    // (matched by "color") or are single-value bg tokens ending in "-bg"
+    // (e.g. --sf-card-bg, --sf-icon-box-bg).
+    if (n.includes("color")) return "color";
+    if (n.endsWith("-bg")) return "color";
+    if (n.includes("font") || n.includes("family")) return "font";
     return "text";
   }
 
