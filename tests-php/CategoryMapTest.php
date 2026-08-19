@@ -69,4 +69,128 @@ final class CategoryMapTest extends TestCase {
 			$this->assertContains( $case[1], $order, "label '{$case[1]}' is produced by label_for() but missing from order()" );
 		}
 	}
+
+	/**
+	 * The t-shirt scale (2xs → 3xl) must read small→large after sorting with
+	 * compare(), not in the lexicographic jumble a plain sort() produced
+	 * (2xl, 2xs, 3xl, l, m, s, xl, xs). This is the core of issue #232.
+	 */
+	public function test_compare_orders_tshirt_scale_small_to_large() {
+		$input = array(
+			'--sf-space-2xl',
+			'--sf-space-2xs',
+			'--sf-space-3xl',
+			'--sf-space-l',
+			'--sf-space-m',
+			'--sf-space-s',
+			'--sf-space-xl',
+			'--sf-space-xs',
+		);
+		usort( $input, array( 'Slashed_Category_Map', 'compare' ) );
+
+		$this->assertSame(
+			array(
+				'--sf-space-2xs',
+				'--sf-space-xs',
+				'--sf-space-s',
+				'--sf-space-m',
+				'--sf-space-l',
+				'--sf-space-xl',
+				'--sf-space-2xl',
+				'--sf-space-3xl',
+			),
+			$input
+		);
+	}
+
+	/**
+	 * Edge keywords (none, px, base) slot into the scale, and non-scale config
+	 * tokens (ratio, scale) sort after the scale members of the family.
+	 */
+	public function test_compare_places_edge_keywords_and_non_scale_tokens() {
+		$input = array(
+			'--sf-space-scale',
+			'--sf-space-m',
+			'--sf-space-none',
+			'--sf-space-px',
+			'--sf-space-xs',
+			'--sf-space-ratio',
+		);
+		usort( $input, array( 'Slashed_Category_Map', 'compare' ) );
+
+		$this->assertSame(
+			array(
+				// none → px → xs → m are the scale members (base "--sf-space").
+				'--sf-space-none',
+				'--sf-space-px',
+				'--sf-space-xs',
+				'--sf-space-m',
+				// Non-scale config tokens keep natural order, after the scale.
+				'--sf-space-ratio',
+				'--sf-space-scale',
+			),
+			$input
+		);
+	}
+
+	/**
+	 * Numeric colour steps must order numerically (50 < 100 < 950), with the
+	 * bare family token ahead of its numbered steps.
+	 */
+	public function test_compare_orders_numeric_colour_steps_numerically() {
+		$input = array(
+			'--sf-color-primary-100',
+			'--sf-color-primary-50',
+			'--sf-color-primary-950',
+			'--sf-color-primary',
+			'--sf-color-primary-500',
+		);
+		usort( $input, array( 'Slashed_Category_Map', 'compare' ) );
+
+		$this->assertSame(
+			array(
+				'--sf-color-primary',
+				'--sf-color-primary-50',
+				'--sf-color-primary-100',
+				'--sf-color-primary-500',
+				'--sf-color-primary-950',
+			),
+			$input
+		);
+	}
+
+	/**
+	 * Distinct families must stay grouped together (not interleaved) so the
+	 * category list still reads one family at a time.
+	 */
+	public function test_compare_keeps_distinct_families_grouped() {
+		$input = array(
+			'--sf-size-xl',
+			'--sf-space-s',
+			'--sf-size-s',
+			'--sf-space-xl',
+		);
+		usort( $input, array( 'Slashed_Category_Map', 'compare' ) );
+
+		$this->assertSame(
+			array(
+				'--sf-size-s',
+				'--sf-size-xl',
+				'--sf-space-s',
+				'--sf-space-xl',
+			),
+			$input
+		);
+	}
+
+	public function test_scale_order_is_monotonic_across_the_tshirt_scale() {
+		$scale    = Slashed_Category_Map::scale_order();
+		$sequence = array( '2xs', 'xs', 's', 'm', 'l', 'xl', '2xl', '3xl' );
+		$prev     = -1;
+		foreach ( $sequence as $key ) {
+			$this->assertArrayHasKey( $key, $scale );
+			$this->assertGreaterThan( $prev, $scale[ $key ], "scale rank for '{$key}' must increase along the scale" );
+			$prev = $scale[ $key ];
+		}
+	}
 }

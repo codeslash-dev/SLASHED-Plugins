@@ -405,7 +405,10 @@ class Slashed_Inventory {
 	 * Get variables grouped by category label.
 	 *
 	 * Categories appear in canonical display order. Empty categories are
-	 * dropped. Names within each category are sorted.
+	 * dropped. Names within each category are ordered semantically by
+	 * Slashed_Category_Map::compare() so scale families read small→large
+	 * (2xs, xs, s, m, l, xl, 2xl …) and numeric colour steps stay numeric,
+	 * rather than the lexicographic order a plain sort() produces.
 	 *
 	 * @return array<string, string[]>
 	 */
@@ -422,7 +425,7 @@ class Slashed_Inventory {
 		$ordered = array();
 		foreach ( Slashed_Category_Map::order() as $cat ) {
 			if ( ! empty( $grouped[ $cat ] ) ) {
-				sort( $grouped[ $cat ], SORT_NATURAL | SORT_FLAG_CASE );
+				usort( $grouped[ $cat ], array( 'Slashed_Category_Map', 'compare' ) );
 				$ordered[ $cat ] = $grouped[ $cat ];
 			}
 		}
@@ -430,7 +433,7 @@ class Slashed_Inventory {
 		// Append any uncategorized buckets at the end (defensive).
 		foreach ( $grouped as $cat => $list ) {
 			if ( ! isset( $ordered[ $cat ] ) ) {
-				sort( $list, SORT_NATURAL | SORT_FLAG_CASE );
+				usort( $list, array( 'Slashed_Category_Map', 'compare' ) );
 				$ordered[ $cat ] = $list;
 			}
 		}
