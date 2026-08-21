@@ -48,12 +48,26 @@
     try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
   }
 
+  // The persisted panel id can predate the framework's domain regroup. Neither
+  // the vendored SidebarNav (rail) nor DomainPanel handle the retired ids any
+  // more, so a returning user whose last panel was Shadows/Effects would land on
+  // a dead selection (blank panel, unreachable from the rail). Map the legacy
+  // ids onto their canonical successor before seeding `domain`. `misc` is still
+  // a live id (relabelled "System"), so it needs no migration.
+  const LEGACY_DOMAIN_MIGRATIONS: Record<string, string> = {
+    shadows: 'depth',
+    effects: 'depth',
+  };
+  function migrateDomain(id: string): string {
+    return LEGACY_DOMAIN_MIGRATIONS[id] ?? id;
+  }
+
   let isOpen    = $state(readBool(LS_OPEN_KEY, true));
   let isMobile  = $state(typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false);
   let overrides = $state<Record<string, string>>(loadInitialOverrides());
   let past      = $state<Record<string, string>[]>([]);
   let future    = $state<Record<string, string>[]>([]);
-  let domain    = $state(readStr(LS_DOMAIN_KEY, 'home'));
+  let domain    = $state(migrateDomain(readStr(LS_DOMAIN_KEY, 'home')));
   let showPalette = $state(false);
   let showResetConfirm = $state(false);
   let resetCancelBtn = $state<HTMLButtonElement | null>(null);

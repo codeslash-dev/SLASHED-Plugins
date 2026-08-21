@@ -53,6 +53,15 @@
   let showPalette = $state(false);
   // Mobile category drawer (replaces the cramped icon rail on narrow screens).
   let navDrawerOpen = $state(false);
+  // The shell root — also our container-query context (see the wrapper below).
+  // A ResizeObserver on it reconciles the drawer when the *container* (not the
+  // viewport) crosses the desktop breakpoint: `@3xl:hidden` would otherwise only
+  // CSS-hide an open drawer, leaving a hidden aria-modal dialog mounted and its
+  // focus-restore (use:drawerFocus) un-run. Container width, not viewport, is
+  // what actually decides whether the persistent rail is showing.
+  let shellEl = $state<HTMLElement | null>(null);
+  // Keep in sync with the `@3xl` container breakpoint (48rem = 768px).
+  const DESKTOP_SHELL_PX = 768;
   // When the drawer (a modal dialog) opens, move focus into it so keyboard users
   // land inside the modal — the dialog's Escape handler then receives the event,
   // and screen readers announce it. On close, focus returns to the trigger.
@@ -331,8 +340,25 @@
       }
     };
     window.addEventListener("keydown", handler);
+
+    // Close the mobile drawer once the shell is wide enough to show the
+    // persistent rail. Without this, growing the container past the breakpoint
+    // (e.g. an embedded host resizing, or rotating to landscape) merely
+    // `@3xl:hidden`s an open drawer — the aria-modal dialog stays in the DOM and
+    // use:drawerFocus never restores focus to the trigger. Observing the shell's
+    // own box (our @container element) matches exactly what the CSS reacts to.
+    let ro: ResizeObserver | undefined;
+    if (shellEl && typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver((entries) => {
+        const width = entries[0]?.contentRect.width ?? 0;
+        if (width >= DESKTOP_SHELL_PX && navDrawerOpen) navDrawerOpen = false;
+      });
+      ro.observe(shellEl);
+    }
+
     return () => {
       window.removeEventListener("keydown", handler);
+      ro?.disconnect();
       if (saveStateTimer) clearTimeout(saveStateTimer);
       if (importStatusTimer) clearTimeout(importStatusTimer);
     };
@@ -362,7 +388,7 @@
      desktop three-column layout into a box that can't hold it. The @3xl/… (48rem
      = 768px) variants below query THIS element's width instead, so the same
      768px threshold now measures the space we truly have. -->
-<div class="{embedded ? 'w-full h-full' : 'w-screen h-screen'} @container flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-800 dark:text-slate-200 font-sans">
+<div bind:this={shellEl} class="{embedded ? 'w-full h-full' : 'w-screen h-screen'} @container flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-800 dark:text-slate-200 font-sans">
   <!-- Top header bar -->
   <StudioHeader
     {overrides}
