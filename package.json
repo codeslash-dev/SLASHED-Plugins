@@ -37,7 +37,7 @@
     "test": "node --test tests/*.test.js"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.1",
+    "@commitlint/cli": "^21.2.2",
     "@commitlint/config-conventional": "^21.2.0",
     "stylelint": "^17.14.1",
     "stylelint-config-standard": "^40.0.0"
