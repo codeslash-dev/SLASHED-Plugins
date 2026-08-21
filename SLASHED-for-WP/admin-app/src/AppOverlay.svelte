@@ -18,11 +18,18 @@
   const LS_OPEN_KEY   = 'slashed-overlay/open';
   const LS_DOMAIN_KEY = 'slashed-overlay/domain';
 
+  // Keep in step with the framework configurator's domain set (App.svelte /
+  // SidebarNav.svelte, which this overlay reuses via the vendored sync). The
+  // rail was regrouped upstream: Shadows + Effects merged into "Depth", Misc
+  // became "System", and Components / Changes were added. Stale entries here
+  // (shadows/effects/misc-as-"Misc") left the overlay header showing raw domain
+  // ids like "depth"/"components"/"changes" for panels the rail can now reach.
   const DOMAIN_LABELS: Record<string, string> = {
     home: 'Home', colors: 'Colors', typography: 'Typography', spacing: 'Spacing',
-    layout: 'Layout', borders: 'Borders', shadows: 'Shadows', motion: 'Motion',
-    effects: 'Effects', macros: 'Macros', misc: 'Misc', themes: 'Themes',
-    wcag: 'WCAG', setup: 'Install', cheatsheet: 'Classes',
+    layout: 'Layout', borders: 'Shape', depth: 'Depth', motion: 'Motion',
+    macros: 'Macros', misc: 'System', components: 'Components',
+    changes: 'Changes', themes: 'Presets', wcag: 'Accessibility',
+    setup: 'Install & export', cheatsheet: 'Reference',
   };
 
   function overridesByDomain(ov: Record<string, string>): Record<string, number> {
@@ -405,8 +412,15 @@
     </button>
   </div>
 
-  <!-- Body: icon nav rail + domain panel -->
-  <div class="flex flex-1 min-h-0">
+  <!-- Body: icon nav rail + domain panel.
+       @container: SidebarNav sizes its rail with the `@3xl` (48rem = 768px)
+       *container* query, so it needs a query container to measure against. This
+       overlay is a fixed ~420px panel, so anchoring the query here keeps the
+       nav an unlabelled 56px icon rail (leaving the DomainPanel its full ~364px)
+       instead of ballooning to the 208px labelled layout the old viewport-based
+       `md:` rule produced on a wide desktop viewport — which squeezed the panel
+       to ~212px and clipped its controls. -->
+  <div class="@container flex flex-1 min-h-0">
     <!-- Reuse the same SidebarNav from the full editor -->
     <SidebarNav
       activeId={domain}

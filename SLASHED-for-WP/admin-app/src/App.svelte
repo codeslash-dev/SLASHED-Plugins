@@ -354,7 +354,15 @@
   </button>
 {/snippet}
 
-<div class="{embedded ? 'w-full h-full' : 'w-screen h-screen'} flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-800 dark:text-slate-200 font-sans">
+<!-- @container: the shell is a size-query container so its inner layout adapts
+     to the width it's actually given, not the browser viewport. Standalone we
+     own the viewport (w-screen), but embedded hosts (WP admin page beside the
+     ~160px admin menu, or a narrow slide-in panel) size us into a container far
+     narrower than the viewport — viewport `md:` rules would then force the full
+     desktop three-column layout into a box that can't hold it. The @3xl/… (48rem
+     = 768px) variants below query THIS element's width instead, so the same
+     768px threshold now measures the space we truly have. -->
+<div class="{embedded ? 'w-full h-full' : 'w-screen h-screen'} @container flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-800 dark:text-slate-200 font-sans">
   <!-- Top header bar -->
   <StudioHeader
     {overrides}
@@ -385,7 +393,7 @@
        visible without scrolling and doesn't compete with the status bar.
        Hidden on tool screens, which have no preview to fold to. -->
   {#if !hidePreview}
-    <div class="md:hidden flex items-stretch border-b border-black/8 dark:border-white/8 bg-slate-50 dark:bg-[#0d0d14] shrink-0">
+    <div class="@3xl:hidden flex items-stretch border-b border-black/8 dark:border-white/8 bg-slate-50 dark:bg-[#0d0d14] shrink-0">
       {@render foldToggleButton("controls", SlidersHorizontal, "Controls")}
       {@render foldToggleButton("preview", Eye, "Preview")}
     </div>
@@ -396,7 +404,7 @@
     <!-- Icon nav rail — desktop only. On mobile the category drawer (opened
          from the panel heading) replaces it, so the narrow screen isn't eaten
          by an unlabelled 56px strip. -->
-    <div class="shrink-0 hidden md:flex">
+    <div class="shrink-0 hidden @3xl:flex">
       <SidebarNav
         activeId={domain}
         onSelect={(d) => { navigateTo(d); }}
@@ -408,7 +416,7 @@
          on tool screens where the preview is hidden. On mobile it fills the row
          (the icon rail already claims its own space). -->
     <div class={`min-w-0 bg-slate-50 dark:bg-[#0c0c15] border-r border-black/8 dark:border-white/8 flex-col min-h-0 ${
-      hidePreview ? "flex-1 flex" : `flex-1 md:flex-none md:w-[360px] ${mobileView === "preview" ? "hidden md:flex" : "flex"}`
+      hidePreview ? "flex-1 flex" : `flex-1 @3xl:flex-none @3xl:w-[360px] ${mobileView === "preview" ? "hidden @3xl:flex" : "flex"}`
     }`}>
       <!-- Panel heading -->
       <div class="h-9 flex items-center px-4 border-b border-black/6 dark:border-white/6 shrink-0 gap-2">
@@ -419,7 +427,7 @@
           <button
             onclick={() => { navDrawerOpen = true; }}
             aria-label="Choose a panel"
-            class="md:hidden flex items-center gap-1.5 flex-1 min-w-0 text-left cursor-pointer"
+            class="@3xl:hidden flex items-center gap-1.5 flex-1 min-w-0 text-left cursor-pointer"
           >
             <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest truncate">
               {DOMAIN_LABELS[domain] ?? domain}
@@ -428,7 +436,7 @@
           </button>
           <!-- Desktop: a static label (the rail handles navigation there); no
                button, so it never enters the tab order or opens a hidden drawer. -->
-          <span class="hidden md:inline text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest truncate">
+          <span class="hidden @3xl:inline text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest truncate">
             {DOMAIN_LABELS[domain] ?? domain}
           </span>
         </div>
@@ -466,7 +474,7 @@
          entirely on tool screens (Changes / Presets / Install & export /
          Reference), which have no live sample. -->
     {#if !hidePreview}
-      <div class={`flex-1 flex-col min-h-0 min-w-0 ${mobileView === "controls" ? "hidden md:flex" : "flex"}`}>
+      <div class={`flex-1 flex-col min-h-0 min-w-0 ${mobileView === "controls" ? "hidden @3xl:flex" : "flex"}`}>
         <PreviewPanel
           {overrides}
           {previewTheme}
@@ -489,10 +497,11 @@
   />
 
   <!-- Mobile category drawer — labelled, grouped navigation (the desktop rail
-       equivalent). md:hidden so it never appears on desktop. -->
+       equivalent). @3xl:hidden so it never appears once the shell is wide
+       enough (>=768px) to show the persistent rail. -->
   {#if navDrawerOpen}
     <div
-      class="md:hidden fixed inset-0 z-40 flex"
+      class="@3xl:hidden fixed inset-0 z-40 flex"
       role="dialog"
       aria-modal="true"
       aria-label="Choose a panel"
