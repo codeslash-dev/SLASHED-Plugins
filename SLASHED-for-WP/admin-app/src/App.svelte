@@ -60,15 +60,43 @@
   // focus-restore (use:drawerFocus) un-run. Container width, not viewport, is
   // what actually decides whether the persistent rail is showing.
   let shellEl = $state<HTMLElement | null>(null);
-  // Keep in sync with the `@3xl` container breakpoint (48rem = 768px).
-  const DESKTOP_SHELL_PX = 768;
+  // The desktop icon rail wrapper — used as a focus fallback when a breakpoint
+  // close hides the drawer's original trigger (see drawerFocus above).
+  let railEl = $state<HTMLElement | null>(null);
+  // Mirror of the `@3xl` container breakpoint, expressed in rem so it tracks the
+  // CSS even when a host sets a non-16px root font size. `rem` (and therefore
+  // Tailwind's container breakpoints) resolve against the *root* font size, so
+  // convert to px against that — a hardcoded 768 would drift from `@3xl` the
+  // moment `html { font-size }` isn't the 16px default.
+  const DESKTOP_SHELL_REM = 48;
+  function desktopShellPx(): number {
+    const root =
+      typeof document !== "undefined"
+        ? parseFloat(getComputedStyle(document.documentElement).fontSize)
+        : NaN;
+    return DESKTOP_SHELL_REM * (Number.isFinite(root) && root > 0 ? root : 16);
+  }
   // When the drawer (a modal dialog) opens, move focus into it so keyboard users
   // land inside the modal — the dialog's Escape handler then receives the event,
   // and screen readers announce it. On close, focus returns to the trigger.
   function drawerFocus(node: HTMLElement) {
     const prev = document.activeElement as HTMLElement | null;
     node.focus();
-    return { destroy() { prev?.focus?.(); } };
+    return {
+      destroy() {
+        // Restore focus to whatever was focused before the drawer opened —
+        // normally the mobile trigger. But when the drawer closes because the
+        // shell reached desktop width (the ResizeObserver below), that trigger
+        // is now `@3xl:hidden` (offsetParent === null); focusing a hidden node
+        // drops focus to <body>. In that case move focus to the visible desktop
+        // rail's current item instead so keyboard focus stays in the nav.
+        if (prev && prev.offsetParent !== null) { prev.focus?.(); return; }
+        const target =
+          railEl?.querySelector<HTMLElement>('[aria-current="page"]') ??
+          railEl?.querySelector<HTMLElement>("button");
+        target?.focus?.();
+      },
+    };
   }
   // Close on Escape and trap Tab/Shift+Tab inside the modal drawer so keyboard
   // focus can't wander to the controls behind an aria-modal dialog.
@@ -351,7 +379,7 @@
     if (shellEl && typeof ResizeObserver !== "undefined") {
       ro = new ResizeObserver((entries) => {
         const width = entries[0]?.contentRect.width ?? 0;
-        if (width >= DESKTOP_SHELL_PX && navDrawerOpen) navDrawerOpen = false;
+        if (width >= desktopShellPx() && navDrawerOpen) navDrawerOpen = false;
       });
       ro.observe(shellEl);
     }
@@ -430,7 +458,7 @@
     <!-- Icon nav rail — desktop only. On mobile the category drawer (opened
          from the panel heading) replaces it, so the narrow screen isn't eaten
          by an unlabelled 56px strip. -->
-    <div class="shrink-0 hidden @3xl:flex">
+    <div bind:this={railEl} class="shrink-0 hidden @3xl:flex">
       <SidebarNav
         activeId={domain}
         onSelect={(d) => { navigateTo(d); }}
