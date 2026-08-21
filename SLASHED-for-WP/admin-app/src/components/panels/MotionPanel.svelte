@@ -4,6 +4,8 @@
   import SliderRow from '../inputs/SliderRow.svelte';
   import Toggle from '../inputs/Toggle.svelte';
   import Section from '../inputs/Section.svelte';
+  import ScaleShadowNotice from '../inputs/ScaleShadowNotice.svelte';
+  import { scaleShadows } from '../../lib/tokenModel';
   import { themeState } from '../../lib/theme.svelte';
 
   // <option> only reliably accepts a background via inline style (no dark:
@@ -62,6 +64,10 @@
   let demoDuration = $state("--sf-duration-normal");
 
   let showDurations = $state(false);
+
+  // Absolute per-duration overrides that shadow the global --sf-motion-scale
+  // knob (same detached-scale warning as Type/Spacing, via tokenModel).
+  let motionShadow = $derived(scaleShadows(overrides).find((s) => s.family.id === "motion")?.shadowedSteps ?? []);
   let showEasing = $state(false);
   let showStagger = $state(false);
   let showAdvanced = $state(false);
@@ -166,6 +172,7 @@
 
   <!-- DURATIONS (with inline preview) -->
   <Section title="Durations" bind:open={showDurations}>
+      <ScaleShadowNotice tokens={motionShadow} scaleLabel="duration" onClear={() => motionShadow.forEach(onReset)} />
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
         Named duration tokens. Drag to set an absolute ms value, overriding the global scale.
         {#if motionDisabled}<span class="text-amber-600 dark:text-amber-400"> (No effect while motion is disabled.)</span>{/if}

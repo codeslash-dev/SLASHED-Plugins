@@ -5,6 +5,8 @@
   import ColorInput from '../inputs/ColorInput.svelte';
   import Section from '../inputs/Section.svelte';
   import { SPACE_SCALE, RADIUS_SCALE, BORDER_WIDTH_SCALE, type VarOption } from '../../lib/variableScales';
+  import ScaleShadowNotice from '../inputs/ScaleShadowNotice.svelte';
+  import { scaleShadows } from '../../lib/tokenModel';
 
   let { overrides, onSet, onReset }: {
     overrides: Record<string, string>;
@@ -36,7 +38,6 @@
   let showBorderWidths = $state(false);
   let showLineStyles = $state(false);
   let showDividers = $state(false);
-  let showFocusRing = $state(false);
   let showRadiusScale = $state(false);
   let showRadiusPreview = $state(false);
   let showMediaRadius = $state(false);
@@ -50,15 +51,19 @@
   }
 
   let borderScale  = $derived(parseNum(overrides["--sf-border-scale"], 1));
-  let focusWidth   = $derived(parseNum(overrides["--sf-focus-ring-width"], 2, "px"));
-  let focusOffset  = $derived(parseNum(overrides["--sf-focus-ring-offset"], 2, "px"));
   let dividerWidth = $derived(parseNum(overrides["--sf-divider-width"]?.replace("px",""), 1));
   let dividerGap   = $derived(parseNum(overrides["--sf-divider-gap"]?.replace("rem",""), 1));  // ~1rem ≈ var(--sf-space-m) at default scale
   let borderColor  = $derived(overrides["--sf-color-border"] ?? "");
   let borderStyle  = $derived(overrides["--sf-border-style"] ?? "solid");
-  let focusRingColor = $derived(overrides["--sf-focus-ring-color"] ?? "");
   let dividerColor = $derived(overrides["--sf-divider-color"] ?? "");
   let mediaRadius  = $derived(parseNum(overrides["--sf-media-radius"]?.replace("rem",""), 0));
+
+  // Fixed per-step overrides that shadow the radius / border-width scale knobs
+  // (the same detached-scale state the Type & Spacing panels already warn about;
+  // generalised here via tokenModel.scaleShadows).
+  let radiusShadow = $derived(scaleShadows(overrides).find((s) => s.family.id === "radius")?.shadowedSteps ?? []);
+  let borderShadow = $derived(scaleShadows(overrides).find((s) => s.family.id === "border-width")?.shadowedSteps ?? []);
+  const clearSteps = (steps: string[]) => steps.forEach(onReset);
 
   function getStyleCurrent(tokenName: string, defaultVal: string): string {
     return overrides[tokenName] ?? defaultVal;
@@ -102,6 +107,7 @@
 
   <!-- BORDER SCALE -->
   <Section title="Border widths" bind:open={showBorderWidths}>
+      <ScaleShadowNotice tokens={borderShadow} scaleLabel="border-width" onClear={() => clearSteps(borderShadow)} />
       <SliderRow
         label="Border scale" value={borderScale} min={0} max={4} step={0.25}
         help="Multiplier applied to all border widths. 0 hides all borders."
@@ -218,70 +224,24 @@
         currentRaw={overrides["--sf-divider-gap"]}
         onRawSet={(v) => onSet("--sf-divider-gap", v)}
       />
-  </Section>
 
-  <div class="h-px bg-black/6 dark:bg-white/6"></div>
-
-  <!-- FOCUS RING -->
-  <Section title="Focus ring" bind:open={showFocusRing}>
-      <SliderRow
-        label="Ring width" value={focusWidth} min={0} max={6} step={0.5} unit="px"
-        help="Thickness of the keyboard focus indicator"
-        overridden={"--sf-focus-ring-width" in overrides}
-        onChange={(v) => onSet("--sf-focus-ring-width", `${v}px`)}
-        onReset={() => onReset("--sf-focus-ring-width")}
-      />
-      <SliderRow
-        label="Ring offset" value={focusOffset} min={0} max={8} step={0.5} unit="px"
-        help="Gap between element edge and focus ring"
-        overridden={"--sf-focus-ring-offset" in overrides}
-        onChange={(v) => onSet("--sf-focus-ring-offset", `${v}px`)}
-        onReset={() => onReset("--sf-focus-ring-offset")}
-      />
-      <div class="flex items-center gap-2">
-        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 w-24 shrink-0">Ring color</div>
-        <ColorInput
-          token="--sf-focus-ring-color"
-          value={focusRingColor}
-          placeholder="default (action)"
-          isOverridden={"--sf-focus-ring-color" in overrides}
-          onSet={(v) => onSet("--sf-focus-ring-color", v)}
-          onReset={() => onReset("--sf-focus-ring-color")}
-        />
-      </div>
-      <div>
-        <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Ring style</div>
-        <div class="flex gap-2">
-          {#each BORDER_STYLES as style (style)}
-            {@const current = overrides["--sf-focus-ring-style"] ?? "solid"}
-            <button
-              onclick={() => style === "solid" ? onReset("--sf-focus-ring-style") : onSet("--sf-focus-ring-style", style)}
-              class={`flex-1 py-2 rounded-lg text-[10px] border transition-all cursor-pointer capitalize ${
-                current === style
-                  ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-800 dark:text-indigo-200"
-                  : "border-black/8 dark:border-white/8 text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-200"
-              }`}
-            >
-              {style}
-            </button>
-          {/each}
-        </div>
-      </div>
-      <!-- Focus ring preview -->
-      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-center justify-center">
-        <div
-          class="px-4 py-2 bg-indigo-600/30 rounded-lg text-[11px] text-indigo-800 dark:text-indigo-200"
-          style={`outline: var(--sf-focus-ring-width, 2px) var(--sf-focus-ring-style, solid) var(--sf-focus-ring-color, oklch(0.7 0.2 235)); outline-offset: var(--sf-focus-ring-offset, 2px)`}
-        >
-          Focus ring · {overrides["--sf-focus-ring-style"] ?? "solid"}
-        </div>
+      <!-- Divider preview — a real rule between two lines so colour, width,
+           style and the gap around it are all visible together. -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
+        <p class="text-[10px] text-slate-600 dark:text-slate-400 m-0">Content above</p>
+        <hr style={`border:0;border-top:var(--sf-divider-width,1px) var(--sf-divider-style,solid) var(--sf-divider-color, var(--sf-color-border,#64748b));margin-block:var(--sf-divider-gap,1rem)`} />
+        <p class="text-[10px] text-slate-600 dark:text-slate-400 m-0">Content below</p>
       </div>
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
+
+  <!-- Focus ring moved to the Accessibility panel (it's an a11y control and now
+       classifies there, so badge/Reset match where it's edited). -->
 
   <!-- RADIUS -->
   <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Radius</div>
+  <ScaleShadowNotice tokens={radiusShadow} scaleLabel="radius" onClear={() => clearSteps(radiusShadow)} />
 
   <!-- Fine-tune radius steps collapsible -->
   <div>
@@ -396,6 +356,18 @@
             onRawSet={(v) => onSet(t.token, v)}
           />
         {/each}
+
+        <!-- Field-shape preview — a real input styled from the field tokens, so
+             radius and the block/inline padding are directly visible. -->
+        <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
+          <input
+            type="text"
+            disabled
+            placeholder="Sample field"
+            class="w-full text-[11px] text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-white/5 outline-none placeholder:text-slate-500"
+            style={`border:var(--sf-border-width-1,1px) solid var(--sf-color-border,#64748b);border-radius:var(--sf-field-radius,0.5rem);padding-block:var(--sf-field-padding-block,0.375rem);padding-inline:var(--sf-field-padding-inline,0.75rem)`}
+          />
+        </div>
       </div>
     {/if}
   </div>

@@ -1,24 +1,22 @@
 <script lang="ts">
   import type { SlashedToken } from '../../types';
   import TokenRow from '../inputs/TokenRow.svelte';
+  import { domainOf } from '../../lib/domains';
 
-  let { domain, tokens, overrides, onSet, onReset, patterns }: {
+  let { domain, tokens, overrides, onSet, onReset }: {
     domain: string;
     tokens: SlashedToken[];
     overrides: Record<string, string>;
     onSet: (name: string, value: string) => void;
     onReset: (name: string) => void;
-    patterns?: string[];
   } = $props();
 
   let query = $state("");
 
-  let domainTokens = $derived(() => {
-    const pats = patterns ?? [domain];
-    return tokens.filter((t) =>
-      pats.some((p) => t.name.includes(p)) && t.tier !== "INTERNAL"
-    );
-  });
+  // Same classifier as the sidebar badge / Reset / All-tokens list.
+  let domainTokens = $derived(() =>
+    tokens.filter((t) => domainOf(t.name) === domain && t.tier !== "INTERNAL")
+  );
 
   let filtered = $derived(() => {
     if (!query) return domainTokens();

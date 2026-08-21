@@ -9,6 +9,8 @@ framework version is tracked separately via the `SLASHED_*_CSS_REF` constants.
 
 ## [Unreleased]
 
+## [0.6.13] - 2026-08-21
+## [0.6.13] - 2026-08-21
 ## [0.6.12] - 2026-08-19
 
 ### Fixed

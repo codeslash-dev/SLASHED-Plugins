@@ -36,13 +36,11 @@
     return isNaN(v) ? fallback : v;
   }
 
-  let touchTarget = $derived(parseNum(overrides["--sf-touch-target"], 44, "px"));
   let zBaseOffset = $derived(parseNum(overrides["--sf-z-base"], 0));
   let caretColor = $derived(overrides["--sf-color-caret"] ?? "");
   let underlineOffset = $derived(parseNum(overrides["--sf-link-underline-offset"]?.replace("em",""), 0.15));
   let underlineThickness = $derived(overrides["--sf-link-underline-thickness"] ?? "auto");
 
-  let showTouchTarget = $state(false);
   let showZIndex = $state(false);
   let showTextSelection = $state(false);
   let showComponentSizes = $state(false);
@@ -55,33 +53,46 @@
   function getSizeValue(t: typeof SIZE_TOKENS[0]): number {
     return parseNum(overrides[t.token]?.replace("rem",""), t.default);
   }
+
+  const ICON_STEPS = ["xs", "s", "m", "l", "xl", "2xl"];
+
+  // A deliberately landscape (2:1) sample with a centered ring and a full-bleed
+  // border, so object-fit differences are unmistakable: cover crops the sides,
+  // contain letterboxes, fill distorts the circle, none overflows at native px.
+  const OBJECT_FIT_IMG = `data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='60'><rect width='120' height='60' fill='#6366f1'/><circle cx='60' cy='30' r='18' fill='none' stroke='#ffffff' stroke-width='4'/><rect x='3' y='3' width='114' height='54' fill='none' stroke='#ffffff' stroke-width='3'/></svg>`,
+  )}`;
+
+  // Layering ladder for the preview: ordered by each rung's *current* value
+  // (override or default), highest first, so reordering the numbers reorders
+  // the visual stack instead of showing a fixed hierarchy.
+  let zLadder = $derived(
+    Z_INDEX_STEPS
+      .map((z) => ({ ...z, val: parseNum(overrides[z.token], z.def) }))
+      .sort((a, b) => b.val - a.val),
+  );
 </script>
 
 <div class="p-4 space-y-6">
 
-  <!-- TOUCH TARGET -->
-  <Section title="Touch target" bind:open={showTouchTarget}>
-      <SliderRow
-        label="Min touch size" value={touchTarget} min={32} max={64} step={1} unit="px"
-        help="--sf-touch-target — minimum tappable area for interactive elements (WCAG 2.5.5). Independent literal (2.75rem / 44px) — deliberately NOT an alias of the --sf-size-* scale, so retuning sizes never drops below the accessibility floor."
-        overridden={"--sf-touch-target" in overrides}
-        onChange={(v) => onSet("--sf-touch-target", `${v}px`)}
-        onReset={() => onReset("--sf-touch-target")}
-        rawDefault="2.75rem"
-        currentRaw={overrides["--sf-touch-target"]}
-        onRawSet={(v) => onSet("--sf-touch-target", v)}
-      />
-      <!-- Preview -->
-      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 flex items-center gap-3">
-        <div
-          class="bg-indigo-500/30 border border-indigo-500/30 rounded flex items-center justify-center text-[9px] font-mono text-indigo-600/70 dark:text-indigo-400/70 shrink-0"
-          style={`width: var(--sf-touch-target, 2.75rem); height: var(--sf-touch-target, 2.75rem)`}
-        ></div>
-        <p class="text-[9px] text-slate-400 dark:text-slate-600">Minimum interactive area — ensures accessibility on touch devices.</p>
-      </div>
-  </Section>
+  <!-- Touch target moved to the Accessibility panel; focus ring moved to
+       Accessibility; both now classify there so badge/Reset match. -->
 
-  <div class="h-px bg-black/6 dark:bg-white/6"></div>
+  <!-- Overview of the low-level system areas this panel groups. -->
+  <div class="rounded-lg bg-black/3 dark:bg-white/3 border border-black/6 dark:border-white/6 p-3">
+    <p class="text-[10px] text-slate-500 leading-relaxed">
+      Low-level system tokens, grouped by area:
+      <span class="font-semibold text-slate-600 dark:text-slate-400">Layering</span>,
+      <span class="font-semibold text-slate-600 dark:text-slate-400">Text &amp; selection</span>,
+      <span class="font-semibold text-slate-600 dark:text-slate-400">Sizing</span> &amp;
+      <span class="font-semibold text-slate-600 dark:text-slate-400">Icons</span>,
+      <span class="font-semibold text-slate-600 dark:text-slate-400">Media</span>, and
+      <span class="font-semibold text-slate-600 dark:text-slate-400">device / forms</span>.
+    </p>
+  </div>
+
+  <!-- LAYERING -->
+  <div class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">Layering</div>
 
   <!-- Z-INDEX -->
   <Section title="Z-index layers" bind:open={showZIndex}>
@@ -103,9 +114,29 @@
           />
         {/each}
       </div>
+
+      <!-- Layering preview — a static stack showing the rung order (higher
+           token = painted on top). The numbers set precedence; this shows what
+           that precedence means. -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
+        <div class="text-[9px] text-slate-400 dark:text-slate-600 mb-2 leading-snug">Higher rungs paint above lower ones.</div>
+        <div class="relative h-32">
+          {#each zLadder as z, i (z.token)}
+            <div
+              class="absolute flex items-center gap-2 px-2 py-1 rounded-md border border-indigo-500/30 bg-indigo-500/[0.12] shadow-sm"
+              style={`top:${i * 11}px; left:${i * 9}px; right:0; z-index:${zLadder.length - i}`}
+            >
+              <span class="text-[9px] font-semibold text-slate-700 dark:text-slate-300">{z.label}</span>
+              <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600 ml-auto">{z.val}</span>
+            </div>
+          {/each}
+        </div>
+      </div>
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
+
+  <div class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">Text &amp; selection</div>
 
   <!-- SELECTION -->
   <Section title="Text selection" bind:open={showTextSelection}>
@@ -184,6 +215,8 @@
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
+  <div class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">Sizing</div>
+
   <!-- COMPONENT SIZES -->
   <Section title="Component size scale" bind:open={showComponentSizes}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
@@ -218,6 +251,8 @@
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
+
+  <div class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">Links &amp; caret</div>
 
   <!-- CARET & LINKS -->
   <Section title="Caret &amp; links" bind:open={showCaretLinks}>
@@ -280,6 +315,8 @@
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
 
+  <div class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">Icons</div>
+
   <!-- ICON SIZES -->
   <Section title="Icon sizes" bind:open={showIconSizes}>
       <p class="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">
@@ -309,9 +346,24 @@
         onChange={(v) => onSet("--sf-icon-box-pad", `${v}em`)}
         onReset={() => onReset("--sf-icon-box-pad")}
       />
+
+      <!-- Icon-size preview — the same glyph at every step (sized in em, so the
+           box is pinned to 16px text to make the em scale concrete). -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-4 flex items-end justify-center gap-3 flex-wrap" style="font-size:16px">
+        {#each ICON_STEPS as s (s)}
+          <div class="flex flex-col items-center gap-1">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="text-indigo-500" style={`width:var(--sf-icon-${s});height:var(--sf-icon-${s})`}>
+              <path fill="currentColor" d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 17.3 5.8 20.6l1.6-6.7L2.2 8.9l6.9-.6z" />
+            </svg>
+            <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600">{s}</span>
+          </div>
+        {/each}
+      </div>
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
+
+  <div class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">Media</div>
 
   <!-- OBJECT FIT / POSITION -->
   <Section title="Object fit" bind:open={showObjectFit}>
@@ -347,9 +399,27 @@
           <button onclick={() => onReset("--sf-object-position")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
+
+      <!-- Object-fit preview — a landscape sample forced into a taller box, so
+           the current fit visibly crops / letterboxes / stretches / overflows. -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 flex flex-col items-center gap-1.5">
+        <div class="w-24 h-20 rounded-lg overflow-hidden border border-black/10 dark:border-white/10 bg-black/10 dark:bg-white/5">
+          <img
+            src={OBJECT_FIT_IMG}
+            alt="Object-fit sample"
+            class="w-full h-full block"
+            style={`object-fit:var(--sf-object-fit, cover);object-position:var(--sf-object-position, 50% 50%)`}
+          />
+        </div>
+        <div class="text-[8px] font-mono text-slate-400 dark:text-slate-600">
+          object-fit: {overrides["--sf-object-fit"] ?? "cover"}
+        </div>
+      </div>
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
+
+  <div class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">Device &amp; forms</div>
 
   <!-- SAFE AREA INSETS -->
   <Section title="Safe area insets" bind:open={showSafeArea}>
@@ -381,6 +451,9 @@
           </div>
         {/each}
       </div>
+      <p class="text-[9px] text-slate-400 dark:text-slate-600 italic leading-snug">
+        No preview — safe-area insets resolve to the physical device (notch / home indicator) at runtime and are 0 on desktop.
+      </p>
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
@@ -403,6 +476,20 @@
           <button onclick={() => onReset("--sf-field-required-marker")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
         {/if}
       </div>
+
+      <!-- Field-marker preview — a required label with the marker appended, as
+           .sf-field renders it after a required field's label. -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
+        <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+          Email address<span class="text-rose-500 dark:text-rose-400 whitespace-pre">{overrides["--sf-field-required-marker"] ?? " *"}</span>
+          <input
+            type="text"
+            disabled
+            placeholder="name@example.com"
+            class="mt-1 w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-2 py-1 text-[10px] font-normal text-slate-500"
+          />
+        </label>
+      </div>
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>
@@ -410,7 +497,7 @@
   <!-- PREVIEW NOTE -->
   <div class="rounded-lg bg-black/3 dark:bg-white/3 border border-black/6 dark:border-white/6 p-3">
     <p class="text-[10px] text-slate-500 leading-relaxed">
-      Selection colors, caret, links, focus ring, borders and sizes all render in the
+      Selection colors, caret, links, borders and sizes all render in the
       live preview (try the <span class="text-slate-600 dark:text-slate-400 font-semibold">Components</span> template).
       <span class="text-slate-600 dark:text-slate-400 font-semibold">Scroll behavior</span> applies to the page
       itself and can't be shown in the static canvas.

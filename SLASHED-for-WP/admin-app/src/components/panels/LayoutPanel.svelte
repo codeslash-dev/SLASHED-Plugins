@@ -445,6 +445,18 @@
               {/if}
             </div>
           {/each}
+          <!-- Cluster preview — real .sf-cluster with uneven-height items, so
+               both align (cross-axis) and justify (main-axis) are visible. -->
+          <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
+            <div class="sf-cluster" style="min-height:3rem">
+              {#each [1.75, 1, 2.25, 1.25] as h, i (i)}
+                <span
+                  class="flex items-center justify-center text-white text-[9px] font-bold"
+                  style={`min-height:${h}rem;min-width:1.75rem;background:var(--sf-color-primary-400,#818cf8);border-radius:var(--sf-radius-s,4px)`}
+                >{i + 1}</span>
+              {/each}
+            </div>
+          </div>
         </section>
 
         <!-- Equal columns (flowing CSS multi-column, not a grid) -->
@@ -491,6 +503,13 @@
               onSet={(v) => onSet("--sf-equal-rule-color", v)}
               onReset={() => onReset("--sf-equal-rule-color")}
             />
+          </div>
+          <!-- Equal-columns preview — real .sf-equal so the flowing columns and
+               the rule between them react to every control above. -->
+          <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
+            <div class="sf-equal text-[9px] text-slate-600 dark:text-slate-300">
+              <p style="margin:0">SLASHED flows this text across as many equal columns as fit the box, divided by the column rule. Lower the min column width to pack in more, narrower columns; raise it for fewer, roomier ones. The rule width, style and colour draw the divider.</p>
+            </div>
           </div>
         </section>
 
@@ -548,6 +567,18 @@
             {#if "--sf-reel-height" in overrides}
               <button onclick={() => onReset("--sf-reel-height")} class="text-[8px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer shrink-0">reset</button>
             {/if}
+          </div>
+          <!-- Reel preview — real .sf-reel; each item takes --sf-reel-item-width
+               and the row scrolls horizontally when they overflow. -->
+          <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3">
+            <div class="sf-reel">
+              {#each [1, 2, 3, 4, 5, 6] as n (n)}
+                <div
+                  class="flex items-center justify-center text-white text-[10px] font-bold"
+                  style={`height:2.5rem;background:var(--sf-color-primary-400,#818cf8);border-radius:var(--sf-radius-s,4px)`}
+                >{n}</div>
+              {/each}
+            </div>
           </div>
         </section>
 

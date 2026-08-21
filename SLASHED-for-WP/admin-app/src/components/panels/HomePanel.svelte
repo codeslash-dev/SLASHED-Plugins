@@ -1,7 +1,7 @@
 <script lang="ts">
   import {
     Sparkles, Palette, Type, Ruler, Layout, Square, Layers, Zap,
-    Puzzle, Blocks, Component, SwatchBook, ShieldCheck, Package, BookOpen, Save,
+    Puzzle, Blocks, Component, SwatchBook, ShieldCheck, Package, BookOpen, Save, ListChecks,
   } from '@lucide/svelte';
   import type { SavedSlot } from '../../types';
   import { listSavedThemes, saveTheme } from '../../lib/savedThemes';
@@ -14,38 +14,60 @@
     onResetAll: () => void;
   } = $props();
 
-  const TOKEN_DOMAINS = [
-    { id: "colors",     icon: Palette,  label: "Colors",     desc: "Brand, semantic & neutral palettes" },
-    { id: "typography", icon: Type,     label: "Typography", desc: "Font families & fluid type scale" },
-    { id: "spacing",    icon: Ruler,    label: "Spacing",    desc: "Space scale & section rhythm" },
-    { id: "layout",     icon: Layout,   label: "Layout",     desc: "Containers, grids & primitives" },
-    { id: "borders",    icon: Square,   label: "Borders",    desc: "Corner radius & border widths" },
-    { id: "shadows",    icon: Layers,   label: "Shadows",    desc: "Elevation & depth control" },
-    { id: "motion",     icon: Zap,      label: "Motion",     desc: "Duration & easing curves" },
-    { id: "effects",    icon: Sparkles, label: "Effects",    desc: "Blur, opacity & scrollbars" },
-    { id: "macros",     icon: Blocks,    label: "Macros",     desc: "Flow, prose, aspect & scrim" },
-    { id: "misc",       icon: Puzzle,    label: "Misc",       desc: "Z-index & remaining tokens" },
-    { id: "components", icon: Component, label: "Components", desc: "Button & card component tokens" },
+  // Mirrors SidebarNav's grouped information architecture so Home and the rail
+  // always tell the same story (same order, names and descriptions).
+  const GROUPS = [
+    {
+      label: "Foundations",
+      items: [
+        { id: "colors",     icon: Palette,   label: "Colors",     desc: "Brand, semantic & neutral palettes" },
+        { id: "typography", icon: Type,      label: "Typography", desc: "Font families & fluid type scale" },
+        { id: "spacing",    icon: Ruler,     label: "Spacing",    desc: "Space scale & section rhythm" },
+        { id: "borders",    icon: Square,    label: "Shape",      desc: "Corner radius & border widths" },
+        { id: "motion",     icon: Zap,       label: "Motion",     desc: "Duration & easing curves" },
+      ],
+    },
+    {
+      label: "Composition",
+      items: [
+        { id: "layout",     icon: Layout,    label: "Layout",     desc: "Containers, grids & primitives" },
+        { id: "depth",      icon: Layers,    label: "Depth",      desc: "Shadows, glow, blur & opacity" },
+        { id: "macros",     icon: Blocks,    label: "Macros",     desc: "Flow, prose, aspect & scrim" },
+        { id: "components", icon: Component, label: "Components", desc: "Button & card component tokens" },
+        { id: "misc",       icon: Puzzle,    label: "System",     desc: "Layering, sizing, media, selection" },
+      ],
+    },
+    {
+      label: "Quality",
+      items: [
+        { id: "changes",    icon: ListChecks,  label: "Changes",       desc: "Review every active override" },
+        { id: "wcag",       icon: ShieldCheck, label: "Accessibility", desc: "Focus ring, touch target & contrast" },
+      ],
+    },
+    {
+      label: "Project",
+      items: [
+        { id: "themes",     icon: SwatchBook, label: "Presets",          desc: "Save & re-apply configurations" },
+        { id: "setup",      icon: Package,    label: "Install & export", desc: "Export overrides & setup" },
+        { id: "cheatsheet", icon: BookOpen,   label: "Reference",        desc: "Class & token catalogue" },
+      ],
+    },
   ] as const;
-
-  const TOOLS = [
-    { id: "themes",     icon: SwatchBook,  label: "Themes",  desc: "Save & re-apply configurations" },
-    { id: "wcag",       icon: ShieldCheck, label: "WCAG",    desc: "Contrast checker & fixes" },
-    { id: "setup",      icon: Package,     label: "Install", desc: "Export overrides & setup" },
-    { id: "cheatsheet", icon: BookOpen,    label: "Classes", desc: "Utility class reference" },
-  ] as const;
-
-  // Per-domain override counts for the Home screen tiles — uses the same
-  // canonical, ordered domainOf() classification as the sidebar badges and
-  // App.svelte's "Reset N" button, so counts can't disagree or double-count
-  // (unlike independent substring-per-domain matching, where e.g.
-  // --sf-btn-radius could match both "components" and a loose "radius"
-  // pattern in another domain's own list).
-  function domainCount(id: string): number {
-    return Object.keys(overrides).filter((k) => domainOf(k) === id).length;
-  }
 
   let overridesCount = $derived(Object.keys(overrides).length);
+
+  // Per-destination override count — the same canonical domainOf() classifier
+  // the sidebar and Reset use, so counts never disagree. `changes` shows the
+  // total; non-token tools show nothing.
+  const NON_TOKEN_IDS = new Set<string>(["changes", "themes", "setup", "cheatsheet"]);
+  const TOKEN_DOMAIN_IDS = new Set<string>(
+    GROUPS.flatMap((g) => g.items.map((i) => i.id as string)).filter((id) => !NON_TOKEN_IDS.has(id)),
+  );
+  function countFor(id: string): number {
+    if (id === "changes") return overridesCount;
+    if (!TOKEN_DOMAIN_IDS.has(id)) return 0;
+    return Object.keys(overrides).filter((k) => domainOf(k) === id).length;
+  }
   let savedThemes = $state<SavedSlot[]>(listSavedThemes());
   let newName = $state("");
 
@@ -81,60 +103,39 @@
     {/if}
   </div>
 
-  <!-- Token domains -->
-  <div>
-    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Token domains</div>
-    <div class="space-y-1">
-      {#each TOKEN_DOMAINS as d (d.id)}
-        {@const count = domainCount(d.id)}
-        {@const DomainIcon = d.icon}
-        <button
-          onclick={() => onSelect(d.id)}
-          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/6 dark:hover:bg-white/6 transition-colors cursor-pointer group text-left"
-        >
-          <div class="text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors shrink-0">
-            <DomainIcon class="w-4 h-4" />
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{d.label}</div>
-            <div class="text-[9px] text-slate-400 dark:text-slate-600">{d.desc}</div>
-          </div>
-          {#if count > 0}
-            <span class="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded-full font-mono shrink-0">{count}</span>
-          {/if}
-          <span class="text-slate-300 dark:text-slate-700 group-hover:text-slate-500 text-[10px]">→</span>
-        </button>
-      {/each}
+  <!-- Grouped destinations (mirror of the sidebar IA) -->
+  {#each GROUPS as group (group.label)}
+    <div>
+      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">{group.label}</div>
+      <div class="space-y-1">
+        {#each group.items as d (d.id)}
+          {@const count = countFor(d.id)}
+          {@const DomainIcon = d.icon}
+          <button
+            onclick={() => onSelect(d.id)}
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/6 dark:hover:bg-white/6 transition-colors cursor-pointer group text-left"
+          >
+            <div class="text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors shrink-0">
+              <DomainIcon class="w-4 h-4" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{d.label}</div>
+              <div class="text-[9px] text-slate-400 dark:text-slate-600">{d.desc}</div>
+            </div>
+            {#if count > 0}
+              <span class="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded-full font-mono shrink-0">{count}</span>
+            {/if}
+            <span class="text-slate-300 dark:text-slate-700 group-hover:text-slate-500 text-[10px]">→</span>
+          </button>
+        {/each}
+      </div>
     </div>
-  </div>
-
-  <!-- Tools -->
-  <div>
-    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Tools</div>
-    <div class="space-y-1">
-      {#each TOOLS as t (t.id)}
-        {@const ToolIcon = t.icon}
-        <button
-          onclick={() => onSelect(t.id)}
-          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/6 dark:hover:bg-white/6 transition-colors cursor-pointer group text-left"
-        >
-          <div class="text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors shrink-0">
-            <ToolIcon class="w-4 h-4" />
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{t.label}</div>
-            <div class="text-[9px] text-slate-400 dark:text-slate-600">{t.desc}</div>
-          </div>
-          <span class="text-slate-300 dark:text-slate-700 group-hover:text-slate-500 text-[10px]">→</span>
-        </button>
-      {/each}
-    </div>
-  </div>
+  {/each}
 
   <!-- Saved themes -->
   <div>
     <div class="flex items-center justify-between mb-2">
-      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Saved themes</div>
+      <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Presets</div>
       <button
         onclick={() => onSelect("themes")}
         class="text-[10px] text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"

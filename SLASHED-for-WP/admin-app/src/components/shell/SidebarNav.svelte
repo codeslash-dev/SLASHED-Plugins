@@ -1,90 +1,135 @@
 <script lang="ts">
   import {
-    Home, Palette, Type, Ruler, Layout, Square, Layers, Zap, Sparkles, Puzzle,
-    Blocks, Component, SwatchBook, ShieldCheck, Package, BookOpen,
+    Home, Palette, Type, Ruler, Layout, Square, Layers, Zap, Blocks,
+    Puzzle, Component, SwatchBook, ShieldCheck, Package, BookOpen, ListChecks,
   } from '@lucide/svelte';
 
-  let { activeId, onSelect, overridesByDomain = {} }: {
+  let { activeId, onSelect, overridesByDomain = {}, expanded = false }: {
     activeId: string;
     onSelect: (id: string) => void;
     overridesByDomain?: Record<string, number>;
+    /** Force the labelled layout at all widths (used inside the mobile drawer). */
+    expanded?: boolean;
   } = $props();
 
-  const NAV_ITEMS = [
-    { id: "home",       icon: Home,        label: "Home",       group: "tokens" },
-    { id: "colors",     icon: Palette,     label: "Colors",     group: "tokens" },
-    { id: "typography", icon: Type,        label: "Typography", group: "tokens" },
-    { id: "spacing",    icon: Ruler,       label: "Spacing",    group: "tokens" },
-    { id: "layout",     icon: Layout,      label: "Layout",     group: "tokens" },
-    { id: "borders",    icon: Square,      label: "Borders",    group: "tokens" },
-    { id: "shadows",    icon: Layers,      label: "Shadows",    group: "tokens" },
-    { id: "motion",     icon: Zap,         label: "Motion",     group: "tokens" },
-    { id: "effects",    icon: Sparkles,    label: "Effects",    group: "tokens" },
-    { id: "macros",     icon: Blocks,      label: "Macros",     group: "tokens" },
-    { id: "misc",       icon: Puzzle,      label: "Misc",       group: "tokens" },
-    { id: "components", icon: Component,   label: "Components", group: "tokens" },
-    { id: "themes",     icon: SwatchBook,  label: "Themes",     group: "tools" },
-    { id: "wcag",       icon: ShieldCheck, label: "WCAG",       group: "tools" },
-    { id: "setup",      icon: Package,     label: "Install",    group: "tools" },
-    { id: "cheatsheet", icon: BookOpen,    label: "Classes",    group: "tools" },
-  ] as const;
+  // Grouped information architecture. Every destination lives under one of four
+  // named groups so a user reasons about *areas of the design system* instead
+  // of decoding an unlabelled icon rail. `home` sits above the groups.
+  type NavItem = { id: string; icon: typeof Home; label: string };
+  const HOME: NavItem = { id: "home", icon: Home, label: "Home" };
+  const GROUPS: { label: string; items: NavItem[] }[] = [
+    {
+      label: "Foundations",
+      items: [
+        { id: "colors",     icon: Palette,   label: "Colors" },
+        { id: "typography", icon: Type,      label: "Typography" },
+        { id: "spacing",    icon: Ruler,     label: "Spacing" },
+        { id: "borders",    icon: Square,    label: "Shape" },
+        { id: "motion",     icon: Zap,       label: "Motion" },
+      ],
+    },
+    {
+      label: "Composition",
+      items: [
+        { id: "layout",     icon: Layout,    label: "Layout" },
+        { id: "depth",      icon: Layers,    label: "Depth" },
+        { id: "macros",     icon: Blocks,    label: "Macros" },
+        { id: "components", icon: Component, label: "Components" },
+        { id: "misc",       icon: Puzzle,    label: "System" },
+      ],
+    },
+    {
+      label: "Quality",
+      items: [
+        { id: "changes",    icon: ListChecks,  label: "Changes" },
+        { id: "wcag",       icon: ShieldCheck, label: "Accessibility" },
+      ],
+    },
+    {
+      label: "Project",
+      items: [
+        { id: "themes",     icon: SwatchBook, label: "Presets" },
+        { id: "setup",      icon: Package,    label: "Install & export" },
+        { id: "cheatsheet", icon: BookOpen,   label: "Reference" },
+      ],
+    },
+  ];
 
-  let tokens = $derived(NAV_ITEMS.filter((i) => i.group === "tokens"));
-  let tools = $derived(NAV_ITEMS.filter((i) => i.group === "tools"));
+  // Every override maps to exactly one token domain, so their sum is the total
+  // override count — what the Changes overview badge should show.
+  let totalOverrides = $derived(Object.values(overridesByDomain).reduce((a, b) => a + b, 0));
+  const countFor = (id: string): number =>
+    id === "changes" ? totalOverrides : (overridesByDomain[id] || 0);
 </script>
 
-<nav class="w-14 bg-slate-50 dark:bg-[#0a0a0f] border-r border-black/8 dark:border-white/8 flex flex-col items-center py-3 gap-1 shrink-0 overflow-y-auto overflow-x-hidden">
-  <div class="flex flex-col items-center gap-1 w-full px-2">
-    {#each tokens as item (item.id)}
-      {@const isActive = activeId === item.id}
-      {@const count = overridesByDomain[item.id] || 0}
-      {@const Icon = item.icon}
-      <button
-        onclick={() => onSelect(item.id)}
-        title={item.label}
-        class={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all cursor-pointer group ${
-          isActive
-            ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-            : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-black/8 dark:hover:bg-white/8"
-        }`}
-      >
-        <Icon class="w-4 h-4" />
-        {#if count > 0 && !isActive}
-          <span class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-indigo-500 rounded-full text-[8px] font-black text-white flex items-center justify-center">
-            {count > 9 ? "+" : count}
-          </span>
-        {/if}
-        <span class="absolute left-12 bg-slate-800 text-white text-[10px] font-semibold px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-white/10">
-          {item.label}
+<nav
+  class={`bg-slate-50 dark:bg-[#0a0a0f] flex flex-col py-3 gap-1 shrink-0 overflow-y-auto overflow-x-hidden ${
+    expanded
+      ? "w-full items-stretch"
+      : "w-14 md:w-52 items-center md:items-stretch border-r border-black/8 dark:border-white/8"
+  }`}
+  aria-label="Panels"
+>
+  {#snippet navButton(item: NavItem)}
+    {@const isActive = activeId === item.id}
+    {@const count = countFor(item.id)}
+    {@const Icon = item.icon}
+    <button
+      onclick={() => onSelect(item.id)}
+      title={item.label}
+      aria-current={isActive ? "page" : undefined}
+      class={`relative flex items-center gap-2.5 rounded-xl transition-all cursor-pointer group ${
+        expanded
+          ? "justify-start w-full h-9 px-2.5"
+          : "justify-center md:justify-start w-10 md:w-full h-10 md:h-8 px-0 md:px-2.5"
+      } ${
+        isActive
+          ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+          : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-black/8 dark:hover:bg-white/8"
+      }`}
+    >
+      <Icon class="w-4 h-4 shrink-0" />
+      <span class={`${expanded ? "block" : "hidden md:block"} text-[11px] font-semibold truncate`}>{item.label}</span>
+
+      {#if count > 0}
+        <!-- Collapsed rail: corner dot. Labelled layout: trailing count pill. -->
+        <span
+          class={`${expanded ? "hidden" : "md:hidden"} absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full text-[8px] font-black flex items-center justify-center ${
+            isActive ? "bg-white text-indigo-700" : "bg-indigo-500 text-white"
+          }`}
+        >
+          {count > 9 ? "+" : count}
         </span>
-      </button>
-    {/each}
-  </div>
-  <div class="w-8 h-px bg-black/8 dark:bg-white/8 my-2"></div>
-  <div class="flex flex-col items-center gap-1 w-full px-2">
-    {#each tools as item (item.id)}
-      {@const isActive = activeId === item.id}
-      {@const count = overridesByDomain[item.id] || 0}
-      {@const Icon = item.icon}
-      <button
-        onclick={() => onSelect(item.id)}
-        title={item.label}
-        class={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all cursor-pointer group ${
-          isActive
-            ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-            : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-black/8 dark:hover:bg-white/8"
-        }`}
-      >
-        <Icon class="w-4 h-4" />
-        {#if count > 0 && !isActive}
-          <span class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-indigo-500 rounded-full text-[8px] font-black text-white flex items-center justify-center">
-            {count > 9 ? "+" : count}
-          </span>
-        {/if}
-        <span class="absolute left-12 bg-slate-800 text-white text-[10px] font-semibold px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-white/10">
-          {item.label}
+        <span
+          class={`${expanded ? "flex" : "hidden md:flex"} ml-auto min-w-4 h-4 px-1 rounded-full text-[9px] font-black items-center justify-center ${
+            isActive ? "bg-white/25 text-white" : "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
+          }`}
+        >
+          {count > 99 ? "99+" : count}
         </span>
-      </button>
-    {/each}
+      {/if}
+
+      <!-- Tooltip: only for the collapsed icon rail (labels are inline otherwise). -->
+      <span class={`${expanded ? "hidden" : "md:hidden"} absolute left-12 bg-slate-800 text-white text-[10px] font-semibold px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-white/10`}>
+        {item.label}
+      </span>
+    </button>
+  {/snippet}
+
+  <!-- Home -->
+  <div class={`flex flex-col gap-1 w-full px-2 ${expanded ? "items-stretch" : "items-center md:items-stretch"}`}>
+    {@render navButton(HOME)}
   </div>
+
+  {#each GROUPS as group (group.label)}
+    <div class={`h-px bg-black/8 dark:bg-white/8 my-2 ${expanded ? "mx-2.5" : "w-8 md:w-auto md:mx-2.5"}`}></div>
+    <div class={`${expanded ? "block" : "hidden md:block"} px-3 pb-1 text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600`}>
+      {group.label}
+    </div>
+    <div class={`flex flex-col gap-1 w-full px-2 ${expanded ? "items-stretch" : "items-center md:items-stretch"}`}>
+      {#each group.items as item (item.id)}
+        {@render navButton(item)}
+      {/each}
+    </div>
+  {/each}
 </nav>

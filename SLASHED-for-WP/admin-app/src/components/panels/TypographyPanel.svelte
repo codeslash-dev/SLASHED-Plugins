@@ -367,6 +367,16 @@
           {/each}
         </div>
       </div>
+      <!-- Numeric-figures preview — a right-aligned money column. With
+           tabular-nums the digits share one width so the decimals line up;
+           proportional-nums lets them drift. -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-lg border border-black/8 dark:border-white/8 px-3 py-2" style={`font-variant-numeric:var(--sf-font-numeric, tabular-nums)`}>
+        <div class="flex flex-col items-end gap-0.5 text-[12px] text-slate-700 dark:text-slate-300">
+          <span>1,204.05</span>
+          <span>98.10</span>
+          <span>13,760.75</span>
+        </div>
+      </div>
       <div>
         <div class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Optical sizing</div>
         <div class="flex gap-1">
@@ -561,6 +571,19 @@
       </div>
     </div>
 
+    <!-- Leading preview — a wrapped sample at each line-height so the vertical
+         rhythm difference is visible directly. -->
+    <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-2.5">
+      {#each LEADING_TOKENS as t (t.token)}
+        <div>
+          <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600">{t.label}</span>
+          <p class="text-[11px] text-slate-700 dark:text-slate-300 m-0" style={`line-height:var(${t.token})`}>
+            The quick brown fox jumps over the lazy dog while the rhythm of these lines shifts with the leading.
+          </p>
+        </div>
+      {/each}
+    </div>
+
     <SliderRow
       label="Leading taper" value={taper} min={0} max={0.5} step={0.01}
       help="--sf-leading-taper — how aggressively large sizes shrink their line-height."
@@ -606,6 +629,17 @@
               min={-0.1} max={0.2} step={0.005} unit="em"
               onChange={(v) => onSet(t.token, `${v}em`)}
             />
+          </div>
+        {/each}
+      </div>
+
+      <!-- Tracking preview — the same word at each step, so the spacing
+           difference is obvious at a glance. -->
+      <div class="bg-black/4 dark:bg-white/4 rounded-xl border border-black/8 dark:border-white/8 p-3 space-y-1.5">
+        {#each TRACKING_TOKENS as t (t.token)}
+          <div class="flex items-baseline gap-2">
+            <span class="text-[8px] font-mono text-slate-400 dark:text-slate-600 w-10 shrink-0">{t.label}</span>
+            <span class="text-[13px] text-slate-800 dark:text-slate-200 truncate" style={`letter-spacing:var(${t.token})`}>Typography</span>
           </div>
         {/each}
       </div>

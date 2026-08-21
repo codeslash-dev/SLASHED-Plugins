@@ -155,6 +155,20 @@
           </div>
         {/each}
       </div>
+
+      <!-- Text-shadow preview — white text over a photo-like gradient (the real
+           use case: legibility over imagery), each step applying its token. -->
+      <div
+        class="rounded-xl border border-black/8 dark:border-white/8 p-4 flex gap-4 items-center justify-center flex-wrap"
+        style="background:linear-gradient(135deg,var(--sf-color-primary-400,#6366f1),var(--sf-color-secondary-500,#8b5cf6) 60%,var(--sf-color-tertiary-400,#0ea5e9))"
+      >
+        {#each TEXT_SHADOW_TOKENS as t (t.token)}
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-[22px] font-bold text-white leading-none" style={`text-shadow:var(${t.token})`}>Aa</span>
+            <span class="text-[8px] font-mono text-white/70">{t.token.replace("--sf-text-shadow-", "")}</span>
+          </div>
+        {/each}
+      </div>
   </Section>
 
   <div class="h-px bg-black/6 dark:bg-white/6"></div>

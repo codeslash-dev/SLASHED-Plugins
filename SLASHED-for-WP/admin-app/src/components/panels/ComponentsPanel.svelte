@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Eye } from '@lucide/svelte';
   import SliderRow from '../inputs/SliderRow.svelte';
   import Section from '../inputs/Section.svelte';
   import { SPACE_SCALE, RADIUS_SCALE, BORDER_WIDTH_SCALE, SIZE_SCALE, type VarOption } from '../../lib/variableScales';
@@ -190,9 +191,15 @@
 
   <!-- BUTTON -->
   <Section title="Button (.sf-btn)" bind:open={showButton}>
-      <!-- Preview pickers — local state only, not overrides -->
-      <div class="space-y-2">
-        <div class="text-[9px] text-slate-500">Variant (preview only)</div>
+      <!-- Preview setup — local state only, never written to overrides. Fenced
+           and labelled so it's unmistakable these pickers don't export. -->
+      <div class="rounded-xl border border-dashed border-indigo-500/25 bg-indigo-500/[0.03] dark:bg-indigo-400/[0.04] p-2.5 space-y-2">
+        <div class="flex items-center gap-1.5">
+          <Eye class="w-3 h-3 text-indigo-500/70 shrink-0" />
+          <span class="text-[9px] font-bold uppercase tracking-wider text-indigo-600/80 dark:text-indigo-300/80">Preview setup</span>
+          <span class="text-[8px] font-semibold text-slate-500 bg-black/5 dark:bg-white/8 rounded px-1 py-px">not exported</span>
+        </div>
+        <div class="text-[9px] text-slate-500">Variant</div>
         <div class="flex flex-wrap gap-1">
           {#each BTN_VARIANTS as v (v)}
             <button
@@ -395,16 +402,24 @@
 
   <!-- CARD -->
   <Section title="Card (.sf-card)" bind:open={showCard}>
-      <div class="flex items-center gap-3">
-        <label class="flex items-center gap-1.5 text-[9px] text-slate-500 cursor-pointer">
-          <input type="checkbox" bind:checked={cardBordered} class="cursor-pointer" /> bordered
-        </label>
-        <label class="flex items-center gap-1.5 text-[9px] text-slate-500 cursor-pointer">
-          <input type="checkbox" bind:checked={cardElevated} class="cursor-pointer" /> elevated
-        </label>
-        <label class="flex items-center gap-1.5 text-[9px] text-slate-500 cursor-pointer">
-          <input type="checkbox" bind:checked={cardInteractive} class="cursor-pointer" /> interactive
-        </label>
+      <!-- Preview setup — local state only, never written to overrides. -->
+      <div class="rounded-xl border border-dashed border-indigo-500/25 bg-indigo-500/[0.03] dark:bg-indigo-400/[0.04] p-2.5 space-y-2">
+        <div class="flex items-center gap-1.5">
+          <Eye class="w-3 h-3 text-indigo-500/70 shrink-0" />
+          <span class="text-[9px] font-bold uppercase tracking-wider text-indigo-600/80 dark:text-indigo-300/80">Preview setup</span>
+          <span class="text-[8px] font-semibold text-slate-500 bg-black/5 dark:bg-white/8 rounded px-1 py-px">not exported</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <label class="flex items-center gap-1.5 text-[9px] text-slate-500 cursor-pointer">
+            <input type="checkbox" bind:checked={cardBordered} class="cursor-pointer" /> bordered
+          </label>
+          <label class="flex items-center gap-1.5 text-[9px] text-slate-500 cursor-pointer">
+            <input type="checkbox" bind:checked={cardElevated} class="cursor-pointer" /> elevated
+          </label>
+          <label class="flex items-center gap-1.5 text-[9px] text-slate-500 cursor-pointer">
+            <input type="checkbox" bind:checked={cardInteractive} class="cursor-pointer" /> interactive
+          </label>
+        </div>
       </div>
 
       <!-- Live preview — real .sf-card + subcomponents, realistic composition.

@@ -1,13 +1,13 @@
 <script lang="ts">
   import { tick } from 'svelte';
-  import { Undo2, Redo2, Trash2, Share2, FolderOpen, Check, Save, Loader2, AlertTriangle, Sun, Moon } from '@lucide/svelte';
+  import { Undo2, Redo2, Trash2, Share2, FolderOpen, Check, Save, Loader2, AlertTriangle, Sun, Moon, Search } from '@lucide/svelte';
   import { themeState, toggleTheme } from '../../lib/theme.svelte';
   import { buildShareUrl } from '../../lib/codec';
   import { getShareBaseUrl } from '../../lib/persistence';
 
   const version = typeof __SLASHED_VERSION__ !== "undefined" ? __SLASHED_VERSION__ : "";
 
-  let { overrides, overridesCount, canUndo, canRedo, hasPendingChanges, saveState, onUndo, onRedo, onResetAll, onImport, onExport, onSave }: {
+  let { overrides, overridesCount, canUndo, canRedo, hasPendingChanges, saveState, onUndo, onRedo, onResetAll, onImport, onExport, onSave, onOpenSearch }: {
     overrides: Record<string, string>;
     overridesCount: number;
     canUndo: boolean;
@@ -20,6 +20,7 @@
     onImport: () => void;
     onExport: () => void;
     onSave: () => void;
+    onOpenSearch: () => void;
   } = $props();
 
   let shareFeedback = $state(false);
@@ -74,6 +75,18 @@
       Token Architect
     </div>
   </div>
+
+  <!-- Discoverable global search (was hidden behind Cmd/Ctrl+K only). -->
+  <button
+    onclick={onOpenSearch}
+    title="Search panels & tokens (Ctrl/Cmd+K)"
+    aria-label="Search panels and tokens"
+    class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-black/8 dark:hover:bg-white/8 transition-colors cursor-pointer shrink-0"
+  >
+    <Search class="w-3.5 h-3.5 shrink-0" />
+    <span class="hidden md:inline text-[11px]">Search…</span>
+    <kbd class="hidden md:inline text-[9px] font-mono border border-black/10 dark:border-white/10 rounded px-1 py-px">⌘K</kbd>
+  </button>
 
   {#if overridesCount > 0}
     <button
@@ -151,7 +164,7 @@
 
     <button
       onclick={onImport}
-      title="Import CSS overrides"
+      title="Import overrides (CSS or JSON)"
       class="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/8 dark:hover:bg-white/8 transition-all cursor-pointer shrink-0"
     >
       <FolderOpen class="w-3.5 h-3.5" />

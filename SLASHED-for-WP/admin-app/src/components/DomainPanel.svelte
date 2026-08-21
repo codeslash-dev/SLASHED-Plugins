@@ -1,30 +1,33 @@
 <script lang="ts">
   import { SlidersHorizontal, List } from '@lucide/svelte';
   import type { SlashedToken } from '../types';
-  import { DOMAIN_PATTERNS, domainOf } from '../lib/domains';
+  import { domainOf } from '../lib/domains';
   import HomePanel from './panels/HomePanel.svelte';
   import ColorsPanel from './panels/ColorsPanel.svelte';
   import TypographyPanel from './panels/TypographyPanel.svelte';
   import SpacingPanel from './panels/SpacingPanel.svelte';
   import LayoutPanel from './panels/LayoutPanel.svelte';
   import BordersPanel from './panels/BordersPanel.svelte';
-  import ShadowsPanel from './panels/ShadowsPanel.svelte';
+  import DepthPanel from './panels/DepthPanel.svelte';
   import MotionPanel from './panels/MotionPanel.svelte';
-  import EffectsPanel from './panels/EffectsPanel.svelte';
   import MacrosPanel from './panels/MacrosPanel.svelte';
   import MiscPanel from './panels/MiscPanel.svelte';
   import ComponentsPanel from './panels/ComponentsPanel.svelte';
   import ThemesPanel from './panels/ThemesPanel.svelte';
   import ExportPanel from './panels/ExportPanel.svelte';
   import CheatsheetPanel from './panels/CheatsheetPanel.svelte';
+  import ChangesPanel from './panels/ChangesPanel.svelte';
   import GenericTokenPanel from './panels/GenericTokenPanel.svelte';
   import AllTokensTab from './panels/AllTokensTab.svelte';
-  import WcagPanel from './panels/WcagPanel.svelte';
+  import AccessibilityPanel from './panels/AccessibilityPanel.svelte';
 
-  let { domain, tokens, overrides, onSet, onReset, onBulkChange, onApplyTheme, onSelectDomain, onResetAll }: {
+  let { domain, tokens, overrides, focusToken = null, focusNonce = 0, onSet, onReset, onBulkChange, onApplyTheme, onSelectDomain, onResetAll }: {
     domain: string;
     tokens: SlashedToken[];
     overrides: Record<string, string>;
+    /** Deep-link target token from search; opens the All-tokens list on it. */
+    focusToken?: string | null;
+    focusNonce?: number;
     onSet: (name: string, value: string) => void;
     onReset: (name: string) => void;
     onBulkChange: (patch: Record<string, string | null>) => void;
@@ -35,22 +38,27 @@
 
 
   // Domains that skip the two-tab treatment
-  const NO_CONTROLS_TAB = new Set(["home", "themes", "wcag", "setup", "cheatsheet"]);
+  const NO_CONTROLS_TAB = new Set(["home", "changes", "themes", "setup", "cheatsheet"]);
 
   let view = $state<"controls" | "tokens">("controls");
 
-  // Reset view to controls when domain changes
+  // A domain change resets to Controls — UNLESS it arrived with a fresh deep-link
+  // focus request, which opens the All-tokens list on the target token. Both
+  // signals are read in one effect so their order can't race.
+  let lastFocusNonce = -1;
   $effect(() => {
     const _ = domain;
-    view = "controls";
+    const nonce = focusNonce;
+    if (focusToken && nonce !== lastFocusNonce) {
+      lastFocusNonce = nonce;
+      view = "tokens";
+    } else {
+      view = "controls";
+    }
   });
 
-  let patterns = $derived(DOMAIN_PATTERNS[domain] ?? [domain]);
-
-  // Uses domainOf() rather than the raw patterns list so this badge always
-  // agrees with App.svelte's "Reset N" count — matching against a single
-  // domain's patterns in isolation over-counts where patterns overlap (e.g.
-  // layout's "-bg-" also appears in color tokens like --sf-color-bg--active).
+  // domainOf() is the single classifier shared with the sidebar badge and the
+  // category Reset, so this count always agrees with them.
   let domainOverridesInTokenTab = $derived(
     tokens.filter((t) => domainOf(t.name) === domain && t.name in overrides).length
   );
@@ -59,10 +67,10 @@
 {#if NO_CONTROLS_TAB.has(domain)}
   {#if domain === "home"}
     <HomePanel {overrides} onSelect={onSelectDomain} {onApplyTheme} {onResetAll} />
+  {:else if domain === "changes"}
+    <ChangesPanel {tokens} {overrides} {onSet} {onReset} {onBulkChange} {onResetAll} {onSelectDomain} />
   {:else if domain === "themes"}
     <ThemesPanel {overrides} {onApplyTheme} {onResetAll} />
-  {:else if domain === "wcag"}
-    <WcagPanel {tokens} {overrides} {onSet} {onBulkChange} />
   {:else if domain === "setup"}
     <ExportPanel {overrides} {tokens} {onApplyTheme} />
   {:else if domain === "cheatsheet"}
@@ -84,18 +92,18 @@
             <LayoutPanel {overrides} {onSet} {onReset} {onBulkChange} />
           {:else if domain === "borders"}
             <BordersPanel {overrides} {onSet} {onReset} />
-          {:else if domain === "shadows"}
-            <ShadowsPanel {overrides} {onSet} {onReset} />
+          {:else if domain === "depth"}
+            <DepthPanel {overrides} {onSet} {onReset} />
           {:else if domain === "motion"}
             <MotionPanel {overrides} {onSet} {onReset} />
-          {:else if domain === "effects"}
-            <EffectsPanel {overrides} {onSet} {onReset} />
           {:else if domain === "macros"}
             <MacrosPanel {overrides} {onSet} {onReset} />
           {:else if domain === "misc"}
             <MiscPanel {overrides} {onSet} {onReset} {onBulkChange} />
           {:else if domain === "components"}
             <ComponentsPanel {overrides} {onSet} {onReset} />
+          {:else if domain === "wcag"}
+            <AccessibilityPanel {tokens} {overrides} {onSet} {onReset} {onBulkChange} />
           {:else}
             <GenericTokenPanel {domain} {tokens} {overrides} {onSet} {onReset} />
           {/if}
@@ -104,7 +112,9 @@
         <AllTokensTab
           {tokens}
           {overrides}
-          {patterns}
+          {domain}
+          {focusToken}
+          {focusNonce}
           {onSet}
           {onReset}
         />

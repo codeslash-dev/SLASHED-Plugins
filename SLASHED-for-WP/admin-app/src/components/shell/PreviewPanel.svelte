@@ -258,8 +258,19 @@ ${buildTab(template)}
   <!-- Preview toolbar — always a single row (scrolls horizontally instead of
        wrapping) so it can't eat a growing chunk of a short mobile viewport. -->
   <div class="min-h-10 bg-slate-50 dark:bg-[#0d0d14] border-b border-black/8 dark:border-white/8 flex flex-nowrap items-center px-3 gap-2 overflow-x-auto shrink-0">
-    <!-- Template tabs -->
-    <div class="shrink-0 flex bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded-lg p-0.5 gap-0.5 max-w-full overflow-x-auto">
+    <!-- Template selector. Mobile: a compact dropdown (the tab strip used to be
+         clipped in the narrow viewport). Desktop (sm+): the full tab strip. -->
+    <select
+      value={previewTemplate}
+      onchange={(e) => onTemplateChange((e.target as HTMLSelectElement).value as PreviewTemplate)}
+      aria-label="Preview template"
+      class="sm:hidden shrink-0 bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
+    >
+      {#each TABS as t (t.id)}
+        <option value={t.id}>{t.label}</option>
+      {/each}
+    </select>
+    <div class="hidden sm:flex shrink-0 bg-black/5 dark:bg-white/5 border border-black/8 dark:border-white/8 rounded-lg p-0.5 gap-0.5 max-w-full overflow-x-auto">
       {#each TABS as t (t.id)}
         <button
           onclick={() => onTemplateChange(t.id)}
