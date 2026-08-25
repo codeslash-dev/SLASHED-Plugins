@@ -29,7 +29,7 @@ if ( ! defined( 'SLASHED_BRICKS_VERSION' ) ) {
 	define( 'SLASHED_BRICKS_VERSION', '0.6.13' );
 	define( 'SLASHED_BRICKS_PATH', plugin_dir_path( __FILE__ ) );
 	define( 'SLASHED_BRICKS_URL', plugin_dir_url( __FILE__ ) );
-	define( 'SLASHED_BRICKS_CSS_REF', 'v0.7.35' );
+	define( 'SLASHED_BRICKS_CSS_REF', 'v0.7.36' );
 }
 
 /**
